@@ -5,12 +5,27 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: isssd-studio-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: npm test
+
+      - name: Environment
+        run: |
+          node --version
+          npm --version
+
+      - name: Regression tests
+        run: npm test
