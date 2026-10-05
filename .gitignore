@@ -1,0 +1,22 @@
+# Commercial ROMs / emulator artifacts
+*.sfc
+*.smc
+*.fig
+*.swc
+*.rom
+*.sav
+*.srm
+
+# Local ROM directory
+roms/
+fixtures/private/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Node
+node_modules/
+coverage/
