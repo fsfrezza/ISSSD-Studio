@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {buildPlusProjectRom} from '../src/core/project-build.mjs';
 import {knownMirrorOffset,playerOffset} from '../src/core/plus-player.mjs';
+import {resolvePlusTacticalRecord} from '../src/core/plus-tactics-address.mjs';
+import {makePlusTacticalFixture} from './plus-tactics-fixture.mjs';
 
 test('project build starts from immutable base and applies canonical persisted patches before writers',()=>{
   const base=new Uint8Array(0x200000);
@@ -32,10 +34,10 @@ test('project build starts from immutable base and applies canonical persisted p
 });
 
 test('project build normalizes legacy tactical rawHex before writers see semantic state',()=>{
-  const base=new Uint8Array(0x200000);
-  const project={state:{targetLength:0x200000,patchesCompact:[],semantic:{teamsV1:{schema:'isssd-teams-v1',version:2,tactics:{schema:'isssd-custom-tactics-v1',version:2,teams:{'30':{teamId:30,formationIndex:3,formationLabel:'4-4-2',rawHex:'AA'.repeat(31),players:[{index:0,rosterSlot:1,x:-20,y:5,attack:false},{index:1,rosterSlot:9,x:18,y:-4,attack:true}]}}}}}}};
+  const base=makePlusTacticalFixture();
+  const project={state:{targetLength:0x200000,patchesCompact:[],semantic:{teamsV1:{schema:'isssd-teams-v1',version:2,tactics:{schema:'isssd-custom-tactics-v1',version:2,teams:{'30':{teamId:30,formationIndex:3,formationLabel:'4-4-2',rawHex:'AA'.repeat(31),players:[{index:0,rosterSlot:1,x:-20,y:5,className:'DF',attack:false},{index:1,rosterSlot:9,x:18,y:-4,className:'MC',attack:true}]}}}}}}};
   const snapshot=structuredClone(project);
-  buildPlusProjectRom(base,project,{
+  const {rom}=buildPlusProjectRom(base,project,{
     writers:[(_work,state)=>{
       assert.equal(state.teamsV1.tactics,undefined);
       assert.equal(state.plusTactics.schema,'isssd-plus-tactics-v1');
@@ -46,7 +48,29 @@ test('project build normalizes legacy tactical rawHex before writers see semanti
     }],
     writeChecksum:false,
   });
+  assert.equal(rom.length,0x400000);
   assert.deepEqual(project,snapshot);
+});
+
+test('project build generates exclusive tactical infrastructure before semantic tactical writer',()=>{
+  const base=makePlusTacticalFixture();
+  const before=base.slice();
+  const project={state:{targetLength:0x200000,patchesCompact:[],semantic:{plusTactics:{schema:'isssd-plus-tactics-v1',version:1,teams:{
+    '31':{teamId:31,formationIndex:2,players:[{index:0,rosterSlot:2,x:-57,y:7,className:'DF',attack:true}]}
+  }}}}};
+  const {rom}=buildPlusProjectRom(base,project,{writeChecksum:false});
+  assert.equal(rom.length,0x400000);
+  assert.deepEqual(base,before);
+  const a=resolvePlusTacticalRecord(rom,30),b=resolvePlusTacticalRecord(rom,31);
+  assert.equal(a.ptr,b.ptr);
+  assert.notEqual(a.recordPc,b.recordPc);
+  assert.equal(a.pointerBank,0x8B);
+  assert.equal(b.pointerBank,0xC0);
+  assert.equal(b.raw[0],2);
+  assert.equal(b.raw[1],0xEE);
+  assert.equal(b.raw[2],7);
+  assert.equal(b.raw[21]&7,5);
+  assert.notEqual(a.raw[0],b.raw[0]);
 });
 
 test('project build normalizes legacy player attrHex before writers see semantic state',()=>{
