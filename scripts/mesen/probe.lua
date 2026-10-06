@@ -95,7 +95,7 @@ local function finish()
     emu.log(string.format("ISSSD_PROBE_CAND addr=0x%05X value=%d mask=0x%02X changes=%d",r.addr,r.value,r.mask,r.changes))
   end
   emu.log("ISSSD_PROBE_PASS frames="..frame.." candidates="..#rows)
-  emu.stop(0)
+  emu.exit(0)
 end
 
 emu.addEventCallback(function()
