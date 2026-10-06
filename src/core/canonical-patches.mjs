@@ -13,32 +13,63 @@ function validateByteArray(value) {
   return Uint8Array.from(value);
 }
 
-function decodeStringBytes(value,label) {
+function decodeHex(value,label) {
   const compact=value.replace(/\s+/g,'');
-  if (/^(?:[0-9a-fA-F]{2})*$/.test(compact)) {
-    return Uint8Array.from(compact.match(/../g)?.map(x => Number.parseInt(x,16)) ?? []);
-  }
+  if (!/^(?:[0-9a-fA-F]{2})*$/.test(compact)) throw new TypeError(`${label} string must be hexadecimal`);
+  return Uint8Array.from(compact.match(/../g)?.map(x => Number.parseInt(x,16)) ?? []);
+}
 
+function decodeBase64(value,label) {
+  const compact=String(value ?? '').replace(/\s+/g,'');
   const base64=/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
-  if (compact.length>0 && compact.length%4===0 && base64.test(compact)) {
-    try {
-      const binary=atob(compact);
-      return Uint8Array.from(binary,ch=>ch.charCodeAt(0));
-    } catch {
-      // Fall through to the stable validation error below.
+  if (compact.length===0 || compact.length%4!==0 || !base64.test(compact)) {
+    throw new TypeError(`${label} must be valid Base64`);
+  }
+  try {
+    const binary=atob(compact);
+    return Uint8Array.from(binary,ch=>ch.charCodeAt(0)&0xFF);
+  } catch {
+    throw new TypeError(`${label} must be valid Base64`);
+  }
+}
+
+function decodeHistoricalRle(bytes,expectedLength) {
+  const length=Number(expectedLength);
+  if (!Number.isInteger(length) || length < 0) throw new RangeError('rle-base64 patch len must be a non-negative integer');
+  const a=bytes instanceof Uint8Array?bytes:Uint8Array.from(bytes||[]);
+  const out=new Uint8Array(length);
+  let i=0,k=0;
+  while (i<a.length && k<out.length) {
+    const control=a[i++];
+    const count=(control&0x7F)+1;
+    if (control&0x80) {
+      if (i>=a.length) throw new RangeError('rle-base64 repeat run is truncated');
+      const value=a[i++];
+      out.fill(value,k,Math.min(out.length,k+count));
+      k+=count;
+    } else {
+      const end=Math.min(i+count,a.length);
+      out.set(a.subarray(i,end),k);
+      k+=end-i;
+      i=end;
     }
   }
-
-  throw new TypeError(`${label} string must be hexadecimal or Base64`);
+  if (k!==out.length) throw new RangeError('rle-base64 reconstructed length mismatch');
+  return out;
 }
 
 function patchBytes(patch) {
+  if (patch?.encoding === 'rle-base64') {
+    if (typeof patch?.data !== 'string') throw new TypeError('rle-base64 patch data must be a Base64 string');
+    return decodeHistoricalRle(decodeBase64(patch.data,'rle-base64 patch data'),patch.len);
+  }
+  if (patch?.encoding != null) throw new TypeError(`unsupported patch encoding: ${patch.encoding}`);
   if (patch?.data instanceof Uint8Array) return Uint8Array.from(patch.data);
   if (Array.isArray(patch?.data)) return validateByteArray(patch.data);
   if (patch?.bytes instanceof Uint8Array) return Uint8Array.from(patch.bytes);
   if (Array.isArray(patch?.bytes)) return validateByteArray(patch.bytes);
-  if (typeof patch?.data === 'string') return decodeStringBytes(patch.data,'patch data');
-  if (typeof patch?.bytes === 'string') return decodeStringBytes(patch.bytes,'patch bytes');
+  if (typeof patch?.data === 'string') return decodeHex(patch.data,'patch data');
+  if (typeof patch?.bytes === 'string') return decodeHex(patch.bytes,'patch bytes');
   if (Number.isInteger(patch?.value) && patch.value >= 0 && patch.value <= 0xFF) return Uint8Array.of(patch.value);
   throw new TypeError('patch must contain byte data');
 }
