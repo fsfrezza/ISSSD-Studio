@@ -18,11 +18,11 @@ for(let i=0;i<argv.length;i++){
 }
 
 if(positional.length!==1){
-  console.error('Usage: npm run test:emulator -- <rom.sfc> [--mode smoke|nav] [--mesen <Mesen.exe>] [--timeout-ms 30000]');
+  console.error('Usage: npm run test:emulator -- <rom.sfc> [--mode smoke|nav|probe] [--mesen <Mesen.exe>] [--timeout-ms 30000]');
   process.exit(2);
 }
-if(!['smoke','nav'].includes(mode)){
-  console.error('Invalid --mode. Use smoke or nav.');
+if(!['smoke','nav','probe'].includes(mode)){
+  console.error('Invalid --mode. Use smoke, nav or probe.');
   process.exit(2);
 }
 if(!mesenBin){
@@ -35,7 +35,7 @@ if(!Number.isFinite(timeoutMs)||timeoutMs<=0){
 }
 
 const romPath=resolve(positional[0]);
-const luaName=mode==='nav'?'nav.lua':'smoke.lua';
+const luaName=mode==='nav'?'nav.lua':mode==='probe'?'probe.lua':'smoke.lua';
 const luaPath=resolve(fileURLToPath(new URL('./mesen/'+luaName,import.meta.url)));
 const exePath=resolve(mesenBin);
 if(!existsSync(romPath)){console.error('ROM not found: '+romPath);process.exit(2);}
@@ -45,7 +45,7 @@ const args=buildMesenSmokeArgs({luaPath,romPath});
 console.log('Mesen emulator test');
 console.log('Mode:',mode);
 console.log('ROM:',romPath);
-console.log('Target frames:',mode==='nav'?1200:600);
+console.log('Target frames:',mode==='smoke'?600:1200);
 console.log('Timeout:',timeoutMs+'ms');
 
 let stdout='';
@@ -70,6 +70,7 @@ child.on('close',code=>{
   const result=interpretMesenSmokeResult({exitCode:code,stdout,stderr,timedOut});
   if(result.ok){
     if(result.mode==='nav')console.log(`PASS: navigation survived ${result.frames} frames and ${result.steps} input steps.`);
+    else if(result.mode==='probe')console.log(`PASS: WRAM probe completed with ${result.candidates} stable changing candidates.`);
     else console.log(`PASS: Mesen completed ${result.frames} frames.`);
     process.exit(0);
   }
