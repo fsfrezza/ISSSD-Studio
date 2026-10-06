@@ -71,7 +71,7 @@ test('byte-identical overlap with a trailing extension is merged',()=>{
   assert.deepEqual(plain(got),[{off:0x100,data:[1,2,3,4,5]}]);
 });
 
-test('overlapping non-identical patches report both source patches and overlapping bytes',()=>{
+test('overlapping non-identical modern patches remain rejected',()=>{
   assert.throws(()=>canonicalizePatches([
     {off:0x100,data:[1,2,3]},
     {off:0x102,data:[9,4]}
@@ -84,6 +84,25 @@ test('overlapping non-identical patches report both source patches and overlappi
     assert.match(error.message,/current bytes \[09\]/);
     return true;
   });
+});
+
+test('legacy rle-base64 exact-range conflict replays historical last-patch-wins order',()=>{
+  const got=canonicalizePatches([
+    {off:390119,len:9,encoding:'rle-base64',data:'CAsK4gMF9/vtHg=='},
+    {off:390119,len:9,encoding:'rle-base64',data:'CAsR5A8FAf35Hg=='}
+  ]);
+  assert.deepEqual(plain(got),[{
+    off:390119,
+    data:[0x0B,0x11,0xE4,0x0F,0x05,0x01,0xFD,0xF9,0x1E]
+  }]);
+});
+
+test('legacy rle-base64 partial overlap also replays later bytes over earlier bytes',()=>{
+  const got=canonicalizePatches([
+    {off:0x100,len:3,encoding:'rle-base64',data:'AgECAw=='},
+    {off:0x102,len:3,encoding:'rle-base64',data:'AgkEBQ=='}
+  ]);
+  assert.deepEqual(plain(got),[{off:0x100,data:[1,2,9,4,5]}]);
 });
 
 test('historical full 2 MiB expansion persistence is rejected',()=>{
