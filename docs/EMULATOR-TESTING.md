@@ -71,7 +71,33 @@ On Windows the setup, probe and ranking can be chained with one command:
 npm run discover:emulator:windows -- "C:\path\output.sfc"
 ```
 
-### 4. Semantic WRAM test
+### 4. Cross-ROM WRAM comparison
+
+A candidate should be reproduced on the canonical/base ROM and on a generated ROM before it becomes a semantic assertion.
+
+Existing reports can be compared with:
+
+```powershell
+npm run compare:emulator:probes -- probe-base.json probe-generated.json --limit 20 --out probe-comparison.json
+```
+
+The comparison classifies shared addresses as:
+
+- `exact`: value, transition mask and change count are identical;
+- `compatible`: value and transition mask are identical, but the change count differs;
+- `divergent`: the address exists in both reports but does not behave equivalently.
+
+Only `exact` and `compatible` candidates are listed as promotable, with exact matches ranked first.
+
+On Windows the two probes and their comparison can be produced in one command:
+
+```powershell
+npm run discover:emulator:cross-rom:windows -- "C:\path\base.sfc" "C:\path\generated.sfc"
+```
+
+This creates local `probe-base.json`, `probe-generated.json` and `probe-comparison.json` files. Probe reports are ignored by Git.
+
+### 5. Semantic WRAM test
 
 Once candidate addresses have been verified, describe them in a declarative profile instead of editing Lua manually.
 
