@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import crypto from 'node:crypto';
+import {canonicalProjectState} from '../src/core/project-state.mjs';
 
 const file = process.argv[2];
 if (!file) {
@@ -35,6 +36,10 @@ for (let i=0;i<patches.length;i++) {
   if (off >= baseSize || (len !== null && off + len > baseSize)) expansion.push({index:i,off,len});
 }
 
+let canonicalStateError=null;
+try { canonicalProjectState(p,{baseSize}); }
+catch (error) { canonicalStateError=error.message; }
+
 const semantic = p?.semantic ?? p?.state?.semantic ?? {};
 const report = {
   file,
@@ -48,12 +53,14 @@ const report = {
   exactDuplicatePatchCount: duplicates.length,
   expansionPatchCount: expansion.length,
   invalidPatchCount: invalid.length,
+  canonicalStateError,
   semanticKeys: Object.keys(semantic),
   suspiciousFullExpansion: expansion.filter(x=>x.off===0x200000 && x.len===0x200000),
 };
 console.log(JSON.stringify(report,null,2));
 
 let bad=false;
+if (canonicalStateError) { console.error('FAIL: '+canonicalStateError); bad=true; }
 if (invalid.length) { console.error('FAIL: invalid patch offsets'); bad=true; }
 if (report.suspiciousFullExpansion.length) {
   console.error('FAIL: persisted full 2 MiB expansion patch(es) at 0x200000');
