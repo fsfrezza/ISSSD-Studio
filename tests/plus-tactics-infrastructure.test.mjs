@@ -28,8 +28,8 @@ function fixture(){
     const pc=plusLoRomPc(0x8B,ptr);
     for(let j=0;j<31;j++)rom[pc+j]=(i+j)&255;
   }
-  // Teams 30 and 31 share one physical preset.
-  const shared=0x9400;setPtr(rom,30,shared);setPtr(rom,31,shared);
+  // Teams 30 and 31 share exactly the original physical preset of entry 30.
+  const shared=0x9000+30*0x20;setPtr(rom,31,shared);
   const sharedPc=plusLoRomPc(0x8B,shared);
   for(let j=0;j<31;j++)rom[sharedPc+j]=(0x80+j)&255;
   for(const e of PLUS_TACTICAL_EXPECTED_LOADERS)installOriginalLoader(rom,e);
@@ -89,7 +89,7 @@ test('planner refuses incompatible loader fingerprint',()=>{
 test('planner refuses occupied incompatible clone destination',()=>{
   const base=fixture();
   const expanded=new Uint8Array(0x400000);expanded.fill(0xFF);expanded.set(base);
-  const ptr=0x9400,dst=plusLoRomPc(0xC0,ptr);
+  const ptr=0x9000+30*0x20,dst=plusLoRomPc(0xC0,ptr);
   expanded[dst]=0x12;
   assert.throws(()=>planPlusTacticalInfrastructure(expanded),/occupied|incompat/i);
 });
