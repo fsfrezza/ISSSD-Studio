@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {buildPlusProjectRom} from '../src/core/project-build.mjs';
+import {knownMirrorOffset,playerOffset} from '../src/core/plus-player.mjs';
 
 test('project build starts from immutable base and applies canonical persisted patches before writers',()=>{
   const base=new Uint8Array(0x200000);
@@ -69,6 +70,25 @@ test('project build normalizes legacy player attrHex before writers see semantic
     writeChecksum:false,
   });
   assert.deepEqual(project,snapshot);
+});
+
+test('project build applies migrated player edits surgically through built-in player writer',()=>{
+  const base=new Uint8Array(0x200000);
+  const main=playerOffset(30,7),mirror=knownMirrorOffset(30,7);
+  base[main+6]=0x55;
+  base[mirror+6]=0x66;
+  const before=base.slice();
+  const project={state:{targetLength:0x200000,patchesCompact:[],semantic:{teamsV1:{schema:'isssd-teams-v1',version:2,names:{teams:{
+    '30':{teamId:30,players:[{slot:8,name:'PELE',attrHex:'012345673909AB'}]}
+  }}}}}};
+
+  const {rom}=buildPlusProjectRom(base,project,{writeChecksum:false});
+
+  assert.deepEqual(Array.from(rom.slice(main,main+6)),[0x01,0x23,0x45,0x67,0x39,0x09]);
+  assert.equal(rom[main+6],0x55);
+  assert.deepEqual(Array.from(rom.slice(mirror,mirror+6)),[0x01,0x23,0x45,0x67,0x39,0x09]);
+  assert.equal(rom[mirror+6],0x66);
+  assert.deepEqual(base,before);
 });
 
 test('project build rejects persisted expanded targetLength before infrastructure runs',()=>{
