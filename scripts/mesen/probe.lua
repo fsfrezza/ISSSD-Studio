@@ -14,7 +14,7 @@ local pulses={
   {start=940,stop=946,input={start=true}},
 }
 
-local pairs={
+local checkpoints={
   {330,340},
   {450,460},
   {610,620},
@@ -104,7 +104,7 @@ end,emu.eventType.inputPolled)
 
 emu.addEventCallback(function()
   frame=frame+1
-  for _,p in ipairs(pairs) do
+  for _,p in ipairs(checkpoints) do
     if frame==p[1] then beginPair() end
     if frame==p[2] then endPair() end
   end
