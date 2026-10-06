@@ -11,6 +11,7 @@
     "test:emulator": "node scripts/mesen-smoke.mjs",
     "test:emulator:nav": "node scripts/mesen-smoke.mjs --mode nav",
     "test:emulator:probe": "node scripts/mesen-smoke.mjs --mode probe",
+    "test:emulator:semantic": "node scripts/mesen-semantic.mjs",
     "analyze:emulator:probe": "node scripts/analyze-mesen-probe.mjs",
     "discover:emulator:windows": "powershell -ExecutionPolicy Bypass -File scripts/discover-mesen-state-windows.ps1"
   }
