@@ -13,21 +13,32 @@ function validateByteArray(value) {
   return Uint8Array.from(value);
 }
 
+function decodeStringBytes(value,label) {
+  const compact=value.replace(/\s+/g,'');
+  if (/^(?:[0-9a-fA-F]{2})*$/.test(compact)) {
+    return Uint8Array.from(compact.match(/../g)?.map(x => Number.parseInt(x,16)) ?? []);
+  }
+
+  const base64=/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
+  if (compact.length>0 && compact.length%4===0 && base64.test(compact)) {
+    try {
+      const binary=atob(compact);
+      return Uint8Array.from(binary,ch=>ch.charCodeAt(0));
+    } catch {
+      // Fall through to the stable validation error below.
+    }
+  }
+
+  throw new TypeError(`${label} string must be hexadecimal or Base64`);
+}
+
 function patchBytes(patch) {
   if (patch?.data instanceof Uint8Array) return Uint8Array.from(patch.data);
   if (Array.isArray(patch?.data)) return validateByteArray(patch.data);
   if (patch?.bytes instanceof Uint8Array) return Uint8Array.from(patch.bytes);
   if (Array.isArray(patch?.bytes)) return validateByteArray(patch.bytes);
-  if (typeof patch?.data === 'string') {
-    const hex = patch.data.replace(/\s+/g, '');
-    if (!/^(?:[0-9a-fA-F]{2})*$/.test(hex)) throw new TypeError('patch data string must be hexadecimal');
-    return Uint8Array.from(hex.match(/../g)?.map(x => Number.parseInt(x, 16)) ?? []);
-  }
-  if (typeof patch?.bytes === 'string') {
-    const hex = patch.bytes.replace(/\s+/g, '');
-    if (!/^(?:[0-9a-fA-F]{2})*$/.test(hex)) throw new TypeError('patch bytes string must be hexadecimal');
-    return Uint8Array.from(hex.match(/../g)?.map(x => Number.parseInt(x, 16)) ?? []);
-  }
+  if (typeof patch?.data === 'string') return decodeStringBytes(patch.data,'patch data');
+  if (typeof patch?.bytes === 'string') return decodeStringBytes(patch.bytes,'patch bytes');
   if (Number.isInteger(patch?.value) && patch.value >= 0 && patch.value <= 0xFF) return Uint8Array.of(patch.value);
   throw new TypeError('patch must contain byte data');
 }
