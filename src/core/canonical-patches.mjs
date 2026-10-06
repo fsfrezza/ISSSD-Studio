@@ -91,7 +91,8 @@ function patchPreview(patch) {
 
 function normalizePatchWithContext(patch,index) {
   try {
-    return normalizePatch(patch);
+    const normalized=normalizePatch(patch);
+    return {...normalized,sourceIndex:index};
   } catch (error) {
     const rawOff=patch?.off ?? patch?.offset;
     const message=`invalid persisted patch at index ${index}, offset ${String(rawOff)}, preview ${patchPreview(patch)}: ${error.message}`;
@@ -107,6 +108,10 @@ function sameBytes(a, b) {
   return true;
 }
 
+function hexPreview(bytes,max=16) {
+  return [...bytes.slice(0,max)].map(v=>v.toString(16).padStart(2,'0').toUpperCase()).join(' ');
+}
+
 export function canonicalizePatches(patches, {baseSize=PLUS_BASE_SIZE, rejectPersistedExpansion=true}={}) {
   if (!Array.isArray(patches)) throw new TypeError('patch array required');
   const normalized = patches.map((patch,index)=>normalizePatchWithContext(patch,index));
@@ -119,7 +124,7 @@ export function canonicalizePatches(patches, {baseSize=PLUS_BASE_SIZE, rejectPer
     }
   }
 
-  normalized.sort((a,b) => a.off - b.off || a.data.length - b.data.length);
+  normalized.sort((a,b) => a.off - b.off || a.data.length - b.data.length || a.sourceIndex-b.sourceIndex);
 
   const out = [];
   for (const patch of normalized) {
@@ -128,11 +133,21 @@ export function canonicalizePatches(patches, {baseSize=PLUS_BASE_SIZE, rejectPer
 
     if (previous) {
       const previousEnd = previous.off + previous.data.length;
-      if (patch.off < previousEnd) throw new RangeError('overlapping patches');
+      if (patch.off < previousEnd) {
+        const overlapStart=patch.off;
+        const overlapEnd=Math.min(previousEnd,patch.off+patch.data.length);
+        const previousSlice=previous.data.slice(overlapStart-previous.off,overlapEnd-previous.off);
+        const currentSlice=patch.data.slice(0,overlapEnd-overlapStart);
+        throw new RangeError(
+          `overlapping patches: previous index ${previous.sourceIndex} offset ${previous.off} len ${previous.data.length}; `+
+          `current index ${patch.sourceIndex} offset ${patch.off} len ${patch.data.length}; `+
+          `overlap ${overlapStart}..${overlapEnd-1}; previous bytes [${hexPreview(previousSlice)}]; current bytes [${hexPreview(currentSlice)}]`
+        );
+      }
     }
-    out.push({off:patch.off, data:Uint8Array.from(patch.data)});
+    out.push({off:patch.off, data:Uint8Array.from(patch.data), sourceIndex:patch.sourceIndex});
   }
-  return out;
+  return out.map(({off,data})=>({off,data}));
 }
 
 export function applyCanonicalPatches(base, patches) {
