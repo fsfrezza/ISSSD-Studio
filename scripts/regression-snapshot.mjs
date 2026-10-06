@@ -3,9 +3,7 @@ import fs from 'node:fs';
 import crypto from 'node:crypto';
 import path from 'node:path';
 import {diffRanges,readSnesChecksum} from '../src/core/rom-integrity.mjs';
-
-const PLUS_SIZE=0x200000;
-const PLUS_SHA256='ca2d73b226ab252649d4c9c35bb6b81937586d908c1d9dc9d447db7babfaad0a';
+import {PLUS_BASELINE,assertPlusBaseDescriptor} from '../src/core/plus-baseline.mjs';
 
 function sha256(bytes){return crypto.createHash('sha256').update(bytes).digest('hex')}
 function load(file){return new Uint8Array(fs.readFileSync(file))}
@@ -21,7 +19,7 @@ function summarize(base,out){
     changedRanges:ranges.ranges.map(r=>({start:hex(r.start),end:hex(r.end),length:r.length})),
     checksum,
     checksumPairValid:((checksum.checksum^checksum.complement)&0xFFFF)===0xFFFF,
-    hasDataAtExpansionBoundary:out.length>PLUS_SIZE,
+    hasDataAtExpansionBoundary:out.length>PLUS_BASELINE.size,
   };
 }
 
@@ -31,9 +29,8 @@ if(!baseFile||outputs.length===0){
   process.exit(2);
 }
 const base=load(baseFile);
-if(base.length!==PLUS_SIZE) throw new Error('clean Plus base must be exactly 2 MiB');
 const baseHash=sha256(base);
-if(baseHash!==PLUS_SHA256) throw new Error('clean Plus base SHA-256 mismatch: '+baseHash);
+assertPlusBaseDescriptor({size:base.length,sha256:baseHash});
 
 const report={
   schema:'isssd-regression-snapshot-v1',
