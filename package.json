@@ -6,6 +6,7 @@
   "scripts": {
     "test": "node --test tests/*.test.mjs",
     "compare:v692-v693": "node scripts/compare-v692-v693.mjs",
-    "verify:real-plus": "node scripts/verify-real-plus-project.mjs"
+    "verify:real-plus": "node scripts/verify-real-plus-project.mjs",
+    "test:emulator": "node scripts/mesen-smoke.mjs"
   }
 }
