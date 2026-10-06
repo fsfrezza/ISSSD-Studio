@@ -1,4 +1,6 @@
-export const PLUS_BASE_SIZE = 0x200000;
+import {PLUS_BASELINE} from './plus-baseline.mjs';
+
+export const PLUS_BASE_SIZE = PLUS_BASELINE.size;
 
 function patchOffset(patch) {
   const off = Number(patch?.off ?? patch?.offset);
