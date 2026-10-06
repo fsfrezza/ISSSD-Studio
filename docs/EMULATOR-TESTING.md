@@ -2,6 +2,28 @@
 
 The ISSSD Studio emulator harness is intentionally local. Commercial ROM bytes are never committed to the repository or uploaded to public CI.
 
+## Windows path defaults
+
+The local Windows workflow preserves the historical folder layout used by the monolithic HTML Studio:
+
+```text
+ROM directory:     C:\Users\fsfre\Downloads\ISSSD-Studio\roms
+Project directory: C:\Users\fsfre\Downloads\ISSSD-Studio
+```
+
+These are defaults, not hard locks.
+
+You can override them per command with `-RomDir` and `-ProjectDir`, or persist different locations for the current shell with:
+
+```powershell
+$env:ISSSD_ROM_DIR='D:\ROMs'
+$env:ISSSD_PROJECT_DIR='D:\ISSSD Projects'
+```
+
+A full ROM or project path passed explicitly always takes precedence. A relative ROM filename is resolved inside the ROM directory; a relative `.issdproj` filename is resolved inside the project directory.
+
+For the one-command project regression, when no ROM is passed the script scans the default ROM directory and selects the file whose SHA-256 matches the canonical Plus baseline. When no project is passed, the Windows file selector opens directly in the default project directory.
+
 ## Windows setup
 
 Run once from PowerShell:
@@ -101,8 +123,24 @@ This creates local `probe-base.json`, `probe-generated.json` and `probe-comparis
 
 The preferred local regression path starts from the same inputs as the Studio itself: the canonical Plus ROM and an `.issdproj` file.
 
+With the historical default folders configured, the shortest form is now:
+
+```powershell
+npm run test:emulator:project:windows
+```
+
+The canonical Plus ROM is located automatically by SHA-256 in `C:\Users\fsfre\Downloads\ISSSD-Studio\roms`, and the project selector opens in `C:\Users\fsfre\Downloads\ISSSD-Studio`.
+
+You can still provide explicit files exactly as before:
+
 ```powershell
 npm run test:emulator:project:windows -- "C:\path\base.sfc" "C:\path\project.issdproj"
+```
+
+Or use filenames relative to the default directories:
+
+```powershell
+npm run test:emulator:project:windows -- "International Superstar Soccer Deluxe Plus.sfc" "meu-projeto.issdproj"
 ```
 
 This command:
