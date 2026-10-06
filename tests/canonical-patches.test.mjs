@@ -20,6 +20,16 @@ test('exact duplicate patches collapse to one canonical patch',()=>{
   assert.deepEqual(plain(got),[{off:0x100,data:[0xAA,0xBB]}]);
 });
 
+test('historical Base64 patch data is decoded without Node-only APIs',()=>{
+  const got=canonicalizePatches([{off:30918,data:'A1ZEiFg='}]);
+  assert.deepEqual(plain(got),[{off:30918,data:[0x03,0x56,0x44,0x88,0x58]}]);
+});
+
+test('hexadecimal strings take precedence when they are also syntactically valid Base64',()=>{
+  const got=canonicalizePatches([{off:0x100,data:'AABB'}]);
+  assert.deepEqual(plain(got),[{off:0x100,data:[0xAA,0xBB]}]);
+});
+
 test('invalid string patch reports index offset and preview',()=>{
   assert.throws(()=>canonicalizePatches([
     {off:0x100,data:'AABB'},
@@ -28,7 +38,7 @@ test('invalid string patch reports index offset and preview',()=>{
     assert.match(error.message,/index 1/);
     assert.match(error.message,/offset 9029/);
     assert.match(error.message,/not-hex-format/);
-    assert.match(error.message,/must be hexadecimal/);
+    assert.match(error.message,/hexadecimal or Base64/);
     return true;
   });
 });
