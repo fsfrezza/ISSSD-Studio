@@ -55,11 +55,19 @@ test('invalid string patch reports index offset and preview',()=>{
   });
 });
 
-test('overlapping non-identical patches are rejected',()=>{
+test('overlapping non-identical patches report both source patches and overlapping bytes',()=>{
   assert.throws(()=>canonicalizePatches([
     {off:0x100,data:[1,2,3]},
-    {off:0x102,data:[3,4]}
-  ]),/overlapping patches/);
+    {off:0x102,data:[9,4]}
+  ]),error=>{
+    assert.match(error.message,/overlapping patches/);
+    assert.match(error.message,/previous index 0 offset 256 len 3/);
+    assert.match(error.message,/current index 1 offset 258 len 2/);
+    assert.match(error.message,/overlap 258\.\.258/);
+    assert.match(error.message,/previous bytes \[03\]/);
+    assert.match(error.message,/current bytes \[09\]/);
+    return true;
+  });
 });
 
 test('historical full 2 MiB expansion persistence is rejected',()=>{
