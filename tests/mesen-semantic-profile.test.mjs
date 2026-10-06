@@ -35,7 +35,8 @@ test('semantic Lua uses inputPolled, Work RAM reads and pass/fail markers',()=>{
   const lua=renderSemanticLua(profile);
   assert.match(lua,/emu\.eventType\.inputPolled/);
   assert.match(lua,/emu\.memType\.snesWorkRam/);
-  assert.match(lua,/ISSSD_SEMANTIC_STATE intro/);
+  assert.match(lua,/ISSSD_SEMANTIC_STATE/);
+  assert.match(lua,/name="intro"/);
   assert.match(lua,/ISSSD_SEMANTIC_FAIL/);
   assert.match(lua,/ISSSD_SEMANTIC_PASS/);
 });
