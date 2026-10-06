@@ -1,7 +1,11 @@
 import {PLUS_BASE_SIZE,canonicalizePatches} from './canonical-patches.mjs';
 
 function projectPatches(project){
-  return project?.state?.patchesCompact ?? project?.patchesCompact ?? [];
+  return project?.state?.patchesCompact
+    ?? project?.patchesCompact
+    ?? project?.state?.patches
+    ?? project?.patches
+    ?? [];
 }
 
 function projectTargetLength(project,baseSize){
