@@ -13,6 +13,26 @@ $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $pathFile = Join-Path $repoRoot '.tools\mesen\mesen-path.txt'
 
+function Assert-MesenInitialized([string]$MesenExe) {
+  $portableSettings = Join-Path (Split-Path -Parent $MesenExe) 'settings.json'
+  $documents = [Environment]::GetFolderPath([Environment+SpecialFolder]::MyDocuments)
+  $documentsSettings = Join-Path $documents 'Mesen2\settings.json'
+
+  if ((Test-Path $portableSettings -PathType Leaf) -or (Test-Path $documentsSettings -PathType Leaf)) {
+    return
+  }
+
+  throw @"
+Mesen first-run setup is incomplete.
+Mesen 2.1.1 opens its graphical configuration before it honors --testRunner when settings.json does not exist.
+Run Mesen once, complete its initial configuration, close Mesen, then repeat this command.
+Mesen: $MesenExe
+Expected settings in either:
+  $portableSettings
+  $documentsSettings
+"@
+}
+
 foreach ($path in @($BaseRom,$GeneratedRom)) {
   if (-not (Test-Path $path)) { throw "ROM not found: $path" }
 }
@@ -23,6 +43,10 @@ if (-not (Test-Path $pathFile)) {
   & powershell -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'setup-mesen-windows.ps1')
   if ($LASTEXITCODE -ne 0) { throw 'Mesen setup failed' }
 }
+
+$mesenExe = (Get-Content -Raw -Path $pathFile).Trim().TrimStart([char]0xFEFF)
+if (-not (Test-Path $mesenExe -PathType Leaf)) { throw "Mesen executable not found: $mesenExe" }
+Assert-MesenInitialized $mesenExe
 
 Push-Location $repoRoot
 try {
