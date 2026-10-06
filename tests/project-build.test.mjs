@@ -48,6 +48,29 @@ test('project build normalizes legacy tactical rawHex before writers see semanti
   assert.deepEqual(project,snapshot);
 });
 
+test('project build normalizes legacy player attrHex before writers see semantic state',()=>{
+  const base=new Uint8Array(0x200000);
+  const project={state:{targetLength:0x200000,patchesCompact:[],semantic:{teamsV1:{schema:'isssd-teams-v1',version:2,names:{teams:{
+    '30':{teamId:30,players:[{slot:8,name:'PELE',attrHex:'012345673909AB'}]}
+  }}}}}};
+  const snapshot=structuredClone(project);
+  buildPlusProjectRom(base,project,{
+    writers:[(_work,state)=>{
+      assert.equal(state.teamsV1.names.teams['30'].players[0].attrHex,undefined);
+      assert.equal(state.playerEdits.length,1);
+      assert.equal(state.playerEdits[0].team,30);
+      assert.equal(state.playerEdits[0].player,7);
+      assert.equal(state.playerEdits[0].skills.acceleration,1);
+      assert.equal(state.playerEdits[0].skills.energy,10);
+      assert.equal(state.playerEdits[0].naturalPosition,3);
+      assert.equal(state.playerEdits[0].jersey,10);
+      assert.equal(state.playerEdits[0].appearanceRaw,0xAB);
+    }],
+    writeChecksum:false,
+  });
+  assert.deepEqual(project,snapshot);
+});
+
 test('project build rejects persisted expanded targetLength before infrastructure runs',()=>{
   const base=new Uint8Array(0x200000);
   let prepared=false;
