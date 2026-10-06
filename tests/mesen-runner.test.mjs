@@ -37,6 +37,19 @@ test('Mesen navigation result accepts navigation completion marker',()=>{
   assert.equal(result.steps,5);
 });
 
+test('Mesen probe result reports stable changing WRAM candidates',()=>{
+  const result=interpretMesenSmokeResult({
+    exitCode:0,
+    stdout:'ISSSD_PROBE_CAND addr=0x00123 value=4 mask=0x16 changes=3\nISSSD_PROBE_PASS frames=1200 candidates=27\n',
+    stderr:'',
+    timedOut:false,
+  });
+  assert.equal(result.ok,true);
+  assert.equal(result.frames,1200);
+  assert.equal(result.mode,'probe');
+  assert.equal(result.candidates,27);
+});
+
 test('Mesen smoke result rejects timeout',()=>{
   const result=interpretMesenSmokeResult({exitCode:null,stdout:'',stderr:'',timedOut:true});
   assert.equal(result.ok,false);
