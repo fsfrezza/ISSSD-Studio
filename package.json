@@ -13,6 +13,8 @@
     "test:emulator:probe": "node scripts/mesen-smoke.mjs --mode probe",
     "test:emulator:semantic": "node scripts/mesen-semantic.mjs",
     "analyze:emulator:probe": "node scripts/analyze-mesen-probe.mjs",
-    "discover:emulator:windows": "powershell -ExecutionPolicy Bypass -File scripts/discover-mesen-state-windows.ps1"
+    "compare:emulator:probes": "node scripts/compare-mesen-probes.mjs",
+    "discover:emulator:windows": "powershell -ExecutionPolicy Bypass -File scripts/discover-mesen-state-windows.ps1",
+    "discover:emulator:cross-rom:windows": "powershell -ExecutionPolicy Bypass -File scripts/discover-mesen-cross-rom-windows.ps1"
   }
 }
