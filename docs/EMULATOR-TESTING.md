@@ -97,7 +97,35 @@ npm run discover:emulator:cross-rom:windows -- "C:\path\base.sfc" "C:\path\gener
 
 This creates local `probe-base.json`, `probe-generated.json` and `probe-comparison.json` files. Probe reports are ignored by Git.
 
-### 5. Semantic WRAM test
+### 5. One-command Plus project regression
+
+The preferred local regression path starts from the same inputs as the Studio itself: the canonical Plus ROM and an `.issdproj` file.
+
+```powershell
+npm run test:emulator:project:windows -- "C:\path\base.sfc" "C:\path\project.issdproj"
+```
+
+This command:
+
+1. validates the canonical Plus base size and SHA-256;
+2. builds the project twice through `buildPlusProjectRom` and requires deterministic identical output;
+3. writes the generated ROM under `.tools/mesen-runs/<timestamp>/`;
+4. probes both the canonical base and the generated ROM in Mesen;
+5. writes a cross-ROM WRAM comparison in the same local run directory.
+
+No commercial ROM, generated ROM or probe report is committed. The full run directory lives under `.tools/`, which is ignored by Git.
+
+This is the best pre-semantic regression command because it tests the complete chain:
+
+```text
+canonical base ROM + .issdproj
+        -> deterministic Studio core build
+        -> generated ROM
+        -> Mesen probe on base + generated ROM
+        -> cross-ROM state comparison
+```
+
+### 6. Semantic WRAM test
 
 Once candidate addresses have been verified, describe them in a declarative profile instead of editing Lua manually.
 
