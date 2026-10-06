@@ -8,6 +8,7 @@
     "compare:v692-v693": "node scripts/compare-v692-v693.mjs",
     "verify:real-plus": "node scripts/verify-real-plus-project.mjs",
     "setup:mesen:windows": "powershell -ExecutionPolicy Bypass -File scripts/setup-mesen-windows.ps1",
+    "check:windows-defaults": "powershell -ExecutionPolicy Bypass -File scripts/check-windows-defaults.ps1",
     "test:emulator": "node scripts/mesen-smoke.mjs",
     "test:emulator:nav": "node scripts/mesen-smoke.mjs --mode nav",
     "test:emulator:probe": "node scripts/mesen-smoke.mjs --mode probe",
