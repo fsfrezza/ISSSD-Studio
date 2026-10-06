@@ -1,5 +1,5 @@
 import {spawn} from 'node:child_process';
-import {existsSync} from 'node:fs';
+import {existsSync,readFileSync} from 'node:fs';
 import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {buildMesenSmokeArgs,interpretMesenSmokeResult} from '../src/emulator/mesen-runner.mjs';
@@ -25,12 +25,23 @@ if(!['smoke','nav','probe'].includes(mode)){
   console.error('Invalid --mode. Use smoke, nav or probe.');
   process.exit(2);
 }
-if(!mesenBin){
-  console.error('Mesen executable not configured. Set MESEN_BIN or pass --mesen <path>.');
-  process.exit(2);
-}
 if(!Number.isFinite(timeoutMs)||timeoutMs<=0){
   console.error('Invalid --timeout-ms value');
+  process.exit(2);
+}
+
+if(!mesenBin){
+  const pathFile=resolve('.tools/mesen/mesen-path.txt');
+  if(existsSync(pathFile)){
+    mesenBin=readFileSync(pathFile,'utf8').replace(/^\uFEFF/,'').trim();
+  }
+}
+if(!mesenBin){
+  const common=resolve('.tools/mesen/Mesen.exe');
+  if(existsSync(common))mesenBin=common;
+}
+if(!mesenBin){
+  console.error('Mesen executable not configured. Run scripts/setup-mesen-windows.ps1, set MESEN_BIN, or pass --mesen <path>.');
   process.exit(2);
 }
 
@@ -44,6 +55,7 @@ if(!existsSync(exePath)){console.error('Mesen not found: '+exePath);process.exit
 const args=buildMesenSmokeArgs({luaPath,romPath});
 console.log('Mesen emulator test');
 console.log('Mode:',mode);
+console.log('Mesen:',exePath);
 console.log('ROM:',romPath);
 console.log('Target frames:',mode==='smoke'?600:1200);
 console.log('Timeout:',timeoutMs+'ms');
