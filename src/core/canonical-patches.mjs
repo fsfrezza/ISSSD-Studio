@@ -8,15 +8,24 @@ function patchOffset(patch) {
   return off;
 }
 
+function validateByteArray(value) {
+  if (!value.every(x => Number.isInteger(x) && x >= 0 && x <= 0xFF)) throw new RangeError('invalid patch byte');
+  return Uint8Array.from(value);
+}
+
 function patchBytes(patch) {
   if (patch?.data instanceof Uint8Array) return Uint8Array.from(patch.data);
-  if (Array.isArray(patch?.data)) {
-    if (!patch.data.every(x => Number.isInteger(x) && x >= 0 && x <= 0xFF)) throw new RangeError('invalid patch byte');
-    return Uint8Array.from(patch.data);
-  }
+  if (Array.isArray(patch?.data)) return validateByteArray(patch.data);
+  if (patch?.bytes instanceof Uint8Array) return Uint8Array.from(patch.bytes);
+  if (Array.isArray(patch?.bytes)) return validateByteArray(patch.bytes);
   if (typeof patch?.data === 'string') {
     const hex = patch.data.replace(/\s+/g, '');
     if (!/^(?:[0-9a-fA-F]{2})*$/.test(hex)) throw new TypeError('patch data string must be hexadecimal');
+    return Uint8Array.from(hex.match(/../g)?.map(x => Number.parseInt(x, 16)) ?? []);
+  }
+  if (typeof patch?.bytes === 'string') {
+    const hex = patch.bytes.replace(/\s+/g, '');
+    if (!/^(?:[0-9a-fA-F]{2})*$/.test(hex)) throw new TypeError('patch bytes string must be hexadecimal');
     return Uint8Array.from(hex.match(/../g)?.map(x => Number.parseInt(x, 16)) ?? []);
   }
   if (Number.isInteger(patch?.value) && patch.value >= 0 && patch.value <= 0xFF) return Uint8Array.of(patch.value);
