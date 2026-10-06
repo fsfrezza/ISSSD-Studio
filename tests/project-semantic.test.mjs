@@ -28,6 +28,41 @@ test('canonical project semantic clones and migrates legacy tactical state',()=>
   assert.equal('rawHex' in out.plusTactics.teams['30'],false);
 });
 
+test('canonical project semantic migrates legacy attrHex into playerEdits',()=>{
+  const project={state:{semantic:{teamsV1:{schema:'isssd-teams-v1',version:2,names:{teams:{
+    '30':{teamId:30,players:[{slot:8,name:'PELE',attrHex:'012345673909AB'}]}
+  }}}}}};
+  const out=canonicalProjectSemantic(project);
+  assert.equal(out.teamsV1.names.teams['30'].players[0].attrHex,undefined);
+  assert.equal(out.playerEdits.length,1);
+  assert.equal(out.playerEdits[0].team,30);
+  assert.equal(out.playerEdits[0].player,7);
+  assert.equal(out.playerEdits[0].skills.shot,3);
+  assert.equal(out.playerEdits[0].naturalPosition,3);
+  assert.equal(out.playerEdits[0].jersey,10);
+  assert.equal(out.playerEdits[0].appearanceRaw,0xAB);
+});
+
+test('explicit player edits override matching legacy-derived fields',()=>{
+  const project={state:{semantic:{
+    playerEdits:[{team:30,player:7,skills:{shot:10}}],
+    teamsV1:{names:{teams:{'30':{teamId:30,players:[{slot:8,attrHex:'012345673909AB'}]}}}}
+  }}};
+  const out=canonicalProjectSemantic(project);
+  assert.equal(out.playerEdits.length,1);
+  assert.equal(out.playerEdits[0].skills.shot,10);
+  assert.equal(out.playerEdits[0].skills.speed,2);
+  assert.equal(out.playerEdits[0].jersey,10);
+});
+
+test('corrupted legacy player record is quarantined in project semantic state',()=>{
+  const project={state:{semantic:{teamsV1:{names:{teams:{'30':{teamId:30,players:[{slot:8,attrHex:'FFFFFFFFFFFFFF'}]}}}}}}};
+  const out=canonicalProjectSemantic(project);
+  assert.deepEqual(out.playerEdits,[]);
+  assert.equal(out.legacyPlayerAttributeQuarantine.length,1);
+  assert.equal(out.legacyPlayerAttributeQuarantine[0].team,30);
+});
+
 test('canonical project semantic accepts root semantic fallback',()=>{
   const out=canonicalProjectSemantic({semantic:{marker:7}});
   assert.equal(out.marker,7);
