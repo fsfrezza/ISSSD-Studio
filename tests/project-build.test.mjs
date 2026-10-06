@@ -30,6 +30,24 @@ test('project build starts from immutable base and applies canonical persisted p
   assert.equal(diff.changedBytes,2);
 });
 
+test('project build normalizes legacy tactical rawHex before writers see semantic state',()=>{
+  const base=new Uint8Array(0x200000);
+  const project={state:{targetLength:0x200000,patchesCompact:[],semantic:{teamsV1:{schema:'isssd-teams-v1',version:2,tactics:{schema:'isssd-custom-tactics-v1',version:2,teams:{'30':{teamId:30,formationIndex:3,formationLabel:'4-4-2',rawHex:'AA'.repeat(31),players:[{index:0,rosterSlot:1,x:-20,y:5,attack:false},{index:1,rosterSlot:9,x:18,y:-4,attack:true}]}}}}}}};
+  const snapshot=structuredClone(project);
+  buildPlusProjectRom(base,project,{
+    writers:[(_work,state)=>{
+      assert.equal(state.teamsV1.tactics,undefined);
+      assert.equal(state.plusTactics.schema,'isssd-plus-tactics-v1');
+      assert.equal(state.plusTactics.teams['30'].formationIndex,3);
+      assert.equal(state.plusTactics.teams['30'].players[1].rosterSlot,9);
+      assert.equal(state.plusTactics.teams['30'].players[1].attack,true);
+      assert.equal('rawHex' in state.plusTactics.teams['30'],false);
+    }],
+    writeChecksum:false,
+  });
+  assert.deepEqual(project,snapshot);
+});
+
 test('project build rejects persisted expanded targetLength before infrastructure runs',()=>{
   const base=new Uint8Array(0x200000);
   let prepared=false;
