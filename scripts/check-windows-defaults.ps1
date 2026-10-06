@@ -43,7 +43,7 @@ if ($romFile.Length -ne $expectedRomSize) {
 }
 $actualSha = (Get-FileHash -Algorithm SHA256 -Path $romPath).Hash.ToLowerInvariant()
 if ($actualSha -ne $expectedRomSha256) {
-  throw "ROM SHA-256 mismatch. Expected $expectedRomSha256, got $actualSha: $romPath"
+  throw "ROM SHA-256 mismatch. Expected $expectedRomSha256, got ${actualSha}: $romPath"
 }
 
 Write-Host 'PASS: default ROM and project structure is valid.'
