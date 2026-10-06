@@ -55,6 +55,22 @@ test('invalid string patch reports index offset and preview',()=>{
   });
 });
 
+test('byte-identical contained overlap is safely collapsed',()=>{
+  const got=canonicalizePatches([
+    {off:390115,data:[0xAA,0xF0,0xF5]},
+    {off:390116,data:[0xF0,0xF5]}
+  ]);
+  assert.deepEqual(plain(got),[{off:390115,data:[0xAA,0xF0,0xF5]}]);
+});
+
+test('byte-identical overlap with a trailing extension is merged',()=>{
+  const got=canonicalizePatches([
+    {off:0x100,data:[1,2,3]},
+    {off:0x102,data:[3,4,5]}
+  ]);
+  assert.deepEqual(plain(got),[{off:0x100,data:[1,2,3,4,5]}]);
+});
+
 test('overlapping non-identical patches report both source patches and overlapping bytes',()=>{
   assert.throws(()=>canonicalizePatches([
     {off:0x100,data:[1,2,3]},
