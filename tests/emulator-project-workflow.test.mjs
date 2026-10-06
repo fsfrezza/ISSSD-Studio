@@ -1,0 +1,14 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+
+const scriptUrl=new URL('../scripts/test-plus-project-emulator-windows.ps1',import.meta.url);
+
+test('Plus project emulator workflow builds canonically before cross-ROM probing',async()=>{
+  const text=await readFile(scriptUrl,'utf8');
+  assert.match(text,/verify-real-plus-project\.mjs/);
+  assert.match(text,/discover-mesen-cross-rom-windows\.ps1/);
+  assert.match(text,/\.tools\\mesen-runs/);
+  assert.match(text,/probe-comparison\.json/);
+  assert.match(text,/Expected generated ROM was not created/);
+});
