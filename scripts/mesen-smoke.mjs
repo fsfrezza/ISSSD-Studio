@@ -1,5 +1,5 @@
 import {spawn} from 'node:child_process';
-import {existsSync,readFileSync} from 'node:fs';
+import {existsSync,readFileSync,writeFileSync} from 'node:fs';
 import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {buildMesenSmokeArgs,interpretMesenSmokeResult} from '../src/emulator/mesen-runner.mjs';
@@ -8,21 +8,27 @@ const argv=process.argv.slice(2);
 let mesenBin=process.env.MESEN_BIN||'';
 let timeoutMs=30000;
 let mode='smoke';
+let reportPath='';
 const positional=[];
 for(let i=0;i<argv.length;i++){
   const arg=argv[i];
   if(arg==='--mesen'){mesenBin=argv[++i]||'';continue;}
   if(arg==='--timeout-ms'){timeoutMs=Number(argv[++i]);continue;}
   if(arg==='--mode'){mode=String(argv[++i]||'');continue;}
+  if(arg==='--report'){reportPath=String(argv[++i]||'');continue;}
   positional.push(arg);
 }
 
 if(positional.length!==1){
-  console.error('Usage: npm run test:emulator -- <rom.sfc> [--mode smoke|nav|probe] [--mesen <Mesen.exe>] [--timeout-ms 30000]');
+  console.error('Usage: npm run test:emulator -- <rom.sfc> [--mode smoke|nav|probe] [--mesen <Mesen.exe>] [--timeout-ms 30000] [--report report.json]');
   process.exit(2);
 }
 if(!['smoke','nav','probe'].includes(mode)){
   console.error('Invalid --mode. Use smoke, nav or probe.');
+  process.exit(2);
+}
+if(reportPath&&mode!=='probe'){
+  console.error('--report is only valid with --mode probe.');
   process.exit(2);
 }
 if(!Number.isFinite(timeoutMs)||timeoutMs<=0){
@@ -81,9 +87,26 @@ child.on('close',code=>{
   clearTimeout(timer);
   const result=interpretMesenSmokeResult({exitCode:code,stdout,stderr,timedOut});
   if(result.ok){
-    if(result.mode==='nav')console.log(`PASS: navigation survived ${result.frames} frames and ${result.steps} input steps.`);
-    else if(result.mode==='probe')console.log(`PASS: WRAM probe completed with ${result.candidates} stable changing candidates.`);
-    else console.log(`PASS: Mesen completed ${result.frames} frames.`);
+    if(result.mode==='nav'){
+      console.log(`PASS: navigation survived ${result.frames} frames and ${result.steps} input steps.`);
+    }else if(result.mode==='probe'){
+      console.log(`PASS: WRAM probe completed with ${result.candidates} stable changing candidates.`);
+      if(reportPath){
+        const output=resolve(reportPath);
+        const report={
+          schema:'isssd-mesen-probe-v1',
+          romPath,
+          frames:result.frames,
+          totalCandidates:result.candidates,
+          emittedCandidates:result.probeCandidates.length,
+          candidates:result.probeCandidates,
+        };
+        writeFileSync(output,JSON.stringify(report,null,2)+'\n','utf8');
+        console.log('Probe report:',output);
+      }
+    }else{
+      console.log(`PASS: Mesen completed ${result.frames} frames.`);
+    }
     process.exit(0);
   }
   console.error('FAIL:',result.reason);
