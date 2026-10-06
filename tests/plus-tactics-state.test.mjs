@@ -19,9 +19,11 @@ test('migrates historical raw tactical snapshot to semantic state and drops rawH
   assert.deepEqual(out.teams['30'].customState,{formation:3});
 });
 
-test('validates semantic coordinates and roster slots',()=>{
+test('validates global X as -57..57, Y as -39..39, and roster slots',()=>{
   assert.throws(()=>canonicalizePlusTacticsState({teams:{'1':{players:[{rosterSlot:0,x:0,y:0}]}}}),/rosterSlot/);
-  assert.throws(()=>canonicalizePlusTacticsState({teams:{'1':{players:[{rosterSlot:1,x:40,y:0}]}}}),/coordinate/);
+  assert.doesNotThrow(()=>canonicalizePlusTacticsState({teams:{'1':{players:[{rosterSlot:1,x:-57,y:-39},{rosterSlot:2,x:57,y:39}]}}}));
+  assert.throws(()=>canonicalizePlusTacticsState({teams:{'1':{players:[{rosterSlot:1,x:58,y:0}]}}}),/X.*-57.*57/i);
+  assert.throws(()=>canonicalizePlusTacticsState({teams:{'1':{players:[{rosterSlot:1,x:0,y:40}]}}}),/Y.*-39.*39/i);
 });
 
 test('canonical output is detached and deterministic',()=>{
