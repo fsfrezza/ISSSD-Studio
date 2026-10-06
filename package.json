@@ -10,6 +10,7 @@
     "setup:mesen:windows": "powershell -ExecutionPolicy Bypass -File scripts/setup-mesen-windows.ps1",
     "test:emulator": "node scripts/mesen-smoke.mjs",
     "test:emulator:nav": "node scripts/mesen-smoke.mjs --mode nav",
-    "test:emulator:probe": "node scripts/mesen-smoke.mjs --mode probe"
+    "test:emulator:probe": "node scripts/mesen-smoke.mjs --mode probe",
+    "analyze:emulator:probe": "node scripts/analyze-mesen-probe.mjs"
   }
 }
