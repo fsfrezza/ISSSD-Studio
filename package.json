@@ -5,6 +5,7 @@
   "description": "Regression harness and source history for ISSSD Studio",
   "scripts": {
     "test": "node --test tests/*.test.mjs",
-    "compare:v692-v693": "node scripts/compare-v692-v693.mjs"
+    "compare:v692-v693": "node scripts/compare-v692-v693.mjs",
+    "verify:real-plus": "node scripts/verify-real-plus-project.mjs"
   }
 }
