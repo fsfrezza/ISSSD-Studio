@@ -11,7 +11,7 @@ test('decode keeps natural position, jersey and raw appearance separate',()=>{
 
 for (const field of ['acceleration','speed','shot','curve','balance','intelligence','dribbling','jump','energy']) {
  test(field+' skill write is nibble-surgical and preserves unrelated player data',()=>{
-  const r=Uint8Array.from([0x12,0x34,0x56,0x78,0x39,0x08,0xAB]);
+  const r=Uint8Array.from([0x12,0x34,0x56,0x78,0x31,0x08,0xAB]);
   const before=r.slice();
   const decodedBefore=decodePlayerRecord(before);
   writeSkill(r,field,10);
