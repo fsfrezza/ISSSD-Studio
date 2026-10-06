@@ -32,6 +32,6 @@ emu.addEventCallback(function()
   frame=frame+1
   if frame>=1200 then
     emu.log("ISSSD_NAV_PASS frames="..frame.." steps="..steps)
-    emu.stop(0)
+    emu.exit(0)
   end
 end, emu.eventType.endFrame)
