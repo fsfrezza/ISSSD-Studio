@@ -59,18 +59,70 @@ The JSON report schema is `isssd-mesen-probe-v1` and contains:
 }
 ```
 
-## Semantic test target
+Candidate ranking is available with:
 
-The probe is a discovery tool, not the final assertion. Once one or more WRAM addresses are verified to identify stable ISSSD states, they should be promoted into a semantic Mesen test such as:
+```powershell
+npm run analyze:emulator:probe -- probe.json --limit 20 --out probe-ranked.json
+```
+
+On Windows the setup, probe and ranking can be chained with one command:
+
+```powershell
+npm run discover:emulator:windows -- "C:\path\output.sfc"
+```
+
+### 4. Semantic WRAM test
+
+Once candidate addresses have been verified, describe them in a declarative profile instead of editing Lua manually.
+
+Example profile:
+
+```json
+{
+  "schema": "isssd-mesen-semantic-v1",
+  "maxFrames": 1200,
+  "pulses": [
+    {"name":"start","start":360,"stop":366,"input":{"start":true}},
+    {"name":"confirm","start":520,"stop":526,"input":{"a":true}}
+  ],
+  "checkpoints": [
+    {"name":"intro","address":291,"expected":2,"start":200,"stop":350},
+    {"name":"main-menu","address":291,"expected":5,"start":380,"stop":500},
+    {"name":"team-selection","address":1110,"expected":7,"start":540,"stop":900}
+  ]
+}
+```
+
+Run it with:
+
+```powershell
+npm run test:emulator:semantic -- "C:\path\output.sfc" "C:\path\semantic-profile.json"
+```
+
+The launcher validates the profile, generates a temporary Lua script, injects the configured controller pulses and waits for each expected WRAM value inside its frame window. The generated Lua file is deleted after the run.
+
+A semantic failure identifies the checkpoint that was not reached rather than reporting only a generic emulator failure.
+
+## Promotion rule for semantic states
+
+The probe is a discovery tool, not the final assertion. A candidate address must not be treated as a screen identifier until it has been reproduced across:
+
+1. the clean canonical Plus base;
+2. at least one generated ROM;
+3. repeated runs with the same navigation sequence.
+
+Timing-only, animation-dependent or volatile values must not be promoted.
+
+The target semantic flow is therefore:
 
 ```text
 boot
-  -> intro state
+  -> intro state confirmed by WRAM
   -> START
-  -> main menu state
+  -> main menu state confirmed by WRAM
   -> A
-  -> team selection state
+  -> team selection state confirmed by WRAM
   -> PASS
 ```
 
-A candidate address must not be treated as a screen identifier until it has been reproduced across the clean base and at least one generated ROM. Timing-only or animation-dependent values should not be promoted.
+Frame windows are intentionally used instead of exact frame numbers so the test remains tolerant of small timing differences while still detecting a missing game state.
