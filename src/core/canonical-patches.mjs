@@ -108,6 +108,13 @@ function sameBytes(a, b) {
   return true;
 }
 
+function sameOverlap(previous,patch,overlapStart,overlapEnd) {
+  for (let address=overlapStart; address<overlapEnd; address++) {
+    if (previous.data[address-previous.off] !== patch.data[address-patch.off]) return false;
+  }
+  return true;
+}
+
 function hexPreview(bytes,max=16) {
   return [...bytes.slice(0,max)].map(v=>v.toString(16).padStart(2,'0').toUpperCase()).join(' ');
 }
@@ -133,16 +140,27 @@ export function canonicalizePatches(patches, {baseSize=PLUS_BASE_SIZE, rejectPer
 
     if (previous) {
       const previousEnd = previous.off + previous.data.length;
+      const patchEnd=patch.off+patch.data.length;
       if (patch.off < previousEnd) {
         const overlapStart=patch.off;
-        const overlapEnd=Math.min(previousEnd,patch.off+patch.data.length);
+        const overlapEnd=Math.min(previousEnd,patchEnd);
         const previousSlice=previous.data.slice(overlapStart-previous.off,overlapEnd-previous.off);
         const currentSlice=patch.data.slice(0,overlapEnd-overlapStart);
-        throw new RangeError(
-          `overlapping patches: previous index ${previous.sourceIndex} offset ${previous.off} len ${previous.data.length}; `+
-          `current index ${patch.sourceIndex} offset ${patch.off} len ${patch.data.length}; `+
-          `overlap ${overlapStart}..${overlapEnd-1}; previous bytes [${hexPreview(previousSlice)}]; current bytes [${hexPreview(currentSlice)}]`
-        );
+        if (!sameOverlap(previous,patch,overlapStart,overlapEnd)) {
+          throw new RangeError(
+            `overlapping patches: previous index ${previous.sourceIndex} offset ${previous.off} len ${previous.data.length}; `+
+            `current index ${patch.sourceIndex} offset ${patch.off} len ${patch.data.length}; `+
+            `overlap ${overlapStart}..${overlapEnd-1}; previous bytes [${hexPreview(previousSlice)}]; current bytes [${hexPreview(currentSlice)}]`
+          );
+        }
+        if (patchEnd>previousEnd) {
+          const tail=patch.data.slice(previousEnd-patch.off);
+          const merged=new Uint8Array(previous.data.length+tail.length);
+          merged.set(previous.data);
+          merged.set(tail,previous.data.length);
+          previous.data=merged;
+        }
+        continue;
       }
     }
     out.push({off:patch.off, data:Uint8Array.from(patch.data), sourceIndex:patch.sourceIndex});
