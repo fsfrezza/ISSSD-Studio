@@ -55,6 +55,31 @@ test('legacy bytes still cannot persist generated expansion',()=>{
   assert.throws(()=>canonicalProjectState(project,{baseSize:BASE_SIZE}),/immutable base boundary/);
 });
 
+test('legacy persisted SNES checksum patch is discarded',()=>{
+  const project={
+    state:{
+      targetLength:BASE_SIZE,
+      patches:[
+        {off:0x7FDC,bytes:[62,134,193,121]},
+        {off:0xE7F2,bytes:[1,2,3]},
+      ],
+    },
+  };
+  const state=canonicalProjectState(project,{baseSize:BASE_SIZE});
+  assert.equal(state.patches.length,1);
+  assert.equal(state.patches[0].off,0xE7F2);
+});
+
+test('patch crossing checksum boundary is rejected instead of partially discarded',()=>{
+  const project={
+    state:{
+      targetLength:BASE_SIZE,
+      patches:[{off:0x7FDB,bytes:[1,2,3,4,5]}],
+    },
+  };
+  assert.throws(()=>canonicalProjectState(project,{baseSize:BASE_SIZE}),/checksum boundary/);
+});
+
 test('normalizePatch accepts bytes array without changing byte values',()=>{
   const patch=normalizePatch({off:0x3456,bytes:[0,127,128,255]});
   assert.equal(patch.off,0x3456);
