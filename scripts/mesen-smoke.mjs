@@ -63,6 +63,7 @@ console.log('Mesen emulator test');
 console.log('Mode:',mode);
 console.log('Mesen:',exePath);
 console.log('ROM:',romPath);
+console.log('Lua:',luaPath);
 console.log('Target frames:',mode==='smoke'?600:1200);
 console.log('Timeout:',timeoutMs+'ms');
 
@@ -110,5 +111,9 @@ child.on('close',code=>{
     process.exit(0);
   }
   console.error('FAIL:',result.reason);
+  console.error('Mesen exit code:',code);
+  console.error('Mesen args:',JSON.stringify(args));
+  if(stdout.trim()) console.error('Captured stdout:\n'+stdout.trim());
+  if(stderr.trim()) console.error('Captured stderr:\n'+stderr.trim());
   process.exit(1);
 });
