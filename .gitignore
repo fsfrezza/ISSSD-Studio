@@ -6,6 +6,7 @@
 *.rom
 *.sav
 *.srm
+probe*.json
 
 # Local ROM directory
 roms/
