@@ -20,14 +20,26 @@ test('exact duplicate patches collapse to one canonical patch',()=>{
   assert.deepEqual(plain(got),[{off:0x100,data:[0xAA,0xBB]}]);
 });
 
-test('historical Base64 patch data is decoded without Node-only APIs',()=>{
-  const got=canonicalizePatches([{off:30918,data:'A1ZEiFg='}]);
-  assert.deepEqual(plain(got),[{off:30918,data:[0x03,0x56,0x44,0x88,0x58]}]);
+test('historical rle-base64 literal patch is decoded exactly like monolithic Studio',()=>{
+  const got=canonicalizePatches([{off:30918,len:4,encoding:'rle-base64',data:'A1ZEiFg='}]);
+  assert.deepEqual(plain(got),[{off:30918,data:[0x56,0x44,0x88,0x58]}]);
 });
 
-test('hexadecimal strings take precedence when they are also syntactically valid Base64',()=>{
+test('historical rle-base64 repeat run is decoded exactly like monolithic Studio',()=>{
+  const got=canonicalizePatches([{off:0x200,len:4,encoding:'rle-base64',data:'g1o='}]);
+  assert.deepEqual(plain(got),[{off:0x200,data:[0x5A,0x5A,0x5A,0x5A]}]);
+});
+
+test('rle-base64 reconstructed length must match persisted len',()=>{
+  assert.throws(()=>canonicalizePatches([
+    {off:0x100,len:5,encoding:'rle-base64',data:'A1ZEiFg='}
+  ]),/reconstructed length mismatch/);
+});
+
+test('plain string patches remain hexadecimal only',()=>{
   const got=canonicalizePatches([{off:0x100,data:'AABB'}]);
   assert.deepEqual(plain(got),[{off:0x100,data:[0xAA,0xBB]}]);
+  assert.throws(()=>canonicalizePatches([{off:0x200,data:'A1ZEiFg='}]),/must be hexadecimal/);
 });
 
 test('invalid string patch reports index offset and preview',()=>{
@@ -38,7 +50,7 @@ test('invalid string patch reports index offset and preview',()=>{
     assert.match(error.message,/index 1/);
     assert.match(error.message,/offset 9029/);
     assert.match(error.message,/not-hex-format/);
-    assert.match(error.message,/hexadecimal or Base64/);
+    assert.match(error.message,/must be hexadecimal/);
     return true;
   });
 });
