@@ -1,4 +1,4 @@
-const MIN_COORD=-39,MAX_COORD=39;
+const X_MIN=-57,X_MAX=57,Y_MIN=-39,Y_MAX=39;
 
 function int(value,label){
   const n=Number(value);
@@ -13,7 +13,8 @@ function normalizePlayer(player,index){
   const rosterSlot=int(player.rosterSlot ?? player.slot,'rosterSlot');
   if(rosterSlot<1||rosterSlot>20)throw new RangeError('rosterSlot must be 1..20');
   const x=int(player.x,'x'),y=int(player.y,'y');
-  if(x<MIN_COORD||x>MAX_COORD||y<MIN_COORD||y>MAX_COORD)throw new RangeError('tactical coordinate must be -39..39');
+  if(x<X_MIN||x>X_MAX)throw new RangeError('tactical X must be -57..57');
+  if(y<Y_MIN||y>Y_MAX)throw new RangeError('tactical Y must be -39..39');
   return {
     index:Number.isInteger(Number(player.index))?Number(player.index):index,
     rosterSlot,
