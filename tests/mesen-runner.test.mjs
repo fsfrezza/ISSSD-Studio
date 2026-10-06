@@ -21,6 +21,20 @@ test('Mesen smoke result passes only on exit zero with pass marker',()=>{
   });
   assert.equal(result.ok,true);
   assert.equal(result.frames,600);
+  assert.equal(result.mode,'smoke');
+});
+
+test('Mesen navigation result accepts navigation completion marker',()=>{
+  const result=interpretMesenSmokeResult({
+    exitCode:0,
+    stdout:'ISSSD_NAV_STEP start frame=360\nISSSD_NAV_PASS frames=1200 steps=5\n',
+    stderr:'',
+    timedOut:false,
+  });
+  assert.equal(result.ok,true);
+  assert.equal(result.frames,1200);
+  assert.equal(result.mode,'nav');
+  assert.equal(result.steps,5);
 });
 
 test('Mesen smoke result rejects timeout',()=>{
