@@ -1,5 +1,7 @@
+import {PLUS_BASELINE} from './plus-baseline.mjs';
+
 export const PLUS = Object.freeze({
-  baseSize: 0x200000,
+  baseSize: PLUS_BASELINE.size,
   playerBank: 0x150000,
   teams: 56,
   playersPerTeam: 20,
