@@ -20,6 +20,19 @@ test('exact duplicate patches collapse to one canonical patch',()=>{
   assert.deepEqual(plain(got),[{off:0x100,data:[0xAA,0xBB]}]);
 });
 
+test('invalid string patch reports index offset and preview',()=>{
+  assert.throws(()=>canonicalizePatches([
+    {off:0x100,data:'AABB'},
+    {off:0x2345,data:'not-hex-format'}
+  ]),error=>{
+    assert.match(error.message,/index 1/);
+    assert.match(error.message,/offset 9029/);
+    assert.match(error.message,/not-hex-format/);
+    assert.match(error.message,/must be hexadecimal/);
+    return true;
+  });
+});
+
 test('overlapping non-identical patches are rejected',()=>{
   assert.throws(()=>canonicalizePatches([
     {off:0x100,data:[1,2,3]},
