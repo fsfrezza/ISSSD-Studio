@@ -7,16 +7,22 @@ import {buildMesenSmokeArgs,interpretMesenSmokeResult} from '../src/emulator/mes
 const argv=process.argv.slice(2);
 let mesenBin=process.env.MESEN_BIN||'';
 let timeoutMs=30000;
+let mode='smoke';
 const positional=[];
 for(let i=0;i<argv.length;i++){
   const arg=argv[i];
   if(arg==='--mesen'){mesenBin=argv[++i]||'';continue;}
   if(arg==='--timeout-ms'){timeoutMs=Number(argv[++i]);continue;}
+  if(arg==='--mode'){mode=String(argv[++i]||'');continue;}
   positional.push(arg);
 }
 
 if(positional.length!==1){
-  console.error('Usage: npm run test:emulator -- <rom.sfc> [--mesen <Mesen.exe>] [--timeout-ms 30000]');
+  console.error('Usage: npm run test:emulator -- <rom.sfc> [--mode smoke|nav] [--mesen <Mesen.exe>] [--timeout-ms 30000]');
+  process.exit(2);
+}
+if(!['smoke','nav'].includes(mode)){
+  console.error('Invalid --mode. Use smoke or nav.');
   process.exit(2);
 }
 if(!mesenBin){
@@ -29,15 +35,17 @@ if(!Number.isFinite(timeoutMs)||timeoutMs<=0){
 }
 
 const romPath=resolve(positional[0]);
-const luaPath=resolve(fileURLToPath(new URL('./mesen/smoke.lua',import.meta.url)));
+const luaName=mode==='nav'?'nav.lua':'smoke.lua';
+const luaPath=resolve(fileURLToPath(new URL('./mesen/'+luaName,import.meta.url)));
 const exePath=resolve(mesenBin);
 if(!existsSync(romPath)){console.error('ROM not found: '+romPath);process.exit(2);}
 if(!existsSync(exePath)){console.error('Mesen not found: '+exePath);process.exit(2);}
 
 const args=buildMesenSmokeArgs({luaPath,romPath});
-console.log('Mesen smoke test');
+console.log('Mesen emulator test');
+console.log('Mode:',mode);
 console.log('ROM:',romPath);
-console.log('Target frames: 600');
+console.log('Target frames:',mode==='nav'?1200:600);
 console.log('Timeout:',timeoutMs+'ms');
 
 let stdout='';
@@ -61,7 +69,8 @@ child.on('close',code=>{
   clearTimeout(timer);
   const result=interpretMesenSmokeResult({exitCode:code,stdout,stderr,timedOut});
   if(result.ok){
-    console.log(`PASS: Mesen completed ${result.frames} frames.`);
+    if(result.mode==='nav')console.log(`PASS: navigation survived ${result.frames} frames and ${result.steps} input steps.`);
+    else console.log(`PASS: Mesen completed ${result.frames} frames.`);
     process.exit(0);
   }
   console.error('FAIL:',result.reason);
