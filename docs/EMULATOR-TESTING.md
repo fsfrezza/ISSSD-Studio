@@ -28,6 +28,14 @@ A full ROM or project path passed explicitly always takes precedence. A relative
 
 For the one-command project regression, when no ROM is passed the script first tries the canonical default filename and validates it by SHA-256; if it is unavailable or does not match, it scans the configured ROM directory for the canonical Plus SHA-256. When no project is passed, the script first tries the canonical default project filename; if it is absent, the Windows file selector opens in the configured project directory with that filename prefilled.
 
+Before running Mesen, the local structure can be checked independently with:
+
+```powershell
+npm run check:windows-defaults
+```
+
+This verifies the two directories, the two canonical filenames, the `.issdproj` extension, the Plus ROM size (2 MiB) and its canonical SHA-256. The same `ISSSD_ROM_DIR`, `ISSSD_PROJECT_DIR`, `ISSSD_ROM_NAME` and `ISSSD_PROJECT_NAME` environment overrides are honored.
+
 ## Windows setup
 
 Run once from PowerShell:
