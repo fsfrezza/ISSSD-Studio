@@ -34,7 +34,17 @@ if (-not $exe) {
 $pathFile = Join-Path $mesenDir 'mesen-path.txt'
 Set-Content -Path $pathFile -Value $exe.FullName -Encoding UTF8
 
+$documents = [Environment]::GetFolderPath([Environment+SpecialFolder]::MyDocuments)
+$documentsSettings = Join-Path $documents 'Mesen2\settings.json'
+$portableSettings = Join-Path $exe.DirectoryName 'settings.json'
+
 Write-Host "Mesen installed and verified:"
 Write-Host $exe.FullName
 Write-Host "SHA-256: $expectedSha256"
 Write-Host "The emulator remains local under .tools/ and is not committed to Git."
+Write-Host ''
+Write-Host 'First-run note:'
+Write-Host 'Mesen 2.1.1 must be initialized once before --testRunner can run headlessly.'
+Write-Host 'If neither settings file exists, run Mesen once, complete its initial configuration, close it, and then run the ISSSD emulator test.'
+Write-Host "Portable settings: $portableSettings"
+Write-Host "Documents settings: $documentsSettings"
