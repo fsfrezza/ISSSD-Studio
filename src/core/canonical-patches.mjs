@@ -108,15 +108,34 @@ function sameBytes(a, b) {
   return true;
 }
 
-function sameOverlap(previous,patch,overlapStart,overlapEnd) {
-  for (let address=overlapStart; address<overlapEnd; address++) {
-    if (previous.data[address-previous.off] !== patch.data[address-patch.off]) return false;
-  }
-  return true;
-}
-
 function hexPreview(bytes,max=16) {
   return [...bytes.slice(0,max)].map(v=>v.toString(16).padStart(2,'0').toUpperCase()).join(' ');
+}
+
+function replayLegacyRlePatches(normalized,baseSize,rejectPersistedExpansion) {
+  let length=baseSize;
+  if (!rejectPersistedExpansion) {
+    for (const patch of normalized) length=Math.max(length,patch.off+patch.data.length);
+  }
+  const values=new Uint8Array(length);
+  const written=new Uint8Array(length);
+
+  // Historical studioApplyPatches() iterated in persisted order and called
+  // out.set(...), therefore a later patch wins any overlapping byte.
+  for (const patch of normalized) {
+    values.set(patch.data,patch.off);
+    written.fill(1,patch.off,patch.off+patch.data.length);
+  }
+
+  const out=[];
+  let i=0;
+  while (i<length) {
+    if (!written[i]) { i++; continue; }
+    const start=i;
+    while (i<length && written[i]) i++;
+    out.push({off:start,data:values.slice(start,i)});
+  }
+  return out;
 }
 
 export function canonicalizePatches(patches, {baseSize=PLUS_BASE_SIZE, rejectPersistedExpansion=true}={}) {
@@ -131,6 +150,9 @@ export function canonicalizePatches(patches, {baseSize=PLUS_BASE_SIZE, rejectPer
     }
   }
 
+  const isLegacyRleSet=patches.length>0 && patches.every(patch=>patch?.encoding==='rle-base64');
+  if (isLegacyRleSet) return replayLegacyRlePatches(normalized,baseSize,rejectPersistedExpansion);
+
   normalized.sort((a,b) => a.off - b.off || a.data.length - b.data.length || a.sourceIndex-b.sourceIndex);
 
   const out = [];
@@ -140,26 +162,22 @@ export function canonicalizePatches(patches, {baseSize=PLUS_BASE_SIZE, rejectPer
 
     if (previous) {
       const previousEnd = previous.off + previous.data.length;
-      const patchEnd=patch.off+patch.data.length;
       if (patch.off < previousEnd) {
         const overlapStart=patch.off;
-        const overlapEnd=Math.min(previousEnd,patchEnd);
+        const overlapEnd=Math.min(previousEnd,patch.off+patch.data.length);
         const previousSlice=previous.data.slice(overlapStart-previous.off,overlapEnd-previous.off);
         const currentSlice=patch.data.slice(0,overlapEnd-overlapStart);
-        if (!sameOverlap(previous,patch,overlapStart,overlapEnd)) {
+        if (!sameBytes(previousSlice,currentSlice)) {
           throw new RangeError(
             `overlapping patches: previous index ${previous.sourceIndex} offset ${previous.off} len ${previous.data.length}; `+
             `current index ${patch.sourceIndex} offset ${patch.off} len ${patch.data.length}; `+
             `overlap ${overlapStart}..${overlapEnd-1}; previous bytes [${hexPreview(previousSlice)}]; current bytes [${hexPreview(currentSlice)}]`
           );
         }
-        if (patchEnd>previousEnd) {
-          const tail=patch.data.slice(previousEnd-patch.off);
-          const merged=new Uint8Array(previous.data.length+tail.length);
-          merged.set(previous.data);
-          merged.set(tail,previous.data.length);
-          previous.data=merged;
-        }
+        const patchEnd=patch.off+patch.data.length;
+        if (patchEnd<=previousEnd) continue;
+        const tail=patch.data.slice(previousEnd-patch.off);
+        previous.data=Uint8Array.from([...previous.data,...tail]);
         continue;
       }
     }
