@@ -39,6 +39,26 @@ export function normalizePatch(patch) {
   return {off, data};
 }
 
+function patchPreview(patch) {
+  const raw=patch?.data ?? patch?.bytes ?? patch?.value;
+  if (typeof raw==='string') return JSON.stringify(raw.slice(0,80));
+  if (Array.isArray(raw)) return JSON.stringify(raw.slice(0,16));
+  if (raw instanceof Uint8Array) return JSON.stringify([...raw.slice(0,16)]);
+  try { return JSON.stringify(raw); } catch { return String(raw); }
+}
+
+function normalizePatchWithContext(patch,index) {
+  try {
+    return normalizePatch(patch);
+  } catch (error) {
+    const rawOff=patch?.off ?? patch?.offset;
+    const message=`invalid persisted patch at index ${index}, offset ${String(rawOff)}, preview ${patchPreview(patch)}: ${error.message}`;
+    const wrapped=new error.constructor(message);
+    wrapped.cause=error;
+    throw wrapped;
+  }
+}
+
 function sameBytes(a, b) {
   if (a.length !== b.length) return false;
   for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
@@ -47,7 +67,7 @@ function sameBytes(a, b) {
 
 export function canonicalizePatches(patches, {baseSize=PLUS_BASE_SIZE, rejectPersistedExpansion=true}={}) {
   if (!Array.isArray(patches)) throw new TypeError('patch array required');
-  const normalized = patches.map(normalizePatch);
+  const normalized = patches.map((patch,index)=>normalizePatchWithContext(patch,index));
 
   if (rejectPersistedExpansion) {
     for (const patch of normalized) {
