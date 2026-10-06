@@ -24,10 +24,10 @@ export function normalizeProbeReport(report){
 }
 
 function stateLikeScore(candidate){
-  let score=candidate.changes*100;
-  if(candidate.value<=0x0F)score+=40;
-  else if(candidate.value<=0x3F)score+=20;
-  else if(candidate.value<=0x7F)score+=5;
+  let score=candidate.changes*40;
+  if(candidate.value<=0x0F)score+=180;
+  else if(candidate.value<=0x3F)score+=90;
+  else if(candidate.value<=0x7F)score+=20;
   const transitionBits=candidate.mask.toString(2).replace(/0/g,'').length;
   score+=transitionBits*10;
   if(candidate.mask!==0)score+=10;
