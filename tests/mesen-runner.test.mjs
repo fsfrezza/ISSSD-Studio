@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   buildMesenSmokeArgs,
   interpretMesenSmokeResult,
+  parseMesenProbeCandidates,
 } from '../src/emulator/mesen-runner.mjs';
 
 test('Mesen smoke args use headless testRunner and stdout logging',()=>{
@@ -37,6 +38,17 @@ test('Mesen navigation result accepts navigation completion marker',()=>{
   assert.equal(result.steps,5);
 });
 
+test('Mesen probe candidates are parsed into structured WRAM records',()=>{
+  const out=[
+    'ISSSD_PROBE_CAND addr=0x00123 value=4 mask=0x16 changes=3',
+    'ISSSD_PROBE_CAND addr=0x1ABCD value=255 mask=0x02 changes=1',
+  ].join('\n');
+  assert.deepEqual(parseMesenProbeCandidates(out),[
+    {address:0x00123,addressHex:'0x00123',value:4,mask:0x16,maskHex:'0x16',changes:3},
+    {address:0x1ABCD,addressHex:'0x1ABCD',value:255,mask:0x02,maskHex:'0x02',changes:1},
+  ]);
+});
+
 test('Mesen probe result reports stable changing WRAM candidates',()=>{
   const result=interpretMesenSmokeResult({
     exitCode:0,
@@ -48,6 +60,8 @@ test('Mesen probe result reports stable changing WRAM candidates',()=>{
   assert.equal(result.frames,1200);
   assert.equal(result.mode,'probe');
   assert.equal(result.candidates,27);
+  assert.equal(result.probeCandidates.length,1);
+  assert.equal(result.probeCandidates[0].address,0x123);
 });
 
 test('Mesen smoke result rejects timeout',()=>{
