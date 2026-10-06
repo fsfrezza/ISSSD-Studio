@@ -9,7 +9,9 @@ function hex5(value){
 
 export function normalizeProbeReport(report){
   if(report===null||typeof report!=='object'||Array.isArray(report))throw new TypeError('probe report object required');
-  if(report.mode!=='probe')throw new TypeError('probe report mode must be probe');
+  const isModeReport=report.mode==='probe';
+  const isSchemaReport=report.schema==='isssd-mesen-probe-v1';
+  if(!isModeReport&&!isSchemaReport)throw new TypeError('probe report must use mode=probe or schema=isssd-mesen-probe-v1');
   const frames=report.frames===undefined?null:asInt(report.frames,'frames',{min:1});
   if(!Array.isArray(report.candidates))throw new TypeError('probe candidates array required');
   const candidates=report.candidates.map((row,index)=>{
@@ -20,7 +22,12 @@ export function normalizeProbeReport(report){
     const changes=asInt(row.changes,`candidate ${index} changes`,{max:8});
     return {address,addressHex:hex5(address),value,mask,changes};
   });
-  return {mode:'probe',frames,candidates};
+  return {
+    mode:'probe',
+    schema:isSchemaReport?'isssd-mesen-probe-v1':null,
+    frames,
+    candidates,
+  };
 }
 
 function stateLikeScore(candidate){
