@@ -9,20 +9,24 @@ The local Windows workflow preserves the historical folder layout used by the mo
 ```text
 ROM directory:     C:\Users\fsfre\Downloads\ISSSD-Studio\roms
 Project directory: C:\Users\fsfre\Downloads\ISSSD-Studio
+ROM filename:      International Superstar Soccer Deluxe Plus.sfc
+Project filename:  International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj
 ```
 
 These are defaults, not hard locks.
 
-You can override them per command with `-RomDir` and `-ProjectDir`, or persist different locations for the current shell with:
+You can override directories per command with `-RomDir` and `-ProjectDir`, filenames with `-RomName` and `-ProjectName`, or persist alternatives for the current shell with:
 
 ```powershell
 $env:ISSSD_ROM_DIR='D:\ROMs'
 $env:ISSSD_PROJECT_DIR='D:\ISSSD Projects'
+$env:ISSSD_ROM_NAME='custom-plus.sfc'
+$env:ISSSD_PROJECT_NAME='custom-project.issdproj'
 ```
 
 A full ROM or project path passed explicitly always takes precedence. A relative ROM filename is resolved inside the ROM directory; a relative `.issdproj` filename is resolved inside the project directory.
 
-For the one-command project regression, when no ROM is passed the script scans the default ROM directory and selects the file whose SHA-256 matches the canonical Plus baseline. When no project is passed, the Windows file selector opens directly in the default project directory.
+For the one-command project regression, when no ROM is passed the script first tries the canonical default filename and validates it by SHA-256; if it is unavailable or does not match, it scans the configured ROM directory for the canonical Plus SHA-256. When no project is passed, the script first tries the canonical default project filename; if it is absent, the Windows file selector opens in the configured project directory with that filename prefilled.
 
 ## Windows setup
 
@@ -123,13 +127,18 @@ This creates local `probe-base.json`, `probe-generated.json` and `probe-comparis
 
 The preferred local regression path starts from the same inputs as the Studio itself: the canonical Plus ROM and an `.issdproj` file.
 
-With the historical default folders configured, the shortest form is now:
+With the historical defaults configured, the shortest form is:
 
 ```powershell
 npm run test:emulator:project:windows
 ```
 
-The canonical Plus ROM is located automatically by SHA-256 in `C:\Users\fsfre\Downloads\ISSSD-Studio\roms`, and the project selector opens in `C:\Users\fsfre\Downloads\ISSSD-Studio`.
+This resolves, by default:
+
+```text
+C:\Users\fsfre\Downloads\ISSSD-Studio\roms\International Superstar Soccer Deluxe Plus.sfc
+C:\Users\fsfre\Downloads\ISSSD-Studio\International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj
+```
 
 You can still provide explicit files exactly as before:
 
@@ -137,7 +146,7 @@ You can still provide explicit files exactly as before:
 npm run test:emulator:project:windows -- "C:\path\base.sfc" "C:\path\project.issdproj"
 ```
 
-Or use filenames relative to the default directories:
+Or use filenames relative to the configured default directories:
 
 ```powershell
 npm run test:emulator:project:windows -- "International Superstar Soccer Deluxe Plus.sfc" "meu-projeto.issdproj"
