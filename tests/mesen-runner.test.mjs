@@ -4,6 +4,7 @@ import {
   buildMesenSmokeArgs,
   interpretMesenSmokeResult,
   parseMesenProbeCandidates,
+  parseMesenSemanticStates,
 } from '../src/emulator/mesen-runner.mjs';
 
 test('Mesen smoke args use headless testRunner and stdout logging',()=>{
@@ -62,6 +63,36 @@ test('Mesen probe result reports stable changing WRAM candidates',()=>{
   assert.equal(result.candidates,27);
   assert.equal(result.probeCandidates.length,1);
   assert.equal(result.probeCandidates[0].address,0x123);
+});
+
+test('Mesen semantic result reports reached checkpoints',()=>{
+  const stdout=[
+    'ISSSD_SEMANTIC_STATE intro frame=240 value=2',
+    'ISSSD_SEMANTIC_STATE menu frame=420 value=5',
+    'ISSSD_SEMANTIC_PASS frames=1200 checkpoints=2',
+  ].join('\n');
+  assert.deepEqual(parseMesenSemanticStates(stdout),[
+    {name:'intro',frame:240,value:2},
+    {name:'menu',frame:420,value:5},
+  ]);
+  const result=interpretMesenSmokeResult({exitCode:0,stdout,stderr:'',timedOut:false});
+  assert.equal(result.ok,true);
+  assert.equal(result.mode,'semantic');
+  assert.equal(result.checkpoints,2);
+  assert.equal(result.semanticStates.length,2);
+});
+
+test('Mesen semantic failure preserves missing checkpoint name',()=>{
+  const result=interpretMesenSmokeResult({
+    exitCode:1,
+    stdout:'ISSSD_SEMANTIC_STATE intro frame=240 value=2\nISSSD_SEMANTIC_FAIL checkpoint=menu frame=501\n',
+    stderr:'',
+    timedOut:false,
+  });
+  assert.equal(result.ok,false);
+  assert.equal(result.mode,'semantic');
+  assert.match(result.reason,/menu/);
+  assert.equal(result.semanticStates.length,1);
 });
 
 test('Mesen smoke result rejects timeout',()=>{
