@@ -1,5 +1,6 @@
 import {assertHostBridge} from '../platform/host-bridge.mjs';
 import {canonicalProjectOpen} from '../core/project-open.mjs';
+import {projectDocumentFromCanonical} from '../core/project-serialize.mjs';
 import {buildPlusProjectRom} from '../core/project-build.mjs';
 
 function cloneValue(value){
@@ -65,8 +66,9 @@ export class StudioSession{
   }
 
   async saveProject(options={}){
-    if(!this.#project)throw new Error('project is not loaded');
-    return this.#host.saveProject(cloneValue(this.#project),options);
+    if(!this.#canonicalProject)throw new Error('project is not loaded');
+    const document=projectDocumentFromCanonical(this.#canonicalProject);
+    return this.#host.saveProject(document,options);
   }
 
   async exportBuilt(options={}){
