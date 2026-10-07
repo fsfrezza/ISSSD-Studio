@@ -17,11 +17,19 @@ export const PLUS_MAIN_MENU_ORIGINAL={
   options:'OPTIONS',
 };
 
-export const PLUS_MAIN_MENU_DEFAULT_STYLE={size:115,bold:0};
+export const PLUS_MAIN_MENU_BASE_ITEM_STYLE={
+  scale:115,width:100,height:100,x:0,y:0,letterSpacing:0,lineSpacing:16,align:'center',bold:0,
+};
+
+export const PLUS_MAIN_MENU_DEFAULT_STYLE={
+  previewSelected:1,
+  items:Array.from({length:8},()=>({...PLUS_MAIN_MENU_BASE_ITEM_STYLE})),
+};
 
 const LEGACY_TEXT_ALIASES={international:'championship',worldSeries:'cup'};
 
 function clone(value){return structuredClone(value);}
+function clamp(value,min,max,fallback){const n=Number(value);return Number.isFinite(n)?Math.max(min,Math.min(max,n)):fallback;}
 
 export function normalizePlusMainMenuText(value){
   const source=String(value??'').toUpperCase().replace(/\r/g,'');
@@ -32,13 +40,37 @@ export function normalizePlusMainMenuText(value){
     .trim();
 }
 
+export function canonicalizePlusMainMenuItemStyle(value={}){
+  if(value===null||typeof value!=='object'||Array.isArray(value))throw new TypeError('Plus main menu item style must be an object');
+  return {
+    scale:clamp(value.scale,80,160,PLUS_MAIN_MENU_BASE_ITEM_STYLE.scale),
+    width:clamp(value.width,80,125,PLUS_MAIN_MENU_BASE_ITEM_STYLE.width),
+    height:clamp(value.height,80,125,PLUS_MAIN_MENU_BASE_ITEM_STYLE.height),
+    x:Math.round(clamp(value.x,-16,16,0)/8)*8,
+    y:Math.round(clamp(value.y,-16,16,0)/8)*8,
+    letterSpacing:[0,8].includes(Number(value.letterSpacing))?Number(value.letterSpacing):0,
+    lineSpacing:[8,16,24].includes(Number(value.lineSpacing))?Number(value.lineSpacing):16,
+    align:['left','center','right'].includes(value.align)?value.align:'center',
+    bold:Number(value.bold)?1:0,
+  };
+}
+
 function normalizeStyle(style={}){
   if(style===null||typeof style!=='object'||Array.isArray(style))throw new TypeError('Plus main menu style must be an object');
-  const size=Number(style.size??PLUS_MAIN_MENU_DEFAULT_STYLE.size);
-  const bold=Number(style.bold??PLUS_MAIN_MENU_DEFAULT_STYLE.bold);
-  if(!Number.isFinite(size)||size<90||size>125)throw new RangeError('Plus main menu font size must be between 90 and 125');
-  if(!Number.isInteger(bold)||bold<0||bold>1)throw new RangeError('Plus main menu bold must be 0 or 1');
-  return {size,bold};
+  const previewSelected=Math.round(clamp(style.previewSelected,0,7,1));
+  let items;
+  if(Array.isArray(style.items)){
+    if(style.items.length!==8)throw new TypeError('Plus main menu style must contain 8 item styles');
+    items=style.items.map(canonicalizePlusMainMenuItemStyle);
+  }else{
+    // v6.00/v6.01 stored only global size/bold. Promote those values to the
+    // per-item style introduced later without losing historical appearance.
+    const global={...PLUS_MAIN_MENU_BASE_ITEM_STYLE};
+    if(style.size!==undefined)global.scale=clamp(style.size,80,160,115);
+    if(style.bold!==undefined)global.bold=Number(style.bold)?1:0;
+    items=Array.from({length:8},()=>canonicalizePlusMainMenuItemStyle(global));
+  }
+  return {previewSelected,items};
 }
 
 function normalizeTextRecord(record={}){
