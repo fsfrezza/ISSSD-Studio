@@ -4,7 +4,7 @@ Editor/Studio para projetos de ROM baseados em International Superstar Soccer De
 
 ## Objetivo deste repositório
 
-Este repositório passa a ser a fonte de verdade do desenvolvimento do ISSSD Studio: histórico de versões, regressões, testes automatizados e builds reproduzíveis.
+Este repositório é a fonte de verdade do desenvolvimento do ISSSD Studio: histórico de versões, regressões, testes automatizados e builds reproduzíveis.
 
 ## Regras do projeto
 
@@ -14,6 +14,7 @@ Este repositório passa a ser a fonte de verdade do desenvolvimento do ISSSD Stu
 - Alterações semânticas devem ser preferidas a patches físicos históricos.
 - Expansões/infraestrutura gerada devem existir apenas no build quando possível, não se acumular no projeto.
 - Toda regressão encontrada deve ganhar um teste automatizado.
+- Uma função só é considerada migrada quando existe contrato semântico/writer modular e teste específico; mera reprodução de patch histórico não basta.
 
 ## Baseline conhecido
 
@@ -23,13 +24,22 @@ ROM-base Plus esperada:
 
 A ROM em si não deve ser enviada ao GitHub.
 
-## Investigação atual
+## Estado atual
 
-Regressão de 2026-10-05:
-- abrir ROM-base e salvar gera ROM funcional;
-- abrir projeto e desmarcar todas as alterações gera ROM funcional;
-- manter qualquer alteração do projeto gera ROM que trava;
-- projetos recentes acumularam patches de expansão de 2 MiB em `0x200000`;
-- a linha v6.92 é o principal baseline pré-regressão a recuperar/testar.
+O núcleo novo já consegue:
+- abrir projetos sem mutar a ROM-base;
+- migrar compatibilidade crítica de projetos históricos;
+- gerar a ROM Plus de forma determinística;
+- aplicar writers semânticos de jogadores e táticas;
+- gerar infraestrutura de táticas apenas no build;
+- recalcular checksum;
+- validar uma ROM real no Mesen por 1200 frames, tanto na base quanto na saída gerada.
 
-Veja `docs/HISTORY.md` e `docs/RECOVERY.md`.
+A antiga regressão v6.92 → v6.93 está documentada e coberta pelo núcleo/testes. O foco atual deixa de ser apenas recuperar o build e passa a ser **migrar funcionalidade por funcionalidade do monólito para módulos semânticos testáveis**.
+
+A lista de funções, status de migração e ordem recomendada está em:
+
+- `docs/FUNCTIONAL-MIGRATION-MATRIX.md`
+- `docs/HISTORY.md`
+- `docs/V692-V693-ROOT-CAUSE.md`
+- `docs/EMULATOR-TESTING.md`
