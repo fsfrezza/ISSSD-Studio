@@ -37,10 +37,9 @@ test('serialization round-trip preserves canonical project meaning',()=>{
   const legacy={
     state:{
       targetLength:0x200000,
-      patchesCompact:{
-        patchFormat:'rle-base64-v1',
-        patches:[{off:0x1234,len:4,encoding:'rle-base64',data:'A1ZEiFg='}],
-      },
+      patchesCompact:[
+        {off:0x1234,len:4,encoding:'rle-base64',data:'A1ZEiFg='},
+      ],
       semantic:{
         playerEdits:[{team:30,player:8,skills:{shot:9}}],
         plusTactics:{schema:'isssd-plus-tactics-v1',version:1,teams:{}},
