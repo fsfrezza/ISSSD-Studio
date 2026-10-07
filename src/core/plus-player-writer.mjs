@@ -1,12 +1,14 @@
 import {
   playerOffset,decodePlayerRecord,writeSkill,writeNaturalPosition,writeJersey,surgicalWritesForRecord
 } from './plus-player.mjs';
+import {readPlusPlayerName,writePlusPlayerName} from './plus-player-name.mjs';
 
 const SKILLS=['acceleration','speed','shot','curve','balance','intelligence','dribbling','jump','energy'];
 
 function validateEdit(edit){
   if(!edit || !Number.isInteger(edit.team) || !Number.isInteger(edit.player)) throw new TypeError('player edit requires team and player');
   if(edit.skills!==undefined && (edit.skills===null || typeof edit.skills!=='object' || Array.isArray(edit.skills))) throw new TypeError('skills must be an object');
+  if(edit.name!==undefined&&typeof edit.name!=='string')throw new TypeError('player name must be a string');
   return edit;
 }
 
@@ -17,9 +19,19 @@ export function plusPlayerWriter(rom,state={}){
 
   for(const rawEdit of edits){
     const edit=validateEdit(rawEdit);
+
+    if(edit.name!==undefined){
+      writePlusPlayerName(rom,{
+        team:edit.team,
+        player:edit.player,
+        name:edit.name,
+        alignment:edit.alignment,
+        manualFixed:edit.manualFixed,
+      });
+    }
+
     const off=playerOffset(edit.team,edit.player);
     if(off+7>rom.length) throw new RangeError('player record outside ROM');
-
     const before=rom.slice(off,off+7);
     const after=before.slice();
 
@@ -38,5 +50,5 @@ export function plusPlayerWriter(rom,state={}){
 
 export function readPlusPlayer(rom,team,player){
   const off=playerOffset(team,player);
-  return decodePlayerRecord(rom.slice(off,off+7));
+  return {...decodePlayerRecord(rom.slice(off,off+7)),name:readPlusPlayerName(rom,team,player)};
 }
