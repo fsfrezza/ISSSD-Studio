@@ -38,6 +38,23 @@ function playerAttributesOnlyState(state){
   });
   return {...state,playerEdits:edits};
 }
+function playerSkillsOnlyState(state){
+  const edits=(state?.playerEdits??[])
+    .filter(edit=>edit?.skills!==undefined)
+    .map(edit=>({team:edit.team,player:edit.player,skills:edit.skills}));
+  return {...state,playerEdits:edits};
+}
+function playerRosterFieldsOnlyState(state){
+  const edits=(state?.playerEdits??[])
+    .filter(edit=>edit?.naturalPosition!==undefined||edit?.jersey!==undefined)
+    .map(edit=>({
+      team:edit.team,
+      player:edit.player,
+      ...(edit.naturalPosition!==undefined?{naturalPosition:edit.naturalPosition}:{}),
+      ...(edit.jersey!==undefined?{jersey:edit.jersey}:{}),
+    }));
+  return {...state,playerEdits:edits};
+}
 function usage(){
   console.error('Usage: node scripts/build-semantic-corridor-plus.mjs <clean-plus.sfc> <project.issdproj> --out-dir <dir>');
 }
@@ -62,6 +79,8 @@ const variants=[
   {id:'02-players-only',writers:[plusPlayerWriter]},
   {id:'02a-player-names-only',writers:[plusPlayerWriter],state:playerNamesOnlyState(semantic)},
   {id:'02b-player-attributes-only',writers:[plusPlayerWriter],state:playerAttributesOnlyState(semantic)},
+  {id:'02b1-player-skills-only',writers:[plusPlayerWriter],state:playerSkillsOnlyState(semantic)},
+  {id:'02b2-player-roster-fields-only',writers:[plusPlayerWriter],state:playerRosterFieldsOnlyState(semantic)},
   {id:'02c-players-no-checksum',writers:[plusPlayerWriter],writeChecksum:false},
   {id:'03-strategies-only',writers:[plusStrategyTextWriter]},
   {id:'04-safe-combined',writers:[plusPlayerWriter,plusStrategyTextWriter,plusRomMetaWriter]},
@@ -101,6 +120,8 @@ console.log(JSON.stringify({
   baseSha256:PLUS_BASELINE.sha256,
   playerEdits:(semantic.playerEdits??[]).length,
   playerNameEdits:(semantic.playerEdits??[]).filter(edit=>edit?.name!==undefined).length,
+  playerSkillEdits:(semantic.playerEdits??[]).filter(edit=>edit?.skills!==undefined).length,
+  playerRosterFieldEdits:(semantic.playerEdits??[]).filter(edit=>edit?.naturalPosition!==undefined||edit?.jersey!==undefined).length,
   tacticalEditsPresent:hasTacticalEdits(semantic),
   testOrder:results.map(result=>result.id),
 },null,2));
