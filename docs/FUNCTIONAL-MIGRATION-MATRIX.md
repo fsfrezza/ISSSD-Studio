@@ -4,7 +4,7 @@ Este documento transforma a linha histórica do monólito em um plano verificáv
 
 ## Critério de status
 
-- **MIGRADO**: existe representação semântica ou writer modular no `src/`, com testes automatizados específicos.
+- **MIGRADO**: existe representação semântica ou writer/contrato modular no `src/`, com testes automatizados específicos.
 - **PARCIAL**: existe infraestrutura modular relevante, mas a funcionalidade completa do Studio ainda depende de compatibilidade legada, patches persistidos, UI ausente ou semântica incompleta.
 - **LEGADO**: funcionalidade conhecida do monólito/histórico, ainda sem módulo semântico equivalente no núcleo novo.
 - **A VALIDAR**: há evidência histórica da função, mas ainda precisamos extrair contrato, offsets/formato ou comportamento de um snapshot aprovado antes de implementar.
@@ -19,10 +19,11 @@ Um patch histórico que ainda é apenas reproduzido byte a byte **não conta com
 | Build determinístico | MIGRADO | `build-plus.mjs`, `project-build.mjs` | build repetido byte-idêntico; projeto real validado |
 | Checksum SNES | MIGRADO | `rom-integrity.mjs` | testes unitários + build real |
 | Abrir projeto sem mutar ROM | MIGRADO | `project-open.mjs`, `project-state.mjs` | regressão v6.93 coberta |
+| Schema moderno + serialização canônica `.issdproj` | MIGRADO | `project-serialize.mjs`, `StudioSession.saveProject()` | schema/version explícitos; patches JSON-safe; round-trip canônico testado |
 | Migração semântica de projeto legado | PARCIAL | `project-semantic.mjs`, compatibilidade `rle-base64-v1` | jogadores/táticas cobertos; demais áreas ainda podem permanecer como patches |
 | Patches legados ordenados | MIGRADO como compatibilidade | `canonical-patches.mjs` | RLE, overlap redundante e last-write-wins legado testados |
 | Geração de infraestrutura apenas no build | MIGRADO para táticas | `plus-tactics-infrastructure.mjs` | expansão não deve persistir no `.issdproj` |
-| Host/browser/desktop abstraction | PARCIAL | `browser-host.mjs`, `host-bridge.mjs`, `studio-session.mjs` | ainda falta fechar serialização/salvamento final do projeto desktop |
+| Host/browser/desktop abstraction | PARCIAL | `browser-host.mjs`, `host-bridge.mjs`, `studio-session.mjs` | contrato de salvar projeto fechado; host desktop/Tauri ainda não concluído |
 | Smoke test Mesen | MIGRADO mínimo | scripts Mesen + runner | ROM-base e ROM gerada sobrevivem 1200 frames |
 | Teste semântico de telas no Mesen | PARCIAL | profile/probe/analyzer existem | ainda sem endereço WRAM semântico confirmado |
 
@@ -114,16 +115,19 @@ Um patch histórico que ainda é apenas reproduzido byte a byte **não conta com
 | Leitura de patchesCompact RLE legado | MIGRADO | canonical patches |
 | Migração `attrHex` → `playerEdits` | MIGRADO | semantic migration |
 | Descarte de `tactics.rawHex` legado | MIGRADO | semantic migration |
+| Schema moderno/versionado de saída | MIGRADO | `isssd-studio-project-v1`, versão 1, perfil `plus` |
+| Round-trip abrir → canonicalizar → salvar → reabrir | MIGRADO | `project-serialize.test.mjs` |
 | Persistência de estado semântico | PARCIAL | jogadores/táticas têm modelo; demais domínios ainda não |
-| Salvar projeto pelo Studio desktop | PARCIAL | `StudioSession` existe; contrato final de serialização ainda precisa ser fechado |
+| Salvar projeto pelo `StudioSession` | MIGRADO | não reapresenta contêiner legado; salva documento canônico moderno |
+| Host desktop/Tauri para salvar arquivo | LEGADO/PARCIAL | contrato existe, implementação desktop final ainda não |
 | Reabrir projeto e reaplicar sobre ROM-base limpa | MIGRADO arquiteturalmente | núcleo novo separa open de build |
 
 ## Ordem de migração recomendada
 
 A sequência abaixo minimiza risco e evita voltar a persistir bytes físicos como estado principal:
 
-1. **Fechar o contrato de serialização do `.issdproj` moderno**: versão de schema, domínios semânticos e round-trip estável.
-2. **Nomes de jogadores**: já convivem diretamente com o domínio de jogadores e têm alto valor funcional.
+1. **Contrato de serialização do `.issdproj` moderno — CONCLUÍDO**: schema/version, JSON seguro e round-trip canônico.
+2. **Nomes de jogadores — PRÓXIMO**: já convivem diretamente com o domínio de jogadores e têm alto valor funcional.
 3. **Escalação/ordem/camisas**: completar o domínio de equipe antes de construir a UI nova.
 4. **Título interno + `romMeta`**: domínio pequeno e isolável, bom para validar o padrão writer + teste.
 5. **Textos e menu principal**: extrair codec/layout e abandonar a edição por offsets soltos.
@@ -154,4 +158,4 @@ build determinístico
 Mesen como regressão de integração quando aplicável
 ```
 
-A matriz deve ser atualizada no mesmo commit em que uma funcionalidade muda de status.
+A matriz deve ser atualizada sempre que uma funcionalidade muda de status.
