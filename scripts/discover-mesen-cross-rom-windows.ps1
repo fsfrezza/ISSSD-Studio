@@ -39,12 +39,25 @@ function Show-ProbeFailure([string]$Label,[string]$LogPath,[int]$ExitCode) {
   Write-Host ''
   Write-Host "$Label probe failed with exit code $ExitCode" -ForegroundColor Red
   if (Test-Path $LogPath -PathType Leaf) {
-    Write-Host "Diagnostic log: $([IO.Path]::GetFullPath($LogPath))"
+    $fullLogPath = [IO.Path]::GetFullPath($LogPath)
+    Write-Host "Diagnostic log: $fullLogPath"
     Write-Host '--- diagnostic tail ---'
     Get-Content -Path $LogPath -Tail 80 | ForEach-Object { Write-Host $_ }
     Write-Host '--- end diagnostic tail ---'
+
+    $interesting = Get-Content -Path $LogPath | Where-Object {
+      $_ -match 'ISSSD_PROBE_HEARTBEAT|ISSSD_PROBE_STAGE|ISSSD_PROBE_PASS|^FAIL:|Mesen exit code:|Suppressed .*uninitialized-memory warnings'
+    }
+    Write-Host 'PROBE FAILURE SUMMARY:' -ForegroundColor Yellow
+    if ($interesting) {
+      $interesting | Select-Object -Last 20 | ForEach-Object { Write-Host $_ }
+    } else {
+      Write-Host '(no probe heartbeat/stage/pass markers were recorded)'
+    }
+    Write-Host "PROBE LOG PATH: $fullLogPath"
   } else {
     Write-Host "Diagnostic log was not created: $LogPath"
+    Write-Host 'PROBE FAILURE SUMMARY: diagnostic log missing' -ForegroundColor Yellow
   }
 }
 
