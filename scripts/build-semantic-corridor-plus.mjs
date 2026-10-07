@@ -2,59 +2,10 @@ import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {basename,join} from 'node:path';
 import {createHash} from 'node:crypto';
 import {buildPlusRom} from '../src/core/build-plus.mjs';
-import {canonicalProjectSemantic} from '../src/core/project-semantic.mjs';
 import {plusPlayerWriter} from '../src/core/plus-player-writer.mjs';
-import {plusRomMetaWriter} from '../src/core/plus-rom-meta.mjs';
-import {plusStrategyTextWriter} from '../src/core/plus-strategy-text.mjs';
-import {preparePlusTacticalInfrastructure} from '../src/core/plus-tactics-infrastructure.mjs';
-import {plusTacticsWriter} from '../src/core/plus-tactics-writer.mjs';
 import {PLUS_BASELINE,assertPlusBaseDescriptor} from '../src/core/plus-baseline.mjs';
 
 function sha256(bytes){return createHash('sha256').update(bytes).digest('hex');}
-function hasTacticalEdits(state){
-  const teams=state?.plusTactics?.teams;
-  return !!teams&&typeof teams==='object'&&!Array.isArray(teams)&&Object.keys(teams).length>0;
-}
-function playerNamesOnlyState(state){
-  const edits=(state?.playerEdits??[])
-    .filter(edit=>edit?.name!==undefined)
-    .map(edit=>({
-      team:edit.team,
-      player:edit.player,
-      name:edit.name,
-      ...(edit.alignment!==undefined?{alignment:edit.alignment}:{}),
-      ...(edit.manualFixed!==undefined?{manualFixed:edit.manualFixed}:{}),
-    }));
-  return {...state,playerEdits:edits};
-}
-function playerAttributesOnlyState(state){
-  const edits=(state?.playerEdits??[]).map(edit=>{
-    const out={team:edit.team,player:edit.player};
-    if(edit.skills!==undefined)out.skills=edit.skills;
-    if(edit.naturalPosition!==undefined)out.naturalPosition=edit.naturalPosition;
-    if(edit.jersey!==undefined)out.jersey=edit.jersey;
-    if(edit.appearanceRaw!==undefined)out.appearanceRaw=edit.appearanceRaw;
-    return out;
-  });
-  return {...state,playerEdits:edits};
-}
-function playerSkillsOnlyState(state){
-  const edits=(state?.playerEdits??[])
-    .filter(edit=>edit?.skills!==undefined)
-    .map(edit=>({team:edit.team,player:edit.player,skills:edit.skills}));
-  return {...state,playerEdits:edits};
-}
-function playerRosterFieldsOnlyState(state){
-  const edits=(state?.playerEdits??[])
-    .filter(edit=>edit?.naturalPosition!==undefined||edit?.jersey!==undefined)
-    .map(edit=>({
-      team:edit.team,
-      player:edit.player,
-      ...(edit.naturalPosition!==undefined?{naturalPosition:edit.naturalPosition}:{}),
-      ...(edit.jersey!==undefined?{jersey:edit.jersey}:{}),
-    }));
-  return {...state,playerEdits:edits};
-}
 function usage(){
   console.error('Usage: node scripts/build-semantic-corridor-plus.mjs <clean-plus.sfc> <project.issdproj> --out-dir <dir>');
 }
@@ -69,59 +20,32 @@ const [romPath,projectPath]=args;
 const base=Uint8Array.from(await readFile(romPath));
 assertPlusBaseDescriptor({size:base.length,sha256:sha256(base)});
 const project=JSON.parse(await readFile(projectPath,'utf8'));
-const semantic=canonicalProjectSemantic(project);
 await mkdir(outDir,{recursive:true});
 const stem=basename(projectPath).replace(/\.issdproj$/i,'');
 
-const variants=[
-  {id:'00-base-exact',exactBase:true},
-  {id:'01-rom-meta-only',writers:[plusRomMetaWriter]},
-  {id:'02-players-only',writers:[plusPlayerWriter]},
-  {id:'02a-player-names-only',writers:[plusPlayerWriter],state:playerNamesOnlyState(semantic)},
-  {id:'02b-player-attributes-only',writers:[plusPlayerWriter],state:playerAttributesOnlyState(semantic)},
-  {id:'02b1-player-skills-only',writers:[plusPlayerWriter],state:playerSkillsOnlyState(semantic)},
-  {id:'02b2-player-roster-fields-only',writers:[plusPlayerWriter],state:playerRosterFieldsOnlyState(semantic)},
-  {id:'02c-players-no-checksum',writers:[plusPlayerWriter],writeChecksum:false},
-  {id:'03-strategies-only',writers:[plusStrategyTextWriter]},
-  {id:'04-safe-combined',writers:[plusPlayerWriter,plusStrategyTextWriter,plusRomMetaWriter]},
-  {id:'05-tactics-only',writers:[plusTacticsWriter],tactics:true},
-];
+// Diagnostic intent: do NOT migrate legacy teamsV1.names[*].attrHex here.
+// Only modern, explicitly persisted playerEdits are allowed to write attributes.
+const sourceSemantic=project?.state?.semantic??project?.semantic??{};
+const explicitPlayerEdits=Array.isArray(sourceSemantic?.playerEdits)
+  ?structuredClone(sourceSemantic.playerEdits)
+  :[];
+const semanticState={playerEdits:explicitPlayerEdits};
 
-const results=[];
-for(const variant of variants){
-  let rom;
-  if(variant.exactBase){
-    rom=base.slice();
-  }else{
-    const prepareInfrastructure=variant.tactics&&hasTacticalEdits(semantic)
-      ?work=>preparePlusTacticalInfrastructure(work)
-      :null;
-    rom=buildPlusRom(base,{
-      semanticState:variant.state??semantic,
-      prepareInfrastructure,
-      writers:variant.writers,
-      writeChecksum:variant.writeChecksum!==false,
-    }).rom;
-  }
-  const outputPath=join(outDir,`${stem}-${variant.id}.sfc`);
-  await writeFile(outputPath,rom);
-  const result={
-    id:variant.id,
-    outputPath,
-    size:rom.length,
-    sha256:sha256(rom),
-    changedBytes:rom.reduce((count,value,index)=>count+(index>=base.length||value!==base[index]?1:0),0),
-  };
-  results.push(result);
-  console.log(JSON.stringify(result,null,2));
-}
+const rom=buildPlusRom(base,{
+  semanticState,
+  writers:[plusPlayerWriter],
+  writeChecksum:true,
+}).rom;
+const outputPath=join(outDir,`${stem}-player-explicit-only.sfc`);
+await writeFile(outputPath,rom);
 
 console.log(JSON.stringify({
+  id:'player-explicit-only',
+  outputPath,
+  size:rom.length,
+  sha256:sha256(rom),
+  explicitPlayerEdits:explicitPlayerEdits.length,
+  changedBytes:rom.reduce((count,value,index)=>count+(index>=base.length||value!==base[index]?1:0),0),
+  note:'legacy attrHex snapshots intentionally ignored',
   baseSha256:PLUS_BASELINE.sha256,
-  playerEdits:(semantic.playerEdits??[]).length,
-  playerNameEdits:(semantic.playerEdits??[]).filter(edit=>edit?.name!==undefined).length,
-  playerSkillEdits:(semantic.playerEdits??[]).filter(edit=>edit?.skills!==undefined).length,
-  playerRosterFieldEdits:(semantic.playerEdits??[]).filter(edit=>edit?.naturalPosition!==undefined||edit?.jersey!==undefined).length,
-  tacticalEditsPresent:hasTacticalEdits(semantic),
-  testOrder:results.map(result=>result.id),
 },null,2));
