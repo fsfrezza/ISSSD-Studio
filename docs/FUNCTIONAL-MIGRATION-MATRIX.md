@@ -20,7 +20,7 @@ Um patch histórico que ainda é apenas reproduzido byte a byte **não conta com
 | Checksum SNES | MIGRADO | `rom-integrity.mjs` | testes unitários + build real |
 | Abrir projeto sem mutar ROM | MIGRADO | `project-open.mjs`, `project-state.mjs` | regressão v6.93 coberta |
 | Schema moderno + serialização canônica `.issdproj` | MIGRADO | `project-serialize.mjs`, `StudioSession.saveProject()` | schema/version explícitos; patches JSON-safe; round-trip canônico testado |
-| Migração semântica de projeto legado | PARCIAL | `project-semantic.mjs`, compatibilidade `rle-base64-v1` | jogadores/táticas cobertos; demais áreas ainda podem permanecer como patches |
+| Migração semântica de projeto legado | PARCIAL | `project-semantic.mjs`, compatibilidade `rle-base64-v1` | atributos, nomes e táticas cobertos; demais áreas ainda podem permanecer como patches |
 | Patches legados ordenados | MIGRADO como compatibilidade | `canonical-patches.mjs` | RLE, overlap redundante e last-write-wins legado testados |
 | Geração de infraestrutura apenas no build | MIGRADO para táticas | `plus-tactics-infrastructure.mjs` | expansão não deve persistir no `.issdproj` |
 | Host/browser/desktop abstraction | PARCIAL | `browser-host.mjs`, `host-bridge.mjs`, `studio-session.mjs` | contrato de salvar projeto fechado; host desktop/Tauri ainda não concluído |
@@ -38,8 +38,9 @@ Um patch histórico que ainda é apenas reproduzido byte a byte **não conta com
 | Aparência raw | PARCIAL | preservada como dado opaco; sem writer semântico validado |
 | Espelho especial do Brasil | MIGRADO | `plus-player-writer.mjs`; slots 2..7 + caso Pelé/Pardilla cobertos |
 | Argentina sem espelho do Brasil | MIGRADO | comportamento coberto por teste |
-| Edição de nomes de jogadores | LEGADO | histórico v6.34/v6.84+; precisa extrair codec/layout aprovado e criar writer semântico |
-| Espaço, ponto e apóstrofo em nomes | LEGADO | regra funcional conhecida, ainda sem módulo novo |
+| Edição de nomes de jogadores | MIGRADO | `plus-player-name.mjs`, `plus-player-name-state.mjs`, writer integrado e migração de `isssd-name-roster-v1` |
+| Espaço, ponto e apóstrofo em nomes | MIGRADO | codec TallMenuText validado; apóstrofos equivalentes normalizados para byte `0x5A` |
+| Alinhamento de nome / goleiros centralizados | MIGRADO | left/center/right/manual preservados; slots de goleiro forçam centro como no monólito |
 | Camisas 1–20 únicas com troca automática | PARCIAL | writer grava camisa; lógica de edição/normalização ainda não modularizada |
 | Troca de ordem da escalação | LEGADO | histórico v6.88/v6.92; precisa extrair estrutura semântica |
 | Trocar slots titulares sem alterar camisa | LEGADO | requisito conhecido; sem writer modular específico |
@@ -114,6 +115,7 @@ Um patch histórico que ainda é apenas reproduzido byte a byte **não conta com
 | Leitura de projeto moderno | MIGRADO | project state/open |
 | Leitura de patchesCompact RLE legado | MIGRADO | canonical patches |
 | Migração `attrHex` → `playerEdits` | MIGRADO | semantic migration |
+| Migração `isssd-name-roster-v1` → `playerEdits` | MIGRADO | `nameHex` é decodificado semanticamente; bytes inválidos vão para quarentena |
 | Descarte de `tactics.rawHex` legado | MIGRADO | semantic migration |
 | Schema moderno/versionado de saída | MIGRADO | `isssd-studio-project-v1`, versão 1, perfil `plus` |
 | Round-trip abrir → canonicalizar → salvar → reabrir | MIGRADO | `project-serialize.test.mjs` |
@@ -127,8 +129,8 @@ Um patch histórico que ainda é apenas reproduzido byte a byte **não conta com
 A sequência abaixo minimiza risco e evita voltar a persistir bytes físicos como estado principal:
 
 1. **Contrato de serialização do `.issdproj` moderno — CONCLUÍDO**: schema/version, JSON seguro e round-trip canônico.
-2. **Nomes de jogadores — PRÓXIMO**: já convivem diretamente com o domínio de jogadores e têm alto valor funcional.
-3. **Escalação/ordem/camisas**: completar o domínio de equipe antes de construir a UI nova.
+2. **Nomes de jogadores — CONCLUÍDO**: codec, ponteiros Plus, writer, migração de projeto legado e testes específicos.
+3. **Escalação/ordem/camisas — PRÓXIMO**: completar o domínio de equipe antes de construir a UI nova.
 4. **Título interno + `romMeta`**: domínio pequeno e isolável, bom para validar o padrão writer + teste.
 5. **Textos e menu principal**: extrair codec/layout e abandonar a edição por offsets soltos.
 6. **Organização de equipes/grupos/seleção**: formalizar tabelas e IDs antes da interface.
