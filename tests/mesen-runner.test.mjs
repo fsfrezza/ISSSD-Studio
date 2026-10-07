@@ -7,10 +7,17 @@ import {
   parseMesenSemanticStates,
 } from '../src/emulator/mesen-runner.mjs';
 
-test('Mesen smoke args use headless testRunner and stdout logging',()=>{
+test('Mesen smoke args use headless testRunner, stdout logging and explicit timeout',()=>{
   assert.deepEqual(
     buildMesenSmokeArgs({luaPath:'C:/repo/scripts/mesen/smoke.lua',romPath:'C:/roms/test.sfc'}),
-    ['--enableStdout','--testRunner','C:/repo/scripts/mesen/smoke.lua','C:/roms/test.sfc']
+    ['--enableStdout','--timeout=180','--testRunner','C:/repo/scripts/mesen/smoke.lua','C:/roms/test.sfc']
+  );
+});
+
+test('Mesen smoke args accept a caller-supplied testRunner timeout',()=>{
+  assert.deepEqual(
+    buildMesenSmokeArgs({luaPath:'a.lua',romPath:'b.sfc',testRunnerTimeoutSec:240}),
+    ['--enableStdout','--timeout=240','--testRunner','a.lua','b.sfc']
   );
 });
 
