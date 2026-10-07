@@ -13,5 +13,6 @@ test('Plus project emulator workflow builds one persisted-patch bisect ROM befor
   assert.match(text,/\.tools\\mesen-runs/);
   assert.match(text,/probe-comparison\.json/);
   assert.match(text,/ROM TO TEST MANUALLY/);
-  assert.match(text,/first half of canonical ranges/i);
+  assert.match(text,/first quarter of canonical ranges/i);
+  assert.match(text,/--part' '0' '--parts' '4/);
 });
