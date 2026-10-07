@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {StudioSession} from '../src/app/studio-session.mjs';
+import {PROJECT_SCHEMA,PROJECT_SCHEMA_VERSION} from '../src/core/project-serialize.mjs';
 
 function fixture(){
   const base=new Uint8Array(0x200000);
@@ -71,7 +72,7 @@ test('exportBuilt exports exactly the latest built ROM',async()=>{
   assert.equal(exportCall[2].suggestedName,'test-output');
 });
 
-test('saveProject delegates a detached project snapshot to host',async()=>{
+test('saveProject writes canonical modern schema rather than replaying legacy container',async()=>{
   const {host,project,calls}=fixture();
   const session=new StudioSession({host,verifyBase:async()=>true});
   await session.openProject();
@@ -79,5 +80,9 @@ test('saveProject delegates a detached project snapshot to host',async()=>{
   const saveCall=calls.find(x=>Array.isArray(x)&&x[0]==='saveProject');
   assert.ok(saveCall);
   assert.notEqual(saveCall[1],project);
-  assert.deepEqual(saveCall[1],project);
+  assert.equal(saveCall[1].schema,PROJECT_SCHEMA);
+  assert.equal(saveCall[1].version,PROJECT_SCHEMA_VERSION);
+  assert.equal(saveCall[1].profile,'plus');
+  assert.deepEqual(saveCall[1].state,{targetLength:0x200000,patches:[],semantic:{}});
+  assert.equal(saveCall[2].suggestedName,'saved');
 });
