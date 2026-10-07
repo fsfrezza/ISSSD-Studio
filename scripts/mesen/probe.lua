@@ -23,6 +23,14 @@ local checkpoints={
   {1030,1040},
 }
 
+local heartbeatFrames={
+  [1]=true,
+  [60]=true,
+  [120]=true,
+  [240]=true,
+  [330]=true,
+}
+
 local function inputForFrame(f)
   local state={}
   for _,p in ipairs(pulses) do
@@ -104,6 +112,9 @@ end,emu.eventType.inputPolled)
 
 emu.addEventCallback(function()
   frame=frame+1
+  if heartbeatFrames[frame] then
+    emu.log("ISSSD_PROBE_HEARTBEAT frame="..frame)
+  end
   for _,p in ipairs(checkpoints) do
     if frame==p[1] then beginPair() end
     if frame==p[2] then endPair() end
