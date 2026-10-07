@@ -1,6 +1,6 @@
 import {spawn} from 'node:child_process';
-import {existsSync,readFileSync,writeFileSync} from 'node:fs';
-import {resolve} from 'node:path';
+import {existsSync,readFileSync,writeFileSync,mkdirSync} from 'node:fs';
+import {dirname,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {buildMesenSmokeArgs,interpretMesenSmokeResult} from '../src/emulator/mesen-runner.mjs';
 
@@ -9,6 +9,7 @@ let mesenBin=process.env.MESEN_BIN||'';
 let timeoutMs=null;
 let mode='smoke';
 let reportPath='';
+let logPath='';
 const positional=[];
 for(let i=0;i<argv.length;i++){
   const arg=argv[i];
@@ -16,11 +17,12 @@ for(let i=0;i<argv.length;i++){
   if(arg==='--timeout-ms'){timeoutMs=Number(argv[++i]);continue;}
   if(arg==='--mode'){mode=String(argv[++i]||'');continue;}
   if(arg==='--report'){reportPath=String(argv[++i]||'');continue;}
+  if(arg==='--log'){logPath=String(argv[++i]||'');continue;}
   positional.push(arg);
 }
 
 if(positional.length!==1){
-  console.error('Usage: npm run test:emulator -- <rom.sfc> [--mode smoke|nav|probe] [--mesen <Mesen.exe>] [--timeout-ms <ms>] [--report report.json]');
+  console.error('Usage: npm run test:emulator -- <rom.sfc> [--mode smoke|nav|probe] [--mesen <Mesen.exe>] [--timeout-ms <ms>] [--report report.json] [--log run.log]');
   process.exit(2);
 }
 if(!['smoke','nav','probe'].includes(mode)){
@@ -71,6 +73,7 @@ console.log('ROM:',romPath);
 console.log('Lua:',luaPath);
 console.log('Target frames:',mode==='smoke'?600:1200);
 console.log('Timeout:',timeoutMs+'ms');
+if(logPath) console.log('Diagnostic log:',resolve(logPath));
 
 let stdout='';
 let stdoutBuffer='';
@@ -95,6 +98,32 @@ function consumeStdoutText(text,{flush=false}={}){
   }
 }
 
+function writeDiagnosticLog({code,result}){
+  if(!logPath)return;
+  const output=resolve(logPath);
+  mkdirSync(dirname(output),{recursive:true});
+  const lines=[
+    `mode=${mode}`,
+    `rom=${romPath}`,
+    `lua=${luaPath}`,
+    `mesen=${exePath}`,
+    `timeoutMs=${timeoutMs}`,
+    `exitCode=${code}`,
+    `timedOut=${timedOut}`,
+    `suppressedUninitializedReads=${suppressedUninitializedReads}`,
+    `result=${result.reason}`,
+    `args=${JSON.stringify(args)}`,
+    '',
+    '--- stdout ---',
+    stdout.trimEnd(),
+    '',
+    '--- stderr ---',
+    stderr.trimEnd(),
+    '',
+  ];
+  writeFileSync(output,lines.join('\n'),'utf8');
+}
+
 child.stdout.on('data',chunk=>consumeStdoutText(chunk.toString()));
 child.stderr.on('data',chunk=>{const s=chunk.toString();stderr+=s;process.stderr.write(s);});
 const timer=setTimeout(()=>{
@@ -115,6 +144,7 @@ child.on('close',code=>{
     console.log(`Suppressed ${suppressedUninitializedReads} repetitive uninitialized-memory warnings.`);
   }
   const result=interpretMesenSmokeResult({exitCode:code,stdout,stderr,timedOut});
+  writeDiagnosticLog({code,result});
   if(result.ok){
     if(result.mode==='nav'){
       console.log(`PASS: navigation survived ${result.frames} frames and ${result.steps} input steps.`);
@@ -141,6 +171,7 @@ child.on('close',code=>{
   console.error('FAIL:',result.reason);
   console.error('Mesen exit code:',code);
   console.error('Mesen args:',JSON.stringify(args));
+  if(logPath) console.error('Diagnostic log:',resolve(logPath));
   if(stdout.trim()) console.error('Captured stdout:\n'+stdout.trim());
   if(stderr.trim()) console.error('Captured stderr:\n'+stderr.trim());
   process.exit(1);
