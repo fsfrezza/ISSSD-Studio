@@ -28,17 +28,20 @@ test('canonical project semantic clones and migrates legacy tactical state',()=>
   assert.equal('rawHex' in out.plusTactics.teams['30'],false);
 });
 
-test('canonical project semantic quarantines legacy attrHex instead of creating playerEdits',()=>{
-  const project={state:{semantic:{teamsV1:{schema:'isssd-teams-v1',version:2,names:{teams:{
-    '30':{teamId:30,players:[{slot:8,name:'PELE',attrHex:'012345673909AB'}]}
-  }}}}}};
+test('canonical project semantic quarantines legacy attrHex while preserving valid name migration',()=>{
+  const project={state:{semantic:{teamsV1:{schema:'isssd-teams-v1',version:2,names:{
+    schema:'isssd-name-roster-v1',version:1,mode:'names-only',teams:{
+      '30':{teamId:30,players:[{slot:8,name:'PELE',nameHex:'77868D8600000000',attrHex:'012345673909AB'}]}
+    }
+  }}}}};
   const out=canonicalProjectSemantic(project);
   assert.equal(out.teamsV1.names,undefined);
   assert.equal(out.playerEdits.length,1);
   assert.equal(out.playerEdits[0].team,30);
   assert.equal(out.playerEdits[0].player,7);
   assert.equal(out.playerEdits[0].name,'PELE');
-  assert.equal('skills' in out.playerEdits[0],false);
+  assert.equal(out.playerEdits[0].skills,undefined);
+  assert.equal(out.playerEdits[0].jersey,undefined);
   assert.equal(out.legacyPlayerAttributeQuarantine.length,1);
   assert.equal(out.legacyPlayerAttributeQuarantine[0].attrHex,'012345673909AB');
 });
@@ -46,7 +49,11 @@ test('canonical project semantic quarantines legacy attrHex instead of creating 
 test('explicit player edits remain authoritative while legacy attrHex is quarantined',()=>{
   const project={state:{semantic:{
     playerEdits:[{team:30,player:7,skills:{shot:10}}],
-    teamsV1:{names:{teams:{'30':{teamId:30,players:[{slot:8,name:'PELE',attrHex:'012345673909AB'}]}}}}
+    teamsV1:{names:{
+      schema:'isssd-name-roster-v1',version:1,mode:'names-only',teams:{
+        '30':{teamId:30,players:[{slot:8,name:'PELE',nameHex:'77868D8600000000',attrHex:'012345673909AB'}]}
+      }
+    }}
   }}};
   const out=canonicalProjectSemantic(project);
   assert.equal(out.playerEdits.length,1);
