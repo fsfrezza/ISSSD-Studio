@@ -1,6 +1,5 @@
 import {applyCanonicalPatches} from './canonical-patches.mjs';
 import {buildPlusRom} from './build-plus.mjs';
-import {plusGroupsWriter} from './plus-groups.mjs';
 import {plusPlayerWriter} from './plus-player-writer.mjs';
 import {plusRomMetaWriter} from './plus-rom-meta.mjs';
 import {plusStrategyTextWriter} from './plus-strategy-text.mjs';
@@ -45,12 +44,12 @@ export function buildPlusProjectRom(baseRom,project,options={}){
     // Generated infrastructure is complete before semantic writers run.
     // Player attributes use verified surgical writes; tactics write only to
     // resolved exclusive records and refuse shared presets. Verified strategy
-    // phrases use native 2x10 records. Group organization writes only the
-    // native data tables. Main-menu semantic state is intentionally NOT
-    // materialized here yet: its renderer rewrites large compressed graphics
-    // blocks and must pass runtime navigation validation before promotion.
-    // ROM metadata precedes the derived SNES checksum.
-    writers:[plusPlayerWriter,plusTacticsWriter,plusStrategyTextWriter,plusGroupsWriter,plusRomMetaWriter,...userWriters],
+    // phrases use native 2x10 records. Main-menu graphics and group organization
+    // are intentionally NOT materialized by the default build while runtime
+    // navigation regressions are being isolated. Both semantic states remain
+    // preserved and their writers may still be invoked explicitly in focused
+    // tests. ROM metadata precedes the derived SNES checksum.
+    writers:[plusPlayerWriter,plusTacticsWriter,plusStrategyTextWriter,plusRomMetaWriter,...userWriters],
   });
 
   return {
