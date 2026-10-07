@@ -34,17 +34,18 @@ Um patch histórico que ainda é apenas reproduzido byte a byte **não conta com
 | Banco de 56 equipes × 20 jogadores × 7 bytes | MIGRADO | `plus-player.mjs` |
 | Skills 1–10 ↔ nibbles 0–9 | MIGRADO | player core + testes |
 | Posição natural | MIGRADO | player core + testes |
-| Número da camisa | MIGRADO no writer | escrita cirúrgica coberta; regra de unicidade/troca automática ainda precisa existir na camada de edição/UI |
+| Número da camisa | MIGRADO | writer cirúrgico + operações semânticas em `plus-team-roster.mjs` |
 | Aparência raw | PARCIAL | preservada como dado opaco; sem writer semântico validado |
 | Espelho especial do Brasil | MIGRADO | `plus-player-writer.mjs`; slots 2..7 + caso Pelé/Pardilla cobertos |
 | Argentina sem espelho do Brasil | MIGRADO | comportamento coberto por teste |
 | Edição de nomes de jogadores | MIGRADO | `plus-player-name.mjs`, `plus-player-name-state.mjs`, writer integrado e migração de `isssd-name-roster-v1` |
 | Espaço, ponto e apóstrofo em nomes | MIGRADO | codec TallMenuText validado; apóstrofos equivalentes normalizados para byte `0x5A` |
 | Alinhamento de nome / goleiros centralizados | MIGRADO | left/center/right/manual preservados; slots de goleiro forçam centro como no monólito |
-| Camisas 1–20 únicas com troca automática | PARCIAL | writer grava camisa; lógica de edição/normalização ainda não modularizada |
-| Troca de ordem da escalação | LEGADO | histórico v6.88/v6.92; precisa extrair estrutura semântica |
-| Trocar slots titulares sem alterar camisa | LEGADO | requisito conhecido; sem writer modular específico |
-| Titulares/reservas | LEGADO | UI/estado ainda não formalizados |
+| Camisas 1–20 únicas com troca automática | MIGRADO no domínio | `planPlusJerseySwap()` reproduz a troca individual; atribuição de equipe inteira exige permutação única 1–20 |
+| Troca de ordem da escalação | PARCIAL | troca tática segura dos titulares está modelada; reordenação física de registros continua bloqueada sem mapa comprovado |
+| Trocar slots titulares sem alterar camisa | MIGRADO no domínio | `swapPlusStarterTacticalAssignments()` troca apenas PosX/PosY/classe/ATACAR e preserva identidade/nome/camisa |
+| Titulares/reservas | PARCIAL | contrato físico conhecido (11 titulares + 9 reservas); camada de UI ainda não reconstruída |
+| Reordenar fisicamente registros de 7 bytes | BLOQUEADO/A VALIDAR | monólito registra ausência de mapa independente comprovado; não implementar por inferência |
 
 ## Táticas / formação / campo
 
@@ -58,9 +59,9 @@ Um patch histórico que ainda é apenas reproduzido byte a byte **não conta com
 | Estado semântico de tática | MIGRADO | `plus-tactics-state.mjs` |
 | Writer cirúrgico de tática | MIGRADO | `plus-tactics-writer.mjs` |
 | Setas/controles de posicionamento | LEGADO/UI | sem camada nova de interface |
-| GK fixo | LEGADO/UI + regra | precisa formalizar validação de edição |
-| Coluna ATACAR | LEGADO/UI | representação de UI ainda não migrada |
-| Formação personalizada completa por equipe | PARCIAL | formato de tática migrado; fluxo de escalação/equipe ainda não |
+| GK fixo | PARCIAL | goleiro fica fora dos 10 slots táticos de linha; validação/UI ainda precisa ser reconstruída |
+| Coluna ATACAR | MIGRADO no domínio / UI pendente | flag tática já é semântica e participa da troca segura; representação visual ainda falta |
+| Formação personalizada completa por equipe | PARCIAL | formato de tática migrado; fluxo completo de equipe/UI ainda não |
 
 ## Textos, menus e metadados
 
@@ -130,8 +131,8 @@ A sequência abaixo minimiza risco e evita voltar a persistir bytes físicos com
 
 1. **Contrato de serialização do `.issdproj` moderno — CONCLUÍDO**: schema/version, JSON seguro e round-trip canônico.
 2. **Nomes de jogadores — CONCLUÍDO**: codec, ponteiros Plus, writer, migração de projeto legado e testes específicos.
-3. **Escalação/ordem/camisas — PRÓXIMO**: completar o domínio de equipe antes de construir a UI nova.
-4. **Título interno + `romMeta`**: domínio pequeno e isolável, bom para validar o padrão writer + teste.
+3. **Escalação/camisas — PARCIALMENTE CONCLUÍDO**: swap de camisa e troca tática segura entre titulares já são contratos testados; reordenação física permanece bloqueada até prova do mapeamento.
+4. **Título interno + `romMeta` — PRÓXIMO**: domínio pequeno e isolável, bom para validar o padrão writer + teste.
 5. **Textos e menu principal**: extrair codec/layout e abandonar a edição por offsets soltos.
 6. **Organização de equipes/grupos/seleção**: formalizar tabelas e IDs antes da interface.
 7. **Assets gráficos, paletas e tela inicial**.
