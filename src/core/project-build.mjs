@@ -1,5 +1,6 @@
 import {applyCanonicalPatches} from './canonical-patches.mjs';
 import {buildPlusRom} from './build-plus.mjs';
+import {plusGroupsWriter} from './plus-groups.mjs';
 import {plusMainMenuWriter} from './plus-main-menu-renderer.mjs';
 import {plusPlayerWriter} from './plus-player-writer.mjs';
 import {plusRomMetaWriter} from './plus-rom-meta.mjs';
@@ -53,10 +54,11 @@ export function buildPlusProjectRom(baseRom,project,options={}){
     prepareInfrastructure,
     // Generated infrastructure is complete before semantic writers run.
     // Player attributes use verified surgical writes; tactics write only to
-    // resolved exclusive records and refuse shared presets. Verified strategy
-    // phrases use native 2x10 records. Main-menu graphics are rebuilt only for
-    // an explicitly native-committed menu. ROM metadata precedes checksum.
-    writers:[plusPlayerWriter,plusTacticsWriter,plusStrategyTextWriter,committedPlusMainMenuWriter,plusRomMetaWriter,...userWriters],
+    // resolved exclusive records and refuse shared presets. Group organization
+    // writes only the verified native group tables, terminator and counter; the
+    // historical experimental navigation/render ASM is deliberately excluded.
+    // Strategy phrases and committed main-menu graphics remain native writers.
+    writers:[plusPlayerWriter,plusTacticsWriter,plusGroupsWriter,plusStrategyTextWriter,committedPlusMainMenuWriter,plusRomMetaWriter,...userWriters],
   });
 
   return {
