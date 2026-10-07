@@ -39,7 +39,7 @@ test('canonical project semantic quarantines legacy attrHex while preserving val
   assert.equal(out.playerEdits.length,1);
   assert.equal(out.playerEdits[0].team,30);
   assert.equal(out.playerEdits[0].player,7);
-  assert.equal(out.playerEdits[0].name,'PELE');
+  assert.equal(out.playerEdits[0].name,'Pele');
   assert.equal(out.playerEdits[0].skills,undefined);
   assert.equal(out.playerEdits[0].jersey,undefined);
   assert.equal(out.legacyPlayerAttributeQuarantine.length,1);
@@ -58,7 +58,7 @@ test('explicit player edits remain authoritative while legacy attrHex is quarant
   const out=canonicalProjectSemantic(project);
   assert.equal(out.playerEdits.length,1);
   assert.equal(out.playerEdits[0].skills.shot,10);
-  assert.equal(out.playerEdits[0].name,'PELE');
+  assert.equal(out.playerEdits[0].name,'Pele');
   assert.equal(out.playerEdits[0].skills.speed,undefined);
   assert.equal(out.legacyPlayerAttributeQuarantine.length,1);
 });
