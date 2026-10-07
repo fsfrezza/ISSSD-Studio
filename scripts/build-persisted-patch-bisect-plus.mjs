@@ -10,7 +10,7 @@ function sha256(bytes){return createHash('sha256').update(bytes).digest('hex');}
 
 const [romPath,projectPath,...rest]=process.argv.slice(2);
 if(!romPath||!projectPath){
-  console.error('Usage: node scripts/build-persisted-patch-bisect-plus.mjs <clean-plus.sfc> <project.issdproj> [--out-dir <dir>] [--start <n>] [--end <n>]');
+  console.error('Usage: node scripts/build-persisted-patch-bisect-plus.mjs <clean-plus.sfc> <project.issdproj> [--out-dir <dir>] [--start <n>] [--end <n>] [--part <n> --parts <n>]');
   process.exit(2);
 }
 function argValue(name){const i=rest.indexOf(name);return i>=0?rest[i+1]:null;}
@@ -22,9 +22,23 @@ const project=JSON.parse(await readFile(projectPath,'utf8'));
 const canonical=canonicalProjectState(project,{baseSize:base.length});
 const total=canonical.patches.length;
 
-let start=Number(argValue('--start') ?? 0);
-let endRaw=argValue('--end');
-let end=endRaw==null?Math.ceil(total/2):Number(endRaw);
+const partRaw=argValue('--part');
+const partsRaw=argValue('--parts');
+let start;
+let end;
+if(partRaw!==null||partsRaw!==null){
+  const part=Number(partRaw);
+  const parts=Number(partsRaw);
+  if(!Number.isInteger(part)||!Number.isInteger(parts)||parts<1||part<0||part>=parts){
+    throw new RangeError(`invalid patch partition part=${partRaw} parts=${partsRaw}`);
+  }
+  start=Math.ceil(total*part/parts);
+  end=Math.ceil(total*(part+1)/parts);
+}else{
+  start=Number(argValue('--start') ?? 0);
+  const endRaw=argValue('--end');
+  end=endRaw==null?Math.ceil(total/2):Number(endRaw);
+}
 if(!Number.isInteger(start)||!Number.isInteger(end)||start<0||end<start||end>total){
   throw new RangeError(`invalid patch slice ${start}..${end} for ${total} canonical persisted ranges`);
 }
