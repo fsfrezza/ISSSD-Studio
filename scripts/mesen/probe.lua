@@ -41,24 +41,47 @@ local function inputForFrame(f)
   return state
 end
 
+-- Reading every byte of SNES WRAM through emu.read() causes Mesen to emit an
+-- "Uninitialized memory read" warning for every untouched byte.  Besides being
+-- noisy, that makes a full 128 KiB scan take minutes in testRunner mode.
+-- Mesen's native access counters let us identify WRAM that the game has already
+-- written and restrict value reads to those initialized addresses.
+local function initializedAddresses()
+  local counters=emu.getAccessCounters(emu.counterType.writeCount,emu.memType.snesWorkRam)
+  local addresses={}
+  for i,count in ipairs(counters) do
+    local addr=i-1
+    if addr>=WRAM_SIZE then break end
+    if count and count>0 then
+      addresses[#addresses+1]=addr
+    end
+  end
+  return addresses
+end
+
 local function snapshot()
   local t={}
-  for addr=0,WRAM_SIZE-1 do
+  local addresses=initializedAddresses()
+  for _,addr in ipairs(addresses) do
     t[addr]=emu.read(addr,emu.memType.snesWorkRam,false)
   end
-  return t
+  return t,#addresses
 end
 
 local function beginPair()
-  first=snapshot()
+  local activeCount
+  first,activeCount=snapshot()
+  emu.log("ISSSD_PROBE_SNAPSHOT frame="..frame.." active="..activeCount)
 end
 
 local function endPair()
   stageIndex=stageIndex+1
   local bit=1 << (stageIndex-1)
-  for addr=0,WRAM_SIZE-1 do
+  local compared=0
+  for addr,firstValue in pairs(first) do
+    compared=compared+1
     local v=emu.read(addr,emu.memType.snesWorkRam,false)
-    if v==first[addr] then
+    if v==firstValue then
       if stageIndex==1 then
         stable[addr]=true
         last[addr]=v
@@ -74,7 +97,7 @@ local function endPair()
     end
   end
   first=nil
-  emu.log("ISSSD_PROBE_STAGE index="..stageIndex.." frame="..frame)
+  emu.log("ISSSD_PROBE_STAGE index="..stageIndex.." frame="..frame.." compared="..compared)
 end
 
 local function bitCount(n)
@@ -88,8 +111,8 @@ end
 
 local function finish()
   local rows={}
-  for addr=0,WRAM_SIZE-1 do
-    if stable[addr] and masks[addr] and masks[addr]~=0 then
+  for addr,isStable in pairs(stable) do
+    if isStable and masks[addr] and masks[addr]~=0 then
       table.insert(rows,{addr=addr,mask=masks[addr],value=last[addr],changes=bitCount(masks[addr])})
     end
   end
