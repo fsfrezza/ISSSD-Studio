@@ -15,6 +15,29 @@ function hasTacticalEdits(state){
   const teams=state?.plusTactics?.teams;
   return !!teams&&typeof teams==='object'&&!Array.isArray(teams)&&Object.keys(teams).length>0;
 }
+function playerNamesOnlyState(state){
+  const edits=(state?.playerEdits??[])
+    .filter(edit=>edit?.name!==undefined)
+    .map(edit=>({
+      team:edit.team,
+      player:edit.player,
+      name:edit.name,
+      ...(edit.alignment!==undefined?{alignment:edit.alignment}:{}),
+      ...(edit.manualFixed!==undefined?{manualFixed:edit.manualFixed}:{}),
+    }));
+  return {...state,playerEdits:edits};
+}
+function playerAttributesOnlyState(state){
+  const edits=(state?.playerEdits??[]).map(edit=>{
+    const out={team:edit.team,player:edit.player};
+    if(edit.skills!==undefined)out.skills=edit.skills;
+    if(edit.naturalPosition!==undefined)out.naturalPosition=edit.naturalPosition;
+    if(edit.jersey!==undefined)out.jersey=edit.jersey;
+    if(edit.appearanceRaw!==undefined)out.appearanceRaw=edit.appearanceRaw;
+    return out;
+  });
+  return {...state,playerEdits:edits};
+}
 function usage(){
   console.error('Usage: node scripts/build-semantic-corridor-plus.mjs <clean-plus.sfc> <project.issdproj> --out-dir <dir>');
 }
@@ -37,6 +60,9 @@ const variants=[
   {id:'00-base-exact',exactBase:true},
   {id:'01-rom-meta-only',writers:[plusRomMetaWriter]},
   {id:'02-players-only',writers:[plusPlayerWriter]},
+  {id:'02a-player-names-only',writers:[plusPlayerWriter],state:playerNamesOnlyState(semantic)},
+  {id:'02b-player-attributes-only',writers:[plusPlayerWriter],state:playerAttributesOnlyState(semantic)},
+  {id:'02c-players-no-checksum',writers:[plusPlayerWriter],writeChecksum:false},
   {id:'03-strategies-only',writers:[plusStrategyTextWriter]},
   {id:'04-safe-combined',writers:[plusPlayerWriter,plusStrategyTextWriter,plusRomMetaWriter]},
   {id:'05-tactics-only',writers:[plusTacticsWriter],tactics:true},
@@ -52,10 +78,10 @@ for(const variant of variants){
       ?work=>preparePlusTacticalInfrastructure(work)
       :null;
     rom=buildPlusRom(base,{
-      semanticState:semantic,
+      semanticState:variant.state??semantic,
       prepareInfrastructure,
       writers:variant.writers,
-      writeChecksum:true,
+      writeChecksum:variant.writeChecksum!==false,
     }).rom;
   }
   const outputPath=join(outDir,`${stem}-${variant.id}.sfc`);
@@ -73,6 +99,8 @@ for(const variant of variants){
 
 console.log(JSON.stringify({
   baseSha256:PLUS_BASELINE.sha256,
+  playerEdits:(semantic.playerEdits??[]).length,
+  playerNameEdits:(semantic.playerEdits??[]).filter(edit=>edit?.name!==undefined).length,
   tacticalEditsPresent:hasTacticalEdits(semantic),
   testOrder:results.map(result=>result.id),
 },null,2));
