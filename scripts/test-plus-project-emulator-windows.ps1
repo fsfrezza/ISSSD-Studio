@@ -110,6 +110,7 @@ New-Item -ItemType Directory -Force -Path $runDir | Out-Null
 
 $projectStem = [IO.Path]::GetFileNameWithoutExtension($Project)
 $generatedRom = Join-Path $runDir "$projectStem-verified.sfc"
+$semanticOnlyRom = Join-Path $runDir "$projectStem-semantic-only.sfc"
 $baseReport = Join-Path $runDir 'probe-base.json'
 $generatedReport = Join-Path $runDir 'probe-generated.json'
 $comparison = Join-Path $runDir 'probe-comparison.json'
@@ -118,13 +119,19 @@ $generatedLog = Join-Path $runDir 'probe-generated.log'
 
 Push-Location $repoRoot
 try {
-  Write-Host '1/2 Building project through the deterministic Plus core...'
+  Write-Host '1/3 Building project through the deterministic Plus core...'
   & node 'scripts/verify-real-plus-project.mjs' $BaseRom $Project '--out-dir' $runDir
   if ($LASTEXITCODE -ne 0) { throw "Project build verification failed with exit code $LASTEXITCODE" }
   if (-not (Test-Path $generatedRom)) { throw "Expected generated ROM was not created: $generatedRom" }
 
   Write-Host ''
-  Write-Host '2/2 Running cross-ROM emulator state discovery...'
+  Write-Host '2/3 Building semantic-only diagnostic ROM (persisted patches ignored)...'
+  & node 'scripts/build-semantic-only-plus-project.mjs' $BaseRom $Project '--out-dir' $runDir
+  if ($LASTEXITCODE -ne 0) { throw "Semantic-only project build failed with exit code $LASTEXITCODE" }
+  if (-not (Test-Path $semanticOnlyRom)) { throw "Expected semantic-only ROM was not created: $semanticOnlyRom" }
+
+  Write-Host ''
+  Write-Host '3/3 Running cross-ROM emulator state discovery on the normal generated ROM...'
   & powershell -ExecutionPolicy Bypass -File 'scripts/discover-mesen-cross-rom-windows.ps1' `
     $BaseRom $generatedRom `
     -BaseReport $baseReport `
@@ -138,7 +145,8 @@ try {
   Write-Host ''
   Write-Host 'Plus project emulator regression flow completed.'
   Write-Host "Run directory: $runDir"
-  Write-Host "Generated ROM: $generatedRom"
+  Write-Host "Normal generated ROM: $generatedRom"
+  Write-Host "SEMANTIC-ONLY ROM TO TEST MANUALLY: $semanticOnlyRom"
   Write-Host "WRAM comparison: $comparison"
   Write-Host "Base diagnostic log: $baseLog"
   Write-Host "Generated diagnostic log: $generatedLog"
