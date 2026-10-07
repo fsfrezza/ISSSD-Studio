@@ -14,10 +14,11 @@ test('opening a project returns data only and cannot mutate the base ROM',()=>{
 
   assert.deepEqual(base,before);
   assert.equal(opened.semantic.teamsV1.names.teams['30'].players[0].attrHex,undefined);
-  assert.equal(opened.semantic.playerEdits[0].team,30);
-  assert.equal(opened.semantic.playerEdits[0].player,7);
-  assert.equal(opened.semantic.playerEdits[0].skills.shot,3);
-  assert.equal(opened.semantic.playerEdits[0].appearanceRaw,0xAB);
+  assert.deepEqual(opened.semantic.playerEdits,[]);
+  assert.equal(opened.semantic.legacyPlayerAttributeQuarantine.length,1);
+  assert.equal(opened.semantic.legacyPlayerAttributeQuarantine[0].team,30);
+  assert.equal(opened.semantic.legacyPlayerAttributeQuarantine[0].player,7);
+  assert.equal(opened.semantic.legacyPlayerAttributeQuarantine[0].attrHex,'012345673909AB');
   assert.equal(opened.semantic.teamsV1.tactics,undefined);
   assert.equal(opened.semantic.plusTactics.teams['30'].players[0].rosterSlot,8);
   assert.equal('rawHex' in opened.semantic.plusTactics.teams['30'],false);
