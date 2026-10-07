@@ -22,7 +22,7 @@ test('legacy names-only roster becomes semantic player name edits',()=>{
   assert.deepEqual(legacy.teams[0].players[0],{slot:1,name:'Buffon',nameHex:'69968787908F0000'});
 });
 
-test('project semantic migration removes handled raw name roster and merges names with attributes',()=>{
+test('project semantic migration keeps name edit but quarantines colocated attrHex',()=>{
   const project={state:{semantic:{
     teamsV1:{schema:'isssd-teams-v1',version:2,names:{
       schema:'isssd-name-roster-v1',version:1,mode:'names-only',teams:{
@@ -38,8 +38,10 @@ test('project semantic migration removes handled raw name roster and merges name
   assert.equal(semantic.playerEdits[0].player,8);
   assert.equal(semantic.playerEdits[0].name,'Pele');
   assert.equal(semantic.playerEdits[0].alignment,'left');
-  assert.equal(semantic.playerEdits[0].jersey,10);
-  assert.ok(semantic.playerEdits[0].skills);
+  assert.equal(semantic.playerEdits[0].jersey,undefined);
+  assert.equal(semantic.playerEdits[0].skills,undefined);
+  assert.equal(semantic.legacyPlayerAttributeQuarantine.length,1);
+  assert.equal(semantic.legacyPlayerAttributeQuarantine[0].attrHex,'99597858670900');
 });
 
 test('unsupported legacy name bytes are quarantined rather than silently replaced',()=>{
