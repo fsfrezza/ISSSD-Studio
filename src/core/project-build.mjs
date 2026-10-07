@@ -1,7 +1,6 @@
 import {applyCanonicalPatches} from './canonical-patches.mjs';
 import {buildPlusRom} from './build-plus.mjs';
 import {plusGroupsWriter} from './plus-groups.mjs';
-import {plusMainMenuWriter} from './plus-main-menu-renderer.mjs';
 import {plusPlayerWriter} from './plus-player-writer.mjs';
 import {plusRomMetaWriter} from './plus-rom-meta.mjs';
 import {plusStrategyTextWriter} from './plus-strategy-text.mjs';
@@ -14,15 +13,6 @@ import {diffRanges} from './rom-integrity.mjs';
 function hasTacticalEdits(semanticState){
   const teams=semanticState?.plusTactics?.teams;
   return !!teams && typeof teams==='object' && !Array.isArray(teams) && Object.keys(teams).length>0;
-}
-
-function committedPlusMainMenuWriter(rom,state){
-  // Logical text drafts and menuScreenV1 were historically project/preview
-  // state only. mainMenuGraphicTextsV600 was created only after verify() had
-  // proven all five native blocks fit. Preserve that distinction in the new
-  // core: only explicitly committed native graphics may materialize in ROM.
-  if(state?.plusMainMenu?.nativeCommitted!==true)return rom;
-  return plusMainMenuWriter(rom,state);
 }
 
 export function buildPlusProjectRom(baseRom,project,options={}){
@@ -54,11 +44,13 @@ export function buildPlusProjectRom(baseRom,project,options={}){
     prepareInfrastructure,
     // Generated infrastructure is complete before semantic writers run.
     // Player attributes use verified surgical writes; tactics write only to
-    // resolved exclusive records and refuse shared presets. Group organization
-    // writes only the verified native group tables, terminator and counter; the
-    // historical experimental navigation/render ASM is deliberately excluded.
-    // Strategy phrases and committed main-menu graphics remain native writers.
-    writers:[plusPlayerWriter,plusTacticsWriter,plusGroupsWriter,plusStrategyTextWriter,committedPlusMainMenuWriter,plusRomMetaWriter,...userWriters],
+    // resolved exclusive records and refuse shared presets. Verified strategy
+    // phrases use native 2x10 records. Group organization writes only the
+    // native data tables. Main-menu semantic state is intentionally NOT
+    // materialized here yet: its renderer rewrites large compressed graphics
+    // blocks and must pass runtime navigation validation before promotion.
+    // ROM metadata precedes the derived SNES checksum.
+    writers:[plusPlayerWriter,plusTacticsWriter,plusStrategyTextWriter,plusGroupsWriter,plusRomMetaWriter,...userWriters],
   });
 
   return {
