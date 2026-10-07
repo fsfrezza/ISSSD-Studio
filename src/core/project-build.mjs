@@ -16,14 +16,15 @@ function hasTacticalEdits(semanticState){
 
 export function buildPlusProjectRom(baseRom,project,options={}){
   const canonical=canonicalProjectState(project,{baseSize:baseRom?.length});
-  const patchedBase=applyCanonicalPatches(baseRom,canonical.patches);
+  const ignorePersistedPatches=options.ignorePersistedPatches===true;
+  const patchedBase=ignorePersistedPatches ? baseRom : applyCanonicalPatches(baseRom,canonical.patches);
   const semanticState=canonicalProjectSemantic(project);
   const userWriters=options.writers??[];
   if(!Array.isArray(userWriters))throw new TypeError('writers must be functions');
   const userPrepare=options.prepareInfrastructure??null;
   if(userPrepare!==null&&typeof userPrepare!=='function')throw new TypeError('prepareInfrastructure must be a function');
   const tacticalEdits=hasTacticalEdits(semanticState);
-  const {writers:_writers,prepareInfrastructure:_prepareInfrastructure,...buildOptions}=options;
+  const {writers:_writers,prepareInfrastructure:_prepareInfrastructure,ignorePersistedPatches:_ignorePersistedPatches,...buildOptions}=options;
 
   const prepareInfrastructure=(userPrepare||tacticalEdits)
     ?(work,state)=>{
@@ -44,11 +45,9 @@ export function buildPlusProjectRom(baseRom,project,options={}){
     // Generated infrastructure is complete before semantic writers run.
     // Player attributes use verified surgical writes; tactics write only to
     // resolved exclusive records and refuse shared presets. Verified strategy
-    // phrases use native 2x10 records. Main-menu graphics and group organization
-    // are intentionally NOT materialized by the default build while runtime
-    // navigation regressions are being isolated. Both semantic states remain
-    // preserved and their writers may still be invoked explicitly in focused
-    // tests. ROM metadata precedes the derived SNES checksum.
+    // phrases use native 2x10 records. Main-menu and group semantic state are
+    // intentionally NOT materialized by default until runtime navigation is
+    // proven. ROM metadata precedes the derived SNES checksum.
     writers:[plusPlayerWriter,plusTacticsWriter,plusStrategyTextWriter,plusRomMetaWriter,...userWriters],
   });
 
@@ -56,5 +55,6 @@ export function buildPlusProjectRom(baseRom,project,options={}){
     ...result,
     diff:diffRanges(baseRom,result.rom),
     projectState:canonical,
+    ignoredPersistedPatches:ignorePersistedPatches,
   };
 }
