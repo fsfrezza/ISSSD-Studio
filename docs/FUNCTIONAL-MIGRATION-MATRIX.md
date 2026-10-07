@@ -20,7 +20,7 @@ Um patch histórico que ainda é apenas reproduzido byte a byte **não conta com
 | Checksum SNES | MIGRADO | `rom-integrity.mjs` | testes unitários + build real |
 | Abrir projeto sem mutar ROM | MIGRADO | `project-open.mjs`, `project-state.mjs` | regressão v6.93 coberta |
 | Schema moderno + serialização canônica `.issdproj` | MIGRADO | `project-serialize.mjs`, `StudioSession.saveProject()` | schema/version explícitos; patches JSON-safe; round-trip canônico testado |
-| Migração semântica de projeto legado | PARCIAL | `project-semantic.mjs`, compatibilidade `rle-base64-v1` | atributos, nomes, táticas e Estratégias cobertos; demais áreas ainda podem permanecer como patches |
+| Migração semântica de projeto legado | PARCIAL | `project-semantic.mjs`, compatibilidade `rle-base64-v1` | atributos, nomes, táticas, Estratégias e Menu Principal cobertos; demais áreas ainda podem permanecer como patches |
 | Patches legados ordenados | MIGRADO como compatibilidade | `canonical-patches.mjs` | RLE, overlap redundante e last-write-wins legado testados |
 | Geração de infraestrutura apenas no build | MIGRADO para táticas | `plus-tactics-infrastructure.mjs` | expansão não deve persistir no `.issdproj` |
 | Host/browser/desktop abstraction | PARCIAL | `browser-host.mjs`, `host-bridge.mjs`, `studio-session.mjs` | contrato de salvar projeto fechado; host desktop/Tauri ainda não concluído |
@@ -67,13 +67,13 @@ Um patch histórico que ainda é apenas reproduzido byte a byte **não conta com
 
 | Funcionalidade histórica | Status | Próxima ação |
 | --- | --- | --- |
-| Textos customizados | PARCIAL | Estratégias já têm codec/writer semântico; demais telas ainda precisam ser extraídas individualmente |
-| Fonte nativa/original para controles | LEGADO | extrair fonte/tiles e contrato de escrita por tela; não confundir fonte gráfica com strings nativas |
-| Texto por tela, não por palavra | MIGRADO para Estratégias / PARCIAL geral | `plus-strategy-text.mjs` modela cada uma das 8 estratégias como uma frase completa |
-| Quebra de linha por espaços | MIGRADO para Estratégias / PARCIAL geral | duas linhas de 10 posições; quebra exclusivamente entre palavras e centralização por linha |
+| Textos customizados | PARCIAL | Estratégias e Menu Principal já têm estado semântico; demais telas ainda precisam ser extraídas individualmente |
+| Fonte nativa/original para controles | PARCIAL | Menu Principal já possui rasterizador/codec Konami modular; demais fontes/tiles ainda precisam de contrato por tela |
+| Texto por tela, não por palavra | MIGRADO para Estratégias e Menu Principal / PARCIAL geral | strings lógicas são modeladas por opção/tela, sem reapresentar fragmentos históricos como domínio principal |
+| Quebra de linha por espaços | MIGRADO para Estratégias e Menu Principal / PARCIAL geral | Estratégias usam 2×10; Menu Principal usa slot nativo de 112 px e no máximo duas linhas |
 | Estratégias como campo inteiro | MIGRADO | 8 registros nativos de 20 bytes; reader/codec/writer + migração das chaves `strategy.screen.v614.*` |
-| Preset de textos em português | MIGRADO no domínio / UI pendente | descritores guardam os 8 textos PT-BR validados; interface nova ainda não reconstruída |
-| Menu principal customizado | LEGADO | separar strings/composição semântica dos assets gráficos e extrair o writer realmente confirmado |
+| Preset de textos em português | MIGRADO no domínio / UI pendente | descritores de Estratégias guardam PT-BR validado; interface nova ainda não reconstruída |
+| Menu principal customizado | MIGRADO no core / UI pendente | `plus-main-menu-state.mjs`, `plus-main-menu-renderer.mjs`, `konami-lz.mjs`; 5 regiões nativas, limites preservados e writer somente para `nativeCommitted=true` |
 | Título interno da ROM | MIGRADO | `plus-rom-meta.mjs`; 21 bytes ASCII em `0x7FC0`, aplicado semanticamente antes do checksum |
 | `romMeta` / metadados | PARCIAL | título interno possui writer semântico; demais campos do cabeçalho continuam apenas como metadados/integridade |
 
@@ -118,10 +118,11 @@ Um patch histórico que ainda é apenas reproduzido byte a byte **não conta com
 | Migração `attrHex` → `playerEdits` | MIGRADO | semantic migration |
 | Migração `isssd-name-roster-v1` → `playerEdits` | MIGRADO | `nameHex` é decodificado semanticamente; bytes inválidos vão para quarentena |
 | Migração das Estratégias de `textWorkspaceV2` | MIGRADO | extrai só `strategy.screen.v614.*` para `plusStrategyTexts`; intenções não relacionadas permanecem intactas |
+| Migração do Menu Principal legado | MIGRADO | unifica `mainMenuDraft`, `textWorkspaceV2.mainMenu`, `menuScreenV1` e `mainMenuGraphicTextsV600`; preserva distinção entre rascunho lógico e gráfico nativo implementado |
 | Descarte de `tactics.rawHex` legado | MIGRADO | semantic migration |
 | Schema moderno/versionado de saída | MIGRADO | `isssd-studio-project-v1`, versão 1, perfil `plus` |
 | Round-trip abrir → canonicalizar → salvar → reabrir | MIGRADO | `project-serialize.test.mjs` |
-| Persistência de estado semântico | PARCIAL | jogadores, táticas, Estratégias e título interno têm modelo; demais domínios ainda não |
+| Persistência de estado semântico | PARCIAL | jogadores, táticas, Estratégias, Menu Principal e título interno têm modelo; demais domínios ainda não |
 | Salvar projeto pelo `StudioSession` | MIGRADO | não reapresenta contêiner legado; salva documento canônico moderno |
 | Host desktop/Tauri para salvar arquivo | LEGADO/PARCIAL | contrato existe, implementação desktop final ainda não |
 | Reabrir projeto e reaplicar sobre ROM-base limpa | MIGRADO arquiteturalmente | núcleo novo separa open de build |
@@ -134,7 +135,7 @@ A sequência abaixo minimiza risco e evita voltar a persistir bytes físicos com
 2. **Nomes de jogadores — CONCLUÍDO**: codec, ponteiros Plus, writer, migração de projeto legado e testes específicos.
 3. **Escalação/camisas — PARCIALMENTE CONCLUÍDO**: swap de camisa e troca tática segura entre titulares já são contratos testados; reordenação física permanece bloqueada até prova do mapeamento.
 4. **Título interno + `romMeta` — CONCLUÍDO PARA O TÍTULO**: writer semântico do título validado; não ampliar para bytes de integridade derivados.
-5. **Textos e menu principal — EM ANDAMENTO**: Estratégias concluídas como primeiro subdomínio nativo; próximo passo é separar texto lógico, composição e assets gráficos do Menu Principal.
+5. **Textos e menu principal — EM ANDAMENTO**: Estratégias e Menu Principal concluídos no core; seguir tela por tela, extraindo contratos confirmados antes de reconstruir a UI.
 6. **Organização de equipes/grupos/seleção**: formalizar tabelas e IDs antes da interface.
 7. **Assets gráficos, paletas e tela inicial**.
 8. **All Stars/expansões especiais** apenas depois que as tabelas regulares estiverem semânticas e testadas.
