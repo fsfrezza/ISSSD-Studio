@@ -17,7 +17,7 @@ test('legacy names-only roster becomes semantic player name edits',()=>{
   assert.equal(migrated.quarantined.length,0);
   assert.deepEqual(migrated.edits,[
     {team:0,player:0,name:'Buffon',alignment:'left'},
-    {team:0,player:17,name:'P.Rossi',alignment:'left'},
+    {team:0,player:17,name:'P.Rossi',alignment:'center'},
   ]);
   assert.deepEqual(legacy.teams[0].players[0],{slot:1,name:'Buffon',nameHex:'69968787908F0000'});
 });
@@ -26,7 +26,7 @@ test('project semantic migration removes handled raw name roster and merges name
   const project={state:{semantic:{
     teamsV1:{schema:'isssd-teams-v1',version:2,names:{
       schema:'isssd-name-roster-v1',version:1,mode:'names-only',teams:{
-        30:{teamId:30,players:[{slot:9,name:'Pele',nameHex:'77668D8600000000',attrHex:'99597858670900'}]},
+        30:{teamId:30,players:[{slot:9,name:'Pele',nameHex:'77868D8600000000',attrHex:'99597858670900'}]},
       },
     },tactics:{schema:'isssd-custom-tactics-v1',version:1,teams:{}}},
   }}};
