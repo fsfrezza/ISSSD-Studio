@@ -1,5 +1,6 @@
 import {migrateLegacyPlayerAttributes} from './plus-player-state.mjs';
 import {migrateLegacyPlayerNames} from './plus-player-name-state.mjs';
+import {migrateLegacyPlusMainMenu} from './plus-main-menu-state.mjs';
 import {migrateLegacyPlusStrategyTexts} from './plus-strategy-text.mjs';
 import {canonicalizePlusTacticsState} from './plus-tactics-state.mjs';
 
@@ -75,5 +76,10 @@ export function canonicalProjectSemantic(project){
     }
   }
 
-  return out;
+  // The historical main menu had three overlapping persistence surfaces:
+  // mainMenuDraft/textWorkspaceV2 for logical strings, menuScreenV1 for the
+  // preview composition, and mainMenuGraphicTextsV600 for the exact native
+  // text renderer settings. Collapse those mirrors into one semantic state.
+  // The native compressed graphics are deliberately not generated here yet.
+  return migrateLegacyPlusMainMenu(out);
 }
