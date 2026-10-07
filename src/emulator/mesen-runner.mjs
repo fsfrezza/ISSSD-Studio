@@ -6,10 +6,11 @@ const SEMANTIC_FAIL_RE=/ISSSD_SEMANTIC_FAIL\s+checkpoint=([^\s]+)\s+frame=(\d+)/
 const SEMANTIC_STATE_RE=/ISSSD_SEMANTIC_STATE\s+([^\s]+)\s+frame=(\d+)\s+value=(\d+)/g;
 const PROBE_CAND_RE=/ISSSD_PROBE_CAND\s+addr=(0x[0-9A-Fa-f]+)\s+value=(\d+)\s+mask=(0x[0-9A-Fa-f]+)\s+changes=(\d+)/g;
 
-export function buildMesenSmokeArgs({luaPath,romPath}={}){
+export function buildMesenSmokeArgs({luaPath,romPath,testRunnerTimeoutSec=180}={}){
   if(!luaPath)throw new TypeError('luaPath required');
   if(!romPath)throw new TypeError('romPath required');
-  return ['--enableStdout','--testRunner',String(luaPath),String(romPath)];
+  if(!Number.isFinite(testRunnerTimeoutSec)||testRunnerTimeoutSec<=0)throw new TypeError('testRunnerTimeoutSec must be positive');
+  return ['--enableStdout',`--timeout=${Math.ceil(testRunnerTimeoutSec)}`,'--testRunner',String(luaPath),String(romPath)];
 }
 
 export function parseMesenProbeCandidates(stdout=''){
