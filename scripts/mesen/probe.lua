@@ -1,3 +1,5 @@
+print("ISSSD_PROBE_LOADED")
+
 local frame=0
 local WRAM_SIZE=0x20000
 local first=nil
@@ -41,11 +43,6 @@ local function inputForFrame(f)
   return state
 end
 
--- Reading every byte of SNES WRAM through emu.read() causes Mesen to emit an
--- "Uninitialized memory read" warning for every untouched byte.  Besides being
--- noisy, that makes a full 128 KiB scan take minutes in testRunner mode.
--- Mesen's native access counters let us identify WRAM that the game has already
--- written and restrict value reads to those initialized addresses.
 local function initializedAddresses()
   local counters=emu.getAccessCounters(emu.counterType.writeCount,emu.memType.snesWorkRam)
   local addresses={}
@@ -71,7 +68,7 @@ end
 local function beginPair()
   local activeCount
   first,activeCount=snapshot()
-  emu.log("ISSSD_PROBE_SNAPSHOT frame="..frame.." active="..activeCount)
+  print("ISSSD_PROBE_SNAPSHOT frame="..frame.." active="..activeCount)
 end
 
 local function endPair()
@@ -97,7 +94,7 @@ local function endPair()
     end
   end
   first=nil
-  emu.log("ISSSD_PROBE_STAGE index="..stageIndex.." frame="..frame.." compared="..compared)
+  print("ISSSD_PROBE_STAGE index="..stageIndex.." frame="..frame.." compared="..compared)
 end
 
 local function bitCount(n)
@@ -123,10 +120,10 @@ local function finish()
   local limit=math.min(#rows,128)
   for i=1,limit do
     local r=rows[i]
-    emu.log(string.format("ISSSD_PROBE_CAND addr=0x%05X value=%d mask=0x%02X changes=%d",r.addr,r.value,r.mask,r.changes))
+    print(string.format("ISSSD_PROBE_CAND addr=0x%05X value=%d mask=0x%02X changes=%d",r.addr,r.value,r.mask,r.changes))
   end
-  emu.log("ISSSD_PROBE_PASS frames="..frame.." candidates="..#rows)
-  emu.exit(0)
+  print("ISSSD_PROBE_PASS frames="..frame.." candidates="..#rows)
+  emu.stop(0)
 end
 
 emu.addEventCallback(function()
@@ -136,7 +133,7 @@ end,emu.eventType.inputPolled)
 emu.addEventCallback(function()
   frame=frame+1
   if heartbeatFrames[frame] then
-    emu.log("ISSSD_PROBE_HEARTBEAT frame="..frame)
+    print("ISSSD_PROBE_HEARTBEAT frame="..frame)
   end
   for _,p in ipairs(checkpoints) do
     if frame==p[1] then beginPair() end
