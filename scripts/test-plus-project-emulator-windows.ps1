@@ -21,23 +21,19 @@ function Resolve-RelativeInput([string]$Value,[string]$DefaultDir) {
 }
 
 function Find-CanonicalPlusRom([string]$Directory,[string]$PreferredName) {
-  if (-not (Test-Path $Directory -PathType Container)) {
-    throw "Default ROM directory not found: $Directory. Use -RomDir, -BaseRom, or ISSSD_ROM_DIR to change it."
-  }
+  if (-not (Test-Path $Directory -PathType Container)) { throw "Default ROM directory not found: $Directory" }
   if (-not [string]::IsNullOrWhiteSpace($PreferredName)) {
     $preferred = Join-Path $Directory $PreferredName
     if (Test-Path $preferred -PathType Leaf) {
       $preferredHash = (Get-FileHash -Algorithm SHA256 -Path $preferred).Hash.ToLowerInvariant()
       if ($preferredHash -eq $canonicalPlusSha256) { return [IO.Path]::GetFullPath($preferred) }
-      Write-Host "Preferred ROM name exists but SHA-256 does not match canonical Plus; falling back to hash scan: $preferred"
     }
   }
-  $candidates = Get-ChildItem -Path $Directory -File | Where-Object { $_.Extension.ToLowerInvariant() -in @('.sfc','.smc') } | Sort-Object Name
-  foreach ($candidate in $candidates) {
+  foreach ($candidate in (Get-ChildItem -Path $Directory -File | Where-Object { $_.Extension.ToLowerInvariant() -in @('.sfc','.smc') } | Sort-Object Name)) {
     $hash = (Get-FileHash -Algorithm SHA256 -Path $candidate.FullName).Hash.ToLowerInvariant()
     if ($hash -eq $canonicalPlusSha256) { return $candidate.FullName }
   }
-  throw "Canonical Plus ROM was not found in $Directory. Preferred name: $PreferredName. Expected SHA-256: $canonicalPlusSha256."
+  throw "Canonical Plus ROM was not found in $Directory"
 }
 
 function Select-ProjectFile([string]$InitialDirectory,[string]$PreferredName) {
@@ -60,43 +56,35 @@ function Select-ProjectFile([string]$InitialDirectory,[string]$PreferredName) {
 if ($Limit -lt 1 -or $Limit -gt 500) { throw 'Limit must be between 1 and 500' }
 $RomDir = [IO.Path]::GetFullPath($RomDir)
 $ProjectDir = [IO.Path]::GetFullPath($ProjectDir)
-
-if ([string]::IsNullOrWhiteSpace($BaseRom)) {
-  Write-Host "Locating canonical Plus ROM in: $RomDir"
-  $BaseRom = Find-CanonicalPlusRom $RomDir $RomName
-} else { $BaseRom = Resolve-RelativeInput $BaseRom $RomDir }
-
-if ([string]::IsNullOrWhiteSpace($Project)) {
-  Write-Host "Resolving project in: $ProjectDir"
-  $Project = Select-ProjectFile $ProjectDir $ProjectName
-} else { $Project = Resolve-RelativeInput $Project $ProjectDir }
-
+if ([string]::IsNullOrWhiteSpace($BaseRom)) { $BaseRom = Find-CanonicalPlusRom $RomDir $RomName } else { $BaseRom = Resolve-RelativeInput $BaseRom $RomDir }
+if ([string]::IsNullOrWhiteSpace($Project)) { $Project = Select-ProjectFile $ProjectDir $ProjectName } else { $Project = Resolve-RelativeInput $Project $ProjectDir }
 foreach ($path in @($BaseRom,$Project)) { if (-not (Test-Path $path -PathType Leaf)) { throw "Input not found: $path" } }
 if ([IO.Path]::GetExtension($Project).ToLowerInvariant() -ne '.issdproj') { throw 'Project must use the .issdproj extension' }
 
 Write-Host "ROM base: $BaseRom"
 Write-Host "Project: $Project"
-
 $runId = Get-Date -Format 'yyyyMMdd-HHmmss-fff'
 $runDir = Join-Path $repoRoot ".tools\mesen-runs\$runId"
 New-Item -ItemType Directory -Force -Path $runDir | Out-Null
-$projectStem = [IO.Path]::GetFileNameWithoutExtension($Project)
-$generatedRom = Join-Path $runDir "$projectStem-semantic-only.sfc"
-$baseReport = Join-Path $runDir 'probe-base.json'
-$generatedReport = Join-Path $runDir 'probe-generated.json'
-$comparison = Join-Path $runDir 'probe-comparison.json'
-$baseLog = Join-Path $runDir 'probe-base.log'
-$generatedLog = Join-Path $runDir 'probe-generated.log'
 
 Push-Location $repoRoot
 try {
-  Write-Host '1/2 Building the single semantic-only ROM under test (persisted patches ignored)...'
-  & node 'scripts/build-semantic-only-plus-project.mjs' $BaseRom $Project '--out-dir' $runDir
-  if ($LASTEXITCODE -ne 0) { throw "Semantic-only project build failed with exit code $LASTEXITCODE" }
-  if (-not (Test-Path $generatedRom)) { throw "Expected semantic-only ROM was not created: $generatedRom" }
+  Write-Host '1/2 Building ONE persisted-patch bisect ROM (first half of canonical ranges)...'
+  $buildOutput = & node 'scripts/build-persisted-patch-bisect-plus.mjs' $BaseRom $Project '--out-dir' $runDir
+  if ($LASTEXITCODE -ne 0) { throw "Persisted-patch bisect build failed with exit code $LASTEXITCODE" }
+  $buildOutput | Write-Host
+  $summary = ($buildOutput -join "`n") | ConvertFrom-Json
+  $generatedRom = [string]$summary.outputPath
+  if ([string]::IsNullOrWhiteSpace($generatedRom) -or -not (Test-Path $generatedRom)) { throw "Expected bisect ROM was not created: $generatedRom" }
+
+  $baseReport = Join-Path $runDir 'probe-base.json'
+  $generatedReport = Join-Path $runDir 'probe-generated.json'
+  $comparison = Join-Path $runDir 'probe-comparison.json'
+  $baseLog = Join-Path $runDir 'probe-base.log'
+  $generatedLog = Join-Path $runDir 'probe-generated.log'
 
   Write-Host ''
-  Write-Host '2/2 Running emulator liveness diagnostics on that ROM...'
+  Write-Host '2/2 Running emulator liveness diagnostics on that single ROM...'
   & powershell -ExecutionPolicy Bypass -File 'scripts/discover-mesen-cross-rom-windows.ps1' `
     $BaseRom $generatedRom `
     -BaseReport $baseReport `
@@ -108,8 +96,8 @@ try {
   if ($LASTEXITCODE -ne 0) { throw "Cross-ROM emulator test failed with exit code $LASTEXITCODE" }
 
   Write-Host ''
-  Write-Host 'Semantic-only emulator regression flow completed.'
-  Write-Host "Run directory: $runDir"
+  Write-Host 'Persisted-patch bisect flow completed.'
+  Write-Host "Selected canonical patch indexes: $($summary.selectedRangeIndexes.startInclusive)..$($summary.selectedRangeIndexes.endExclusive - 1) of $($summary.totalCanonicalPersistedRanges) ranges"
+  Write-Host "Selected persisted bytes: $($summary.selectedBytes)"
   Write-Host "ROM TO TEST MANUALLY: $generatedRom"
-  Write-Host "WRAM comparison: $comparison"
 } finally { Pop-Location }
