@@ -1,5 +1,6 @@
 import {migrateLegacyPlayerAttributes} from './plus-player-state.mjs';
 import {migrateLegacyPlayerNames} from './plus-player-name-state.mjs';
+import {migrateLegacyPlusStrategyTexts} from './plus-strategy-text.mjs';
 import {canonicalizePlusTacticsState} from './plus-tactics-state.mjs';
 
 function mergePlayerEdit(base,override){
@@ -60,5 +61,19 @@ export function canonicalProjectSemantic(project){
     out.plusTactics=canonicalizePlusTacticsState(legacyTactics);
     if(out.teamsV1&&typeof out.teamsV1==='object')delete out.teamsV1.tactics;
   }
+
+  // v6.14 stored the eight Strategy-screen phrases as generic graphical text
+  // intentions. They are now a verified native text domain: 8 records of
+  // 2 lines x 10 cells. Extract only those keys and leave every unrelated
+  // textWorkspaceV2 entry untouched for later migrations.
+  const strategyMigration=migrateLegacyPlusStrategyTexts(out.textWorkspaceV2,out.plusStrategyTexts);
+  if(strategyMigration.handled.length||out.plusStrategyTexts!=null){
+    out.plusStrategyTexts=strategyMigration.state;
+    const values=out?.textWorkspaceV2?.sections?.graphicIntents?.values;
+    if(values&&typeof values==='object'&&!Array.isArray(values)){
+      for(const key of strategyMigration.handled)delete values[key];
+    }
+  }
+
   return out;
 }
