@@ -1,4 +1,5 @@
 import {migrateLegacyPlayerAttributes} from './plus-player-state.mjs';
+import {migrateLegacyPlayerNames} from './plus-player-name-state.mjs';
 import {canonicalizePlusTacticsState} from './plus-tactics-state.mjs';
 
 function mergePlayerEdit(base,override){
@@ -31,14 +32,26 @@ export function canonicalProjectSemantic(project){
   const out=structuredClone(semantic);
 
   if(out.teamsV1&&typeof out.teamsV1==='object'&&!Array.isArray(out.teamsV1)){
-    const migrated=migrateLegacyPlayerAttributes(out.teamsV1);
-    out.teamsV1=migrated.teamsV1;
-    if(migrated.edits.length||migrated.quarantined.length){
-      out.playerEdits=mergePlayerEdits(migrated.edits,out.playerEdits);
+    // Attributes must migrate before names because old v6.92/v6.93 name-roster
+    // records can also carry attrHex beside nameHex.
+    const attributes=migrateLegacyPlayerAttributes(out.teamsV1);
+    out.teamsV1=attributes.teamsV1;
+    if(attributes.edits.length||attributes.quarantined.length){
+      out.playerEdits=mergePlayerEdits(attributes.edits,out.playerEdits);
     }
-    if(migrated.quarantined.length){
+    if(attributes.quarantined.length){
       const existing=Array.isArray(out.legacyPlayerAttributeQuarantine)?out.legacyPlayerAttributeQuarantine:[];
-      out.legacyPlayerAttributeQuarantine=[...existing,...migrated.quarantined];
+      out.legacyPlayerAttributeQuarantine=[...existing,...attributes.quarantined];
+    }
+
+    const names=migrateLegacyPlayerNames(out.teamsV1.names);
+    if(names.handled){
+      out.playerEdits=mergePlayerEdits(names.edits,out.playerEdits);
+      delete out.teamsV1.names;
+    }
+    if(names.quarantined.length){
+      const existing=Array.isArray(out.legacyPlayerNameQuarantine)?out.legacyPlayerNameQuarantine:[];
+      out.legacyPlayerNameQuarantine=[...existing,...names.quarantined];
     }
   }
 
