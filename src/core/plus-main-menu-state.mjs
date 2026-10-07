@@ -56,6 +56,12 @@ function normalizeTextRecord(record={}){
   return out;
 }
 
+function hasKnownTextValue(record){
+  if(!record||typeof record!=='object'||Array.isArray(record))return false;
+  return [...PLUS_MAIN_MENU_IDS,...Object.keys(LEGACY_TEXT_ALIASES)]
+    .some(key=>Object.prototype.hasOwnProperty.call(record,key));
+}
+
 function normalizeCompositionItem(item,id){
   if(!item||typeof item!=='object'||Array.isArray(item))throw new TypeError('Plus main menu composition item must be an object');
   if(item.id!==id)throw new TypeError('Unexpected Plus main menu composition item: '+String(item.id));
@@ -148,12 +154,14 @@ export function migrateLegacyPlusMainMenu(semantic){
   const workspaceTexts=out?.textWorkspaceV2?.sections?.mainMenu?.values;
   const legacyTexts=out?.mainMenuDraft;
   const composition=out?.menuScreenV1;
+  const hasWorkspaceTexts=hasKnownTextValue(workspaceTexts);
+  const hasLegacyTexts=hasKnownTextValue(legacyTexts);
 
   if(out.plusMainMenu!==undefined&&out.plusMainMenu!==null){
     out.plusMainMenu=canonicalizePlusMainMenuState(out.plusMainMenu);
-  }else if(graphic||workspaceTexts||legacyTexts||composition){
+  }else if(graphic||hasWorkspaceTexts||hasLegacyTexts||composition){
     out.plusMainMenu=canonicalizePlusMainMenuState({
-      texts:graphic?.texts??workspaceTexts??legacyTexts??{},
+      texts:graphic?.texts??(hasWorkspaceTexts?workspaceTexts:null)??(hasLegacyTexts?legacyTexts:null)??{},
       style:graphic?.style??PLUS_MAIN_MENU_DEFAULT_STYLE,
       composition:composition??null,
     });
@@ -162,9 +170,9 @@ export function migrateLegacyPlusMainMenu(semantic){
   if(out.plusMainMenu){
     if(graphic&&graphicValues&&typeof graphicValues==='object')delete graphicValues[PLUS_MAIN_MENU_GRAPHIC_LEGACY_KEY];
     if(graphic&&out.graphicalTextIntentions&&typeof out.graphicalTextIntentions==='object')delete out.graphicalTextIntentions[PLUS_MAIN_MENU_GRAPHIC_LEGACY_KEY];
-    if(workspaceTexts&&typeof workspaceTexts==='object')removeKnownTextKeys(workspaceTexts);
-    delete out.mainMenuDraft;
-    delete out.menuScreenV1;
+    if(hasWorkspaceTexts)removeKnownTextKeys(workspaceTexts);
+    if(hasLegacyTexts)delete out.mainMenuDraft;
+    if(composition)delete out.menuScreenV1;
   }
 
   return out;
