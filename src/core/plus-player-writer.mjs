@@ -1,7 +1,7 @@
 import {
   playerOffset,decodePlayerRecord,writeSkill,writeNaturalPosition,writeJersey,surgicalWritesForRecord
 } from './plus-player.mjs';
-import {readPlusPlayerName,writePlusPlayerName} from './plus-player-name.mjs';
+import {writePlusPlayerName} from './plus-player-name.mjs';
 
 const SKILLS=['acceleration','speed','shot','curve','balance','intelligence','dribbling','jump','energy'];
 
@@ -50,5 +50,5 @@ export function plusPlayerWriter(rom,state={}){
 
 export function readPlusPlayer(rom,team,player){
   const off=playerOffset(team,player);
-  return {...decodePlayerRecord(rom.slice(off,off+7)),name:readPlusPlayerName(rom,team,player)};
+  return decodePlayerRecord(rom.slice(off,off+7));
 }
