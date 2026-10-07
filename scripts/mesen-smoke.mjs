@@ -6,7 +6,7 @@ import {buildMesenSmokeArgs,interpretMesenSmokeResult} from '../src/emulator/mes
 
 const argv=process.argv.slice(2);
 let mesenBin=process.env.MESEN_BIN||'';
-let timeoutMs=30000;
+let timeoutMs=null;
 let mode='smoke';
 let reportPath='';
 const positional=[];
@@ -20,7 +20,7 @@ for(let i=0;i<argv.length;i++){
 }
 
 if(positional.length!==1){
-  console.error('Usage: npm run test:emulator -- <rom.sfc> [--mode smoke|nav|probe] [--mesen <Mesen.exe>] [--timeout-ms 30000] [--report report.json]');
+  console.error('Usage: npm run test:emulator -- <rom.sfc> [--mode smoke|nav|probe] [--mesen <Mesen.exe>] [--timeout-ms <ms>] [--report report.json]');
   process.exit(2);
 }
 if(!['smoke','nav','probe'].includes(mode)){
@@ -31,6 +31,7 @@ if(reportPath&&mode!=='probe'){
   console.error('--report is only valid with --mode probe.');
   process.exit(2);
 }
+if(timeoutMs===null) timeoutMs=mode==='probe'?120000:30000;
 if(!Number.isFinite(timeoutMs)||timeoutMs<=0){
   console.error('Invalid --timeout-ms value');
   process.exit(2);
@@ -58,7 +59,11 @@ const exePath=resolve(mesenBin);
 if(!existsSync(romPath)){console.error('ROM not found: '+romPath);process.exit(2);}
 if(!existsSync(exePath)){console.error('Mesen not found: '+exePath);process.exit(2);}
 
-const args=buildMesenSmokeArgs({luaPath,romPath});
+const args=buildMesenSmokeArgs({
+  luaPath,
+  romPath,
+  testRunnerTimeoutSec:Math.max(180,Math.ceil(timeoutMs/1000)+30),
+});
 console.log('Mesen emulator test');
 console.log('Mode:',mode);
 console.log('Mesen:',exePath);
@@ -68,10 +73,29 @@ console.log('Target frames:',mode==='smoke'?600:1200);
 console.log('Timeout:',timeoutMs+'ms');
 
 let stdout='';
+let stdoutBuffer='';
 let stderr='';
 let timedOut=false;
+let suppressedUninitializedReads=0;
 const child=spawn(exePath,args,{stdio:['ignore','pipe','pipe'],windowsHide:true});
-child.stdout.on('data',chunk=>{const s=chunk.toString();stdout+=s;process.stdout.write(s);});
+
+function consumeStdoutText(text,{flush=false}={}){
+  stdoutBuffer+=text;
+  const parts=stdoutBuffer.split(/\r?\n/);
+  if(!flush) stdoutBuffer=parts.pop()??'';
+  else stdoutBuffer='';
+  for(const line of parts){
+    if(!line&&flush) continue;
+    if(line.includes('[CPU] Uninitialized memory read:')){
+      suppressedUninitializedReads++;
+      continue;
+    }
+    stdout+=line+'\n';
+    process.stdout.write(line+'\n');
+  }
+}
+
+child.stdout.on('data',chunk=>consumeStdoutText(chunk.toString()));
 child.stderr.on('data',chunk=>{const s=chunk.toString();stderr+=s;process.stderr.write(s);});
 const timer=setTimeout(()=>{
   timedOut=true;
@@ -86,6 +110,10 @@ child.on('error',error=>{
 
 child.on('close',code=>{
   clearTimeout(timer);
+  if(stdoutBuffer) consumeStdoutText('\n',{flush:true});
+  if(suppressedUninitializedReads>0){
+    console.log(`Suppressed ${suppressedUninitializedReads} repetitive uninitialized-memory warnings.`);
+  }
   const result=interpretMesenSmokeResult({exitCode:code,stdout,stderr,timedOut});
   if(result.ok){
     if(result.mode==='nav'){
