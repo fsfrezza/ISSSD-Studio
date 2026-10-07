@@ -23,7 +23,7 @@ function plusRomWithNamePointer(team=0,pointer=0xBD20){
 
 test('TallMenuText player names reproduce known v6.92 bytes',()=>{
   assert.deepEqual([...encodeFixedPlayerName('Buffon')],[0x69,0x96,0x87,0x87,0x90,0x8F,0,0]);
-  assert.equal(decodeFixedPlayerName(Uint8Array.from([0x77,0x54,0x79,0x90,0x94,0x94,0x8A,0])),'P.Rossi  ');
+  assert.equal(decodeFixedPlayerName(Uint8Array.from([0x77,0x54,0x79,0x90,0x94,0x94,0x8A,0])),'P.Rossi ');
 });
 
 test('spaces, period and apostrophe are valid player-name characters',()=>{
@@ -43,6 +43,7 @@ test('alignment semantics match the historical fixed-width editor',()=>{
   assert.equal(formatPlayerName('Zoff','center'),'  Zoff  ');
   assert.equal(formatPlayerName('Riva','right'),'    Riva');
   assert.equal(inferPlayerNameAlignment('Buffon  '),'left');
+  assert.equal(inferPlayerNameAlignment('P.Rossi '),'center');
   assert.equal(inferPlayerNameAlignment('  Zoff  '),'center');
   assert.equal(inferPlayerNameAlignment('    Riva'),'right');
 });
@@ -70,6 +71,6 @@ test('player writer edits name without reconstructing the seven-byte attribute r
   const originalAttr=Uint8Array.from([0x12,0x34,0x56,0x78,0x45,0x01,0xAB]);
   rom.set(originalAttr,attrOff);
   plusPlayerWriter(rom,{playerEdits:[{team:0,player:1,name:'D. Costa',alignment:'left'}]});
-  assert.equal(decodeFixedPlayerName(rom.slice(nameOff,nameOff+8)),'D. Costa ');
+  assert.equal(decodeFixedPlayerName(rom.slice(nameOff,nameOff+8)),'D. Costa');
   assert.deepEqual(rom.slice(attrOff,attrOff+7),originalAttr);
 });
