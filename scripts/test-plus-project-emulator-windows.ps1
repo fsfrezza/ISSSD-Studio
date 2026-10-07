@@ -113,6 +113,8 @@ $generatedRom = Join-Path $runDir "$projectStem-verified.sfc"
 $baseReport = Join-Path $runDir 'probe-base.json'
 $generatedReport = Join-Path $runDir 'probe-generated.json'
 $comparison = Join-Path $runDir 'probe-comparison.json'
+$baseLog = Join-Path $runDir 'probe-base.log'
+$generatedLog = Join-Path $runDir 'probe-generated.log'
 
 Push-Location $repoRoot
 try {
@@ -128,6 +130,8 @@ try {
     -BaseReport $baseReport `
     -GeneratedReport $generatedReport `
     -Comparison $comparison `
+    -BaseLog $baseLog `
+    -GeneratedLog $generatedLog `
     -Limit $Limit
   if ($LASTEXITCODE -ne 0) { throw "Cross-ROM emulator test failed with exit code $LASTEXITCODE" }
 
@@ -136,6 +140,8 @@ try {
   Write-Host "Run directory: $runDir"
   Write-Host "Generated ROM: $generatedRom"
   Write-Host "WRAM comparison: $comparison"
+  Write-Host "Base diagnostic log: $baseLog"
+  Write-Host "Generated diagnostic log: $generatedLog"
 } finally {
   Pop-Location
 }
