@@ -6,6 +6,8 @@ param(
   [string]$BaseReport = 'probe-base.json',
   [string]$GeneratedReport = 'probe-generated.json',
   [string]$Comparison = 'probe-comparison.json',
+  [string]$BaseLog = 'probe-base.log',
+  [string]$GeneratedLog = 'probe-generated.log',
   [int]$Limit = 20
 )
 
@@ -33,6 +35,19 @@ Expected settings in either:
 "@
 }
 
+function Show-ProbeFailure([string]$Label,[string]$LogPath,[int]$ExitCode) {
+  Write-Host ''
+  Write-Host "$Label probe failed with exit code $ExitCode" -ForegroundColor Red
+  if (Test-Path $LogPath -PathType Leaf) {
+    Write-Host "Diagnostic log: $([IO.Path]::GetFullPath($LogPath))"
+    Write-Host '--- diagnostic tail ---'
+    Get-Content -Path $LogPath -Tail 80 | ForEach-Object { Write-Host $_ }
+    Write-Host '--- end diagnostic tail ---'
+  } else {
+    Write-Host "Diagnostic log was not created: $LogPath"
+  }
+}
+
 foreach ($path in @($BaseRom,$GeneratedRom)) {
   if (-not (Test-Path $path)) { throw "ROM not found: $path" }
 }
@@ -51,12 +66,20 @@ Assert-MesenInitialized $mesenExe
 Push-Location $repoRoot
 try {
   Write-Host 'Running WRAM probe on canonical/base ROM...'
-  & node 'scripts/mesen-smoke.mjs' '--mode' 'probe' $BaseRom '--report' $BaseReport
-  if ($LASTEXITCODE -ne 0) { throw "Base probe failed with exit code $LASTEXITCODE" }
+  & node 'scripts/mesen-smoke.mjs' '--mode' 'probe' $BaseRom '--report' $BaseReport '--log' $BaseLog
+  if ($LASTEXITCODE -ne 0) {
+    $code = $LASTEXITCODE
+    Show-ProbeFailure 'Base' $BaseLog $code
+    throw "Base probe failed with exit code $code"
+  }
 
   Write-Host 'Running WRAM probe on generated ROM...'
-  & node 'scripts/mesen-smoke.mjs' '--mode' 'probe' $GeneratedRom '--report' $GeneratedReport
-  if ($LASTEXITCODE -ne 0) { throw "Generated probe failed with exit code $LASTEXITCODE" }
+  & node 'scripts/mesen-smoke.mjs' '--mode' 'probe' $GeneratedRom '--report' $GeneratedReport '--log' $GeneratedLog
+  if ($LASTEXITCODE -ne 0) {
+    $code = $LASTEXITCODE
+    Show-ProbeFailure 'Generated' $GeneratedLog $code
+    throw "Generated probe failed with exit code $code"
+  }
 
   Write-Host 'Comparing cross-ROM WRAM behavior...'
   & node 'scripts/compare-mesen-probes.mjs' $BaseReport $GeneratedReport '--limit' $Limit '--out' $Comparison
@@ -67,6 +90,8 @@ try {
   Write-Host "Base report: $((Resolve-Path $BaseReport).Path)"
   Write-Host "Generated report: $((Resolve-Path $GeneratedReport).Path)"
   Write-Host "Comparison: $((Resolve-Path $Comparison).Path)"
+  Write-Host "Base diagnostic log: $((Resolve-Path $BaseLog).Path)"
+  Write-Host "Generated diagnostic log: $((Resolve-Path $GeneratedLog).Path)"
 } finally {
   Pop-Location
 }
