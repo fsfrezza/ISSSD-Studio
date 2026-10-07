@@ -110,7 +110,6 @@ New-Item -ItemType Directory -Force -Path $runDir | Out-Null
 
 $projectStem = [IO.Path]::GetFileNameWithoutExtension($Project)
 $generatedRom = Join-Path $runDir "$projectStem-verified.sfc"
-$semanticOnlyRom = Join-Path $runDir "$projectStem-semantic-only.sfc"
 $baseReport = Join-Path $runDir 'probe-base.json'
 $generatedReport = Join-Path $runDir 'probe-generated.json'
 $comparison = Join-Path $runDir 'probe-comparison.json'
@@ -119,24 +118,13 @@ $generatedLog = Join-Path $runDir 'probe-generated.log'
 
 Push-Location $repoRoot
 try {
-  Write-Host '1/4 Building project through the deterministic Plus core...'
+  Write-Host '1/2 Building the single ROM under test through the deterministic Plus core...'
   & node 'scripts/verify-real-plus-project.mjs' $BaseRom $Project '--out-dir' $runDir
   if ($LASTEXITCODE -ne 0) { throw "Project build verification failed with exit code $LASTEXITCODE" }
   if (-not (Test-Path $generatedRom)) { throw "Expected generated ROM was not created: $generatedRom" }
 
   Write-Host ''
-  Write-Host '2/4 Building semantic-only diagnostic ROM (persisted patches ignored)...'
-  & node 'scripts/build-semantic-only-plus-project.mjs' $BaseRom $Project '--out-dir' $runDir
-  if ($LASTEXITCODE -ne 0) { throw "Semantic-only project build failed with exit code $LASTEXITCODE" }
-  if (-not (Test-Path $semanticOnlyRom)) { throw "Expected semantic-only ROM was not created: $semanticOnlyRom" }
-
-  Write-Host ''
-  Write-Host '3/4 Building semantic isolation corridor...'
-  & node 'scripts/build-semantic-corridor-plus.mjs' $BaseRom $Project '--out-dir' $runDir
-  if ($LASTEXITCODE -ne 0) { throw "Semantic corridor build failed with exit code $LASTEXITCODE" }
-
-  Write-Host ''
-  Write-Host '4/4 Running cross-ROM emulator state discovery on the normal generated ROM...'
+  Write-Host '2/2 Running emulator liveness diagnostics on that ROM...'
   & powershell -ExecutionPolicy Bypass -File 'scripts/discover-mesen-cross-rom-windows.ps1' `
     $BaseRom $generatedRom `
     -BaseReport $baseReport `
@@ -150,17 +138,7 @@ try {
   Write-Host ''
   Write-Host 'Plus project emulator regression flow completed.'
   Write-Host "Run directory: $runDir"
-  Write-Host "Normal generated ROM: $generatedRom"
-  Write-Host "Semantic-only ROM: $semanticOnlyRom"
-  Write-Host ''
-  Write-Host 'MANUAL ISOLATION ROMS (test in numeric order):'
-  Write-Host "  00 exact base:       $(Join-Path $runDir "$projectStem-00-base-exact.sfc")"
-  Write-Host "  01 ROM metadata:     $(Join-Path $runDir "$projectStem-01-rom-meta-only.sfc")"
-  Write-Host "  02 players:          $(Join-Path $runDir "$projectStem-02-players-only.sfc")"
-  Write-Host "  03 strategies:       $(Join-Path $runDir "$projectStem-03-strategies-only.sfc")"
-  Write-Host "  04 safe combined:    $(Join-Path $runDir "$projectStem-04-safe-combined.sfc")"
-  Write-Host "  05 tactics + infra:  $(Join-Path $runDir "$projectStem-05-tactics-only.sfc")"
-  Write-Host ''
+  Write-Host "ROM TO TEST MANUALLY: $generatedRom"
   Write-Host "WRAM comparison: $comparison"
   Write-Host "Base diagnostic log: $baseLog"
   Write-Host "Generated diagnostic log: $generatedLog"
