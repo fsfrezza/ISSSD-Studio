@@ -68,11 +68,11 @@ New-Item -ItemType Directory -Force -Path $runDir | Out-Null
 Push-Location $repoRoot
 try {
   Write-Host ''
-  Write-Host 'Generating FOUR dependency-safe delta-debug ROMs focused inside previous Q1.'
-  Write-Host 'Each ROM keeps the full project except one quarter of the previously isolated Q1 atoms.'
+  Write-Host 'Generating FOUR dependency-safe delta-debug ROMs focused inside previous Q1.4.'
+  Write-Host 'Each ROM keeps the full project except one quarter of the previously isolated Q1.4 atoms.'
   Write-Host 'Known Brazil mirror/main pairs remain atomic.'
   Write-Host 'No Mesen probe will run; manual first-screen behavior is the signal.'
-  $buildOutput = & node 'scripts/build-persisted-patch-ddmin-plus.mjs' $BaseRom $Project '--out-dir' $runDir '--parts' '4' '--focus-path' '0'
+  $buildOutput = & node 'scripts/build-persisted-patch-ddmin-plus.mjs' $BaseRom $Project '--out-dir' $runDir '--parts' '4' '--focus-path' '0,3'
   if ($LASTEXITCODE -ne 0) { throw "Dependency-safe focused ddmin build failed with exit code $LASTEXITCODE" }
   $buildOutput | Write-Host
   $summary = ($buildOutput -join "`n") | ConvertFrom-Json
@@ -80,8 +80,8 @@ try {
   Write-Host ''
   Write-Host 'ROMs TO TEST MANUALLY'
   foreach ($item in $summary.outputs) {
-    Write-Host "Q1.$($item.part): $($item.outputPath)"
+    Write-Host "Q1.4.$($item.part): $($item.outputPath)"
   }
   Write-Host ''
-  Write-Host 'Report each result as Q1.1/Q1.2/Q1.3/Q1.4 = TRAVA or PASSA.'
+  Write-Host 'Report each result as Q1.4.1/Q1.4.2/Q1.4.3/Q1.4.4 = TRAVA or PASSA.'
 } finally { Pop-Location }
