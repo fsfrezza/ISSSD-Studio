@@ -1,5 +1,6 @@
 import {applyCanonicalPatches} from './canonical-patches.mjs';
 import {buildPlusRom} from './build-plus.mjs';
+import {reconcileKnownPlayerIntegrityMirrors} from './plus-player.mjs';
 import {plusPlayerWriter} from './plus-player-writer.mjs';
 import {plusRomMetaWriter} from './plus-rom-meta.mjs';
 import {plusStrategyTextWriter} from './plus-strategy-text.mjs';
@@ -17,7 +18,11 @@ function hasTacticalEdits(semanticState){
 export function buildPlusProjectRom(baseRom,project,options={}){
   const canonical=canonicalProjectState(project,{baseSize:baseRom?.length});
   const ignorePersistedPatches=options.ignorePersistedPatches===true;
-  const patchedBase=ignorePersistedPatches ? baseRom : applyCanonicalPatches(baseRom,canonical.patches);
+  const persistedBase=ignorePersistedPatches ? baseRom : applyCanonicalPatches(baseRom,canonical.patches);
+  // Deluxe Plus adds runtime integrity copies in bank-80 freespace. Historical
+  // projects may contain one-sided player-bank patches; rebuild the known copies
+  // from the authoritative player table before semantic writers run.
+  const patchedBase=reconcileKnownPlayerIntegrityMirrors(persistedBase);
   const semanticState=canonicalProjectSemantic(project);
   const userWriters=options.writers??[];
   if(!Array.isArray(userWriters))throw new TypeError('writers must be functions');
