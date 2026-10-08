@@ -20,9 +20,9 @@ export function buildPlusProjectRom(baseRom,project,options={}){
   const ignorePersistedPatches=options.ignorePersistedPatches===true;
   const persistedBase=ignorePersistedPatches ? baseRom : applyCanonicalPatches(baseRom,canonical.patches);
   // Deluxe Plus adds runtime integrity copies in bank-80 freespace. Historical
-  // projects may contain one-sided player-bank patches; rebuild the known copies
-  // from the authoritative player table before semantic writers run.
-  const patchedBase=reconcileKnownPlayerIntegrityMirrors(persistedBase);
+  // projects may contain one-sided player-bank patches; repair only mismatches
+  // introduced relative to the immutable base, preserving base discrepancies.
+  const patchedBase=reconcileKnownPlayerIntegrityMirrors(baseRom,persistedBase);
   const semanticState=canonicalProjectSemantic(project);
   const userWriters=options.writers??[];
   if(!Array.isArray(userWriters))throw new TypeError('writers must be functions');
