@@ -62,12 +62,12 @@ if ([IO.Path]::GetExtension($Project).ToLowerInvariant() -ne '.issdproj') { thro
 Write-Host "ROM base: $BaseRom"
 Write-Host "Project: $Project"
 Write-Host ''
-Write-Host 'Inspecting possible Brazil player 0/1 low-ROM records before known player 2 mirror. No ROM will be generated.'
+Write-Host 'Searching the Plus base for exact 6-byte player-tail mirrors and their preceding-byte transforms. No ROM will be generated.'
 
 Push-Location $repoRoot
 try {
-  $inspectionOutput = & node 'scripts/inspect-brazil-pre-mirror-plus.mjs' $BaseRom
-  if ($LASTEXITCODE -ne 0) { throw "Brazil pre-mirror inspection failed with exit code $LASTEXITCODE" }
+  $inspectionOutput = & node 'scripts/inspect-player-tail-mirrors-plus.mjs' $BaseRom
+  if ($LASTEXITCODE -ne 0) { throw "Player tail mirror inspection failed with exit code $LASTEXITCODE" }
   $inspectionOutput | Write-Host
   Write-Host ''
   Write-Host 'NO ROM GENERATED. Copy the JSON block above back into the chat.'
