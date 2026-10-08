@@ -35,39 +35,20 @@ function Find-CanonicalPlusRom([string]$Directory,[string]$PreferredName) {
   throw "Canonical Plus ROM was not found in $Directory"
 }
 
-function Select-ProjectFile([string]$InitialDirectory,[string]$PreferredName) {
-  if (-not (Test-Path $InitialDirectory -PathType Container)) { throw "Default project directory not found: $InitialDirectory" }
-  if (-not [string]::IsNullOrWhiteSpace($PreferredName)) {
-    $preferred = Join-Path $InitialDirectory $PreferredName
-    if (Test-Path $preferred -PathType Leaf) { return [IO.Path]::GetFullPath($preferred) }
-  }
-  Add-Type -AssemblyName System.Windows.Forms
-  $dialog = New-Object System.Windows.Forms.OpenFileDialog
-  $dialog.Title = 'Select ISSSD Studio project'
-  $dialog.InitialDirectory = $InitialDirectory
-  $dialog.Filter = 'ISSSD Studio Project (*.issdproj)|*.issdproj|All files (*.*)|*.*'
-  $dialog.Multiselect = $false
-  if (-not [string]::IsNullOrWhiteSpace($PreferredName)) { $dialog.FileName = $PreferredName }
-  if ($dialog.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { throw 'Project selection cancelled.' }
-  return $dialog.FileName
-}
-
 $RomDir = [IO.Path]::GetFullPath($RomDir)
-$ProjectDir = [IO.Path]::GetFullPath($ProjectDir)
 if ([string]::IsNullOrWhiteSpace($BaseRom)) { $BaseRom = Find-CanonicalPlusRom $RomDir $RomName } else { $BaseRom = Resolve-RelativeInput $BaseRom $RomDir }
-if ([string]::IsNullOrWhiteSpace($Project)) { $Project = Select-ProjectFile $ProjectDir $ProjectName } else { $Project = Resolve-RelativeInput $Project $ProjectDir }
-foreach ($path in @($BaseRom,$Project)) { if (-not (Test-Path $path -PathType Leaf)) { throw "Input not found: $path" } }
-if ([IO.Path]::GetExtension($Project).ToLowerInvariant() -ne '.issdproj') { throw 'Project must use the .issdproj extension' }
+if (-not (Test-Path $BaseRom -PathType Leaf)) { throw "Input not found: $BaseRom" }
 
 Write-Host "ROM base: $BaseRom"
-Write-Host "Project: $Project"
 Write-Host ''
-Write-Host 'Searching the Plus base for exact 6-byte player-tail mirrors and their preceding-byte transforms. No ROM will be generated.'
+Write-Host 'Static analysis: tracing every plausible reference to Plus data in PC 0x78B8-0x78EF / SNES $80:F8B8-$80:F8EF.'
+Write-Host 'The upstream USA disassembly marks $80:F828-$80:FF8F as free bytes, so this block is Plus-specific infrastructure.'
+Write-Host 'No ROM will be generated.'
 
 Push-Location $repoRoot
 try {
-  $inspectionOutput = & node 'scripts/inspect-player-tail-mirrors-plus.mjs' $BaseRom
-  if ($LASTEXITCODE -ne 0) { throw "Player tail mirror inspection failed with exit code $LASTEXITCODE" }
+  $inspectionOutput = & node 'scripts/inspect-plus-f8-references.mjs' $BaseRom
+  if ($LASTEXITCODE -ne 0) { throw "Plus F8 reference inspection failed with exit code $LASTEXITCODE" }
   $inspectionOutput | Write-Host
   Write-Host ''
   Write-Host 'NO ROM GENERATED. Copy the JSON block above back into the chat.'
