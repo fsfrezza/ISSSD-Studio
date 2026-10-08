@@ -10,7 +10,7 @@ function sha256(bytes){return createHash('sha256').update(bytes).digest('hex');}
 
 const [romPath,projectPath,...rest]=process.argv.slice(2);
 if(!romPath||!projectPath){
-  console.error('Usage: node scripts/build-persisted-patch-bisect-plus.mjs <clean-plus.sfc> <project.issdproj> [--out-dir <dir>] [--start <n>] [--end <n>] [--part <n> --parts <n>]');
+  console.error('Usage: node scripts/build-persisted-patch-bisect-plus.mjs <clean-plus.sfc> <project.issdproj> [--out-dir <dir>] [--start <n>] [--end <n>] [--part <n> --parts <n>] [--byte-part <n> --byte-parts <n>]');
   process.exit(2);
 }
 function argValue(name){const i=rest.indexOf(name);return i>=0?rest[i+1]:null;}
@@ -43,7 +43,36 @@ if(!Number.isInteger(start)||!Number.isInteger(end)||start<0||end<start||end>tot
   throw new RangeError(`invalid patch slice ${start}..${end} for ${total} canonical persisted ranges`);
 }
 
-const subset=canonical.patches.slice(start,end).map(p=>({off:p.off,data:[...p.data]}));
+let subset=canonical.patches.slice(start,end).map(p=>({off:p.off,data:[...p.data]}));
+let byteSelection=null;
+const bytePartRaw=argValue('--byte-part');
+const bytePartsRaw=argValue('--byte-parts');
+if(bytePartRaw!==null||bytePartsRaw!==null){
+  if(subset.length!==1) throw new RangeError('byte partitioning requires exactly one selected canonical range');
+  const bytePart=Number(bytePartRaw);
+  const byteParts=Number(bytePartsRaw);
+  if(!Number.isInteger(bytePart)||!Number.isInteger(byteParts)||byteParts<1||bytePart<0||bytePart>=byteParts){
+    throw new RangeError(`invalid byte partition bytePart=${bytePartRaw} byteParts=${bytePartsRaw}`);
+  }
+  const source=subset[0];
+  const sourceLength=source.data.length;
+  const byteStart=Math.ceil(sourceLength*bytePart/byteParts);
+  const byteEnd=Math.ceil(sourceLength*(bytePart+1)/byteParts);
+  const sliced=source.data.slice(byteStart,byteEnd);
+  if(sliced.length===0) throw new RangeError(`byte partition ${bytePart}/${byteParts} is empty for range length ${sourceLength}`);
+  subset=[{off:source.off+byteStart,data:sliced}];
+  byteSelection={
+    sourceRangeIndex:start,
+    sourceRangeOffset:source.off,
+    sourceRangeLength:sourceLength,
+    bytePart,
+    byteParts,
+    startInclusive:byteStart,
+    endExclusive:byteEnd,
+    count:byteEnd-byteStart,
+  };
+}
+
 const diagnostic=structuredClone(project);
 diagnostic.state=diagnostic.state&&typeof diagnostic.state==='object'&&!Array.isArray(diagnostic.state)?diagnostic.state:{};
 diagnostic.state.targetLength=base.length;
@@ -63,6 +92,7 @@ const summary={
   mode:'persisted-patch-bisect',
   totalCanonicalPersistedRanges:total,
   selectedRangeIndexes:{startInclusive:start,endExclusive:end,count:end-start},
+  byteSelection,
   selectedBytes,
   selectedPcSpan:first&&last?{start:first.off,endExclusive:last.off+last.data.length}:null,
   outputSize:result.rom.length,
@@ -74,7 +104,8 @@ const summary={
 if(outDir){
   await mkdir(outDir,{recursive:true});
   const stem=basename(projectPath).replace(/\.issdproj$/i,'');
-  const outputPath=join(outDir,`${stem}-patch-bisect-${start}-${end}.sfc`);
+  const byteSuffix=byteSelection?`-bytes-${byteSelection.startInclusive}-${byteSelection.endExclusive}`:'';
+  const outputPath=join(outDir,`${stem}-patch-bisect-${start}-${end}${byteSuffix}.sfc`);
   await writeFile(outputPath,result.rom);
   summary.outputPath=outputPath;
 }
