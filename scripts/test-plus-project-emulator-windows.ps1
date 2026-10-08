@@ -61,30 +61,28 @@ if ([IO.Path]::GetExtension($Project).ToLowerInvariant() -ne '.issdproj') { thro
 
 Write-Host "ROM base: $BaseRom"
 Write-Host "Project: $Project"
-Write-Host ''
-Write-Host 'Inspecting isolated persisted-patch focus Q1.4.2.3 directly. No ROM will be generated.'
+$runId = Get-Date -Format 'yyyyMMdd-HHmmss-fff'
+$runDir = Join-Path $repoRoot ".tools\mesen-runs\$runId"
+New-Item -ItemType Directory -Force -Path $runDir | Out-Null
 
 Push-Location $repoRoot
 try {
-  $inspectionOutput = & node 'scripts/inspect-persisted-focus-plus.mjs' $BaseRom $Project '--parts' '4' '--focus-path' '0,3,1,2'
-  if ($LASTEXITCODE -ne 0) { throw "Focused persisted-patch inspection failed with exit code $LASTEXITCODE" }
-  $inspectionOutput | Write-Host
-  $summary = ($inspectionOutput -join "`n") | ConvertFrom-Json
+  Write-Host ''
+  Write-Host 'Generating FIVE exact omission ROMs for the isolated Q1.4.2.3 atoms.'
+  Write-Host 'Each ROM keeps the full project and omits exactly one dependency-safe atom.'
+  Write-Host 'This is the final manual isolation round for this focus.'
+  $buildOutput = & node 'scripts/build-persisted-focus-atom-omit-plus.mjs' $BaseRom $Project '--out-dir' $runDir '--parts' '4' '--focus-path' '0,3,1,2'
+  if ($LASTEXITCODE -ne 0) { throw "Focused atom omission build failed with exit code $LASTEXITCODE" }
+  $buildOutput | Write-Host
+  $summary = ($buildOutput -join "`n") | ConvertFrom-Json
 
   Write-Host ''
-  Write-Host 'FOCUSED ATOM DIAGNOSIS'
-  Write-Host "Focus: Q1.4.2.3"
-  Write-Host "Dependency-safe atoms in focus: $($summary.focusAtomIndexes.count)"
-  foreach ($atom in $summary.atoms) {
-    Write-Host "Atom $($atom.atomIndex): $($atom.key) [$($atom.kind)] patches=$($atom.patchIndexes -join ',')"
-    foreach ($patch in $atom.patches) {
-      Write-Host "  patch $($patch.patchIndex): off=$($patch.offsetHex) len=$($patch.length) changed=$($patch.changedByteCount)"
-      Write-Host "    base:      $($patch.baseBytesHex -join ' ')"
-      Write-Host "    persisted: $($patch.persistedBytesHex -join ' ')"
-    }
+  Write-Host 'ROMs TO TEST MANUALLY'
+  foreach ($item in $summary.outputs) {
+    Write-Host "T$($item.testNumber) atom=$($item.atomIndex) off=$($item.firstOffsetHex): $($item.outputPath)"
   }
   Write-Host ''
-  Write-Host 'NO ROM GENERATED. Copy the JSON block above back into the chat.'
+  Write-Host 'Report T1/T2/T3/T4/T5 = TRAVA or PASSA. The passing ROM identifies the exact offending atom.'
 } finally {
   Pop-Location
 }
