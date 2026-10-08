@@ -9,17 +9,27 @@ import {playerOffset,knownMirrorOffset} from '../src/core/plus-player.mjs';
 function sha256(bytes){return createHash('sha256').update(bytes).digest('hex');}
 function overlaps(p,start,end){return p.off<end && (p.off+p.data.length)>start;}
 function clonePatch(p){return {off:p.off,data:[...p.data]};}
+function splitBounds(start,end,part,parts){
+  const count=end-start;
+  return {
+    start:start+Math.ceil(count*part/parts),
+    end:start+Math.ceil(count*(part+1)/parts),
+  };
+}
 
 const [romPath,projectPath,...rest]=process.argv.slice(2);
 if(!romPath||!projectPath){
-  console.error('Usage: node scripts/build-persisted-patch-ddmin-plus.mjs <clean-plus.sfc> <project.issdproj> --out-dir <dir> [--parts <n>]');
+  console.error('Usage: node scripts/build-persisted-patch-ddmin-plus.mjs <clean-plus.sfc> <project.issdproj> --out-dir <dir> [--parts <n>] [--focus-path <comma-separated zero-based parts>]');
   process.exit(2);
 }
 function argValue(name){const i=rest.indexOf(name);return i>=0?rest[i+1]:null;}
 const outDir=argValue('--out-dir');
 const parts=Number(argValue('--parts')??4);
+const focusPathRaw=argValue('--focus-path');
+const focusPath=focusPathRaw==null||focusPathRaw.trim()===''?[]:focusPathRaw.split(',').map(Number);
 if(!outDir) throw new Error('--out-dir is required');
 if(!Number.isInteger(parts)||parts<2||parts>16) throw new RangeError('--parts must be 2..16');
+if(focusPath.some(part=>!Number.isInteger(part)||part<0||part>=parts)) throw new RangeError(`invalid --focus-path for ${parts} parts: ${focusPathRaw}`);
 
 const base=Uint8Array.from(await readFile(romPath));
 assertPlusBaseDescriptor({size:base.length,sha256:sha256(base)});
@@ -48,12 +58,24 @@ for(const dep of dependencyRegions){
 for(let i=0;i<patches.length;i++) if(!assigned.has(i)) atoms.push({key:`range-${i}`,indexes:[i]});
 atoms.sort((a,b)=>Math.min(...a.indexes)-Math.min(...b.indexes));
 
+let focusStart=0;
+let focusEnd=atoms.length;
+const resolvedFocus=[];
+for(const part of focusPath){
+  const next=splitBounds(focusStart,focusEnd,part,parts);
+  if(next.end<=next.start) throw new RangeError(`focus path enters empty partition at ${resolvedFocus.concat(part).join(',')}`);
+  focusStart=next.start;
+  focusEnd=next.end;
+  resolvedFocus.push(part);
+}
+
 await mkdir(outDir,{recursive:true});
 const stem=basename(projectPath).replace(/\.issdproj$/i,'');
 const outputs=[];
 for(let part=0;part<parts;part++){
-  const atomStart=Math.ceil(atoms.length*part/parts);
-  const atomEnd=Math.ceil(atoms.length*(part+1)/parts);
+  const bounds=splitBounds(focusStart,focusEnd,part,parts);
+  const atomStart=bounds.start;
+  const atomEnd=bounds.end;
   const omitted=new Set();
   for(const atom of atoms.slice(atomStart,atomEnd)) for(const idx of atom.indexes) omitted.add(idx);
   const subset=patches.filter((_,i)=>!omitted.has(i)).map(clonePatch);
@@ -66,12 +88,17 @@ for(let part=0;part<parts;part++){
   delete diagnostic.patches;
   delete diagnostic.targetLength;
   const result=buildPlusProjectRom(base,diagnostic);
-  const label=`omit-q${part+1}-of-${parts}`;
+  const focusLabel=focusPath.length?`focus-${focusPath.map(x=>x+1).join('-')}-`:' ';
+  const cleanFocusLabel=focusLabel.trim();
+  const label=`${cleanFocusLabel?cleanFocusLabel+'-':''}omit-q${part+1}-of-${parts}`;
   const outputPath=join(outDir,`${stem}-ddmin-${label}.sfc`);
   await writeFile(outputPath,result.rom);
   outputs.push({
     part:part+1,
     parts,
+    focusPathZeroBased:focusPath,
+    focusPathOneBased:focusPath.map(x=>x+1),
+    focusAtomIndexes:{startInclusive:focusStart,endExclusive:focusEnd,count:focusEnd-focusStart},
     omittedAtomIndexes:{startInclusive:atomStart,endExclusive:atomEnd,count:atomEnd-atomStart},
     omittedPatchCount:omitted.size,
     includedPatchCount:subset.length,
@@ -86,5 +113,9 @@ console.log(JSON.stringify({
   totalCanonicalPersistedRanges:patches.length,
   totalDependencySafeAtoms:atoms.length,
   protectedDependencies:dependencyRegions.map(x=>x.key),
+  parts,
+  focusPathZeroBased:focusPath,
+  focusPathOneBased:focusPath.map(x=>x+1),
+  focusAtomIndexes:{startInclusive:focusStart,endExclusive:focusEnd,count:focusEnd-focusStart},
   outputs,
 },null,2));
