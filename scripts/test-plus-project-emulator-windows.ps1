@@ -69,13 +69,13 @@ New-Item -ItemType Directory -Force -Path $runDir | Out-Null
 
 Push-Location $repoRoot
 try {
-  Write-Host '1/2 Building ONE persisted-patch isolation ROM (canonical range 0 only)...'
-  $buildOutput = & node 'scripts/build-persisted-patch-bisect-plus.mjs' $BaseRom $Project '--out-dir' $runDir '--start' '0' '--end' '1'
-  if ($LASTEXITCODE -ne 0) { throw "Persisted-patch isolation build failed with exit code $LASTEXITCODE" }
+  Write-Host '1/2 Building ONE byte-level isolation ROM (first half of canonical range 0)...'
+  $buildOutput = & node 'scripts/build-persisted-patch-bisect-plus.mjs' $BaseRom $Project '--out-dir' $runDir '--start' '0' '--end' '1' '--byte-part' '0' '--byte-parts' '2'
+  if ($LASTEXITCODE -ne 0) { throw "Persisted-patch byte isolation build failed with exit code $LASTEXITCODE" }
   $buildOutput | Write-Host
   $summary = ($buildOutput -join "`n") | ConvertFrom-Json
   $generatedRom = [string]$summary.outputPath
-  if ([string]::IsNullOrWhiteSpace($generatedRom) -or -not (Test-Path $generatedRom)) { throw "Expected isolated-range ROM was not created: $generatedRom" }
+  if ([string]::IsNullOrWhiteSpace($generatedRom) -or -not (Test-Path $generatedRom)) { throw "Expected byte-isolation ROM was not created: $generatedRom" }
 
   $baseReport = Join-Path $runDir 'probe-base.json'
   $generatedReport = Join-Path $runDir 'probe-generated.json'
@@ -96,8 +96,11 @@ try {
   if ($LASTEXITCODE -ne 0) { throw "Cross-ROM emulator test failed with exit code $LASTEXITCODE" }
 
   Write-Host ''
-  Write-Host 'Persisted-patch isolation flow completed.'
-  Write-Host "Selected canonical patch indexes: $($summary.selectedRangeIndexes.startInclusive)..$($summary.selectedRangeIndexes.endExclusive - 1) of $($summary.totalCanonicalPersistedRanges) ranges"
+  Write-Host 'Persisted-patch byte isolation flow completed.'
+  Write-Host "Canonical range index: $($summary.byteSelection.sourceRangeIndex)"
+  Write-Host "Canonical range PC offset: $($summary.byteSelection.sourceRangeOffset)"
+  Write-Host "Canonical range length: $($summary.byteSelection.sourceRangeLength) bytes"
+  Write-Host "Selected byte interval inside range: $($summary.byteSelection.startInclusive)..$($summary.byteSelection.endExclusive - 1)"
   Write-Host "Selected persisted bytes: $($summary.selectedBytes)"
   Write-Host "ROM TO TEST MANUALLY: $generatedRom"
 } finally { Pop-Location }
