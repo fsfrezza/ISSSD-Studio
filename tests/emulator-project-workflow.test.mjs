@@ -4,17 +4,16 @@ import {readFile} from 'node:fs/promises';
 
 const scriptUrl=new URL('../scripts/test-plus-project-emulator-windows.ps1',import.meta.url);
 
-test('Plus project emulator workflow builds one byte-level isolated persisted-patch ROM before cross-ROM probing',async()=>{
+test('Plus project Windows diagnostic inspects canonical persisted range 0 without generating another ROM',async()=>{
   const text=await readFile(scriptUrl,'utf8');
-  assert.match(text,/build-persisted-patch-bisect-plus\.mjs/);
-  assert.doesNotMatch(text,/build-semantic-only-plus-project\.mjs/);
-  assert.doesNotMatch(text,/verify-real-plus-project\.mjs/);
-  assert.match(text,/discover-mesen-cross-rom-windows\.ps1/);
-  assert.match(text,/\.tools\\mesen-runs/);
-  assert.match(text,/probe-comparison\.json/);
-  assert.match(text,/ROM TO TEST MANUALLY/);
-  assert.match(text,/first eighth of canonical range 0/i);
-  assert.match(text,/--start' '0' '--end' '1' '--byte-part' '0' '--byte-parts' '8/);
-  assert.match(text,/Canonical range PC offset/);
-  assert.match(text,/Selected byte interval inside range/);
+  assert.match(text,/inspect-persisted-range0-plus\.mjs/);
+  assert.doesNotMatch(text,/build-persisted-patch-bisect-plus\.mjs/);
+  assert.doesNotMatch(text,/discover-mesen-cross-rom-windows\.ps1/);
+  assert.doesNotMatch(text,/ROM TO TEST MANUALLY/);
+  assert.match(text,/No ROM will be generated/i);
+  assert.match(text,/Range 0 PC offset/);
+  assert.match(text,/Base bytes/);
+  assert.match(text,/Persisted bytes/);
+  assert.match(text,/First byte/);
+  assert.match(text,/NO ROM GENERATED/);
 });
