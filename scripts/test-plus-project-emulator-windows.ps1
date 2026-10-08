@@ -36,8 +36,12 @@ function Find-CanonicalPlusRom([string]$Directory,[string]$PreferredName) {
 }
 
 $RomDir = [IO.Path]::GetFullPath($RomDir)
+$ProjectDir = [IO.Path]::GetFullPath($ProjectDir)
 if ([string]::IsNullOrWhiteSpace($BaseRom)) { $BaseRom = Find-CanonicalPlusRom $RomDir $RomName } else { $BaseRom = Resolve-RelativeInput $BaseRom $RomDir }
 if (-not (Test-Path $BaseRom -PathType Leaf)) { throw "Input not found: $BaseRom" }
+if (-not (Test-Path $ProjectDir -PathType Container)) { throw "Project directory not found: $ProjectDir" }
+
+$jsonPath = Join-Path $ProjectDir 'ISSSD-Plus-F8-reference-inspection.json'
 
 Write-Host "ROM base: $BaseRom"
 Write-Host ''
@@ -49,9 +53,11 @@ Push-Location $repoRoot
 try {
   $inspectionOutput = & node 'scripts/inspect-plus-f8-references.mjs' $BaseRom
   if ($LASTEXITCODE -ne 0) { throw "Plus F8 reference inspection failed with exit code $LASTEXITCODE" }
-  $inspectionOutput | Write-Host
+  $inspectionOutput | Set-Content -Path $jsonPath -Encoding utf8
   Write-Host ''
-  Write-Host 'NO ROM GENERATED. Copy the JSON block above back into the chat.'
+  Write-Host "JSON GENERATED: $jsonPath"
+  Write-Host 'Upload that JSON file to the chat. The full JSON is no longer printed to the console.'
+  Write-Host 'NO ROM GENERATED.'
 } finally {
   Pop-Location
 }
