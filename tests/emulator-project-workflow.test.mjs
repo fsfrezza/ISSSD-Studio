@@ -4,19 +4,17 @@ import {readFile} from 'node:fs/promises';
 
 const scriptUrl=new URL('../scripts/test-plus-project-emulator-windows.ps1',import.meta.url);
 
-test('Plus Windows diagnostic traces Plus-specific F8 references into a JSON file without generating ROMs',async()=>{
+test('Plus Windows workflow builds exactly one full integrity-reconciled project ROM for manual validation',async()=>{
   const text=await readFile(scriptUrl,'utf8');
-  assert.match(text,/inspect-plus-f8-references\.mjs/);
-  assert.doesNotMatch(text,/inspect-player-tail-mirrors-plus\.mjs/);
+  assert.match(text,/build-full-plus-project\.mjs/);
+  assert.doesNotMatch(text,/inspect-plus-f8-references\.mjs/);
   assert.doesNotMatch(text,/build-persisted-focus-atom-omit-plus\.mjs/);
   assert.doesNotMatch(text,/build-persisted-patch-ddmin-plus\.mjs/);
   assert.doesNotMatch(text,/discover-mesen-cross-rom-windows\.ps1/);
-  assert.doesNotMatch(text,/ROMs TO TEST MANUALLY/);
-  assert.match(text,/0x78B8-0x78EF/);
-  assert.match(text,/\$80:F828-\$80:FF8F as free bytes/);
-  assert.match(text,/ISSSD-Plus-F8-reference-inspection\.json/);
-  assert.match(text,/Set-Content -Path \$jsonPath -Encoding utf8/);
-  assert.match(text,/full JSON is no longer printed to the console/i);
-  assert.match(text,/No ROM will be generated/i);
-  assert.match(text,/NO ROM GENERATED/);
+  assert.match(text,/Generating ONE full project ROM/i);
+  assert.match(text,/persisted patches, semantic writers, and Plus player integrity reconciliation/i);
+  assert.match(text,/ISSSD-Plus-project-integrity-fixed\.sfc/);
+  assert.match(text,/No Mesen probe will run/i);
+  assert.match(text,/ROM TO TEST MANUALLY/);
+  assert.match(text,/PASSA if it advances normally beyond the first screen; otherwise TRAVA/i);
 });
