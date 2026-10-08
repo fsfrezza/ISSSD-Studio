@@ -4,15 +4,15 @@ import {readFile} from 'node:fs/promises';
 
 const scriptUrl=new URL('../scripts/test-plus-project-emulator-windows.ps1',import.meta.url);
 
-test('Plus project Windows diagnostic builds four dependency-safe ddmin ROMs focused inside previous Q1.4.2',async()=>{
+test('Plus project Windows diagnostic inspects isolated Q1.4.2.3 atoms without generating another ROM',async()=>{
   const text=await readFile(scriptUrl,'utf8');
-  assert.match(text,/build-persisted-patch-ddmin-plus\.mjs/);
-  assert.doesNotMatch(text,/inspect-brazil-mirror-patches-plus\.mjs/);
-  assert.doesNotMatch(text,/build-persisted-patch-bisect-plus\.mjs/);
+  assert.match(text,/inspect-persisted-focus-plus\.mjs/);
+  assert.doesNotMatch(text,/build-persisted-patch-ddmin-plus\.mjs/);
   assert.doesNotMatch(text,/discover-mesen-cross-rom-windows\.ps1/);
-  assert.match(text,/FOUR dependency-safe delta-debug ROMs focused inside previous Q1\.4\.2/i);
-  assert.match(text,/mirror\/main pairs remain atomic/i);
-  assert.match(text,/--parts' '4' '--focus-path' '0,3,1/);
-  assert.match(text,/ROMs TO TEST MANUALLY/);
-  assert.match(text,/Q1\.4\.2\.1\/Q1\.4\.2\.2\/Q1\.4\.2\.3\/Q1\.4\.2\.4 = TRAVA or PASSA/);
+  assert.doesNotMatch(text,/ROMs TO TEST MANUALLY/);
+  assert.match(text,/Q1\.4\.2\.3/);
+  assert.match(text,/--parts' '4' '--focus-path' '0,3,1,2/);
+  assert.match(text,/FOCUSED ATOM DIAGNOSIS/);
+  assert.match(text,/Dependency-safe atoms in focus/);
+  assert.match(text,/NO ROM GENERATED/);
 });
