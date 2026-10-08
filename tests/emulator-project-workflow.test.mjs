@@ -13,8 +13,8 @@ test('Plus project emulator workflow builds one byte-level isolated persisted-pa
   assert.match(text,/\.tools\\mesen-runs/);
   assert.match(text,/probe-comparison\.json/);
   assert.match(text,/ROM TO TEST MANUALLY/);
-  assert.match(text,/first half of canonical range 0/i);
-  assert.match(text,/--start' '0' '--end' '1' '--byte-part' '0' '--byte-parts' '2/);
+  assert.match(text,/first eighth of canonical range 0/i);
+  assert.match(text,/--start' '0' '--end' '1' '--byte-part' '0' '--byte-parts' '8/);
   assert.match(text,/Canonical range PC offset/);
   assert.match(text,/Selected byte interval inside range/);
 });
