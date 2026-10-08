@@ -61,29 +61,30 @@ if ([IO.Path]::GetExtension($Project).ToLowerInvariant() -ne '.issdproj') { thro
 
 Write-Host "ROM base: $BaseRom"
 Write-Host "Project: $Project"
-$runId = Get-Date -Format 'yyyyMMdd-HHmmss-fff'
-$runDir = Join-Path $repoRoot ".tools\mesen-runs\$runId"
-New-Item -ItemType Directory -Force -Path $runDir | Out-Null
+Write-Host ''
+Write-Host 'Inspecting isolated persisted-patch focus Q1.4.2.3 directly. No ROM will be generated.'
 
 Push-Location $repoRoot
 try {
-  Write-Host ''
-  Write-Host 'Generating FOUR dependency-safe delta-debug ROMs focused inside previous Q1.4.2.'
-  Write-Host 'Each ROM keeps the full project except one quarter of the previously isolated Q1.4.2 atoms.'
-  Write-Host 'Known Brazil mirror/main pairs remain atomic.'
-  Write-Host 'No Mesen probe will run; manual first-screen behavior is the signal.'
-  $buildOutput = & node 'scripts/build-persisted-patch-ddmin-plus.mjs' $BaseRom $Project '--out-dir' $runDir '--parts' '4' '--focus-path' '0,3,1'
-  if ($LASTEXITCODE -ne 0) { throw "Dependency-safe focused ddmin build failed with exit code $LASTEXITCODE" }
-  $buildOutput | Write-Host
-  $summary = ($buildOutput -join "`n") | ConvertFrom-Json
+  $inspectionOutput = & node 'scripts/inspect-persisted-focus-plus.mjs' $BaseRom $Project '--parts' '4' '--focus-path' '0,3,1,2'
+  if ($LASTEXITCODE -ne 0) { throw "Focused persisted-patch inspection failed with exit code $LASTEXITCODE" }
+  $inspectionOutput | Write-Host
+  $summary = ($inspectionOutput -join "`n") | ConvertFrom-Json
 
   Write-Host ''
-  Write-Host 'ROMs TO TEST MANUALLY'
-  foreach ($item in $summary.outputs) {
-    Write-Host "Q1.4.2.$($item.part): $($item.outputPath)"
+  Write-Host 'FOCUSED ATOM DIAGNOSIS'
+  Write-Host "Focus: Q1.4.2.3"
+  Write-Host "Dependency-safe atoms in focus: $($summary.focusAtomIndexes.count)"
+  foreach ($atom in $summary.atoms) {
+    Write-Host "Atom $($atom.atomIndex): $($atom.key) [$($atom.kind)] patches=$($atom.patchIndexes -join ',')"
+    foreach ($patch in $atom.patches) {
+      Write-Host "  patch $($patch.patchIndex): off=$($patch.offsetHex) len=$($patch.length) changed=$($patch.changedByteCount)"
+      Write-Host "    base:      $($patch.baseBytesHex -join ' ')"
+      Write-Host "    persisted: $($patch.persistedBytesHex -join ' ')"
+    }
   }
   Write-Host ''
-  Write-Host 'Report each result as Q1.4.2.1/Q1.4.2.2/Q1.4.2.3/Q1.4.2.4 = TRAVA or PASSA.'
+  Write-Host 'NO ROM GENERATED. Copy the JSON block above back into the chat.'
 } finally {
   Pop-Location
 }
