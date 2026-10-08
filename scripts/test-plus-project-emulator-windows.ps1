@@ -84,5 +84,6 @@ try {
   }
   Write-Host ''
   Write-Host 'Report each result as Q1.4.2.1/Q1.4.2.2/Q1.4.2.3/Q1.4.2.4 = TRAVA or PASSA.'
-} finally { Pop-Location }
+} finally {
+  Pop-Location
 }
