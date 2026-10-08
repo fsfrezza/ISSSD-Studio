@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 
 const scriptUrl=new URL('../scripts/test-plus-project-emulator-windows.ps1',import.meta.url);
 
-test('Plus project emulator workflow builds one isolated persisted-patch range ROM before cross-ROM probing',async()=>{
+test('Plus project emulator workflow builds one byte-level isolated persisted-patch ROM before cross-ROM probing',async()=>{
   const text=await readFile(scriptUrl,'utf8');
   assert.match(text,/build-persisted-patch-bisect-plus\.mjs/);
   assert.doesNotMatch(text,/build-semantic-only-plus-project\.mjs/);
@@ -13,6 +13,8 @@ test('Plus project emulator workflow builds one isolated persisted-patch range R
   assert.match(text,/\.tools\\mesen-runs/);
   assert.match(text,/probe-comparison\.json/);
   assert.match(text,/ROM TO TEST MANUALLY/);
-  assert.match(text,/canonical range 0 only/i);
-  assert.match(text,/--start' '0' '--end' '1/);
+  assert.match(text,/first half of canonical range 0/i);
+  assert.match(text,/--start' '0' '--end' '1' '--byte-part' '0' '--byte-parts' '2/);
+  assert.match(text,/Canonical range PC offset/);
+  assert.match(text,/Selected byte interval inside range/);
 });
