@@ -4,15 +4,15 @@ import {readFile} from 'node:fs/promises';
 
 const scriptUrl=new URL('../scripts/test-plus-project-emulator-windows.ps1',import.meta.url);
 
-test('Plus project Windows diagnostic builds four dependency-safe persisted-patch ddmin ROMs',async()=>{
+test('Plus project Windows diagnostic builds four dependency-safe ddmin ROMs focused inside previous Q1',async()=>{
   const text=await readFile(scriptUrl,'utf8');
   assert.match(text,/build-persisted-patch-ddmin-plus\.mjs/);
   assert.doesNotMatch(text,/inspect-brazil-mirror-patches-plus\.mjs/);
   assert.doesNotMatch(text,/build-persisted-patch-bisect-plus\.mjs/);
   assert.doesNotMatch(text,/discover-mesen-cross-rom-windows\.ps1/);
-  assert.match(text,/FOUR dependency-safe delta-debug ROMs/i);
-  assert.match(text,/mirror\/main pairs are kept together atomically/i);
-  assert.match(text,/--parts' '4/);
+  assert.match(text,/FOUR dependency-safe delta-debug ROMs focused inside previous Q1/i);
+  assert.match(text,/mirror\/main pairs remain atomic/i);
+  assert.match(text,/--parts' '4' '--focus-path' '0/);
   assert.match(text,/ROMs TO TEST MANUALLY/);
-  assert.match(text,/Q1\/Q2\/Q3\/Q4 = TRAVA or PASSA/);
+  assert.match(text,/Q1\.1\/Q1\.2\/Q1\.3\/Q1\.4 = TRAVA or PASSA/);
 });
