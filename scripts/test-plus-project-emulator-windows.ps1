@@ -6,8 +6,7 @@ param(
   [string]$RomDir = $(if ($env:ISSSD_ROM_DIR) { $env:ISSSD_ROM_DIR } else { 'C:\Users\fsfre\Downloads\ISSSD-Studio\roms' }),
   [string]$ProjectDir = $(if ($env:ISSSD_PROJECT_DIR) { $env:ISSSD_PROJECT_DIR } else { 'C:\Users\fsfre\Downloads\ISSSD-Studio' }),
   [string]$RomName = $(if ($env:ISSSD_ROM_NAME) { $env:ISSSD_ROM_NAME } else { 'International Superstar Soccer Deluxe Plus.sfc' }),
-  [string]$ProjectName = $(if ($env:ISSSD_PROJECT_NAME) { $env:ISSSD_PROJECT_NAME } else { 'International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj' }),
-  [int]$Limit = 20
+  [string]$ProjectName = $(if ($env:ISSSD_PROJECT_NAME) { $env:ISSSD_PROJECT_NAME } else { 'International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj' })
 )
 
 $ErrorActionPreference = 'Stop'
@@ -53,7 +52,6 @@ function Select-ProjectFile([string]$InitialDirectory,[string]$PreferredName) {
   return $dialog.FileName
 }
 
-if ($Limit -lt 1 -or $Limit -gt 500) { throw 'Limit must be between 1 and 500' }
 $RomDir = [IO.Path]::GetFullPath($RomDir)
 $ProjectDir = [IO.Path]::GetFullPath($ProjectDir)
 if ([string]::IsNullOrWhiteSpace($BaseRom)) { $BaseRom = Find-CanonicalPlusRom $RomDir $RomName } else { $BaseRom = Resolve-RelativeInput $BaseRom $RomDir }
@@ -63,44 +61,25 @@ if ([IO.Path]::GetExtension($Project).ToLowerInvariant() -ne '.issdproj') { thro
 
 Write-Host "ROM base: $BaseRom"
 Write-Host "Project: $Project"
-$runId = Get-Date -Format 'yyyyMMdd-HHmmss-fff'
-$runDir = Join-Path $repoRoot ".tools\mesen-runs\$runId"
-New-Item -ItemType Directory -Force -Path $runDir | Out-Null
+Write-Host ''
+Write-Host 'Inspecting canonical persisted range 0 directly. No ROM will be generated.'
 
 Push-Location $repoRoot
 try {
-  Write-Host '1/2 Building ONE byte-level isolation ROM (first eighth of canonical range 0)...'
-  $buildOutput = & node 'scripts/build-persisted-patch-bisect-plus.mjs' $BaseRom $Project '--out-dir' $runDir '--start' '0' '--end' '1' '--byte-part' '0' '--byte-parts' '8'
-  if ($LASTEXITCODE -ne 0) { throw "Persisted-patch byte isolation build failed with exit code $LASTEXITCODE" }
-  $buildOutput | Write-Host
-  $summary = ($buildOutput -join "`n") | ConvertFrom-Json
-  $generatedRom = [string]$summary.outputPath
-  if ([string]::IsNullOrWhiteSpace($generatedRom) -or -not (Test-Path $generatedRom)) { throw "Expected byte-isolation ROM was not created: $generatedRom" }
-
-  $baseReport = Join-Path $runDir 'probe-base.json'
-  $generatedReport = Join-Path $runDir 'probe-generated.json'
-  $comparison = Join-Path $runDir 'probe-comparison.json'
-  $baseLog = Join-Path $runDir 'probe-base.log'
-  $generatedLog = Join-Path $runDir 'probe-generated.log'
+  $inspectionOutput = & node 'scripts/inspect-persisted-range0-plus.mjs' $BaseRom $Project
+  if ($LASTEXITCODE -ne 0) { throw "Persisted range inspection failed with exit code $LASTEXITCODE" }
+  $inspectionOutput | Write-Host
+  $summary = ($inspectionOutput -join "`n") | ConvertFrom-Json
 
   Write-Host ''
-  Write-Host '2/2 Running emulator liveness diagnostics on that single ROM...'
-  & powershell -ExecutionPolicy Bypass -File 'scripts/discover-mesen-cross-rom-windows.ps1' `
-    $BaseRom $generatedRom `
-    -BaseReport $baseReport `
-    -GeneratedReport $generatedReport `
-    -Comparison $comparison `
-    -BaseLog $baseLog `
-    -GeneratedLog $generatedLog `
-    -Limit $Limit
-  if ($LASTEXITCODE -ne 0) { throw "Cross-ROM emulator test failed with exit code $LASTEXITCODE" }
-
+  Write-Host 'DIRECT DIAGNOSIS DATA'
+  Write-Host "Canonical ranges: $($summary.totalCanonicalPersistedRanges)"
+  Write-Host "Range 0 PC offset: $($summary.rangeOffsetHex) ($($summary.rangeOffset))"
+  Write-Host "Range 0 length: $($summary.rangeLength) bytes"
+  Write-Host "Base bytes: $($summary.baseBytesHex -join ' ')"
+  Write-Host "Persisted bytes: $($summary.persistedBytesHex -join ' ')"
+  Write-Host "Changed bytes in range: $($summary.changedByteCount)"
+  Write-Host "First byte: $($summary.firstPersistedByte.pcOffsetHex) base=$($summary.firstPersistedByte.baseHex) persisted=$($summary.firstPersistedByte.persistedHex) differs=$($summary.firstPersistedByte.differs)"
   Write-Host ''
-  Write-Host 'Persisted-patch byte isolation flow completed.'
-  Write-Host "Canonical range index: $($summary.byteSelection.sourceRangeIndex)"
-  Write-Host "Canonical range PC offset: $($summary.byteSelection.sourceRangeOffset)"
-  Write-Host "Canonical range length: $($summary.byteSelection.sourceRangeLength) bytes"
-  Write-Host "Selected byte interval inside range: $($summary.byteSelection.startInclusive)..$($summary.byteSelection.endExclusive - 1)"
-  Write-Host "Selected persisted bytes: $($summary.selectedBytes)"
-  Write-Host "ROM TO TEST MANUALLY: $generatedRom"
+  Write-Host 'NO ROM GENERATED. Copy the JSON block above back into the chat.'
 } finally { Pop-Location }
