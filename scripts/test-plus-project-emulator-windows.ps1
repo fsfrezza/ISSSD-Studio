@@ -69,13 +69,13 @@ New-Item -ItemType Directory -Force -Path $runDir | Out-Null
 
 Push-Location $repoRoot
 try {
-  Write-Host '1/2 Building ONE persisted-patch bisect ROM (first 1/512 of canonical ranges)...'
-  $buildOutput = & node 'scripts/build-persisted-patch-bisect-plus.mjs' $BaseRom $Project '--out-dir' $runDir '--part' '0' '--parts' '512'
-  if ($LASTEXITCODE -ne 0) { throw "Persisted-patch bisect build failed with exit code $LASTEXITCODE" }
+  Write-Host '1/2 Building ONE persisted-patch isolation ROM (canonical range 0 only)...'
+  $buildOutput = & node 'scripts/build-persisted-patch-bisect-plus.mjs' $BaseRom $Project '--out-dir' $runDir '--start' '0' '--end' '1'
+  if ($LASTEXITCODE -ne 0) { throw "Persisted-patch isolation build failed with exit code $LASTEXITCODE" }
   $buildOutput | Write-Host
   $summary = ($buildOutput -join "`n") | ConvertFrom-Json
   $generatedRom = [string]$summary.outputPath
-  if ([string]::IsNullOrWhiteSpace($generatedRom) -or -not (Test-Path $generatedRom)) { throw "Expected bisect ROM was not created: $generatedRom" }
+  if ([string]::IsNullOrWhiteSpace($generatedRom) -or -not (Test-Path $generatedRom)) { throw "Expected isolated-range ROM was not created: $generatedRom" }
 
   $baseReport = Join-Path $runDir 'probe-base.json'
   $generatedReport = Join-Path $runDir 'probe-generated.json'
@@ -96,7 +96,7 @@ try {
   if ($LASTEXITCODE -ne 0) { throw "Cross-ROM emulator test failed with exit code $LASTEXITCODE" }
 
   Write-Host ''
-  Write-Host 'Persisted-patch bisect flow completed.'
+  Write-Host 'Persisted-patch isolation flow completed.'
   Write-Host "Selected canonical patch indexes: $($summary.selectedRangeIndexes.startInclusive)..$($summary.selectedRangeIndexes.endExclusive - 1) of $($summary.totalCanonicalPersistedRanges) ranges"
   Write-Host "Selected persisted bytes: $($summary.selectedBytes)"
   Write-Host "ROM TO TEST MANUALLY: $generatedRom"
