@@ -61,28 +61,16 @@ if ([IO.Path]::GetExtension($Project).ToLowerInvariant() -ne '.issdproj') { thro
 
 Write-Host "ROM base: $BaseRom"
 Write-Host "Project: $Project"
-$runId = Get-Date -Format 'yyyyMMdd-HHmmss-fff'
-$runDir = Join-Path $repoRoot ".tools\mesen-runs\$runId"
-New-Item -ItemType Directory -Force -Path $runDir | Out-Null
+Write-Host ''
+Write-Host 'Inspecting possible Brazil player 0/1 low-ROM records before known player 2 mirror. No ROM will be generated.'
 
 Push-Location $repoRoot
 try {
+  $inspectionOutput = & node 'scripts/inspect-brazil-pre-mirror-plus.mjs' $BaseRom
+  if ($LASTEXITCODE -ne 0) { throw "Brazil pre-mirror inspection failed with exit code $LASTEXITCODE" }
+  $inspectionOutput | Write-Host
   Write-Host ''
-  Write-Host 'Generating FIVE exact omission ROMs for the isolated Q1.4.2.3 atoms.'
-  Write-Host 'Each ROM keeps the full project and omits exactly one dependency-safe atom.'
-  Write-Host 'This is the final manual isolation round for this focus.'
-  $buildOutput = & node 'scripts/build-persisted-focus-atom-omit-plus.mjs' $BaseRom $Project '--out-dir' $runDir '--parts' '4' '--focus-path' '0,3,1,2'
-  if ($LASTEXITCODE -ne 0) { throw "Focused atom omission build failed with exit code $LASTEXITCODE" }
-  $buildOutput | Write-Host
-  $summary = ($buildOutput -join "`n") | ConvertFrom-Json
-
-  Write-Host ''
-  Write-Host 'ROMs TO TEST MANUALLY'
-  foreach ($item in $summary.outputs) {
-    Write-Host "T$($item.testNumber) atom=$($item.atomIndex) off=$($item.firstOffsetHex): $($item.outputPath)"
-  }
-  Write-Host ''
-  Write-Host 'Report T1/T2/T3/T4/T5 = TRAVA or PASSA. The passing ROM identifies the exact offending atom.'
+  Write-Host 'NO ROM GENERATED. Copy the JSON block above back into the chat.'
 } finally {
   Pop-Location
 }
