@@ -109,7 +109,7 @@ test('project build never reapplies quarantined legacy player attrHex through bu
   base[mirror+3]=0x64;
   base[mirror+4]=0x55;
   base[mirror+5]=0x06;
-  base[mirror+6]=0x66;
+  base[mirror+6]=0x55;
   const before=base.slice();
   const project={state:{targetLength:0x200000,patchesCompact:[],semantic:{teamsV1:{schema:'isssd-teams-v1',version:2,names:{teams:{
     '30':{teamId:30,players:[{slot:8,attrHex:'012345673909AB'}]}
