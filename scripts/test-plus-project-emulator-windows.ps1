@@ -61,26 +61,27 @@ if ([IO.Path]::GetExtension($Project).ToLowerInvariant() -ne '.issdproj') { thro
 
 Write-Host "ROM base: $BaseRom"
 Write-Host "Project: $Project"
-Write-Host ''
-Write-Host 'Inspecting Brazil persisted mirror/main counterparts directly. No ROM will be generated.'
+$runId = Get-Date -Format 'yyyyMMdd-HHmmss-fff'
+$runDir = Join-Path $repoRoot ".tools\mesen-runs\$runId"
+New-Item -ItemType Directory -Force -Path $runDir | Out-Null
 
 Push-Location $repoRoot
 try {
-  $inspectionOutput = & node 'scripts/inspect-brazil-mirror-patches-plus.mjs' $BaseRom $Project
-  if ($LASTEXITCODE -ne 0) { throw "Brazil mirror inspection failed with exit code $LASTEXITCODE" }
-  $inspectionOutput | Write-Host
-  $summary = ($inspectionOutput -join "`n") | ConvertFrom-Json
+  Write-Host ''
+  Write-Host 'Generating FOUR dependency-safe delta-debug ROMs.'
+  Write-Host 'Each ROM keeps the full project except one quarter of persisted patch atoms.'
+  Write-Host 'Known Brazil mirror/main pairs are kept together atomically.'
+  Write-Host 'No Mesen probe will run; manual first-screen behavior is the signal.'
+  $buildOutput = & node 'scripts/build-persisted-patch-ddmin-plus.mjs' $BaseRom $Project '--out-dir' $runDir '--parts' '4'
+  if ($LASTEXITCODE -ne 0) { throw "Dependency-safe ddmin build failed with exit code $LASTEXITCODE" }
+  $buildOutput | Write-Host
+  $summary = ($buildOutput -join "`n") | ConvertFrom-Json
 
   Write-Host ''
-  Write-Host 'BRAZIL MIRROR DIAGNOSIS'
-  Write-Host "Canonical ranges: $($summary.totalCanonicalPersistedRanges)"
-  Write-Host "Inconsistent mirror/main pairs: $($summary.inconsistentPairs.Count)"
-  foreach ($pair in $summary.inconsistentPairs) {
-    Write-Host "Player $($pair.player): main=$($pair.mainOffsetHex) mirror=$($pair.mirrorOffsetHex) mainPatched=$($pair.mainPatchedBytes) mirrorPatched=$($pair.mirrorPatchedBytes) mismatches=$($pair.effectiveMismatchCount)"
-    foreach ($m in $pair.mismatches) {
-      Write-Host "  byte $($m.index): main=$($m.mainValueHex) mirror=$($m.mirrorValueHex)"
-    }
+  Write-Host 'ROMs TO TEST MANUALLY'
+  foreach ($item in $summary.outputs) {
+    Write-Host "Q$($item.part): $($item.outputPath)"
   }
   Write-Host ''
-  Write-Host 'NO ROM GENERATED. Copy the JSON block above back into the chat.'
+  Write-Host 'Report each result as Q1/Q2/Q3/Q4 = TRAVA or PASSA.'
 } finally { Pop-Location }
