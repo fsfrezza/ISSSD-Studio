@@ -84,13 +84,32 @@ export function surgicalWritesForRecord(team,player,before,after) {
   return writes;
 }
 
-export function reconcileKnownPlayerIntegrityMirrors(rom){
-  if(!(rom instanceof Uint8Array))throw new TypeError('Uint8Array ROM required');
-  const out=rom.slice();
+// Repairs only integrity mismatches introduced by persisted project patches.
+// Pre-existing discrepancies in the immutable base are preserved byte-for-byte.
+export function reconcileKnownPlayerIntegrityMirrors(baseRom,patchedRom){
+  if(!(baseRom instanceof Uint8Array)||!(patchedRom instanceof Uint8Array))throw new TypeError('Uint8Array ROMs required');
+  if(baseRom.length!==patchedRom.length)throw new RangeError('base and patched ROM lengths must match');
+  const out=patchedRom.slice();
   for(let player=1;player<=7;player++){
     const main=playerOffset(30,player);
     for(const slice of knownMirrorSlices(30,player)){
-      for(let i=0;i<slice.length;i++)out[slice.mirror+i]=out[main+slice.mainStart+i];
+      for(let i=0;i<slice.length;i++){
+        const mainOff=main+slice.mainStart+i;
+        const mirrorOff=slice.mirror+i;
+        const baseMain=baseRom[mainOff];
+        const baseMirror=baseRom[mirrorOff];
+        const currentMain=patchedRom[mainOff];
+        const currentMirror=patchedRom[mirrorOff];
+        const mainChanged=currentMain!==baseMain;
+        const mirrorChanged=currentMirror!==baseMirror;
+        if(mainChanged&&!mirrorChanged){
+          out[mirrorOff]=currentMain;
+        }else if(!mainChanged&&mirrorChanged){
+          out[mainOff]=currentMirror;
+        }else if(mainChanged&&mirrorChanged&&currentMain!==currentMirror){
+          throw new Error(`conflicting persisted Plus integrity edits for Brazil player ${player} at main 0x${mainOff.toString(16).toUpperCase()} / mirror 0x${mirrorOff.toString(16).toUpperCase()}`);
+        }
+      }
     }
   }
   return out;
