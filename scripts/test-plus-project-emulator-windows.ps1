@@ -69,8 +69,8 @@ New-Item -ItemType Directory -Force -Path $runDir | Out-Null
 
 Push-Location $repoRoot
 try {
-  Write-Host '1/2 Building ONE byte-level isolation ROM (first half of canonical range 0)...'
-  $buildOutput = & node 'scripts/build-persisted-patch-bisect-plus.mjs' $BaseRom $Project '--out-dir' $runDir '--start' '0' '--end' '1' '--byte-part' '0' '--byte-parts' '2'
+  Write-Host '1/2 Building ONE byte-level isolation ROM (first quarter of canonical range 0)...'
+  $buildOutput = & node 'scripts/build-persisted-patch-bisect-plus.mjs' $BaseRom $Project '--out-dir' $runDir '--start' '0' '--end' '1' '--byte-part' '0' '--byte-parts' '4'
   if ($LASTEXITCODE -ne 0) { throw "Persisted-patch byte isolation build failed with exit code $LASTEXITCODE" }
   $buildOutput | Write-Host
   $summary = ($buildOutput -join "`n") | ConvertFrom-Json
