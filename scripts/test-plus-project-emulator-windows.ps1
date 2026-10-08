@@ -69,8 +69,8 @@ New-Item -ItemType Directory -Force -Path $runDir | Out-Null
 
 Push-Location $repoRoot
 try {
-  Write-Host '1/2 Building ONE persisted-patch bisect ROM (first eighth of canonical ranges)...'
-  $buildOutput = & node 'scripts/build-persisted-patch-bisect-plus.mjs' $BaseRom $Project '--out-dir' $runDir '--part' '0' '--parts' '8'
+  Write-Host '1/2 Building ONE persisted-patch bisect ROM (first sixteenth of canonical ranges)...'
+  $buildOutput = & node 'scripts/build-persisted-patch-bisect-plus.mjs' $BaseRom $Project '--out-dir' $runDir '--part' '0' '--parts' '16'
   if ($LASTEXITCODE -ne 0) { throw "Persisted-patch bisect build failed with exit code $LASTEXITCODE" }
   $buildOutput | Write-Host
   $summary = ($buildOutput -join "`n") | ConvertFrom-Json
