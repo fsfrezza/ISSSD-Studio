@@ -62,24 +62,25 @@ if ([IO.Path]::GetExtension($Project).ToLowerInvariant() -ne '.issdproj') { thro
 Write-Host "ROM base: $BaseRom"
 Write-Host "Project: $Project"
 Write-Host ''
-Write-Host 'Inspecting canonical persisted range 0 directly. No ROM will be generated.'
+Write-Host 'Inspecting Brazil persisted mirror/main counterparts directly. No ROM will be generated.'
 
 Push-Location $repoRoot
 try {
-  $inspectionOutput = & node 'scripts/inspect-persisted-range0-plus.mjs' $BaseRom $Project
-  if ($LASTEXITCODE -ne 0) { throw "Persisted range inspection failed with exit code $LASTEXITCODE" }
+  $inspectionOutput = & node 'scripts/inspect-brazil-mirror-patches-plus.mjs' $BaseRom $Project
+  if ($LASTEXITCODE -ne 0) { throw "Brazil mirror inspection failed with exit code $LASTEXITCODE" }
   $inspectionOutput | Write-Host
   $summary = ($inspectionOutput -join "`n") | ConvertFrom-Json
 
   Write-Host ''
-  Write-Host 'DIRECT DIAGNOSIS DATA'
+  Write-Host 'BRAZIL MIRROR DIAGNOSIS'
   Write-Host "Canonical ranges: $($summary.totalCanonicalPersistedRanges)"
-  Write-Host "Range 0 PC offset: $($summary.rangeOffsetHex) ($($summary.rangeOffset))"
-  Write-Host "Range 0 length: $($summary.rangeLength) bytes"
-  Write-Host "Base bytes: $($summary.baseBytesHex -join ' ')"
-  Write-Host "Persisted bytes: $($summary.persistedBytesHex -join ' ')"
-  Write-Host "Changed bytes in range: $($summary.changedByteCount)"
-  Write-Host "First byte: $($summary.firstPersistedByte.pcOffsetHex) base=$($summary.firstPersistedByte.baseHex) persisted=$($summary.firstPersistedByte.persistedHex) differs=$($summary.firstPersistedByte.differs)"
+  Write-Host "Inconsistent mirror/main pairs: $($summary.inconsistentPairs.Count)"
+  foreach ($pair in $summary.inconsistentPairs) {
+    Write-Host "Player $($pair.player): main=$($pair.mainOffsetHex) mirror=$($pair.mirrorOffsetHex) mainPatched=$($pair.mainPatchedBytes) mirrorPatched=$($pair.mirrorPatchedBytes) mismatches=$($pair.effectiveMismatchCount)"
+    foreach ($m in $pair.mismatches) {
+      Write-Host "  byte $($m.index): main=$($m.mainValueHex) mirror=$($m.mirrorValueHex)"
+    }
+  }
   Write-Host ''
   Write-Host 'NO ROM GENERATED. Copy the JSON block above back into the chat.'
 } finally { Pop-Location }
