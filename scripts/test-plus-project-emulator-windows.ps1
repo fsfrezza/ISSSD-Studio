@@ -38,26 +38,29 @@ function Find-CanonicalPlusRom([string]$Directory,[string]$PreferredName) {
 $RomDir = [IO.Path]::GetFullPath($RomDir)
 $ProjectDir = [IO.Path]::GetFullPath($ProjectDir)
 if ([string]::IsNullOrWhiteSpace($BaseRom)) { $BaseRom = Find-CanonicalPlusRom $RomDir $RomName } else { $BaseRom = Resolve-RelativeInput $BaseRom $RomDir }
+if ([string]::IsNullOrWhiteSpace($Project)) { $Project = Join-Path $ProjectDir $ProjectName } else { $Project = Resolve-RelativeInput $Project $ProjectDir }
 if (-not (Test-Path $BaseRom -PathType Leaf)) { throw "Input not found: $BaseRom" }
-if (-not (Test-Path $ProjectDir -PathType Container)) { throw "Project directory not found: $ProjectDir" }
+if (-not (Test-Path $Project -PathType Leaf)) { throw "Project not found: $Project" }
+if ([IO.Path]::GetExtension($Project).ToLowerInvariant() -ne '.issdproj') { throw 'Project must use the .issdproj extension' }
 
-$jsonPath = Join-Path $ProjectDir 'ISSSD-Plus-F8-reference-inspection.json'
+$outputPath = Join-Path $ProjectDir 'ISSSD-Plus-project-integrity-fixed.sfc'
 
 Write-Host "ROM base: $BaseRom"
+Write-Host "Project: $Project"
 Write-Host ''
-Write-Host 'Static analysis: tracing every plausible reference to Plus data in PC 0x78B8-0x78EF / SNES $80:F8B8-$80:F8EF.'
-Write-Host 'The upstream USA disassembly marks $80:F828-$80:FF8F as free bytes, so this block is Plus-specific infrastructure.'
-Write-Host 'No ROM will be generated.'
+Write-Host 'Generating ONE full project ROM with persisted patches, semantic writers, and Plus player integrity reconciliation.'
+Write-Host 'No Mesen probe will run. Manual first-screen/navigation behavior is the validation signal.'
 
 Push-Location $repoRoot
 try {
-  $inspectionOutput = & node 'scripts/inspect-plus-f8-references.mjs' $BaseRom
-  if ($LASTEXITCODE -ne 0) { throw "Plus F8 reference inspection failed with exit code $LASTEXITCODE" }
-  $inspectionOutput | Set-Content -Path $jsonPath -Encoding utf8
+  $buildOutput = & node 'scripts/build-full-plus-project.mjs' $BaseRom $Project '--output' $outputPath
+  if ($LASTEXITCODE -ne 0) { throw "Full Plus project build failed with exit code $LASTEXITCODE" }
+  $buildOutput | Write-Host
   Write-Host ''
-  Write-Host "JSON GENERATED: $jsonPath"
-  Write-Host 'Upload that JSON file to the chat. The full JSON is no longer printed to the console.'
-  Write-Host 'NO ROM GENERATED.'
+  Write-Host 'ROM TO TEST MANUALLY:'
+  Write-Host $outputPath
+  Write-Host ''
+  Write-Host 'Report: PASSA if it advances normally beyond the first screen; otherwise TRAVA.'
 } finally {
   Pop-Location
 }
