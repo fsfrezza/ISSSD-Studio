@@ -50,7 +50,8 @@ for(let pc=0;pc<rom.length-2;pc++){
   if(longOps.has(op)){
     if(pc+3>=rom.length) continue;
     const cpu=rom[pc+1]|(rom[pc+2]<<8)|(rom[pc+3]<<16);
-    // Accept bank 80 or its bank-00 mirror for the target freespace.
+    const bank=(cpu>>>16)&0xFF;
+    if(bank!==0x80&&bank!==0x00) continue;
     const normalized=(cpu&0xFFFF)|(0x80<<16);
     if(normalized>=targetCpuStart&&normalized<targetCpuEnd){
       references.push({
@@ -84,7 +85,6 @@ for(let pc=0;pc<rom.length-2;pc++){
   }
 }
 
-// Limit raw coincidences only in presentation; instruction references are all retained.
 const result={
   mode:'inspect-plus-f8-references',
   upstreamDisassemblyFact:{freeCpuRange:'$80:F828-$80:FF8F',note:'USA disassembly marks this range as free bytes; Deluxe Plus repurposes it.'},
