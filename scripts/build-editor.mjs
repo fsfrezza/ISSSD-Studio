@@ -25,10 +25,7 @@ const legacyRoots=[
 
 const candidates=[cachedHtml];
 for(const legacyRoot of legacyRoots){
- candidates.push(
-  path.join(legacyRoot,'legacy-ui','ISSSD-Studio.html'),
-  path.join(legacyRoot,'ISSSD-Studio.html')
- );
+ candidates.push(path.join(legacyRoot,'legacy-ui','ISSSD-Studio.html'),path.join(legacyRoot,'ISSSD-Studio.html'));
 }
 
 let source=candidates.find(p=>fs.existsSync(p));
@@ -54,16 +51,29 @@ if(source!==cachedHtml){
 
 let html=fs.readFileSync(source,'utf8');
 
-// Compatibility fix applied deterministically at build time. Some Visual Bridge
-// snapshots guard studioDeferredPlayerPatches while filtering it, but later read
-// .length directly. When the legacy lifecycle leaves that variable undefined,
-// Salvar Projeto crashes after title-screen image edits. Keep the generated HTML
-// safe without editing the cached legacy artifact by hand.
+// Compatibility fix: project save must tolerate an uninitialized deferred patch list.
 const unsafeDeferredLength='(studioDeferredPlayerPatches.length-deferredNative.length)';
 const safeDeferredLength='((studioDeferredPlayerPatches||[]).length-deferredNative.length)';
 if(html.includes(unsafeDeferredLength)){
  html=html.replaceAll(unsafeDeferredLength,safeDeferredLength);
  console.log('Compatibilidade aplicada: studioDeferredPlayerPatches.length protegido no salvamento de projeto.');
+}
+
+// Canonical text persistence fix. The legacy editor has multiple text mirrors and
+// some renderers still fall back to ROM/original values. Wire the Git runtime into
+// the exact lifecycle points instead of relying on timing/event wrappers.
+const projectObjectNeedle='async function studioProjectObject(){';
+const projectObjectPatched='async function studioProjectObject(){\n window.__ISSSD_GIT_SYNC_TEXT_STATE_BEFORE_SAVE__?.();';
+if(html.includes(projectObjectNeedle)&&!html.includes('__ISSSD_GIT_SYNC_TEXT_STATE_BEFORE_SAVE__?.();')){
+ html=html.replace(projectObjectNeedle,projectObjectPatched);
+ console.log('Persistência canônica aplicada: campos atuais sincronizados antes de Salvar Projeto.');
+}
+
+const importNeedle="await studioImportProject(f);window.ISSSDLog?.add('Projetos','info','Projeto aberto'";
+const importPatched="await studioImportProject(f);await window.__ISSSD_GIT_AFTER_PROJECT_OPEN__?.(f);window.ISSSDLog?.add('Projetos','info','Projeto aberto'";
+if(html.includes(importNeedle)&&!html.includes('__ISSSD_GIT_AFTER_PROJECT_OPEN__?.(f)')){
+ html=html.replace(importNeedle,importPatched);
+ console.log('Importação canônica aplicada: hidratação executada imediatamente após Abrir Projeto.');
 }
 
 const css=fs.existsSync(cssFile)?fs.readFileSync(cssFile,'utf8'):'';
