@@ -43,6 +43,15 @@ if(source!==cachedHtml){
 
 let html=fs.readFileSync(source,'utf8');
 
+// O cache pode ter vindo de uma saída já gerada por uma versão anterior do Git
+// Visual Bridge. Nunca reutilizar CSS/JS injetados antigos: remova-os do HTML-base
+// e injete novamente os arquivos versionados atuais mais abaixo.
+const marker='ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE';
+html=html
+ .replace(/<!--\s*ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE\s*-->\s*/g,'')
+ .replace(/<style\s+id=["']isssd-git-visual-bridge-overrides["'][^>]*>[\s\S]*?<\/style>\s*/g,'')
+ .replace(/<script\s+type=["']module["']\s+id=["']isssd-git-visual-bridge-runtime["'][^>]*>[\s\S]*?<\/script>\s*/g,'');
+
 const unsafeDeferredLength='(studioDeferredPlayerPatches.length-deferredNative.length)';
 const safeDeferredLength='((studioDeferredPlayerPatches||[]).length-deferredNative.length)';
 if(html.includes(unsafeDeferredLength))html=html.replaceAll(unsafeDeferredLength,safeDeferredLength);
@@ -65,12 +74,13 @@ if(!html.includes(openHook))throw new Error('Build interrompido: hook pós-impor
 
 const css=fs.existsSync(cssFile)?fs.readFileSync(cssFile,'utf8'):'';
 const js=fs.existsSync(jsFile)?fs.readFileSync(jsFile,'utf8'):'';
-const marker='ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE';
-if(!html.includes(marker)){
- const patch=`\n<!-- ${marker} -->\n<style id="isssd-git-visual-bridge-overrides">\n${css}\n</style>\n<script type="module" id="isssd-git-visual-bridge-runtime">\n${js}\n</script>\n`;
- if(html.includes('</body>'))html=html.replace('</body>',patch+'\n</body>');else html+=patch;
-}
+const patch=`\n<!-- ${marker} -->\n<style id="isssd-git-visual-bridge-overrides">\n${css}\n</style>\n<script type="module" id="isssd-git-visual-bridge-runtime">\n${js}\n</script>\n`;
+if(html.includes('</body>'))html=html.replace('</body>',patch+'\n</body>');else html+=patch;
 
+const markerCount=(html.match(/ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE/g)||[]).length;
+const runtimeCount=(html.match(/id=["']isssd-git-visual-bridge-runtime["']/g)||[]).length;
+const styleCount=(html.match(/id=["']isssd-git-visual-bridge-overrides["']/g)||[]).length;
+if(markerCount!==1||runtimeCount!==1||styleCount!==1)throw new Error(`Build interrompido: injeção Git duplicada/incompleta (marker=${markerCount}, runtime=${runtimeCount}, style=${styleCount}).`);
 if(!html.includes('git-visual-bridge-v7-full-project-restore'))throw new Error('Build interrompido: runtime v7 de restauração completa não foi injetado.');
 if(html.includes('isssdProjectHydrationDiagnostic')||html.includes('Aplicar dados do projeto aos campos'))throw new Error('Build interrompido: painel manual de diagnóstico ainda está presente na interface gerada.');
 
@@ -80,4 +90,4 @@ for(const name of ['assets','docs','schemas']){const from=path.join(vendorDir,na
 console.log('ISSSD Studio editor build concluído.');
 console.log('Fonte visual em cache: '+source);
 console.log('Saída: '+outHtml);
-console.log('Hooks obrigatórios confirmados: pós-importação + pré-salvamento + restauração da Tela Inicial.');
+console.log('Runtime Git atualizado e único; hooks obrigatórios confirmados.');
