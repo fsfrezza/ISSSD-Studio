@@ -15,6 +15,8 @@ const candidates=[
  cachedHtml,
  path.join(parent,'ISSSD-Studio-Visual-Bridge','legacy-ui','ISSSD-Studio.html'),
  path.join(parent,'ISSSD-Studio-Visual-Bridge','ISSSD-Studio.html'),
+ path.join(parent,'ISSSD-Studio-OLD','ISSSD-Studio-Visual-Bridge','legacy-ui','ISSSD-Studio.html'),
+ path.join(parent,'ISSSD-Studio-OLD','ISSSD-Studio-Visual-Bridge','ISSSD-Studio.html'),
  path.join(parent,'ISSSD-Studio-ANTIGO','ISSSD-Studio.html'),
  path.join(root,'legacy-ui','ISSSD-Studio.html'),
  path.join(root,'ISSSD-Studio.html')
@@ -23,7 +25,7 @@ const candidates=[
 let source=candidates.find(p=>fs.existsSync(p));
 if(!source){
  console.error('ISSSD Studio: não encontrei a interface legada/Visual Bridge.');
- console.error('Na primeira execução, mantenha ISSSD-Studio-Visual-Bridge ao lado de ISSSD-Studio. Depois a interface fica armazenada em .editor-vendor dentro do próprio repositório local.');
+ console.error('Na primeira execução, o build procura o Visual Bridge ao lado de ISSSD-Studio ou dentro de ISSSD-Studio-OLD/ISSSD-Studio-Visual-Bridge. Depois a interface fica armazenada em .editor-vendor dentro do próprio repositório local.');
  console.error('Locais verificados:\n- '+candidates.join('\n- '));
  process.exit(2);
 }
