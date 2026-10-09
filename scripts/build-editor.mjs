@@ -11,21 +11,30 @@ const cachedHtml=path.join(vendorDir,'ISSSD-Studio.html');
 const cssFile=path.join(root,'editor-src','visual-bridge-overrides.css');
 const jsFile=path.join(root,'editor-src','visual-bridge-overrides.mjs');
 
-const candidates=[
- cachedHtml,
- path.join(parent,'ISSSD-Studio-Visual-Bridge','legacy-ui','ISSSD-Studio.html'),
- path.join(parent,'ISSSD-Studio-Visual-Bridge','ISSSD-Studio.html'),
- path.join(parent,'ISSSD-Studio-OLD','ISSSD-Studio-Visual-Bridge','legacy-ui','ISSSD-Studio.html'),
- path.join(parent,'ISSSD-Studio-OLD','ISSSD-Studio-Visual-Bridge','ISSSD-Studio.html'),
- path.join(parent,'ISSSD-Studio-ANTIGO','ISSSD-Studio.html'),
- path.join(root,'legacy-ui','ISSSD-Studio.html'),
- path.join(root,'ISSSD-Studio.html')
+const legacyContainer=path.join(parent,'ISSSD-Studio-OLD');
+const legacyRoots=[
+ path.join(parent,'ISSSD-Studio-Visual-Bridge'),
+ path.join(legacyContainer,'ISSSD-Studio-Visual-Bridge'),
+ path.join(legacyContainer,'ISSSD-Studio-Preview'),
+ path.join(legacyContainer,'ISSSD-Studio-ANTIGO'),
+ path.join(legacyContainer,'ISSSD-Studio-OLD'),
+ path.join(parent,'ISSSD-Studio-ANTIGO'),
+ path.join(root,'legacy-ui'),
+ root
 ];
+
+const candidates=[cachedHtml];
+for(const legacyRoot of legacyRoots){
+ candidates.push(
+  path.join(legacyRoot,'legacy-ui','ISSSD-Studio.html'),
+  path.join(legacyRoot,'ISSSD-Studio.html')
+ );
+}
 
 let source=candidates.find(p=>fs.existsSync(p));
 if(!source){
  console.error('ISSSD Studio: não encontrei a interface legada/Visual Bridge.');
- console.error('Na primeira execução, o build procura o Visual Bridge ao lado de ISSSD-Studio ou dentro de ISSSD-Studio-OLD/ISSSD-Studio-Visual-Bridge. Depois a interface fica armazenada em .editor-vendor dentro do próprio repositório local.');
+ console.error('Na primeira execução, o build procura primeiro o Visual Bridge e depois as demais cópias legadas dentro de ISSSD-Studio-OLD. Depois a interface fica armazenada em .editor-vendor dentro do próprio repositório local.');
  console.error('Locais verificados:\n- '+candidates.join('\n- '));
  process.exit(2);
 }
@@ -42,7 +51,7 @@ if(source!==cachedHtml){
   if(fs.existsSync(from))fs.cpSync(from,to,{recursive:true});
  }
  source=cachedHtml;
- console.log('Visual Bridge importado para cache local: '+cachedHtml);
+ console.log('Interface legada importada para cache local: '+cachedHtml);
 }
 
 let html=fs.readFileSync(source,'utf8');
