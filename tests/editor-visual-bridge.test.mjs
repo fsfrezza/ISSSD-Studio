@@ -27,3 +27,11 @@ test('layout keeps requested compact modes and four-column strategies',()=>{
  assert.match(css,/gm610Fields/);
  assert.match(css,/repeat\(4,minmax\(205px,1fr\)\)/);
 });
+
+test('project hydration is attached to completed project application, not file selection timing',()=>{
+ const src=fs.readFileSync(path.join(root,'editor-src/visual-bridge-overrides.mjs'),'utf8');
+ assert.match(src,/studioApplyProjectWithBase/);
+ assert.match(src,/const result=await apply\.call\(this,project,\.\.\.rest\)/);
+ assert.match(src,/scheduleHydration\(project\)/);
+ assert.doesNotMatch(src,/id==='projectFile'.*scheduleHydration/s);
+});

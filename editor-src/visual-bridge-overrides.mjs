@@ -1,9 +1,9 @@
-const BUILD='git-visual-bridge-v2-project-hydration';
+const BUILD='git-visual-bridge-v3-project-hydration-after-apply';
 window.__ISSSD_GIT_VISUAL_BRIDGE__={build:BUILD,loadedAt:new Date().toISOString()};
 
 const clone=v=>v==null?v:JSON.parse(JSON.stringify(v));
 const cleanTitle=v=>String(v||'').replace(/[^\x20-\x7E]/g,' ').slice(0,21);
-let lastLoadedProject=null;
+let lastAppliedProject=null;
 let hydrateGeneration=0;
 
 function installBadge(){
@@ -19,9 +19,7 @@ function installBadge(){
 }
 
 function setValue(selector,value){
- for(const node of document.querySelectorAll(selector)){
-  if('value' in node)node.value=String(value??'');
- }
+ for(const node of document.querySelectorAll(selector))if('value' in node)node.value=String(value??'');
 }
 
 function hydrateDomFromProject(project){
@@ -67,9 +65,18 @@ function hydrateProjectState(project){
   try{window.ISSSDTextWorkspace?.restore?.(clone(ws))}catch(e){console.warn('Git Bridge: restore textWorkspaceV2',e)}
   try{window.__ISSSD_PREKICK_TEXTS__?.restore?.(clone(ws.sections.preKickoff?.values||{}))}catch(e){console.warn('Git Bridge: restore pre-kickoff',e)}
   try{
+   const direct=clone(ws.sections.direct?.byProfile||{});
+   if(typeof window.studioTextProjectDrafts!=='undefined')window.studioTextProjectDrafts=direct;
+  }catch(e){console.warn('Git Bridge: restore direct texts',e)}
+  try{
+   const pre=clone(ws.sections.preKickoff?.values||{});
+   if(typeof window.preKickoffTextCommitted!=='undefined')window.preKickoffTextCommitted=clone(pre);
+   if(typeof window.preKickoffTextDraft!=='undefined')window.preKickoffTextDraft=clone(pre);
+  }catch(e){console.warn('Git Bridge: restore pre-kickoff mirrors',e)}
+  try{
    const menu=clone(ws.sections.mainMenu?.values||{});
    if(Object.keys(menu).length){
-    window.mainMenuCommittedDraft=menu;
+    window.mainMenuCommittedDraft=clone(menu);
     window.mainMenuFb96Draft=window.mainMenuCanonicalizeDraft?window.mainMenuCanonicalizeDraft(clone(menu)):clone(menu);
     window.mainMenuProjectSaved=true;
    }
@@ -89,37 +96,40 @@ function hydrateProjectState(project){
 }
 
 function scheduleHydration(project){
- lastLoadedProject=project;
+ if(!project?.state?.semantic)return;
+ lastAppliedProject=project;
  const gen=++hydrateGeneration;
- // O Visual Bridge antigo ainda redesenha vários painéis depois da importação.
- // Reaplicar o snapshot canônico após esses repaints evita o retorno aos textos da ROM-base.
- for(const ms of [0,60,180,450,900,1600,2800])setTimeout(()=>{
-  if(gen!==hydrateGeneration||lastLoadedProject!==project)return;
+ // Estes tempos começam APÓS studioApplyProjectWithBase terminar, não no momento
+ // em que o usuário apenas escolhe o arquivo. Assim a seleção de alterações e
+ // a restauração da ROM-base já terminaram antes de reidratar os formulários.
+ for(const ms of [0,50,160,400,850,1500,2600])setTimeout(()=>{
+  if(gen!==hydrateGeneration||lastAppliedProject!==project)return;
   hydrateProjectState(project);
  },ms);
 }
 
-async function captureProjectFile(file){
- try{
-  const project=JSON.parse(await file.text());
-  if(!project?.state?.semantic)return;
+function installLifecycleHook(){
+ if(window.__ISSSD_GIT_PROJECT_LIFECYCLE_HOOK__)return;
+ const apply=window.studioApplyProjectWithBase;
+ if(typeof apply!=='function')return false;
+ window.studioApplyProjectWithBase=async function(project,...rest){
+  const result=await apply.call(this,project,...rest);
   scheduleHydration(project);
- }catch(e){console.error('Git Bridge: não foi possível preparar a reidratação do projeto.',e)}
+  return result;
+ };
+ window.__ISSSD_GIT_PROJECT_LIFECYCLE_HOOK__=true;
+ return true;
 }
 
-function installProjectImportHydrator(){
- if(document.documentElement.dataset.gitProjectHydrator==='1')return;
- document.documentElement.dataset.gitProjectHydrator='1';
- document.addEventListener('change',e=>{
-  const id=e.target?.id;
-  if(id==='projectFile'){
-   const file=e.target.files?.[0];
-   if(file)captureProjectFile(file);
-  }
- },true);
+function ensureLifecycleHook(){
+ if(installLifecycleHook())return;
+ let tries=0;
+ const timer=setInterval(()=>{
+  if(installLifecycleHook()||++tries>50)clearInterval(timer);
+ },100);
 }
 
-function boot(){installBadge();installProjectImportHydrator()}
+function boot(){installBadge();ensureLifecycleHook()}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
 else boot();
 window.addEventListener('load',boot,{once:true});
