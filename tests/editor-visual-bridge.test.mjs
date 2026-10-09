@@ -21,7 +21,15 @@ test('layout keeps requested compact modes and four-column strategies',()=>{
 });
 
 test('build requires exact post-import and pre-save lifecycle hooks',()=>{
- const src=build();assert.match(src,/__ISSSD_GIT_AFTER_PROJECT_OPEN__/);assert.match(src,/studioImportProject/);assert.match(src,/Build interrompido: hook pós-importação não foi instalado/);assert.match(src,/__ISSSD_GIT_SYNC_TEXT_STATE_BEFORE_SAVE__/);assert.match(src,/Build interrompido: hook pré-salvamento não foi instalado/);
+ const src=build();
+ assert.match(src,/__ISSSD_GIT_AFTER_PROJECT_OPEN__/);
+ assert.match(src,/finalImportNeedle/);
+ assert.match(src,/Projeto aberto/);
+ assert.match(src,/openHookCount!==1/);
+ assert.match(src,/hook pós-importação deveria existir uma vez/);
+ assert.match(src,/hook pós-importação foi inserido entre if\/else legado/);
+ assert.match(src,/__ISSSD_GIT_SYNC_TEXT_STATE_BEFORE_SAVE__/);
+ assert.match(src,/Build interrompido: hook pré-salvamento não foi instalado/);
 });
 
 test('build removes stale injected Git runtime and always injects exactly one current runtime',()=>{
