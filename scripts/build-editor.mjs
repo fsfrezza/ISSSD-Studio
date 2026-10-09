@@ -42,10 +42,6 @@ if(source!==cachedHtml){
 }
 
 let html=fs.readFileSync(source,'utf8');
-
-// O cache pode ter vindo de uma saída já gerada por uma versão anterior do Git
-// Visual Bridge. Nunca reutilizar CSS/JS injetados antigos: remova-os do HTML-base
-// e injete novamente os arquivos versionados atuais mais abaixo.
 const marker='ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE';
 html=html
  .replace(/<!--\s*ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE\s*-->\s*/g,'')
@@ -64,11 +60,6 @@ if(!html.includes(saveHook)){
 }
 if(!html.includes(saveHook))throw new Error('Build interrompido: hook pré-salvamento não foi instalado.');
 
-// Reparar qualquer build anterior que tenha inserido o hook entre um if e seu else.
-// A interface legada possui duas chamadas studioImportProject(f); a primeira está em
-// `if (...) await studioImportProject(f); else ...` e NÃO pode receber código entre
-// a chamada e o `else`. O hook deve entrar somente no handler final do lifecycle,
-// imediatamente antes do log "Projeto aberto".
 const openHook='await window.__ISSSD_GIT_AFTER_PROJECT_OPEN__?.(f);';
 html=html.replaceAll(openHook,'');
 const finalImportNeedle="await studioImportProject(f);window.ISSSDLog?.add('Projetos','info','Projeto aberto'";
@@ -79,6 +70,15 @@ const openHookCount=(html.match(/await window\.__ISSSD_GIT_AFTER_PROJECT_OPEN__\
 if(openHookCount!==1)throw new Error(`Build interrompido: hook pós-importação deveria existir uma vez, encontrado ${openHookCount}.`);
 if(/studioImportProject\(f\);\s*await window\.__ISSSD_GIT_AFTER_PROJECT_OPEN__\?\.\(f\);\s*else\b/.test(html))throw new Error('Build interrompido: hook pós-importação foi inserido entre if/else legado.');
 
+// Finalização defensiva: depois de studioProjectObject montar o documento, a baseline
+// segura do projeto aberto pode restaurar seções não editadas antes da validação/download.
+const finalizeHook='window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__?.(obj);';
+html=html.replaceAll(finalizeHook,'');
+const projectObjectNeedle='const obj=await studioProjectObject();';
+if(!html.includes(projectObjectNeedle))throw new Error('Build interrompido: não encontrei a montagem final do .issdproj para instalar proteção de baseline.');
+html=html.replace(projectObjectNeedle,projectObjectNeedle+finalizeHook);
+if((html.match(/__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__/g)||[]).length!==1)throw new Error('Build interrompido: proteção final do .issdproj não foi instalada exatamente uma vez.');
+
 const css=fs.existsSync(cssFile)?fs.readFileSync(cssFile,'utf8'):'';
 const js=fs.existsSync(jsFile)?fs.readFileSync(jsFile,'utf8'):'';
 const patch=`\n<!-- ${marker} -->\n<style id="isssd-git-visual-bridge-overrides">\n${css}\n</style>\n<script type="module" id="isssd-git-visual-bridge-runtime">\n${js}\n</script>\n`;
@@ -88,7 +88,7 @@ const markerCount=(html.match(/ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE/g)||[]).length;
 const runtimeCount=(html.match(/id=["']isssd-git-visual-bridge-runtime["']/g)||[]).length;
 const styleCount=(html.match(/id=["']isssd-git-visual-bridge-overrides["']/g)||[]).length;
 if(markerCount!==1||runtimeCount!==1||styleCount!==1)throw new Error(`Build interrompido: injeção Git duplicada/incompleta (marker=${markerCount}, runtime=${runtimeCount}, style=${styleCount}).`);
-if(!html.includes('git-visual-bridge-v7-full-project-restore'))throw new Error('Build interrompido: runtime v7 de restauração completa não foi injetado.');
+if(!html.includes('git-visual-bridge-v8-safe-project-save'))throw new Error('Build interrompido: runtime v8 de salvamento seguro não foi injetado.');
 if(html.includes('isssdProjectHydrationDiagnostic')||html.includes('Aplicar dados do projeto aos campos'))throw new Error('Build interrompido: painel manual de diagnóstico ainda está presente na interface gerada.');
 
 fs.mkdirSync(outDir,{recursive:true});
@@ -97,4 +97,4 @@ for(const name of ['assets','docs','schemas']){const from=path.join(vendorDir,na
 console.log('ISSSD Studio editor build concluído.');
 console.log('Fonte visual em cache: '+source);
 console.log('Saída: '+outHtml);
-console.log('Runtime Git atualizado e único; lifecycle de projeto preserva o if/else legado.');
+console.log('Runtime Git v8: abertura automática + baseline protegida + finalização defensiva do projeto.');
