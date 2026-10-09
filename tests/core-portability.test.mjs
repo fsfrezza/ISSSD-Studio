@@ -2,8 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readdir,readFile} from 'node:fs/promises';
 import {join} from 'node:path';
+import {fileURLToPath} from 'node:url';
 
-const CORE_DIR=new URL('../src/core/',import.meta.url);
+const CORE_DIR_URL=new URL('../src/core/',import.meta.url);
+const CORE_DIR=fileURLToPath(CORE_DIR_URL);
 
 async function coreFiles(){
   const names=await readdir(CORE_DIR);
@@ -23,7 +25,7 @@ test('core stays frontend/runtime agnostic',async()=>{
   ];
   const violations=[];
   for(const name of await coreFiles()){
-    const text=await readFile(join(CORE_DIR.pathname,name),'utf8');
+    const text=await readFile(join(CORE_DIR,name),'utf8');
     for(const pattern of forbidden){
       if(pattern.test(text))violations.push(`${name}: ${pattern}`);
     }
