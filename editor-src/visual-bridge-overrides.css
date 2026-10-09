@@ -1,0 +1,29 @@
+/* Git-versioned Visual Bridge layout overrides. Keep generated editor/ out of source control. */
+
+/* Modos de jogo mais compactos */
+#page-game-modes #gm610Fields{gap:7px!important}
+#page-game-modes #gm610Fields .fb96-text-row{
+  grid-template-columns:150px minmax(210px,1fr) 56px 92px!important;
+  gap:6px!important;
+  padding:6px 8px!important;
+  min-height:0!important;
+}
+#page-game-modes #gm610Fields .fb96-text-row input{
+  height:32px!important;
+  min-height:32px!important;
+  padding:5px 8px!important;
+  font-size:14px!important;
+  margin-top:0!important;
+}
+
+/* Estratégias em 4 colunas x 2 linhas em telas largas */
+#strategy612Mount .st612-grid{
+  grid-template-columns:repeat(4,minmax(205px,1fr))!important;
+  gap:10px!important;
+}
+#strategy612Mount .st612-item{padding:9px!important}
+#strategy612Mount .st612-item input{padding:8px!important;font-size:14px!important}
+#strategy612Mount .st612-meta{font-size:10px!important}
+#strategy612Mount .st612-item pre{font-size:12px!important;padding:5px!important}
+@media(max-width:1300px){#strategy612Mount .st612-grid{grid-template-columns:repeat(2,minmax(240px,1fr))!important}}
+@media(max-width:800px){#strategy612Mount .st612-grid{grid-template-columns:1fr!important}}
