@@ -5,6 +5,9 @@
   "description": "Regression harness and source history for ISSSD Studio",
   "scripts": {
     "test": "node --test tests/*.test.mjs",
+    "build:editor": "node scripts/build-editor.mjs",
+    "serve:editor": "node scripts/serve-editor.mjs",
+    "editor": "npm run build:editor && npm run serve:editor",
     "compare:v692-v693": "node scripts/compare-v692-v693.mjs",
     "verify:real-plus": "node scripts/verify-real-plus-project.mjs",
     "setup:mesen:windows": "powershell -ExecutionPolicy Bypass -File scripts/setup-mesen-windows.ps1",
