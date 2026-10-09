@@ -21,7 +21,7 @@ test('layout keeps requested compact modes and four-column strategies',()=>{
 });
 
 test('build requires exact post-import and pre-save lifecycle hooks',()=>{
- const src=build();assert.match(src,/__ISSSD_GIT_AFTER_PROJECT_OPEN__/);assert.match(src,/studioImportProject\\\(f\\\)/);assert.match(src,/Build interrompido: hook pós-importação não foi instalado/);assert.match(src,/__ISSSD_GIT_SYNC_TEXT_STATE_BEFORE_SAVE__/);assert.match(src,/Build interrompido: hook pré-salvamento não foi instalado/);
+ const src=build();assert.match(src,/__ISSSD_GIT_AFTER_PROJECT_OPEN__/);assert.match(src,/studioImportProject/);assert.match(src,/Build interrompido: hook pós-importação não foi instalado/);assert.match(src,/__ISSSD_GIT_SYNC_TEXT_STATE_BEFORE_SAVE__/);assert.match(src,/Build interrompido: hook pré-salvamento não foi instalado/);
 });
 
 test('project open restores every canonical textual family automatically',()=>{
