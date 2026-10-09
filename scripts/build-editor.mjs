@@ -39,8 +39,6 @@ if(!source){
  process.exit(2);
 }
 
-// First successful import is cached inside the working tree (ignored by Git),
-// so future builds require only C:\\Users\\fsfre\\Downloads\\ISSSD-Studio.
 if(source!==cachedHtml){
  const sourceDir=path.dirname(source);
  fs.rmSync(path.join(root,'.editor-vendor'),{recursive:true,force:true});
@@ -55,6 +53,19 @@ if(source!==cachedHtml){
 }
 
 let html=fs.readFileSync(source,'utf8');
+
+// Compatibility fix applied deterministically at build time. Some Visual Bridge
+// snapshots guard studioDeferredPlayerPatches while filtering it, but later read
+// .length directly. When the legacy lifecycle leaves that variable undefined,
+// Salvar Projeto crashes after title-screen image edits. Keep the generated HTML
+// safe without editing the cached legacy artifact by hand.
+const unsafeDeferredLength='(studioDeferredPlayerPatches.length-deferredNative.length)';
+const safeDeferredLength='((studioDeferredPlayerPatches||[]).length-deferredNative.length)';
+if(html.includes(unsafeDeferredLength)){
+ html=html.replaceAll(unsafeDeferredLength,safeDeferredLength);
+ console.log('Compatibilidade aplicada: studioDeferredPlayerPatches.length protegido no salvamento de projeto.');
+}
+
 const css=fs.existsSync(cssFile)?fs.readFileSync(cssFile,'utf8'):'';
 const js=fs.existsSync(jsFile)?fs.readFileSync(jsFile,'utf8'):'';
 const marker='ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE';

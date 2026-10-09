@@ -1,4 +1,4 @@
-const BUILD='git-visual-bridge-v4-project-hydration-diagnostic';
+const BUILD='git-visual-bridge-v5-auto-project-hydration';
 window.__ISSSD_GIT_VISUAL_BRIDGE__={build:BUILD,loadedAt:new Date().toISOString()};
 
 const clone=v=>v==null?v:JSON.parse(JSON.stringify(v));
@@ -13,13 +13,9 @@ function installBadge(){
  const status=document.querySelector('.statusbar');
  if(!status)return;
  const badge=document.createElement('span');
- badge.id='isssdGitBridgeBadge';
- badge.className='badge ok';
- badge.textContent='Git Visual Bridge v4';
- badge.title='Interface gerada automaticamente por npm run editor.';
- status.appendChild(badge);
+ badge.id='isssdGitBridgeBadge';badge.className='badge ok';badge.textContent='Git Visual Bridge v5';
+ badge.title='Interface gerada automaticamente por npm run editor.';status.appendChild(badge);
 }
-
 function setValue(selector,value){for(const node of document.querySelectorAll(selector))if('value' in node)node.value=String(value??'')}
 function firstValue(selector){const n=document.querySelector(selector);return n&&'value' in n?String(n.value??''):'<campo ausente>'}
 function sem(project){return project?.state?.semantic||{}}
@@ -33,8 +29,8 @@ function hydrateDom(project){
  for(const [id,v] of Object.entries(menu))setValue(`[data-mm-real="${CSS.escape(id)}"]`,v);
  for(const [id,v] of Object.entries(gfx)){
   setValue(`[data-gfx-intent="${CSS.escape(id)}"]`,v);
-  if(id.startsWith('strategy.screen.v614.')){const n=document.getElementById('st612_'+id.slice(21));if(n)n.value=String(v??'')}
-  if(id.startsWith('__pk590.native.')){const n=document.getElementById('pk590_'+id.slice(15));if(n)n.value=String(v??'')}
+  if(id.startsWith('strategy.screen.v614.')){const n=document.getElementById('st612_'+id.slice('strategy.screen.v614.'.length));if(n)n.value=String(v??'')}
+  if(id.startsWith('__pk590.native.')){const n=document.getElementById('pk590_'+id.slice('__pk590.native.'.length));if(n)n.value=String(v??'')}
  }
  const raw=s.romInternalTitle||s.romInternalTitleDesired||'',title=cleanTitle(raw);
  if(title){
@@ -71,12 +67,11 @@ function hydrateState(project){
 
 function scheduleHydration(project,reason){
  if(!project?.state?.semantic)return;
- confirmedProject=project;
+ confirmedProject=project;lifecycleConfirmed=true;
  const gen=++hydrateGeneration;
  for(const ms of [0,80,220,500,1000,1800,3000])setTimeout(()=>{
   if(gen!==hydrateGeneration)return;
-  hydrateState(project);
-  renderDiagnostic(reason);
+  hydrateState(project);renderDiagnostic(reason);
  },ms);
 }
 
@@ -85,13 +80,11 @@ function diagRow(label,fileValue,stateValue,domValue){
  const ok=String(fileValue??'')===String(domValue??'');
  return `<tr><td>${esc(label)}</td><td><code>${esc(fileValue)}</code></td><td><code>${esc(stateValue)}</code></td><td><code>${esc(domValue)}</code></td><td>${ok?'OK':'DIVERGE'}</td></tr>`;
 }
-
 function ensureDiagnostic(){
  let p=document.getElementById('isssdProjectHydrationDiagnostic');if(p)return p;
  p=document.createElement('section');p.id='isssdProjectHydrationDiagnostic';p.className='card';p.style='margin:12px;position:relative;z-index:5';
  const host=document.querySelector('#page-dashboard .rom-content')||document.querySelector('main')||document.body;host.prepend(p);return p;
 }
-
 function renderDiagnostic(reason='aguardando'){
  const p=ensureDiagnostic(),project=confirmedProject||rawSelectedProject;
  if(!project){p.innerHTML='<h3>Diagnóstico do projeto</h3><div class="note info">Nenhum .issdproj capturado nesta sessão.</div>';return}
@@ -112,27 +105,35 @@ function renderDiagnostic(reason='aguardando'){
 async function captureProjectFile(file){
  try{rawSelectedProject=JSON.parse(await file.text());renderDiagnostic('arquivo selecionado')}catch(e){console.error('Git Bridge: leitura do projeto',e)}
 }
-
 function installProjectCapture(){
+ if(document.documentElement.dataset.gitProjectCapture==='1')return;
+ document.documentElement.dataset.gitProjectCapture='1';
  document.addEventListener('change',e=>{if(e.target?.id==='projectFile'){const f=e.target.files?.[0];if(f)captureProjectFile(f)}},true);
 }
 
-function hookStudioLog(){
- const log=window.ISSSDLog;if(!log?.add||log.add.__gitHydrationHook)return false;
- const prior=log.add.bind(log);
- const wrapped=function(category,level,message,...rest){
-  const result=prior(category,level,message,...rest);
-  if(String(category)==='Projetos'&&String(message)==='Projeto aberto'){
-   lifecycleConfirmed=true;
-   if(rawSelectedProject)scheduleHydration(rawSelectedProject,'evento real: Projeto aberto');
-   else renderDiagnostic('Projeto aberto sem arquivo capturado');
-  }
+// Reliable lifecycle hook: projectFile's own handler awaits studioImportProject().
+// Wrapping that exact function means hydration begins only after the real import,
+// base validation and studioApplyProjectWithBase have all completed.
+function hookProjectImport(){
+ const current=window.studioImportProject;
+ if(typeof current!=='function')return false;
+ if(current.__gitAutoHydration)return true;
+ const wrapped=async function(file,...rest){
+  let project=rawSelectedProject;
+  if(!project&&file){try{project=JSON.parse(await file.text())}catch(_){}}
+  const result=await current.call(this,file,...rest);
+  if(project)scheduleHydration(project,'studioImportProject concluído');
   return result;
  };
- wrapped.__gitHydrationHook=true;log.add=wrapped;return true;
+ wrapped.__gitAutoHydration=true;
+ window.studioImportProject=wrapped;
+ return true;
 }
-function ensureLogHook(){if(hookStudioLog())return;let n=0;const t=setInterval(()=>{if(hookStudioLog()||++n>100)clearInterval(t)},100)}
+function ensureProjectImportHook(){
+ if(hookProjectImport())return;
+ let n=0;const t=setInterval(()=>{if(hookProjectImport()||++n>120)clearInterval(t)},100);
+}
 
-function boot(){installBadge();installProjectCapture();ensureLogHook();setTimeout(()=>renderDiagnostic(),300)}
+function boot(){installBadge();installProjectCapture();ensureProjectImportHook();setTimeout(()=>renderDiagnostic(),300)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-window.addEventListener('load',()=>{installBadge();ensureLogHook();renderDiagnostic()}, {once:true});
+window.addEventListener('load',()=>{installBadge();ensureProjectImportHook();renderDiagnostic()}, {once:true});
