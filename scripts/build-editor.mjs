@@ -64,13 +64,20 @@ if(!html.includes(saveHook)){
 }
 if(!html.includes(saveHook))throw new Error('Build interrompido: hook pré-salvamento não foi instalado.');
 
+// Reparar qualquer build anterior que tenha inserido o hook entre um if e seu else.
+// A interface legada possui duas chamadas studioImportProject(f); a primeira está em
+// `if (...) await studioImportProject(f); else ...` e NÃO pode receber código entre
+// a chamada e o `else`. O hook deve entrar somente no handler final do lifecycle,
+// imediatamente antes do log "Projeto aberto".
 const openHook='await window.__ISSSD_GIT_AFTER_PROJECT_OPEN__?.(f);';
-if(!html.includes(openHook)){
- const re=/await\s+studioImportProject\(f\)\s*;/;
- if(!re.test(html))throw new Error('Build interrompido: não encontrei a chamada de studioImportProject(f) para instalar a restauração automática.');
- html=html.replace(re,m=>m+openHook);
-}
-if(!html.includes(openHook))throw new Error('Build interrompido: hook pós-importação não foi instalado.');
+html=html.replaceAll(openHook,'');
+const finalImportNeedle="await studioImportProject(f);window.ISSSDLog?.add('Projetos','info','Projeto aberto'";
+const finalImportPatched="await studioImportProject(f);"+openHook+"window.ISSSDLog?.add('Projetos','info','Projeto aberto'";
+if(!html.includes(finalImportNeedle))throw new Error('Build interrompido: não encontrei o handler final de Abrir Projeto para instalar a restauração automática.');
+html=html.replace(finalImportNeedle,finalImportPatched);
+const openHookCount=(html.match(/await window\.__ISSSD_GIT_AFTER_PROJECT_OPEN__\?\.\(f\);/g)||[]).length;
+if(openHookCount!==1)throw new Error(`Build interrompido: hook pós-importação deveria existir uma vez, encontrado ${openHookCount}.`);
+if(/studioImportProject\(f\);\s*await window\.__ISSSD_GIT_AFTER_PROJECT_OPEN__\?\.\(f\);\s*else\b/.test(html))throw new Error('Build interrompido: hook pós-importação foi inserido entre if/else legado.');
 
 const css=fs.existsSync(cssFile)?fs.readFileSync(cssFile,'utf8'):'';
 const js=fs.existsSync(jsFile)?fs.readFileSync(jsFile,'utf8'):'';
@@ -90,4 +97,4 @@ for(const name of ['assets','docs','schemas']){const from=path.join(vendorDir,na
 console.log('ISSSD Studio editor build concluído.');
 console.log('Fonte visual em cache: '+source);
 console.log('Saída: '+outHtml);
-console.log('Runtime Git atualizado e único; hooks obrigatórios confirmados.');
+console.log('Runtime Git atualizado e único; lifecycle de projeto preserva o if/else legado.');
