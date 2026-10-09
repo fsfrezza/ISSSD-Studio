@@ -24,6 +24,17 @@ test('build requires exact post-import and pre-save lifecycle hooks',()=>{
  const src=build();assert.match(src,/__ISSSD_GIT_AFTER_PROJECT_OPEN__/);assert.match(src,/studioImportProject/);assert.match(src,/Build interrompido: hook pós-importação não foi instalado/);assert.match(src,/__ISSSD_GIT_SYNC_TEXT_STATE_BEFORE_SAVE__/);assert.match(src,/Build interrompido: hook pré-salvamento não foi instalado/);
 });
 
+test('build removes stale injected Git runtime and always injects exactly one current runtime',()=>{
+ const src=build();
+ assert.match(src,/replace\(\/<!--\\s\*ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE/);
+ assert.match(src,/isssd-git-visual-bridge-overrides/);
+ assert.match(src,/isssd-git-visual-bridge-runtime/);
+ assert.match(src,/markerCount/);
+ assert.match(src,/runtimeCount/);
+ assert.match(src,/styleCount/);
+ assert.match(src,/Runtime Git atualizado e único/);
+});
+
 test('project open restores every canonical textual family automatically',()=>{
  const src=runtime();
  for(const token of ['ISSSDTextWorkspace','studioTextProjectDrafts','__ISSSD_PREKICK_TEXTS__','ISSSDTextIntentions','data-profile-text','data-pk-id','data-mm-real','data-mainmenu-fb96','st612_','pk590_','mainMenuFb96Draft','mainMenuCommittedDraft'])assert.match(src,new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
