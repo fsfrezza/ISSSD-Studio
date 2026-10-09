@@ -1,9 +1,11 @@
-const BUILD='git-visual-bridge-v3-project-hydration-after-apply';
+const BUILD='git-visual-bridge-v4-project-hydration-diagnostic';
 window.__ISSSD_GIT_VISUAL_BRIDGE__={build:BUILD,loadedAt:new Date().toISOString()};
 
 const clone=v=>v==null?v:JSON.parse(JSON.stringify(v));
 const cleanTitle=v=>String(v||'').replace(/[^\x20-\x7E]/g,' ').slice(0,21);
-let lastAppliedProject=null;
+let rawSelectedProject=null;
+let confirmedProject=null;
+let lifecycleConfirmed=false;
 let hydrateGeneration=0;
 
 function installBadge(){
@@ -13,123 +15,124 @@ function installBadge(){
  const badge=document.createElement('span');
  badge.id='isssdGitBridgeBadge';
  badge.className='badge ok';
- badge.textContent='Git Visual Bridge';
- badge.title='Interface gerada automaticamente a partir do Visual Bridge por npm run editor.';
+ badge.textContent='Git Visual Bridge v4';
+ badge.title='Interface gerada automaticamente por npm run editor.';
  status.appendChild(badge);
 }
 
-function setValue(selector,value){
- for(const node of document.querySelectorAll(selector))if('value' in node)node.value=String(value??'');
-}
+function setValue(selector,value){for(const node of document.querySelectorAll(selector))if('value' in node)node.value=String(value??'')}
+function firstValue(selector){const n=document.querySelector(selector);return n&&'value' in n?String(n.value??''):'<campo ausente>'}
+function sem(project){return project?.state?.semantic||{}}
+function sections(project){return sem(project).textWorkspaceV2?.sections||{}}
+function plusProfile(project){const by=sections(project).direct?.byProfile||{};return by['iss-deluxe-plus']||Object.values(by)[0]||{}}
 
-function hydrateDomFromProject(project){
- const sem=project?.state?.semantic||{};
- const sections=sem.textWorkspaceV2?.sections||{};
- const direct=sections.direct?.byProfile||{};
- const profile=direct['iss-deluxe-plus']||Object.values(direct)[0]||{};
- const pre=sections.preKickoff?.values||{};
- const menu=sections.mainMenu?.values||{};
- const gfx=sections.graphicIntents?.values||{};
-
- for(const [id,value] of Object.entries(profile))setValue(`[data-profile-text="${CSS.escape(id)}"]`,value);
- for(const [id,value] of Object.entries(pre))setValue(`[data-pk-id="${CSS.escape(id)}"]`,value);
- for(const [id,value] of Object.entries(menu))setValue(`[data-mm-real="${CSS.escape(id)}"]`,value);
- for(const [id,value] of Object.entries(gfx)){
-  setValue(`[data-gfx-intent="${CSS.escape(id)}"]`,value);
-  if(id.startsWith('strategy.screen.v614.')){
-   const suffix=id.slice('strategy.screen.v614.'.length);
-   const node=document.getElementById('st612_'+suffix);if(node)node.value=String(value??'');
-  }
-  if(id.startsWith('__pk590.native.')){
-   const pc=id.slice('__pk590.native.'.length);
-   const node=document.getElementById('pk590_'+pc);if(node)node.value=String(value??'');
-  }
+function hydrateDom(project){
+ const s=sem(project),sec=sections(project),profile=plusProfile(project),pre=sec.preKickoff?.values||{},menu=sec.mainMenu?.values||{},gfx=sec.graphicIntents?.values||{};
+ for(const [id,v] of Object.entries(profile))setValue(`[data-profile-text="${CSS.escape(id)}"]`,v);
+ for(const [id,v] of Object.entries(pre))setValue(`[data-pk-id="${CSS.escape(id)}"]`,v);
+ for(const [id,v] of Object.entries(menu))setValue(`[data-mm-real="${CSS.escape(id)}"]`,v);
+ for(const [id,v] of Object.entries(gfx)){
+  setValue(`[data-gfx-intent="${CSS.escape(id)}"]`,v);
+  if(id.startsWith('strategy.screen.v614.')){const n=document.getElementById('st612_'+id.slice(21));if(n)n.value=String(v??'')}
+  if(id.startsWith('__pk590.native.')){const n=document.getElementById('pk590_'+id.slice(15));if(n)n.value=String(v??'')}
  }
-
- const rawTitle=sem.romInternalTitle||sem.romInternalTitleDesired||'';
- const title=cleanTitle(rawTitle);
+ const raw=s.romInternalTitle||s.romInternalTitleDesired||'',title=cleanTitle(raw);
  if(title){
   const input=document.getElementById('romMetaTitle');if(input)input.value=title;
   const count=document.getElementById('romMetaTitleCount');if(count)count.textContent=String(title.length);
-  const desired=document.getElementById('romMetaTitleDesired');if(desired)desired.value=String(sem.romInternalTitleDesired||rawTitle);
+  const desired=document.getElementById('romMetaTitleDesired');if(desired)desired.value=String(s.romInternalTitleDesired||raw);
   window.__ISSSD_INTERNAL_TITLE_IMPLEMENTED__=title;
-  window.__ISSSD_INTERNAL_TITLE_DESIRED__=String(sem.romInternalTitleDesired||rawTitle);
+  window.__ISSSD_INTERNAL_TITLE_DESIRED__=String(s.romInternalTitleDesired||raw);
   try{window.__ISSSD_ROM_META_WRITE_TITLE__?.(title,'Título interno do projeto')}catch(_){}
  }
 }
 
-function hydrateProjectState(project){
- const sem=project?.state?.semantic||{};
- const ws=sem.textWorkspaceV2;
+function hydrateState(project){
+ const sec=sections(project),ws=sem(project).textWorkspaceV2;
  if(ws?.sections){
-  try{window.ISSSDTextWorkspace?.restore?.(clone(ws))}catch(e){console.warn('Git Bridge: restore textWorkspaceV2',e)}
-  try{window.__ISSSD_PREKICK_TEXTS__?.restore?.(clone(ws.sections.preKickoff?.values||{}))}catch(e){console.warn('Git Bridge: restore pre-kickoff',e)}
+  try{window.ISSSDTextWorkspace?.restore?.(clone(ws))}catch(e){console.warn('Git Bridge: textWorkspace restore',e)}
+  try{window.__ISSSD_PREKICK_TEXTS__?.restore?.(clone(sec.preKickoff?.values||{}))}catch(_){}
+  try{window.ISSSDTextIntentions?.restore?.(clone(sec.graphicIntents?.values||{}))}catch(_){}
   try{
-   const direct=clone(ws.sections.direct?.byProfile||{});
-   if(typeof window.studioTextProjectDrafts!=='undefined')window.studioTextProjectDrafts=direct;
-  }catch(e){console.warn('Git Bridge: restore direct texts',e)}
-  try{
-   const pre=clone(ws.sections.preKickoff?.values||{});
-   if(typeof window.preKickoffTextCommitted!=='undefined')window.preKickoffTextCommitted=clone(pre);
-   if(typeof window.preKickoffTextDraft!=='undefined')window.preKickoffTextDraft=clone(pre);
-  }catch(e){console.warn('Git Bridge: restore pre-kickoff mirrors',e)}
-  try{
-   const menu=clone(ws.sections.mainMenu?.values||{});
-   if(Object.keys(menu).length){
-    window.mainMenuCommittedDraft=clone(menu);
-    window.mainMenuFb96Draft=window.mainMenuCanonicalizeDraft?window.mainMenuCanonicalizeDraft(clone(menu)):clone(menu);
-    window.mainMenuProjectSaved=true;
-   }
-  }catch(e){console.warn('Git Bridge: restore main menu',e)}
-  try{window.ISSSDTextIntentions?.restore?.(clone(ws.sections.graphicIntents?.values||{}))}catch(e){console.warn('Git Bridge: restore graphic intents',e)}
+   const menu=clone(sec.mainMenu?.values||{});
+   window.mainMenuCommittedDraft=clone(menu);
+   window.mainMenuFb96Draft=window.mainMenuCanonicalizeDraft?window.mainMenuCanonicalizeDraft(clone(menu)):clone(menu);
+   window.mainMenuProjectSaved=true;
+  }catch(_){}
  }
-
  try{window.renderProfileTextEditor?.()}catch(_){}
  try{window.renderPreKickoffTextEditor?.()}catch(_){}
  try{window.renderMainMenuFb96Fields?.()}catch(_){}
  try{window.ISSSDTextWorkspace?.render?.()}catch(_){}
  try{window.ISSSDTextIntentions?.render?.()}catch(_){}
  try{window.ISSSDNativeTexts590?.install?.()}catch(_){}
- try{window.ISSSDGraphicCatalog591?.install?.()}catch(_){}
-
- hydrateDomFromProject(project);
+ hydrateDom(project);
 }
 
-function scheduleHydration(project){
+function scheduleHydration(project,reason){
  if(!project?.state?.semantic)return;
- lastAppliedProject=project;
+ confirmedProject=project;
  const gen=++hydrateGeneration;
- // Estes tempos começam APÓS studioApplyProjectWithBase terminar, não no momento
- // em que o usuário apenas escolhe o arquivo. Assim a seleção de alterações e
- // a restauração da ROM-base já terminaram antes de reidratar os formulários.
- for(const ms of [0,50,160,400,850,1500,2600])setTimeout(()=>{
-  if(gen!==hydrateGeneration||lastAppliedProject!==project)return;
-  hydrateProjectState(project);
+ for(const ms of [0,80,220,500,1000,1800,3000])setTimeout(()=>{
+  if(gen!==hydrateGeneration)return;
+  hydrateState(project);
+  renderDiagnostic(reason);
  },ms);
 }
 
-function installLifecycleHook(){
- if(window.__ISSSD_GIT_PROJECT_LIFECYCLE_HOOK__)return;
- const apply=window.studioApplyProjectWithBase;
- if(typeof apply!=='function')return false;
- window.studioApplyProjectWithBase=async function(project,...rest){
-  const result=await apply.call(this,project,...rest);
-  scheduleHydration(project);
+function diagRow(label,fileValue,stateValue,domValue){
+ const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+ const ok=String(fileValue??'')===String(domValue??'');
+ return `<tr><td>${esc(label)}</td><td><code>${esc(fileValue)}</code></td><td><code>${esc(stateValue)}</code></td><td><code>${esc(domValue)}</code></td><td>${ok?'OK':'DIVERGE'}</td></tr>`;
+}
+
+function ensureDiagnostic(){
+ let p=document.getElementById('isssdProjectHydrationDiagnostic');if(p)return p;
+ p=document.createElement('section');p.id='isssdProjectHydrationDiagnostic';p.className='card';p.style='margin:12px;position:relative;z-index:5';
+ const host=document.querySelector('#page-dashboard .rom-content')||document.querySelector('main')||document.body;host.prepend(p);return p;
+}
+
+function renderDiagnostic(reason='aguardando'){
+ const p=ensureDiagnostic(),project=confirmedProject||rawSelectedProject;
+ if(!project){p.innerHTML='<h3>Diagnóstico do projeto</h3><div class="note info">Nenhum .issdproj capturado nesta sessão.</div>';return}
+ const sec=sections(project),fileProfile=plusProfile(project),filePre=sec.preKickoff?.values||{},fileMenu=sec.mainMenu?.values||{},fileGfx=sec.graphicIntents?.values||{};
+ let snap={};try{snap=window.ISSSDTextWorkspace?.snapshot?.()?.sections||{}}catch(_){}
+ const stateProfile=snap.direct?.byProfile?.['iss-deluxe-plus']||{},statePre=snap.preKickoff?.values||{},stateMenu=snap.mainMenu?.values||{},stateGfx=snap.graphicIntents?.values||{};
+ const rows=[
+  diagRow('Título interno',sem(project).romInternalTitle||'',window.__ISSSD_INTERNAL_TITLE_IMPLEMENTED__||'',firstValue('#romMetaTitle')),
+  diagRow('Modo/JOGATINA',fileProfile.friendly||'',stateProfile.friendly||'',firstValue('[data-profile-text="friendly"]')),
+  diagRow('Pré-kickoff/Formação',filePre.formation||'',statePre.formation||'',firstValue('[data-pk-id="formation"]')),
+  diagRow('Menu/JOGATINA',fileMenu.openGame||'',stateMenu.openGame||'',firstValue('[data-mm-real="openGame"]')),
+  diagRow('Estratégia/Todos ao ataque',fileGfx['strategy.screen.v614.alloutatk']||'',stateGfx['strategy.screen.v614.alloutatk']||'',firstValue('#st612_alloutatk'))
+ ].join('');
+ p.innerHTML=`<div class="sectionbar"><div><h3>Diagnóstico do projeto</h3><div class="subtle">Lifecycle confirmado: <strong>${lifecycleConfirmed?'SIM':'NÃO'}</strong> · ${reason} · ${BUILD}</div></div><button class="btn primary" id="isssdForceHydrate">Aplicar dados do projeto aos campos</button></div><div style="overflow:auto"><table style="width:100%;border-collapse:collapse"><thead><tr><th>Campo</th><th>Arquivo .issdproj</th><th>Estado interno</th><th>Campo visível</th><th>Resultado</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+ p.querySelector('#isssdForceHydrate').onclick=()=>{hydrateState(project);renderDiagnostic('aplicação manual solicitada')};
+}
+
+async function captureProjectFile(file){
+ try{rawSelectedProject=JSON.parse(await file.text());renderDiagnostic('arquivo selecionado')}catch(e){console.error('Git Bridge: leitura do projeto',e)}
+}
+
+function installProjectCapture(){
+ document.addEventListener('change',e=>{if(e.target?.id==='projectFile'){const f=e.target.files?.[0];if(f)captureProjectFile(f)}},true);
+}
+
+function hookStudioLog(){
+ const log=window.ISSSDLog;if(!log?.add||log.add.__gitHydrationHook)return false;
+ const prior=log.add.bind(log);
+ const wrapped=function(category,level,message,...rest){
+  const result=prior(category,level,message,...rest);
+  if(String(category)==='Projetos'&&String(message)==='Projeto aberto'){
+   lifecycleConfirmed=true;
+   if(rawSelectedProject)scheduleHydration(rawSelectedProject,'evento real: Projeto aberto');
+   else renderDiagnostic('Projeto aberto sem arquivo capturado');
+  }
   return result;
  };
- window.__ISSSD_GIT_PROJECT_LIFECYCLE_HOOK__=true;
- return true;
+ wrapped.__gitHydrationHook=true;log.add=wrapped;return true;
 }
+function ensureLogHook(){if(hookStudioLog())return;let n=0;const t=setInterval(()=>{if(hookStudioLog()||++n>100)clearInterval(t)},100)}
 
-function ensureLifecycleHook(){
- if(installLifecycleHook())return;
- let tries=0;
- const timer=setInterval(()=>{
-  if(installLifecycleHook()||++tries>50)clearInterval(timer);
- },100);
-}
-
-function boot(){installBadge();ensureLifecycleHook()}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
-else boot();
-window.addEventListener('load',boot,{once:true});
+function boot(){installBadge();installProjectCapture();ensureLogHook();setTimeout(()=>renderDiagnostic(),300)}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+window.addEventListener('load',()=>{installBadge();ensureLogHook();renderDiagnostic()}, {once:true});
