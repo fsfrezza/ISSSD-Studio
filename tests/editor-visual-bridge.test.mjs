@@ -28,10 +28,17 @@ test('layout keeps requested compact modes and four-column strategies',()=>{
  assert.match(css,/repeat\(4,minmax\(205px,1fr\)\)/);
 });
 
-test('project hydration is attached to completed project application, not file selection timing',()=>{
+test('project hydration runs automatically after studioImportProject completes',()=>{
  const src=fs.readFileSync(path.join(root,'editor-src/visual-bridge-overrides.mjs'),'utf8');
- assert.match(src,/studioApplyProjectWithBase/);
- assert.match(src,/const result=await apply\.call\(this,project,\.\.\.rest\)/);
- assert.match(src,/scheduleHydration\(project\)/);
+ assert.match(src,/window\.studioImportProject=wrapped/);
+ assert.match(src,/const result=await current\.call\(this,file,\.\.\.rest\)/);
+ assert.match(src,/scheduleHydration\(project,'studioImportProject concluído'\)/);
  assert.doesNotMatch(src,/id==='projectFile'.*scheduleHydration/s);
+});
+
+test('editor build protects legacy deferred patch length during project save',()=>{
+ const src=fs.readFileSync(path.join(root,'scripts/build-editor.mjs'),'utf8');
+ assert.match(src,/unsafeDeferredLength/);
+ assert.match(src,/studioDeferredPlayerPatches\|\|\[\]/);
+ assert.match(src,/replaceAll\(unsafeDeferredLength,safeDeferredLength\)/);
 });
