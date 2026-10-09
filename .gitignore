@@ -12,6 +12,9 @@ probe*.json
 roms/
 fixtures/private/
 
+# Generated Visual Bridge editor output
+editor/
+
 # Local emulator/tool bootstrap
 .tools/
 
