@@ -1,0 +1,48 @@
+name: Materialize canonical project
+
+on:
+  push:
+    branches:
+      - canonical-project-rebuild
+    paths:
+      - 'project-source/canonical/**'
+      - 'scripts/restore-canonical-project.mjs'
+      - '.github/workflows/materialize-canonical-project.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Restore canonical project
+        run: node scripts/restore-canonical-project.mjs
+
+      - name: Verify canonical project tests
+        run: node --test tests/canonical-project-source.test.mjs
+
+      - name: Commit materialized .issdproj
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj
+          if git diff --cached --quiet; then
+            echo 'Canonical project already materialized.'
+            exit 0
+          fi
+          git commit -m 'Materialize canonical Plus project'
+          git push origin HEAD:${{ github.ref_name }}
