@@ -5,6 +5,7 @@
   "description": "Regression harness and source history for ISSSD Studio",
   "scripts": {
     "test": "node --test tests/*.test.mjs",
+    "restore:project": "node scripts/restore-canonical-project.mjs",
     "build:editor": "node scripts/build-editor.mjs",
     "serve:editor": "node scripts/serve-editor.mjs",
     "editor": "npm run build:editor && npm run serve:editor",
