@@ -1,4 +1,4 @@
-const V11='git-project-import-v12-screen-texts';
+const V11='git-project-import-v13-screen-owned-controls';
 let currentProject=null;
 let anyUserEdit=false;
 let screenTextsBaseline={schema:'isssd-screen-texts-v1',values:{}};
@@ -14,20 +14,14 @@ function directProfile(p){const by=sections(p).direct?.byProfile||{};return by['
 function normalizeMainMenuColorUi(){
  const grid=document.getElementById('mmColorGrid');if(!grid)return;
  const card=grid.closest('.card');if(!card)return;
- const title=card.querySelector('.sectionbar h3');setText(title,'Cores do Menu Principal');
- const sub=card.querySelector('.sectionbar .subtle');setText(sub,'Edite as paletas 1P e 2P, visualize o resultado e aplique as cores à ROM Plus. Estes valores também são preservados no projeto.');
+ setText(card.querySelector('.sectionbar h3'),'Cores do Menu Principal');
+ setText(card.querySelector('.sectionbar .subtle'),'Edite as paletas 1P e 2P, visualize o resultado e aplique as cores à ROM Plus. Estes valores também são preservados no projeto.');
  const old=document.querySelector('#page-main-menu .mainmenu-appearance, #page-texts .mainmenu-appearance');if(old&&old.style.display!=='none')old.style.display='none';
 }
 
-// v12 — cada texto pertence a uma tela. A interface pode mudar de aba sem perder o
-// estado: o .issdproj guarda uma cópia canônica por proprietário em screenTextsV1.
 function blankScreenTexts(){return {schema:'isssd-screen-texts-v1',values:{}}}
 function screenKey(owner,field){return `${owner}.${field}`}
-function putScreen(state,owner,field,value){
- if(!owner||!field)return;
- state.values[owner]||(state.values[owner]={});
- state.values[owner][field]=String(value??'');
-}
+function putScreen(state,owner,field,value){if(!owner||!field)return;state.values[owner]||(state.values[owner]={});state.values[owner][field]=String(value??'')}
 function getScreen(state,owner,field){return state?.values?.[owner]?.[field]}
 function readScreenNode(node){
  if(!node||!('value'in node))return null;
@@ -43,8 +37,7 @@ function readScreenNode(node){
 function captureScreenTexts(base=screenTextsBaseline){
  const out=clone(base)||blankScreenTexts();out.schema='isssd-screen-texts-v1';out.values=out.values||{};
  document.querySelectorAll('[data-screen-text-owner][data-screen-text-field],[id^="gm610_"],[data-pk-id],[data-mm-real],[id^="st612_"],[id^="tx621_"],#romMetaTitle,#romMetaTitleDesired').forEach(node=>{
-  if(node.id?.startsWith('gm610c_'))return;
-  const x=readScreenNode(node);if(x)putScreen(out,x.owner,x.field,x.value);
+  if(node.id?.startsWith('gm610c_'))return;const x=readScreenNode(node);if(x)putScreen(out,x.owner,x.field,x.value);
  });
  return out;
 }
@@ -75,15 +68,8 @@ function hydrateScreenTexts(p){
  }
 }
 
-function activatePage(pageId,button){
- document.querySelectorAll('section.page').forEach(p=>p.classList.toggle('active',p.id===pageId));
- document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active',b===button));
-}
-function makeNavButton(id,page,label,icon){
- let b=document.getElementById(id);if(b)return b;
- b=document.createElement('button');b.className='navbtn';b.type='button';b.id=id;b.dataset.page=page;b.innerHTML=`<span class="navico">${icon}</span><span>${label}</span><i class="navdot"></i>`;
- b.addEventListener('click',()=>activatePage('page-'+page,b));return b;
-}
+function activatePage(pageId,button){document.querySelectorAll('section.page').forEach(p=>p.classList.toggle('active',p.id===pageId));document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active',b===button))}
+function makeNavButton(id,page,label,icon){let b=document.getElementById(id);if(b)return b;b=document.createElement('button');b.className='navbtn';b.type='button';b.id=id;b.dataset.page=page;b.innerHTML=`<span class="navico">${icon}</span><span>${label}</span><i class="navdot"></i>`;b.addEventListener('click',()=>activatePage('page-'+page,b));return b}
 function ensureScreenPage(id,title,description){
  let page=document.getElementById('page-'+id);if(page)return page;
  const content=document.querySelector('.content');if(!content)return null;
@@ -91,57 +77,100 @@ function ensureScreenPage(id,title,description){
  page.innerHTML=`<div class="pagehead"><div><h2>${title}</h2><p>${description}</p></div></div><div class="rom-content"><div id="${id}ScreenHost"></div></div>`;
  const before=document.getElementById('page-texts')||document.getElementById('page-main-menu');content.insertBefore(page,before||null);return page;
 }
+
+const CONTROL_TERM_GROUPS=[
+ {id:'highball',label:'Bola alta',parts:['high','ball'],original:'HIGH BALL'},
+ {id:'pass',label:'Passe',parts:['pass'],original:'PASS'},
+ {id:'shoot',label:'Chute',parts:['shoot'],original:'SHOOT'},
+ {id:'dash',label:'Corrida',parts:['dash'],original:'DASH'},
+ {id:'keeper',label:'Goleiro',parts:['keeper'],original:'KEEPER'},
+ {id:'semiauto',label:'Semi automático',parts:['semiauto'],original:'SEMI AUTO'},
+ {id:'auto',label:'Automático',parts:['auto'],original:'AUTO'},
+ {id:'manual',label:'Manual',parts:['manual'],original:'MANUAL'}
+];
+function normalizeControlTerm(v){return String(v??'').toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z0-9 -]/g,'').replace(/\s+/g,' ').trim()}
+function hiddenControlValue(id){return String(document.getElementById('tx621_'+id)?.value||'')}
+function wholeControlValue(g){
+ const saved=getScreen(screenTextsBaseline,'controls',g.id);if(saved!=null&&String(saved).trim())return String(saved);
+ return g.parts.map(hiddenControlValue).filter(Boolean).join(' ')||g.original;
+}
+function splitControlTerm(g,value){
+ const q=normalizeControlTerm(value);
+ if(g.parts.length===1)return [q];
+ const words=q?q.split(' '):[];
+ if(words.length<2)throw new Error(`${g.label}: use pelo menos duas palavras; a divisão interna só ocorre nos espaços.`);
+ let best=null;
+ for(let i=1;i<words.length;i++){
+  const left=words.slice(0,i).join(' '),right=words.slice(i).join(' '),score=Math.abs(left.length-right.length);
+  if(left&&right&&(!best||score<best.score))best={left,right,score};
+ }
+ if(!best)throw new Error(`${g.label}: não foi possível dividir o termo.`);
+ return [best.left,best.right];
+}
+function syncWholeControl(g,input,{dispatch=true}={}){
+ const parts=splitControlTerm(g,input.value);input.value=normalizeControlTerm(input.value);
+ g.parts.forEach((id,i)=>{const node=document.getElementById('tx621_'+id);if(node&&node.value!==parts[i]){node.value=parts[i];if(dispatch)node.dispatchEvent(new Event('input',{bubbles:true}))}});
+ const k=screenKey('controls',g.id);touched.screen.add(k);screenTextsBaseline.values.controls||(screenTextsBaseline.values.controls={});screenTextsBaseline.values.controls[g.id]=input.value;
+ return parts;
+}
+function installGroupedControlsUi(){
+ const host=document.getElementById('controlsScreenHost');if(!host)return;
+ const pane=document.querySelector('[data-pane="controller"]');
+ if(pane&&pane.parentElement!==host){pane.classList.add('active');pane.style.display='block';host.appendChild(pane)}
+ const realGrid=pane?.querySelector('.tx621-grid');if(!realGrid)return;
+ realGrid.style.display='none';const oldActions=pane.querySelector('.tx621-actions');if(oldActions)oldActions.style.display='none';
+ let card=document.getElementById('gitControlsWholeTerms');
+ if(!card){
+  card=document.createElement('div');card.id='gitControlsWholeTerms';card.className='card operational-first';
+  card.innerHTML=`<div class="sectionbar"><div><h3>Termos completos dos Controles</h3><div class="subtle">Como em Estratégias, cada inscrição é editada como um termo completo. Quando a ROM usa mais de uma faixa física, o Studio divide internamente somente nos espaços.</div></div><span class="badge ok">writer real</span></div><div class="st612-grid" id="gitControlsTermGrid"></div><div class="st612-actions" style="margin-top:12px"><button class="btn" id="gitControlsRestore" type="button">Restaurar originais</button><button class="btn primary" id="gitControlsCommit" type="button">Implementar no projeto</button><button class="btn success" id="gitControlsApply" type="button">Aplicar à ROM</button></div><div class="note info" id="gitControlsStatus" style="margin-top:10px">Projeto e ROM continuam independentes.</div>`;
+  host.insertBefore(card,pane||host.firstChild);
+  const grid=card.querySelector('#gitControlsTermGrid');
+  for(const g of CONTROL_TERM_GROUPS){const box=document.createElement('div');box.className='st612-item';box.innerHTML=`<label><strong>${g.label}</strong><input id="ctrlterm_${g.id}" data-screen-text-owner="controls" data-screen-text-field="${g.id}" autocomplete="off"></label><div class="st612-meta" id="ctrlterm_meta_${g.id}">${g.original}</div>`;grid.appendChild(box);const inp=box.querySelector('input');inp.value=wholeControlValue(g);inp.addEventListener('input',()=>{try{syncWholeControl(g,inp);setText(card.querySelector('#gitControlsStatus'),'rascunho alterado · implemente no projeto e/ou aplique à ROM');inp.style.borderColor='#6c92ab'}catch(e){setText(card.querySelector('#gitControlsStatus'),e.message);inp.style.borderColor='#e17272'}})}
+  card.querySelector('#gitControlsRestore').onclick=()=>{for(const g of CONTROL_TERM_GROUPS){const inp=document.getElementById('ctrlterm_'+g.id);inp.value=g.original;syncWholeControl(g,inp)}setText(card.querySelector('#gitControlsStatus'),'Originais restaurados no rascunho.')};
+  card.querySelector('#gitControlsCommit').onclick=()=>{try{for(const g of CONTROL_TERM_GROUPS)syncWholeControl(g,document.getElementById('ctrlterm_'+g.id));document.getElementById('tx621Commit')?.click();setText(card.querySelector('#gitControlsStatus'),'Termos completos implementados no projeto. Use Salvar Projeto para gerar o .issdproj.')}catch(e){alert('Revise os Controles: '+e.message)}};
+  card.querySelector('#gitControlsApply').onclick=()=>{try{for(const g of CONTROL_TERM_GROUPS)syncWholeControl(g,document.getElementById('ctrlterm_'+g.id));document.getElementById('tx621Apply')?.click();setText(card.querySelector('#gitControlsStatus'),'Writer dos Controles acionado. Use Salvar ROM para exportar.')}catch(e){alert('Não foi possível aplicar os Controles: '+e.message)}};
+ }
+ for(const g of CONTROL_TERM_GROUPS){const inp=document.getElementById('ctrlterm_'+g.id);if(inp&&document.activeElement!==inp){const saved=getScreen(screenTextsBaseline,'controls',g.id);inp.value=saved!=null?String(saved):wholeControlValue(g);try{syncWholeControl(g,inp,{dispatch:false})}catch(_){}}}
+}
+
+function ensureMatchOptionsContent(){
+ const host=document.getElementById('match-optionsScreenHost');if(!host)return;
+ let pk=document.getElementById('preKickoffTextPanel');
+ if(!pk&&typeof window.renderPreKickoffTextEditor==='function'){try{window.renderPreKickoffTextEditor()}catch(e){console.warn('V13 pré-kickoff render',e)}pk=document.getElementById('preKickoffTextPanel')}
+ if(pk&&pk.parentElement!==host)host.appendChild(pk);
+ if(!pk&&!host.querySelector('.screen-owned-loading')){const n=document.createElement('div');n.className='note info screen-owned-loading';n.textContent='Inicializando os campos de Opções da partida…';host.appendChild(n)}
+ if(pk)host.querySelector('.screen-owned-loading')?.remove();
+}
 function installScreenOwnedUi(){
  const navTexts=document.getElementById('nav-texts');
  if(navTexts){
-  const group=navTexts.parentElement;
-  const match=makeNavButton('nav-match-options','match-options','Opções da partida','▦');
-  const controls=makeNavButton('nav-controls','controls','Controles','⌨');
+  const group=navTexts.parentElement,match=makeNavButton('nav-match-options','match-options','Opções da partida','▦'),controls=makeNavButton('nav-controls','controls','Controles','⌨');
   if(group){if(!match.parentElement)group.insertBefore(match,navTexts);if(!controls.parentElement)group.insertBefore(controls,navTexts)}
   if(navTexts.style.display!=='none')navTexts.style.display='none';
  }
  ensureScreenPage('match-options','Opções da partida','Formação, substituições, estratégia, marcação, dados e início da partida. Textos e gráficos desta tela ficam somente aqui.');
  ensureScreenPage('controls','Controles','Configuração dos botões e inscrições gráficas da tela de controles.');
- const pk=document.getElementById('preKickoffTextPanel'),pkHost=document.getElementById('match-optionsScreenHost');if(pk&&pkHost&&pk.parentElement!==pkHost)pkHost.appendChild(pk);
+ ensureMatchOptionsContent();
  const ctrl=document.querySelector('[data-pane="controller"]'),ctrlHost=document.getElementById('controlsScreenHost');if(ctrl&&ctrlHost&&ctrl.parentElement!==ctrlHost){ctrl.classList.add('active');ctrl.style.display='block';ctrlHost.appendChild(ctrl)}
+ installGroupedControlsUi();
 }
 
 function hydrateDom(p){
  if(!p)return;
  const s=sem(p),sec=sections(p),direct=directProfile(p),pre=sec.preKickoff?.values||{},menu=sec.mainMenu?.values||{},gfx=sec.graphicIntents?.values||{};
- for(const [k,v] of Object.entries(direct))if(!touched.direct.has(k)){
-   setValue(`[data-profile-text="${esc(k)}"]`,v);const n=setId('gm610_'+k,v),c=document.getElementById('gm610c_'+k);if(n&&c)setText(c,String(v??'').length+'/'+(n.maxLength||String(v??'').length));
- }
- for(const [k,v] of Object.entries(pre))if(!touched.pre.has(k)){
-   setValue(`[data-pk-id="${esc(k)}"]`,v);const n=setId('pk_'+k,v),c=document.getElementById('pkc_'+k);if(n&&c)setText(c,String(v??'').length+'/'+(n.maxLength||String(v??'').length));
- }
- for(const [k,v] of Object.entries(menu))if(!touched.menu.has(k)){
-   setValue(`[data-mm-real="${esc(k)}"]`,v);setValue(`[data-mainmenu-fb96="${esc(k)}"]`,v);
- }
- for(const [k,v] of Object.entries(gfx))if(!touched.gfx.has(k)){
-   setValue(`[data-gfx-intent="${esc(k)}"]`,v);
-   if(k.startsWith('strategy.screen.v614.'))setId('st612_'+k.slice('strategy.screen.v614.'.length),v);
-   if(k.startsWith('__pk590.native.'))setId('pk590_'+k.slice('__pk590.native.'.length),v);
- }
- if(!touched.internalTitle){
-   const title=String(s.romInternalTitle||s.romInternalTitleDesired||'').replace(/[^\x20-\x7E]/g,' ').slice(0,21);
-   if(title){setId('romMetaTitle',title);setId('romMetaTitleDesired',String(s.romInternalTitleDesired||title));setText(document.getElementById('romMetaTitleCount'),String(title.length));const st=document.getElementById('romMetaTitleImplementStatus');if(st){setText(st,'Implementado');st.className='badge ok'}}
- }
+ for(const [k,v] of Object.entries(direct))if(!touched.direct.has(k)){setValue(`[data-profile-text="${esc(k)}"]`,v);const n=setId('gm610_'+k,v),c=document.getElementById('gm610c_'+k);if(n&&c)setText(c,String(v??'').length+'/'+(n.maxLength||String(v??'').length))}
+ for(const [k,v] of Object.entries(pre))if(!touched.pre.has(k)){setValue(`[data-pk-id="${esc(k)}"]`,v);const n=setId('pk_'+k,v),c=document.getElementById('pkc_'+k);if(n&&c)setText(c,String(v??'').length+'/'+(n.maxLength||String(v??'').length))}
+ for(const [k,v] of Object.entries(menu))if(!touched.menu.has(k)){setValue(`[data-mm-real="${esc(k)}"]`,v);setValue(`[data-mainmenu-fb96="${esc(k)}"]`,v)}
+ for(const [k,v] of Object.entries(gfx))if(!touched.gfx.has(k)){setValue(`[data-gfx-intent="${esc(k)}"]`,v);if(k.startsWith('strategy.screen.v614.'))setId('st612_'+k.slice('strategy.screen.v614.'.length),v);if(k.startsWith('__pk590.native.'))setId('pk590_'+k.slice('__pk590.native.'.length),v)}
+ if(!touched.internalTitle){const title=String(s.romInternalTitle||s.romInternalTitleDesired||'').replace(/[^\x20-\x7E]/g,' ').slice(0,21);if(title){setId('romMetaTitle',title);setId('romMetaTitleDesired',String(s.romInternalTitleDesired||title));setText(document.getElementById('romMetaTitleCount'),String(title.length));const st=document.getElementById('romMetaTitleImplementStatus');if(st){setText(st,'Implementado');st.className='badge ok'}}}
  hydrateScreenTexts(p);installScreenOwnedUi();
 }
-function applyFull(p){
- if(!p)return;
- try{window.__ISSSD_GIT_REAPPLY_PROJECT_STATE__?.(p)}catch(e){console.error('V11 reapply',e)}
- hydrateDom(p);
- try{window.__ISSSD_TEAM_STATE_API__?.refresh?.()}catch(_){}
-}
+function applyFull(p){if(!p)return;try{window.__ISSSD_GIT_REAPPLY_PROJECT_STATE__?.(p)}catch(e){console.error('V13 reapply',e)}hydrateDom(p);try{window.__ISSSD_TEAM_STATE_API__?.refresh?.()}catch(_){}}
 let hydrateTimer=0,uiTimer=0;
 function scheduleHydration(){if(!currentProject)return;clearTimeout(hydrateTimer);hydrateTimer=setTimeout(()=>hydrateDom(currentProject),20)}
 function scheduleUi(){clearTimeout(uiTimer);uiTimer=setTimeout(installScreenOwnedUi,30)}
 function markTouched(t){
- if(!t)return;
- let k;
- const sx=readScreenNode(t);if(sx)touched.screen.add(screenKey(sx.owner,sx.field));
+ if(!t)return;let k;const sx=readScreenNode(t);if(sx)touched.screen.add(screenKey(sx.owner,sx.field));
  if(t.matches?.('[data-profile-text]')){k=t.dataset.profileText;if(k)touched.direct.add(k)}
  if(t.id?.startsWith('gm610_')&&!t.id.startsWith('gm610c_')){k=t.id.slice(6);if(k)touched.direct.add(k)}
  if(t.matches?.('[data-pk-id]')){k=t.dataset.pkId;if(k)touched.pre.add(k)}
@@ -152,37 +181,31 @@ function markTouched(t){
  if(t.id?.startsWith('st612_'))touched.gfx.add('strategy.screen.v614.'+t.id.slice(6));
  if(t.id?.startsWith('pk590_'))touched.gfx.add('__pk590.native.'+t.id.slice(6));
  if(t.id==='romMetaTitle'||t.id==='romMetaTitleDesired')touched.internalTitle=true;
- if(t.closest?.('#page-title-screen'))touched.titleScreen=true;
- anyUserEdit=true;
+ if(t.closest?.('#page-title-screen'))touched.titleScreen=true;anyUserEdit=true;
 }
 
 const priorFinalize=window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__;
 window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__=function(obj){
- try{priorFinalize?.(obj)}catch(e){console.warn('V12 previous project finalizer',e)}
+ try{priorFinalize?.(obj)}catch(e){console.warn('V13 previous project finalizer',e)}
  if(!obj?.state)return obj;obj.state.semantic||(obj.state.semantic={});
- const baseline=currentProject?projectScreenTexts(currentProject):screenTextsBaseline;
- const captured=captureScreenTexts(baseline);obj.state.semantic.screenTextsV1=captured;screenTextsBaseline=clone(captured);
- window.ISSSDLog?.add?.('Projetos','info','Textos por tela anexados ao projeto',{screens:Object.keys(captured.values||{}).length,fields:Object.values(captured.values||{}).reduce((n,x)=>n+Object.keys(x||{}).length,0)});
- return obj;
+ const baseline=currentProject?projectScreenTexts(currentProject):screenTextsBaseline,captured=captureScreenTexts(baseline);obj.state.semantic.screenTextsV1=captured;screenTextsBaseline=clone(captured);
+ window.ISSSDLog?.add?.('Projetos','info','Textos por tela anexados ao projeto',{screens:Object.keys(captured.values||{}).length,fields:Object.values(captured.values||{}).reduce((n,x)=>n+Object.keys(x||{}).length,0)});return obj;
 };
-
 const previousAfterOpen=window.__ISSSD_GIT_AFTER_PROJECT_OPEN__;
 window.__ISSSD_GIT_AFTER_PROJECT_OPEN__=async function(file){
- try{await previousAfterOpen?.(file)}catch(e){console.warn('V11 previous import hook',e)}
- try{currentProject=JSON.parse(await file.text())}catch(e){console.error('V11 project parse',e);return}
- screenTextsBaseline=projectScreenTexts(currentProject);
- anyUserEdit=false;for(const s of [touched.direct,touched.pre,touched.menu,touched.gfx,touched.screen])s.clear();touched.internalTitle=false;touched.titleScreen=false;
+ try{await previousAfterOpen?.(file)}catch(e){console.warn('V13 previous import hook',e)}
+ try{currentProject=JSON.parse(await file.text())}catch(e){console.error('V13 project parse',e);return}
+ screenTextsBaseline=projectScreenTexts(currentProject);anyUserEdit=false;for(const s of [touched.direct,touched.pre,touched.menu,touched.gfx,touched.screen])s.clear();touched.internalTitle=false;touched.titleScreen=false;
  applyFull(currentProject);normalizeMainMenuColorUi();installScreenOwnedUi();
  for(const ms of [80,220,560,1100])setTimeout(()=>{if(!anyUserEdit)applyFull(currentProject);else hydrateDom(currentProject)},ms);
- window.ISSSDLog?.add?.('Projetos','info','V12: projeto reaplicado com textos por tela sincronizados',{build:V11,screens:Object.keys(screenTextsBaseline.values||{}).length});
+ window.ISSSDLog?.add?.('Projetos','info','V13: projeto reaplicado com textos por tela sincronizados',{build:V11,screens:Object.keys(screenTextsBaseline.values||{}).length});
 };
 document.addEventListener('input',e=>markTouched(e.target),true);
 document.addEventListener('change',e=>{if(e.target?.id!=='projectFile')markTouched(e.target)},true);
 document.addEventListener('click',e=>{if(e.target?.closest?.('.navbtn[data-page], [data-page]'))setTimeout(()=>{scheduleHydration();scheduleUi();normalizeMainMenuColorUi()},0)},true);
-const mo=new MutationObserver(()=>{scheduleHydration();scheduleUi()});
-if(document.documentElement)mo.observe(document.documentElement,{subtree:true,childList:true});
+const mo=new MutationObserver(()=>{scheduleHydration();scheduleUi()});if(document.documentElement)mo.observe(document.documentElement,{subtree:true,childList:true});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{normalizeMainMenuColorUi();installScreenOwnedUi()},{once:true});else{normalizeMainMenuColorUi();installScreenOwnedUi()}
-setTimeout(()=>{normalizeMainMenuColorUi();installScreenOwnedUi()},250);setTimeout(()=>{normalizeMainMenuColorUi();installScreenOwnedUi()},900);
-const badge=document.getElementById('isssdGitBridgeBadge');if(badge){badge.textContent='Git Visual Bridge v12';badge.title='Persistência canônica por tela, sem duplicação de campos.'}
+setTimeout(()=>{normalizeMainMenuColorUi();installScreenOwnedUi()},250);setTimeout(()=>{normalizeMainMenuColorUi();installScreenOwnedUi()},900);setTimeout(installScreenOwnedUi,1600);
+const badge=document.getElementById('isssdGitBridgeBadge');if(badge){badge.textContent='Git Visual Bridge v13';badge.title='Telas proprietárias + Controles por termo completo.'}
 window.__ISSSD_SCREEN_TEXTS_V1__={schema:'isssd-screen-texts-v1',capture:()=>captureScreenTexts(),hydrate:()=>currentProject&&hydrateScreenTexts(currentProject),get:()=>clone(screenTextsBaseline),installScreenOwnedUi};
-window.__ISSSD_GIT_PROJECT_IMPORT_V11__={build:V11,getProject:()=>clone(currentProject),hydrate:()=>currentProject&&hydrateDom(currentProject),normalizeMainMenuColorUi,installScreenOwnedUi};
+window.__ISSSD_GIT_PROJECT_IMPORT_V11__={build:V11,getProject:()=>clone(currentProject),hydrate:()=>currentProject&&hydrateDom(currentProject),normalizeMainMenuColorUi,installScreenOwnedUi,installGroupedControlsUi};
