@@ -3,6 +3,7 @@ name: Materialize canonical project
 on:
   push:
     branches:
+      - main
       - canonical-project-rebuild
     paths:
       - 'project-source/canonical/**'
