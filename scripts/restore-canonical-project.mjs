@@ -1,0 +1,27 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import zlib from 'node:zlib';
+import {fileURLToPath} from 'node:url';
+
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const sourceDir=path.join(root,'project-source','canonical');
+const manifestPath=path.join(sourceDir,'manifest.json');
+const out=path.join(root,'International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj');
+const manifest=JSON.parse(fs.readFileSync(manifestPath,'utf8'));
+const parts=manifest.parts.map(name=>fs.readFileSync(path.join(sourceDir,name),'utf8').trim());
+const compressed=Buffer.from(parts.join(''),'base64');
+const raw=zlib.gunzipSync(compressed);
+const sha=crypto.createHash('sha256').update(raw).digest('hex');
+if(sha!==manifest.sha256)throw new Error(`Projeto canônico inválido: SHA-256 ${sha}, esperado ${manifest.sha256}`);
+const project=JSON.parse(raw.toString('utf8'));
+if(project?.state?.semantic?.romInternalTitle!=='INTERNETSSSUCKERRELAX')throw new Error('Projeto canônico inválido: título interno inesperado.');
+const players=project?.state?.semantic?.teamsV1?.names?.teams?.['30']?.players||[];
+if(players.length!==20)throw new Error(`Projeto canônico inválido: esperados 20 nomes do Brasil, encontrados ${players.length}.`);
+const assets=Object.keys(project?.state?.titleComposerV2?.assets||{});
+if(assets.length!==7)throw new Error(`Projeto canônico inválido: esperados 7 assets da Tela Inicial, encontrados ${assets.length}.`);
+fs.writeFileSync(out,raw);
+console.log(`Projeto canônico restaurado: ${out}`);
+console.log(`SHA-256: ${sha}`);
+console.log(`Jogadores Brasil: ${players.map(p=>p.name).join(', ')}`);
+console.log(`Assets Tela Inicial: ${assets.join(', ')}`);
