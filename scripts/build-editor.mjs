@@ -28,6 +28,21 @@ html=html.replace(/<!--\s*ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE\s*-->\s*/g,'')
 
 const unsafeDeferredLength='(studioDeferredPlayerPatches.length-deferredNative.length)',safeDeferredLength='((studioDeferredPlayerPatches||[]).length-deferredNative.length)';if(html.includes(unsafeDeferredLength))html=html.replaceAll(unsafeDeferredLength,safeDeferredLength);
 
+// O servidor local conhece a ROM-base canônica Plus e a expõe somente ao Editor em
+// /__isssd/default-plus-rom. Assim, abrir um projeto Plus nunca depende do file picker.
+const fixedPlusPath='C:\\Users\\fsfre\\Downloads\\ISSSD-Studio\\roms\\International Superstar Soccer Deluxe Plus.sfc';
+const fixedBaseMarker='__ISSSD_FIXED_PLUS_ROM_PATH__';
+if(!html.includes(fixedBaseMarker)){
+ const baseResolverBoundary='function studioB64(bytes){';
+ if(!html.includes(baseResolverBoundary))throw new Error('Build interrompido: não encontrei o final do resolvedor de ROM-base legado.');
+ const fixedBaseBridge=`const __ISSSD_FIXED_PLUS_ROM_PATH__=${JSON.stringify(fixedPlusPath)};\nconst __ISSSD_FIXED_PLUS_ROM_NAME__='International Superstar Soccer Deluxe Plus.sfc';\nconst __ISSSD_FIXED_PLUS_ROM_ENDPOINT__='/__isssd/default-plus-rom';\nconst __ISSSD_PRE_FIXED_BASE_RESOLVER__=studioGetCachedBase;\nstudioGetCachedBase=async function(sha){\n const cached=await __ISSSD_PRE_FIXED_BASE_RESOLVER__(sha);if(cached?.bytes)return cached;\n try{\n  const r=await fetch(__ISSSD_FIXED_PLUS_ROM_ENDPOINT__,{cache:'no-store'});if(!r.ok)return null;\n  const bytes=new Uint8Array(await r.arrayBuffer()),got=await studioSha256(bytes);\n  if(sha&&got!==sha){console.error('ISSSD Studio: ROM-base fixa não corresponde ao SHA exigido pelo projeto',{path:__ISSSD_FIXED_PLUS_ROM_PATH__,expected:sha,actual:got});return null}\n  await studioCacheBase(bytes,__ISSSD_FIXED_PLUS_ROM_NAME__,'iss-deluxe-plus');\n  window.ISSSDLog?.add?.('ROM / Build','info','ROM-base Plus carregada automaticamente do caminho fixo',{path:__ISSSD_FIXED_PLUS_ROM_PATH__,sha256:got});\n  return {sha256:got,name:__ISSSD_FIXED_PLUS_ROM_NAME__,bytes};\n }catch(e){console.error('ISSSD Studio: falha ao carregar ROM-base fixa',e);return null}\n};\n`;
+ html=html.replace(baseResolverBoundary,fixedBaseBridge+baseResolverBoundary);
+}
+
+// Para projetos Plus, nunca abrir o seletor manual: se o caminho fixo falhar, mostre erro.
+const manualBasePrompt='studioPendingProject=d;\n  alert("A ROM-base deste projeto ainda não está disponível neste navegador. Selecione a ROM-base correspondente; o Studio validará o SHA-256 antes de aplicar qualquer alteração.");\n  document.getElementById("romFile")?.click();';
+if(html.includes(manualBasePrompt))html=html.replace(manualBasePrompt,`if(d.base?.profile==='iss-deluxe-plus'){throw new Error('ROM-base Plus não encontrada no caminho fixo: ${fixedPlusPath.replace(/\\/g,'\\\\')}')}\n  studioPendingProject=d;\n  alert("A ROM-base deste projeto ainda não está disponível neste navegador. Selecione a ROM-base correspondente; o Studio validará o SHA-256 antes de aplicar qualquer alteração.");\n  document.getElementById("romFile")?.click();`);
+
 const saveHook='window.__ISSSD_GIT_SYNC_TEXT_STATE_BEFORE_SAVE__?.();';
 if(!html.includes(saveHook)){const needle='async function studioProjectObject(){';if(!html.includes(needle))throw new Error('Build interrompido: não encontrei studioProjectObject para instalar sincronização pré-salvamento.');html=html.replace(needle,needle+'\n '+saveHook)}
 
@@ -62,8 +77,9 @@ const markerCount=(html.match(/ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE/g)||[]).length,
 if(markerCount!==1||runtimeCount!==1||styleCount!==1||v11Count!==1)throw new Error(`Build interrompido: injeção Git duplicada/incompleta (marker=${markerCount}, runtime=${runtimeCount}, style=${styleCount}, v11=${v11Count}).`);
 if(!html.includes('git-visual-bridge-v10-deterministic-project-import')||!html.includes('git-project-import-v11'))throw new Error('Build interrompido: runtimes de importação não foram injetados.');
 if(!html.includes('__ISSSD_GIT_REAPPLY_PROJECT_STATE__'))throw new Error('Build interrompido: ponte de restauração integral não foi instalada.');
+if(!html.includes('__ISSSD_FIXED_PLUS_ROM_PATH__')||!html.includes('/__isssd/default-plus-rom'))throw new Error('Build interrompido: resolvedor automático da ROM-base Plus não foi instalado.');
 if(!html.includes('profileTextDraft=directPid?JSON.parse(JSON.stringify(directBy[directPid]||{})):{}'))throw new Error('Build interrompido: rascunho textual direto ainda não é restaurado da baseline do projeto.');
 if(html.includes('isssdProjectHydrationDiagnostic')||html.includes('Aplicar dados do projeto aos campos'))throw new Error('Build interrompido: painel manual de diagnóstico ainda está presente.');
 
 fs.mkdirSync(outDir,{recursive:true});fs.writeFileSync(outHtml,html,'utf8');for(const name of ['assets','docs','schemas']){const from=path.join(vendorDir,name),to=path.join(outDir,name);if(fs.existsSync(from)){fs.rmSync(to,{recursive:true,force:true});fs.cpSync(from,to,{recursive:true})}}
-console.log('ISSSD Studio editor build concluído.');console.log('Fonte visual em cache: '+source);console.log('Saída: '+outHtml);console.log('Git Bridge v11: projeto reidratado após o lifecycle legado e após renderizações tardias.');
+console.log('ISSSD Studio editor build concluído.');console.log('Fonte visual em cache: '+source);console.log('Saída: '+outHtml);console.log('ROM-base Plus fixa: '+fixedPlusPath);console.log('Git Bridge v11: projeto reidratado após o lifecycle legado e após renderizações tardias.');
