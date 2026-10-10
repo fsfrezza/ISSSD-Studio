@@ -14,7 +14,11 @@ const v11File=path.join(root,'editor-src','project-import-v11.mjs');
 
 const legacyContainer=path.join(parent,'ISSSD-Studio-OLD');
 const legacyRoots=[path.join(parent,'ISSSD-Studio-Visual-Bridge'),path.join(legacyContainer,'ISSSD-Studio-Visual-Bridge'),path.join(legacyContainer,'ISSSD-Studio-Preview'),path.join(legacyContainer,'ISSSD-Studio-ANTIGO'),path.join(legacyContainer,'ISSSD-Studio-OLD'),path.join(parent,'ISSSD-Studio-ANTIGO'),path.join(root,'legacy-ui'),root];
-const candidates=[cachedHtml];for(const legacyRoot of legacyRoots)candidates.push(path.join(legacyRoot,'legacy-ui','ISSSD-Studio.html'),path.join(legacyRoot,'ISSSD-Studio.html'));
+const rawCandidates=[];for(const legacyRoot of legacyRoots)rawCandidates.push(path.join(legacyRoot,'legacy-ui','ISSSD-Studio.html'),path.join(legacyRoot,'ISSSD-Studio.html'));
+const generatedMarkers=['ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE','isssd-git-controller-v17','git-controller-ui-v17-native-font','git-controller-ui-v18-stable-no-observer'];
+const cacheIsContaminated=fs.existsSync(cachedHtml)&&generatedMarkers.some(m=>fs.readFileSync(cachedHtml,'utf8').includes(m));
+if(cacheIsContaminated){console.warn('ISSSD Studio: cache visual contém injeções geradas antigas; descartando .editor-vendor antes do build.');fs.rmSync(path.join(root,'.editor-vendor'),{recursive:true,force:true})}
+const candidates=[cachedHtml,...rawCandidates];
 let source=candidates.find(p=>fs.existsSync(p));
 if(!source){console.error('ISSSD Studio: não encontrei a interface legada/Visual Bridge.');console.error('Locais verificados:\n- '+candidates.join('\n- '));process.exit(2)}
 if(source!==cachedHtml){const sourceDir=path.dirname(source);fs.rmSync(path.join(root,'.editor-vendor'),{recursive:true,force:true});fs.mkdirSync(vendorDir,{recursive:true});fs.copyFileSync(source,cachedHtml);for(const name of ['assets','docs','schemas']){const from=path.join(sourceDir,name),to=path.join(vendorDir,name);if(fs.existsSync(from))fs.cpSync(from,to,{recursive:true})}source=cachedHtml;console.log('Interface legada importada para cache local: '+cachedHtml)}
@@ -24,7 +28,8 @@ const marker='ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE';
 html=html.replace(/<!--\s*ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE\s*-->\s*/g,'')
  .replace(/<style\s+id=["']isssd-git-visual-bridge-overrides["'][^>]*>[\s\S]*?<\/style>\s*/g,'')
  .replace(/<script\s+type=["']module["']\s+id=["']isssd-git-visual-bridge-runtime["'][^>]*>[\s\S]*?<\/script>\s*/g,'')
- .replace(/<script\s+type=["']module["']\s+id=["']isssd-git-project-import-v11["'][^>]*>[\s\S]*?<\/script>\s*/g,'');
+ .replace(/<script\s+type=["']module["']\s+id=["']isssd-git-project-import-v11["'][^>]*>[\s\S]*?<\/script>\s*/g,'')
+ .replace(/<script\s+type=["']module["']\s+id=["']isssd-git-controller-v17["'][^>]*>[\s\S]*?<\/script>\s*/g,'');
 
 const unsafeDeferredLength='(studioDeferredPlayerPatches.length-deferredNative.length)',safeDeferredLength='((studioDeferredPlayerPatches||[]).length-deferredNative.length)';if(html.includes(unsafeDeferredLength))html=html.replaceAll(unsafeDeferredLength,safeDeferredLength);
 
@@ -80,6 +85,7 @@ if(!html.includes('__ISSSD_GIT_REAPPLY_PROJECT_STATE__'))throw new Error('Build 
 if(!html.includes('__ISSSD_FIXED_PLUS_ROM_PATH__')||!html.includes('/__isssd/default-plus-rom'))throw new Error('Build interrompido: resolvedor automático da ROM-base Plus não foi instalado.');
 if(!html.includes('profileTextDraft=directPid?JSON.parse(JSON.stringify(directBy[directPid]||{})):{}'))throw new Error('Build interrompido: rascunho textual direto ainda não é restaurado da baseline do projeto.');
 if(html.includes('isssdProjectHydrationDiagnostic')||html.includes('Aplicar dados do projeto aos campos'))throw new Error('Build interrompido: painel manual de diagnóstico ainda está presente.');
+if(html.includes('isssd-git-controller-v17')||html.includes('git-controller-ui-v18-stable-no-observer'))throw new Error('Build interrompido: runtime antigo de Controles ainda contaminou a fonte/cache.');
 
 fs.mkdirSync(outDir,{recursive:true});fs.writeFileSync(outHtml,html,'utf8');for(const name of ['assets','docs','schemas']){const from=path.join(vendorDir,name),to=path.join(outDir,name);if(fs.existsSync(from)){fs.rmSync(to,{recursive:true,force:true});fs.cpSync(from,to,{recursive:true})}}
-console.log('ISSSD Studio editor build concluído.');console.log('Fonte visual em cache: '+source);console.log('Saída: '+outHtml);console.log('ROM-base Plus fixa: '+fixedPlusPath);console.log('Git Bridge v11: projeto reidratado após o lifecycle legado e após renderizações tardias.');
+console.log('ISSSD Studio editor build concluído.');console.log('Fonte visual em cache: '+source);console.log('Saída: '+outHtml);console.log('ROM-base Plus fixa: '+fixedPlusPath);console.log('Cache visual higienizado; Git Bridge v11/v16 sem runtime v17/v18 de Controles.');
