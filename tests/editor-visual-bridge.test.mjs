@@ -8,6 +8,7 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const build=()=>fs.readFileSync(path.join(root,'scripts/build-editor.mjs'),'utf8');
 const runtime=()=>fs.readFileSync(path.join(root,'editor-src/visual-bridge-overrides.mjs'),'utf8');
 const v11=()=>fs.readFileSync(path.join(root,'editor-src/project-import-v11.mjs'),'utf8');
+const server=()=>fs.readFileSync(path.join(root,'scripts/serve-editor.mjs'),'utf8');
 
 test('editor automation sources are versioned',()=>{for(const rel of ['scripts/build-editor.mjs','scripts/serve-editor.mjs','editor-src/visual-bridge-overrides.css','editor-src/visual-bridge-overrides.mjs','editor-src/project-import-v11.mjs'])assert.equal(fs.existsSync(path.join(root,rel)),true,rel+' missing')});
 test('build uses Visual Bridge as source and does not silently fall back to skeleton',()=>{const src=build();assert.match(src,/ISSSD-Studio-Visual-Bridge/);assert.match(src,/ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE/);assert.doesNotMatch(src,/editor\/index\.html/)});
@@ -19,3 +20,5 @@ test('project save starts from loaded baseline and overlays only touched text fi
 test('untouched title screen and embedded assets are preserved from loaded project',()=>{const src=runtime();assert.match(src,/!touched\.titleScreen/);assert.match(src,/beforeAssets/);assert.match(src,/afterAssets/);assert.match(src,/salvamento cancelado/)});
 test('manual hydration diagnostic is absent',()=>{const src=runtime()+v11();assert.doesNotMatch(src,/isssdProjectHydrationDiagnostic/);assert.doesNotMatch(src,/Aplicar dados do projeto aos campos/)});
 test('editor build protects legacy deferred patch length during project save',()=>{const src=build();assert.match(src,/unsafeDeferredLength/);assert.match(src,/studioDeferredPlayerPatches\|\|\[\]/)});
+test('local server exposes the canonical Plus ROM from the fixed Windows path',()=>{const src=server();assert.match(src,/C:\\\\Users\\\\fsfre\\\\Downloads\\\\ISSSD-Studio\\\\roms\\\\International Superstar Soccer Deluxe Plus\.sfc/);assert.match(src,/\/__isssd\/default-plus-rom/);assert.match(src,/serveDefaultPlusRom/)});
+test('Plus project base resolver uses the fixed local ROM and never opens a picker for Plus fallback',()=>{const src=build();assert.match(src,/__ISSSD_FIXED_PLUS_ROM_PATH__/);assert.match(src,/__ISSSD_FIXED_PLUS_ROM_ENDPOINT__/);assert.match(src,/\/__isssd\/default-plus-rom/);assert.match(src,/d\.base\?\.profile==='iss-deluxe-plus'/);assert.match(src,/ROM-base Plus não encontrada no caminho fixo/)});
