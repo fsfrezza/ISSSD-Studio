@@ -7,10 +7,8 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const recovery=path.join(root,'project-recovery');
 const output=path.join(root,'International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj');
 const force=process.argv.includes('--force');
-const clone=v=>JSON.parse(JSON.stringify(v));
 
-function readJoined(names){return names.map(n=>fs.readFileSync(path.join(recovery,n),'utf8').trim()).join('')}
-function gunzipJson(names){return JSON.parse(zlib.gunzipSync(Buffer.from(readJoined(names),'base64')).toString('utf8'))}
+function gunzipJson(name){return JSON.parse(zlib.gunzipSync(Buffer.from(fs.readFileSync(path.join(recovery,name),'utf8').trim(),'base64')).toString('utf8'))}
 function countTeams(project){return Object.keys(project?.state?.semantic?.teamsV1?.names?.teams||{}).length}
 function countPlayers(project){return Object.values(project?.state?.semantic?.teamsV1?.names?.teams||{}).reduce((n,t)=>n+(t?.players?.length||0),0)}
 function countAssets(project){return Object.keys(project?.state?.titleComposerV2?.assets||{}).length}
@@ -26,8 +24,21 @@ if(fs.existsSync(output)&&!force){
  }catch(_){}
 }
 
-const project=gunzipJson(['skeleton.part1.b64']);
-project.state.semantic.teamsV1=gunzipJson(['teamsv1.part1.b64','teamsv1.part2.b64','teamsv1.part3.b64']);
+const project=gunzipJson('skeleton.part1.b64');
+const recoveredNames=JSON.parse(fs.readFileSync(path.join(recovery,'player-names.json'),'utf8'));
+const teams={};
+for(const [teamId,rec] of Object.entries(recoveredNames)){
+ teams[teamId]={
+  teamId:Number(teamId),
+  teamName:String(rec.teamName||''),
+  players:(rec.players||[]).map((name,i)=>({slot:i+1,name:String(name||'')}))
+ };
+}
+project.state.semantic.teamsV1={
+ schema:'isssd-teams-v1',version:2,
+ names:{schema:'isssd-name-roster-v1',version:1,mode:'names-only',teams},
+ tactics:{schema:'isssd-tactics-v1',version:1,mode:'semantic-only',teams:{}}
+};
 
 const ws=project.state.semantic.textWorkspaceV2;
 if(!ws?.sections)throw new Error('Recuperação: textWorkspaceV2 ausente no skeleton.');
@@ -70,7 +81,7 @@ project.state.semantic.titleComposerV2={storedIn:'state.titleComposerV2',embedde
 project.name='International-Superstar-Soccer-Deluxe-Plus-projeto';
 project.createdAt=new Date().toISOString();
 project.notes=Array.isArray(project.notes)?project.notes:[];
-project.notes.unshift('Projeto canônico recuperado deterministicamente do Git: textos PT-BR + Tela Inicial + teamsV1 com nomes de jogadores.');
+project.notes.unshift('Projeto canônico recuperado deterministicamente do Git: textos PT-BR + Tela Inicial + 54 equipes/1.080 nomes de jogadores.');
 
 if(countTeams(project)!==54)throw new Error(`Recuperação cancelada: esperado 54 equipes; obtido ${countTeams(project)}.`);
 if(countPlayers(project)!==1080)throw new Error(`Recuperação cancelada: esperado 1080 jogadores; obtido ${countPlayers(project)}.`);
