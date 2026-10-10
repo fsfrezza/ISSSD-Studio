@@ -31,25 +31,22 @@ const saveHook='window.__ISSSD_GIT_SYNC_TEXT_STATE_BEFORE_SAVE__?.();';
 if(!html.includes(saveHook)){const needle='async function studioProjectObject(){';if(!html.includes(needle))throw new Error('Build interrompido: não encontrei studioProjectObject para instalar sincronização pré-salvamento.');html=html.replace(needle,needle+'\n '+saveHook)}
 if(!html.includes(saveHook))throw new Error('Build interrompido: hook pré-salvamento não foi instalado.');
 
-// Ponte clássica: executa no mesmo contexto dos scripts legados e consegue acessar
-// funções/variáveis que o runtime type=module não enxerga diretamente.
+// Ponte clássica no mesmo escopo dos scripts legados. O runtime modular chama esta
+// função depois de restaurar o workspace canônico do .issdproj.
 const applyNeedle='async function studioApplyProjectWithBase(d,baseBytes,baseName){';
 const restoreBridge=`\n window.__ISSSD_GIT_REAPPLY_PROJECT_STATE__=function(project){\n  const sem=project?.state?.semantic||{};\n  try{if(sem.teamsV1?.schema==='isssd-teams-v1')studioRestoreTeamsV1(sem.teamsV1)}catch(e){console.warn('Git Bridge: equipes/jogadores',e)}\n  try{if(studioCore()?.restorePlusGroupsProjectState)studioCore().restorePlusGroupsProjectState(sem.plusGroups||null)}catch(e){console.warn('Git Bridge: grupos',e)}\n  try{if(studioCore()?.restoreGospelGolProjectState)studioCore().restoreGospelGolProjectState(sem.plusGospelGol||null)}catch(e){console.warn('Git Bridge: Gospel-Gol',e)}\n  try{if(typeof studioVariantState!=='undefined'&&sem.studioVariant)studioVariantState=JSON.parse(JSON.stringify(sem.studioVariant));studioVariantRender?.()}catch(e){console.warn('Git Bridge: variante',e)}\n  try{window.ISSSDMenuScreen?.restore?.(sem.menuScreenV1||null)}catch(e){console.warn('Git Bridge: menu visual',e)}\n  try{if(typeof mainMenuColors!=='undefined'&&sem.mainMenuColors){mainMenuColors={...window.MAIN_MENU_ORIGINAL_COLORS,...JSON.parse(JSON.stringify(sem.mainMenuColors))};const rs=sem.mainMenuColorsRomState;studioMainMenuColorsAppliedToRom=!!rs?.applied;studioMainMenuColorsAppliedSnapshot=rs?.colors?JSON.parse(JSON.stringify(rs.colors)):null;renderMainMenuFb96Fields?.()}}catch(e){console.warn('Git Bridge: cores do menu',e)}\n  try{if(sem.preKickoffGraphicAssets)window.ISSSDPrekickNative?.restoreCommitted?.(sem.preKickoffGraphicAssets)}catch(e){console.warn('Git Bridge: gráficos pré-kickoff',e)}\n  try{renderEverything?.();renderPlusGroupOrganizer?.();window.__ISSSD_TEAM_STATE_API__?.refresh?.()}catch(e){console.warn('Git Bridge: render final',e)}\n  return true;\n };\n`;
-if(!html.includes('__ISSSD_GIT_REAPPLY_PROJECT_STATE__')){
- if(!html.includes(applyNeedle))throw new Error('Build interrompido: não encontrei studioApplyProjectWithBase para expor restauração integral do projeto.');
- html=html.replace(applyNeedle,applyNeedle+restoreBridge);
-}
+if(!html.includes('__ISSSD_GIT_REAPPLY_PROJECT_STATE__')){if(!html.includes(applyNeedle))throw new Error('Build interrompido: não encontrei studioApplyProjectWithBase para expor restauração integral do projeto.');html=html.replace(applyNeedle,applyNeedle+restoreBridge)}
 
-const openHook="await window.__ISSSD_GIT_AFTER_PROJECT_OPEN__?.(f);try{window.__ISSSD_GIT_REAPPLY_PROJECT_STATE__?.(JSON.parse(await f.text()));}catch(e){console.warn('Git Bridge: restauração integral pós-importação',e)}";
-html=html.replace(/await window\.__ISSSD_GIT_AFTER_PROJECT_OPEN__\?\.\(f\);try\{window\.__ISSSD_GIT_REAPPLY_PROJECT_STATE__[\s\S]*?\}\s*/g,'');
+// Elimina hooks Git anteriores do cache e instala apenas o lifecycle canônico atual.
+html=html.replace(/await window\.__ISSSD_GIT_AFTER_PROJECT_OPEN__\?\.\(f\);try\{window\.__ISSSD_GIT_REAPPLY_PROJECT_STATE__[\s\S]*?\}\s*;?/g,'');
 html=html.replaceAll('await window.__ISSSD_GIT_AFTER_PROJECT_OPEN__?.(f);','');
+const openHook='await window.__ISSSD_GIT_AFTER_PROJECT_OPEN__?.(f);';
 const finalImportNeedle="await studioImportProject(f);window.ISSSDLog?.add('Projetos','info','Projeto aberto'";
-const finalImportPatched="await studioImportProject(f);"+openHook+";window.ISSSDLog?.add('Projetos','info','Projeto aberto'";
+const finalImportPatched="await studioImportProject(f);"+openHook+"window.ISSSDLog?.add('Projetos','info','Projeto aberto'";
 if(!html.includes(finalImportNeedle))throw new Error('Build interrompido: não encontrei o handler final de Abrir Projeto para instalar a restauração automática.');
 html=html.replace(finalImportNeedle,finalImportPatched);
 const openHookCount=(html.match(/await window\.__ISSSD_GIT_AFTER_PROJECT_OPEN__\?\.\(f\);/g)||[]).length;
 if(openHookCount!==1)throw new Error(`Build interrompido: hook pós-importação deveria existir uma vez, encontrado ${openHookCount}.`);
-if(!html.includes('__ISSSD_GIT_REAPPLY_PROJECT_STATE__?.(JSON.parse(await f.text()))'))throw new Error('Build interrompido: projeto não será reaplicado integralmente após importação.');
 if(/studioImportProject\(f\);\s*await window\.__ISSSD_GIT_AFTER_PROJECT_OPEN__\?\.\(f\);\s*else\b/.test(html))throw new Error('Build interrompido: hook pós-importação foi inserido entre if/else legado.');
 
 const finalizeHook='window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__?.(obj);';
@@ -65,10 +62,10 @@ const patch=`\n<!-- ${marker} -->\n<style id="isssd-git-visual-bridge-overrides"
 if(html.includes('</body>'))html=html.replace('</body>',patch+'\n</body>');else html+=patch;
 const markerCount=(html.match(/ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE/g)||[]).length,runtimeCount=(html.match(/id=["']isssd-git-visual-bridge-runtime["']/g)||[]).length,styleCount=(html.match(/id=["']isssd-git-visual-bridge-overrides["']/g)||[]).length;
 if(markerCount!==1||runtimeCount!==1||styleCount!==1)throw new Error(`Build interrompido: injeção Git duplicada/incompleta (marker=${markerCount}, runtime=${runtimeCount}, style=${styleCount}).`);
-if(!html.includes('git-visual-bridge-v8-safe-project-save'))throw new Error('Build interrompido: runtime v8 de salvamento seguro não foi injetado.');
+if(!html.includes('git-visual-bridge-v10-project-authority'))throw new Error('Build interrompido: runtime v10 de autoridade do projeto não foi injetado.');
 if(!html.includes('__ISSSD_GIT_REAPPLY_PROJECT_STATE__'))throw new Error('Build interrompido: ponte de restauração integral não foi instalada.');
 if(html.includes('isssdProjectHydrationDiagnostic')||html.includes('Aplicar dados do projeto aos campos'))throw new Error('Build interrompido: painel manual de diagnóstico ainda está presente na interface gerada.');
 
 fs.mkdirSync(outDir,{recursive:true});fs.writeFileSync(outHtml,html,'utf8');
 for(const name of ['assets','docs','schemas']){const from=path.join(vendorDir,name),to=path.join(outDir,name);if(fs.existsSync(from)){fs.rmSync(to,{recursive:true,force:true});fs.cpSync(from,to,{recursive:true})}}
-console.log('ISSSD Studio editor build concluído.');console.log('Fonte visual em cache: '+source);console.log('Saída: '+outHtml);console.log('Git Bridge: importação integral automática + baseline protegida.');
+console.log('ISSSD Studio editor build concluído.');console.log('Fonte visual em cache: '+source);console.log('Saída: '+outHtml);console.log('Git Visual Bridge v10: projeto autoritativo + materialização textual + baseline protegida.');
