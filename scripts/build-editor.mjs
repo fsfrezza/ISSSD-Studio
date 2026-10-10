@@ -34,12 +34,15 @@ const restoreBridge=`\n window.__ISSSD_GIT_REAPPLY_PROJECT_STATE__=function(proj
 if(!html.includes('__ISSSD_GIT_REAPPLY_PROJECT_STATE__')){if(!html.includes(applyNeedle))throw new Error('Build interrompido: não encontrei studioApplyProjectWithBase para expor restauração integral do projeto.');html=html.replace(applyNeedle,applyNeedle+restoreBridge)}
 
 // A restauração final ocorre DENTRO de studioApplyProjectWithBase, depois que o legado
-// terminou seus próprios restores/repaints. Isso elimina a corrida ROM-base x projeto.
-const applyEndNeedle='if(typeof studioVariantRender==="function")studioVariantRender();\n  studioUpdateBadge();\n}';
-const applyEndPatched='if(typeof studioVariantRender==="function")studioVariantRender();\n  window.__ISSSD_GIT_REAPPLY_PROJECT_STATE__?.(d);\n  studioUpdateBadge();\n}';
-html=html.replaceAll('window.__ISSSD_GIT_REAPPLY_PROJECT_STATE__?.(d);\n  studioUpdateBadge();','studioUpdateBadge();');
-if(!html.includes(applyEndNeedle))throw new Error('Build interrompido: não encontrei o final de studioApplyProjectWithBase para instalar restauração determinística.');
-html=html.replace(applyEndNeedle,applyEndPatched);
+// terminou seus próprios restores/repaints. Não dependemos mais de whitespace ou do
+// texto exato do final da função: ancoramos no studioUpdateBadge da própria função.
+html=html.replaceAll('window.__ISSSD_GIT_REAPPLY_PROJECT_STATE__?.(d);','');
+const applyStart=html.indexOf(applyNeedle);
+const applyNext=html.indexOf('function studioProjectChangeHasValues(',applyStart);
+if(applyStart<0||applyNext<0)throw new Error('Build interrompido: não consegui delimitar studioApplyProjectWithBase.');
+const applyBadge=html.lastIndexOf('studioUpdateBadge();',applyNext);
+if(applyBadge<applyStart)throw new Error('Build interrompido: não encontrei studioUpdateBadge dentro de studioApplyProjectWithBase.');
+html=html.slice(0,applyBadge)+'window.__ISSSD_GIT_REAPPLY_PROJECT_STATE__?.(d);\n  '+html.slice(applyBadge);
 if((html.match(/__ISSSD_GIT_REAPPLY_PROJECT_STATE__\?\.\(d\)/g)||[]).length!==1)throw new Error('Build interrompido: restauração determinística dentro de studioApplyProjectWithBase não foi instalada exatamente uma vez.');
 
 const openHook='await window.__ISSSD_GIT_AFTER_PROJECT_OPEN__?.(f);';
