@@ -1,33 +1,88 @@
-const BUILD='git-controller-ui-v17-native-font';
-const PC=0x108162, ORIGINAL_COMP=390, RAWLEN=496;
+const BUILD='git-controller-ui-v18-stable-no-observer';
 const SLOTS=[
- ['high','HIGH',0,19],['ball','BALL',19,40],['pass','PASS',40,61],['shoot','SHOOT',61,93],['dash','DASH',93,129],
- ['keeper','KEEPER',129,152],['semiauto','SEMI AUTO',152,189],['auto','AUTO',189,219],['manual','MANUAL',219,248]
+ ['high','HIGH'],['ball','BALL'],['pass','PASS'],['shoot','SHOOT'],['dash','DASH'],
+ ['keeper','KEEPER'],['semiauto','SEMI AUTO'],['auto','AUTO'],['manual','MANUAL']
 ];
-const FALLBACK={
- A:['010','101','101','111','101','101','101'],B:['110','101','101','110','101','101','110'],C:['011','100','100','100','100','100','011'],D:['110','101','101','101','101','101','110'],E:['111','100','100','110','100','100','111'],F:['111','100','100','110','100','100','100'],G:['011','100','100','101','101','101','011'],H:['101','101','101','111','101','101','101'],I:['1','1','1','1','1','1','1'],J:['001','001','001','001','101','101','010'],K:['101','101','110','100','110','101','101'],L:['100','100','100','100','100','100','111'],M:['1001','1111','1111','1011','1001','1001','1001'],N:['101','111','111','111','111','101','101'],O:['010','101','101','101','101','101','010'],P:['110','101','101','110','100','100','100'],Q:['010','101','101','101','101','011','001'],R:['110','101','101','110','101','101','101'],S:['011','100','100','010','001','001','110'],T:['111','010','010','010','010','010','010'],U:['101','101','101','101','101','101','111'],V:['101','101','101','101','101','101','010'],W:['1001','1001','1001','1111','1111','1111','1001'],X:['101','101','010','010','010','101','101'],Y:['101','101','101','010','010','010','010'],Z:['111','001','001','010','100','100','111'],
- '0':['010','101','101','101','101','101','010'],'1':['1','1','1','1','1','1','1'],'2':['110','001','001','010','100','100','111'],'3':['110','001','001','010','001','001','110'],'4':['101','101','101','111','001','001','001'],'5':['111','100','100','110','001','001','110'],'6':['011','100','100','110','101','101','010'],'7':['111','001','001','010','010','010','010'],'8':['010','101','101','010','101','101','010'],'9':['010','101','101','011','001','001','110'],'-':['000','000','000','111','000','000','000']
-};
-let baseRomPromise=null;
 const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
 const norm=s=>String(s??'').toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z0-9 -]/g,'').replace(/\s+/g,' ').trim();
-function host(){return window.__ISSSD_PREKICK_HOST__}function codec(){return window.__ISSSD_PREKICK_CODEC__}
-function resolve(){const h=host(),rom=h?.rom?.();if(!rom||h.profile()!=='iss-deluxe-plus')throw Error('Abra uma ROM ISS Deluxe Plus.');return {h,rom,head:h.header()||0}}
-async function baseRom(){if(!baseRomPromise)baseRomPromise=fetch('/__isssd/default-plus-rom',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('ROM-base Plus fixa não pôde ser lida.');return r.arrayBuffer()}).then(b=>new Uint8Array(b));return baseRomPromise}
-function unpack(source,head){const src=source.slice(head+PC,head+PC+ORIGINAL_COMP),raw=codec().decompress(src);if(raw.length!==RAWLEN)throw Error('Controller: tamanho descomprimido inesperado ('+raw.length+' B).');return Uint8Array.from(raw)}
-function decode2(raw){const pix=new Uint8Array(248*8);for(let t=0;t<31;t++)for(let y=0;y<8;y++){const a=raw[t*16+y*2],b=raw[t*16+y*2+1];for(let x=0;x<8;x++){const bit=7-x;pix[y*248+t*8+x]=((a>>bit)&1)|(((b>>bit)&1)<<1)}}return pix}
-function encode2(pix){const raw=new Uint8Array(RAWLEN);for(let t=0;t<31;t++)for(let y=0;y<8;y++){let a=0,b=0;for(let x=0;x<8;x++){const v=pix[y*248+t*8+x]&3,bit=7-x;a|=(v&1)<<bit;b|=((v>>1)&1)<<bit}raw[t*16+y*2]=a;raw[t*16+y*2+1]=b}return raw}
-function nativeAtlas(pix){const atlas={};for(const [,orig,x0,x1] of SLOTS){const chars=orig.replace(/ /g,'').split(''),cols=[];let on=false,a=0;for(let x=x0;x<=x1;x++){let ink=false;if(x<x1)for(let y=0;y<8;y++)if(pix[y*248+x]){ink=true;break}if(ink&&!on){a=x;on=true}if(!ink&&on){cols.push([a,x]);on=false}}if(cols.length!==chars.length)continue;cols.forEach(([a,b],i)=>{const w=b-a,rows=[];for(let y=0;y<8;y++){const row=[];for(let x=a;x<b;x++)row.push(pix[y*248+x]&3);rows.push(row)};if(!atlas[chars[i]])atlas[chars[i]]={rows,w,native:true}})}return atlas}
-function slotInk(pix,x0,x1){const count=[0,0,0,0];for(let y=0;y<8;y++)for(let x=x0;x<x1;x++){const v=pix[y*248+x]&3;if(v)count[v]++}let best=1;for(let v=2;v<=3;v++)if(count[v]>count[best])best=v;return count[best]?best:1}
-function glyph(c,atlas){if(atlas[c])return atlas[c];const g=FALLBACK[c];return g?{rows:g.map(r=>[...r].map(Number)),w:g[0].length,native:false}:null}
-function textWidth(text,atlas){const q=norm(text);if(!q)return 0;let n=0;for(const c of q){if(c===' '){n+=2;continue}const g=glyph(c,atlas);n+=(g?g.w:3)+1}return Math.max(0,n-1)}
-function drawText(pix,text,x0,x1,atlas,sourcePix){const q=norm(text),w=textWidth(q,atlas);if(w>x1-x0)throw Error('“'+q+'” precisa de '+w+' px; '+(x1-x0)+' px disponíveis em '+x0+'–'+(x1-1)+'.');const ink=slotInk(sourcePix,x0,x1);for(let y=0;y<8;y++)for(let x=x0;x<x1;x++)pix[y*248+x]=0;let x=x0+Math.floor((x1-x0-w)/2);for(const c of q){if(c===' '){x+=2;continue}const g=glyph(c,atlas);if(!g)continue;for(let yy=0;yy<Math.min(8,g.rows.length);yy++)for(let xx=0;xx<g.w;xx++){const v=Number(g.rows[yy][xx])||0;if(v)pix[yy*248+x+xx]=g.native?v:ink}x+=g.w+1}}
-function values(){const out={};for(const [id,orig] of SLOTS){const n=$('ctrlphys_'+id);const draft=window.ISSSDTextIntentions?.getDraft?.('controller.'+id);out[id]=norm(n?.value??(typeof draft==='string'?draft:orig))}return out}
-function stage(){const vals=values();for(const [id,orig,x0,x1] of SLOTS){const q=vals[id];window.ISSSDTextIntentions?.setDraft?.('controller.'+id,q);const n=$('ctrlphys_'+id);if(n)n.value=q}return vals}
-function commit(){stage();window.ISSSDTextIntentions?.commitAll?.();const st=$('gitControlsStatus');if(st)st.textContent='Termos físicos exatos implementados no projeto. Use Salvar Projeto para gerar o .issdproj.'}
-async function apply(){try{const r=resolve(),base=await baseRom(),baseRaw=unpack(base,r.head),sourcePix=decode2(baseRaw),pix=decode2(baseRaw),atlas=nativeAtlas(sourcePix),vals=stage();for(const [id,orig,x0,x1] of SLOTS){const q=vals[id];if(q!==orig)drawText(pix,q,x0,x1,atlas,sourcePix)}const raw=encode2(pix),comp=codec().compress(raw),round=codec().decompress(comp);if(round.length!==raw.length||round.some((v,i)=>v!==raw[i]))throw Error('Falha no round-trip compressão/descompressão.');if(comp.length>ORIGINAL_COMP)throw Error('O Controller recomprimido ocupa '+comp.length+' B; limite seguro: '+ORIGINAL_COMP+' B. Reduza os textos.');const region=new Uint8Array(ORIGINAL_COMP);region.set(comp);if(!r.h.write?.('Controller · fonte nativa preservada',r.head+PC,region))throw Error('O Studio recusou a gravação.');commit();const st=$('gitControlsStatus');if(st)st.textContent='Controles aplicados reconstruindo o bloco a partir da ROM-base: fonte, tamanho e índices de cor originais preservados. Use Salvar ROM.'}catch(e){alert('Não foi possível aplicar os Controles: '+(e.message||e))}}
-function renderExactControls(){const host=$('controlsScreenHost');if(!host)return;let card=$('gitControlsWholeTerms');if(!card){card=document.createElement('div');card.id='gitControlsWholeTerms';card.className='card operational-first';host.replaceChildren(card)}card.innerHTML=`<div class="sectionbar"><div><h3>Controles · termos exatos da ROM</h3><div class="subtle">Os campos abaixo correspondem exatamente às nove inscrições físicas do gráfico original. HIGH BALL e PASS BALL reutilizam o mesmo termo BALL na ROM.</div></div><span class="badge ok">fonte nativa</span></div><div class="note info" style="margin:10px 0"><strong>Composição real:</strong> A = <b>HIGH + BALL</b> · B = <b>PASS + BALL</b> · X = <b>SHOOT</b> · Y = <b>DASH</b>. Portanto <b>BALL é compartilhado</b> entre A e B; o Studio não apresentará duas frases independentes enquanto o tilemap dessa reutilização não estiver mapeado.</div><div id="gitControlsExactGrid"></div><div class="st612-actions" style="margin-top:12px"><button class="btn" id="gitControlsRestore" type="button">Restaurar originais</button><button class="btn primary" id="gitControlsCommit" type="button">Implementar no projeto</button><button class="btn success" id="gitControlsApply" type="button">Aplicar à ROM</button></div><div class="note info" id="gitControlsStatus" style="margin-top:10px">A gravação parte sempre do bloco gráfico da ROM-base para não acumular deformações de testes anteriores.</div>`;const grid=card.querySelector('#gitControlsExactGrid');grid.style.cssText='display:grid;grid-template-columns:repeat(3,minmax(190px,1fr));gap:10px';for(const [id,orig,x0,x1] of SLOTS){const draft=window.ISSSDTextIntentions?.getDraft?.('controller.'+id);const box=document.createElement('label');box.className='st612-item';box.style.cssText='display:grid;gap:6px;padding:10px;border:1px solid #36516b;border-radius:8px;background:#0a1420';box.innerHTML=`<strong>${orig}${id==='ball'?' · compartilhado':''}</strong><input id="ctrlphys_${id}" data-screen-text-owner="controls" data-screen-text-field="${id}" autocomplete="off" value="${String(typeof draft==='string'?draft:orig).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')}"><span class="subtle">faixa ${x0}–${x1-1} · ${x1-x0} px</span>`;grid.appendChild(box);box.querySelector('input').addEventListener('input',e=>{e.target.value=norm(e.target.value);window.ISSSDTextIntentions?.setDraft?.('controller.'+id,e.target.value)})}card.querySelector('#gitControlsRestore').onclick=()=>{for(const [id,orig] of SLOTS){const n=$('ctrlphys_'+id);if(n)n.value=orig;window.ISSSDTextIntentions?.setDraft?.('controller.'+id,orig)}const st=$('gitControlsStatus');if(st)st.textContent='Originais restaurados no rascunho.'};card.querySelector('#gitControlsCommit').onclick=commit;card.querySelector('#gitControlsApply').onclick=apply}
-function placeGlobalButtons(){const grp=$('studioAllExpandTop'),sidebar=document.querySelector('.sidebar'),toggle=$('isssdSidebarToggle');if(!grp||!sidebar)return;if(grp.parentElement!==sidebar)sidebar.insertBefore(grp,toggle||sidebar.firstChild);grp.classList.add('studio-all-sidebar');grp.removeAttribute('style')}
-function sync(){placeGlobalButtons();renderExactControls();const badge=$('isssdGitBridgeBadge');if(badge){badge.textContent='Git Visual Bridge v17';badge.title='Controles exatos + writer com fonte nativa + botões globais reposicionados.'}}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync,{once:true});else sync();window.addEventListener('load',sync,{once:true});document.addEventListener('click',e=>{const p=e.target?.closest?.('.navbtn[data-page]')?.dataset?.page;if(p==='controls')setTimeout(renderExactControls,0)},true);const mo=new MutationObserver(()=>{placeGlobalButtons();if($('controlsScreenHost')&&!$('ctrlphys_high'))renderExactControls()});mo.observe(document.documentElement,{subtree:true,childList:true});
-window.__ISSSD_CONTROLLER_V17__={build:BUILD,render:renderExactControls,apply,commit,placeGlobalButtons};
+
+function draft(id,orig){
+ const v=window.ISSSDTextIntentions?.getDraft?.('controller.'+id);
+ return typeof v==='string'?v:orig;
+}
+function stage(){
+ const vals={};
+ for(const [id,orig] of SLOTS){
+  const el=$('ctrlphys_'+id),v=norm(el?.value??draft(id,orig));
+  vals[id]=v;
+  if(el)el.value=v;
+  window.ISSSDTextIntentions?.setDraft?.('controller.'+id,v);
+ }
+ return vals;
+}
+function commit(){
+ stage();
+ window.ISSSDTextIntentions?.commitAll?.();
+ const st=$('gitControlsStatus');
+ if(st)st.textContent='Termos implementados no projeto. Use Salvar Projeto para gerar o .issdproj.';
+}
+function renderExactControls(){
+ const host=$('controlsScreenHost');
+ if(!host)return false;
+ let card=$('gitControlsWholeTerms');
+ if(!card){
+  card=document.createElement('div');
+  card.id='gitControlsWholeTerms';
+  card.className='card operational-first';
+  host.replaceChildren(card);
+ }
+ card.innerHTML=`<div class="sectionbar"><div><h3>Controles · inscrições reais</h3><div class="subtle">Cada campo abaixo corresponde a uma inscrição física identificada no bloco gráfico original.</div></div><span class="badge ok">mapeamento real</span></div>
+ <div class="note info" style="margin:10px 0"><strong>Inscrições encontradas:</strong> HIGH · BALL · PASS · SHOOT · DASH · KEEPER · SEMI AUTO · AUTO · MANUAL. O Studio não vai inventar frases compostas até o tilemap desta tela estar confirmado.</div>
+ <div id="gitControlsExactGrid" style="display:grid;grid-template-columns:repeat(3,minmax(190px,1fr));gap:10px"></div>
+ <div class="st612-actions" style="margin-top:12px"><button class="btn" id="gitControlsRestore" type="button">Restaurar originais</button><button class="btn primary" id="gitControlsCommit" type="button">Implementar no projeto</button><button class="btn success" id="gitControlsApply" type="button" disabled>Aplicar à ROM</button></div>
+ <div class="note info" id="gitControlsStatus" style="margin-top:10px">A gravação deste bloco foi temporariamente desabilitada nesta correção de estabilidade. Primeiro mantemos o Editor responsivo; o writer será religado somente com fonte, cor e layout nativos preservados.</div>`;
+ const grid=card.querySelector('#gitControlsExactGrid');
+ for(const [id,orig] of SLOTS){
+  const box=document.createElement('label');
+  box.className='st612-item';
+  box.style.cssText='display:grid;gap:6px;padding:10px;border:1px solid #36516b;border-radius:8px;background:#0a1420';
+  box.innerHTML=`<strong>${esc(orig)}</strong><input id="ctrlphys_${id}" data-screen-text-owner="controls" data-screen-text-field="${id}" autocomplete="off" value="${esc(draft(id,orig))}">`;
+  grid.appendChild(box);
+  box.querySelector('input').addEventListener('input',e=>{
+   e.target.value=norm(e.target.value);
+   window.ISSSDTextIntentions?.setDraft?.('controller.'+id,e.target.value);
+  });
+ }
+ card.querySelector('#gitControlsRestore').onclick=()=>{
+  for(const [id,orig] of SLOTS){const n=$('ctrlphys_'+id);if(n)n.value=orig;window.ISSSDTextIntentions?.setDraft?.('controller.'+id,orig)}
+  const st=$('gitControlsStatus');if(st)st.textContent='Originais restaurados no rascunho.';
+ };
+ card.querySelector('#gitControlsCommit').onclick=commit;
+ return true;
+}
+function placeGlobalButtons(){
+ const grp=$('studioAllExpandTop'),sidebar=document.querySelector('.sidebar'),toggle=$('isssdSidebarToggle');
+ if(!grp||!sidebar)return false;
+ if(grp.parentElement!==sidebar)sidebar.insertBefore(grp,toggle||sidebar.firstChild);
+ grp.classList.add('studio-all-sidebar');
+ grp.removeAttribute('style');
+ return true;
+}
+function sync(){
+ placeGlobalButtons();
+ renderExactControls();
+ const badge=$('isssdGitBridgeBadge');
+ if(badge){badge.textContent='Git Visual Bridge v18';badge.title='Correção de estabilidade: sem MutationObserver global.'}
+}
+function finiteBootstrap(){
+ sync();
+ for(const ms of [80,250,700,1500])setTimeout(()=>{placeGlobalButtons();if($('controlsScreenHost')&&!$('ctrlphys_high'))renderExactControls()},ms);
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',finiteBootstrap,{once:true});else finiteBootstrap();
+window.addEventListener('load',()=>{placeGlobalButtons();if($('controlsScreenHost')&&!$('ctrlphys_high'))renderExactControls()},{once:true});
+document.addEventListener('click',e=>{
+ const page=e.target?.closest?.('.navbtn[data-page]')?.dataset?.page;
+ if(page==='controls')requestAnimationFrame(()=>{if(!$('ctrlphys_high'))renderExactControls()});
+},true);
+window.__ISSSD_CONTROLLER_V17__={build:BUILD,render:renderExactControls,commit,placeGlobalButtons};
