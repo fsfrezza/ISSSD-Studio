@@ -40,14 +40,16 @@ if(!html.includes('__ISSSD_GIT_REAPPLY_PROJECT_STATE__')){
  html=html.replace(applyNeedle,applyNeedle+restoreBridge);
 }
 
-const openHook='await window.__ISSSD_GIT_AFTER_PROJECT_OPEN__?.(f);';
-html=html.replaceAll(openHook,'');
+const openHook="await window.__ISSSD_GIT_AFTER_PROJECT_OPEN__?.(f);try{window.__ISSSD_GIT_REAPPLY_PROJECT_STATE__?.(JSON.parse(await f.text()));}catch(e){console.warn('Git Bridge: restauração integral pós-importação',e)}";
+html=html.replace(/await window\.__ISSSD_GIT_AFTER_PROJECT_OPEN__\?\.\(f\);try\{window\.__ISSSD_GIT_REAPPLY_PROJECT_STATE__[\s\S]*?\}\s*/g,'');
+html=html.replaceAll('await window.__ISSSD_GIT_AFTER_PROJECT_OPEN__?.(f);','');
 const finalImportNeedle="await studioImportProject(f);window.ISSSDLog?.add('Projetos','info','Projeto aberto'";
-const finalImportPatched="await studioImportProject(f);"+openHook+"window.ISSSDLog?.add('Projetos','info','Projeto aberto'";
+const finalImportPatched="await studioImportProject(f);"+openHook+";window.ISSSDLog?.add('Projetos','info','Projeto aberto'";
 if(!html.includes(finalImportNeedle))throw new Error('Build interrompido: não encontrei o handler final de Abrir Projeto para instalar a restauração automática.');
 html=html.replace(finalImportNeedle,finalImportPatched);
 const openHookCount=(html.match(/await window\.__ISSSD_GIT_AFTER_PROJECT_OPEN__\?\.\(f\);/g)||[]).length;
 if(openHookCount!==1)throw new Error(`Build interrompido: hook pós-importação deveria existir uma vez, encontrado ${openHookCount}.`);
+if(!html.includes('__ISSSD_GIT_REAPPLY_PROJECT_STATE__?.(JSON.parse(await f.text()))'))throw new Error('Build interrompido: projeto não será reaplicado integralmente após importação.');
 if(/studioImportProject\(f\);\s*await window\.__ISSSD_GIT_AFTER_PROJECT_OPEN__\?\.\(f\);\s*else\b/.test(html))throw new Error('Build interrompido: hook pós-importação foi inserido entre if/else legado.');
 
 const finalizeHook='window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__?.(obj);';
@@ -63,10 +65,10 @@ const patch=`\n<!-- ${marker} -->\n<style id="isssd-git-visual-bridge-overrides"
 if(html.includes('</body>'))html=html.replace('</body>',patch+'\n</body>');else html+=patch;
 const markerCount=(html.match(/ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE/g)||[]).length,runtimeCount=(html.match(/id=["']isssd-git-visual-bridge-runtime["']/g)||[]).length,styleCount=(html.match(/id=["']isssd-git-visual-bridge-overrides["']/g)||[]).length;
 if(markerCount!==1||runtimeCount!==1||styleCount!==1)throw new Error(`Build interrompido: injeção Git duplicada/incompleta (marker=${markerCount}, runtime=${runtimeCount}, style=${styleCount}).`);
-if(!html.includes('git-visual-bridge-v9-full-project-import'))throw new Error('Build interrompido: runtime v9 de importação integral não foi injetado.');
+if(!html.includes('git-visual-bridge-v8-safe-project-save'))throw new Error('Build interrompido: runtime v8 de salvamento seguro não foi injetado.');
 if(!html.includes('__ISSSD_GIT_REAPPLY_PROJECT_STATE__'))throw new Error('Build interrompido: ponte de restauração integral não foi instalada.');
 if(html.includes('isssdProjectHydrationDiagnostic')||html.includes('Aplicar dados do projeto aos campos'))throw new Error('Build interrompido: painel manual de diagnóstico ainda está presente na interface gerada.');
 
 fs.mkdirSync(outDir,{recursive:true});fs.writeFileSync(outHtml,html,'utf8');
 for(const name of ['assets','docs','schemas']){const from=path.join(vendorDir,name),to=path.join(outDir,name);if(fs.existsSync(from)){fs.rmSync(to,{recursive:true,force:true});fs.cpSync(from,to,{recursive:true})}}
-console.log('ISSSD Studio editor build concluído.');console.log('Fonte visual em cache: '+source);console.log('Saída: '+outHtml);console.log('Runtime Git v9: importação integral automática + baseline protegida.');
+console.log('ISSSD Studio editor build concluído.');console.log('Fonte visual em cache: '+source);console.log('Saída: '+outHtml);console.log('Git Bridge: importação integral automática + baseline protegida.');
