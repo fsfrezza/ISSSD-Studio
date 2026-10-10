@@ -6,24 +6,25 @@ const clone=v=>v==null?v:JSON.parse(JSON.stringify(v));
 const sem=p=>p?.state?.semantic||{};
 const sections=p=>sem(p).textWorkspaceV2?.sections||{};
 const esc=v=>window.CSS?.escape?CSS.escape(String(v)):String(v).replace(/[^A-Za-z0-9_-]/g,'\\$&');
-const setValue=(selector,value)=>{for(const n of document.querySelectorAll(selector)){if('value'in n)n.value=String(value??'')}};
-const setId=(id,value)=>{const n=document.getElementById(id);if(n&&'value'in n)n.value=String(value??'');return n};
+const setValue=(selector,value)=>{const next=String(value??'');for(const n of document.querySelectorAll(selector)){if('value'in n&&n.value!==next)n.value=next}};
+const setId=(id,value)=>{const n=document.getElementById(id),next=String(value??'');if(n&&'value'in n&&n.value!==next)n.value=next;return n};
+const setText=(n,value)=>{if(!n)return;const next=String(value??'');if(n.textContent!==next)n.textContent=next};
 function directProfile(p){const by=sections(p).direct?.byProfile||{};return by['iss-deluxe-plus']||Object.values(by)[0]||{}}
 function normalizeMainMenuColorUi(){
  const grid=document.getElementById('mmColorGrid');if(!grid)return;
  const card=grid.closest('.card');if(!card)return;
- const title=card.querySelector('.sectionbar h3');if(title)title.textContent='Cores do Menu Principal';
- const sub=card.querySelector('.sectionbar .subtle');if(sub)sub.textContent='Edite as paletas 1P e 2P, visualize o resultado e aplique as cores à ROM Plus. Estes valores também são preservados no projeto.';
- const old=document.querySelector('#page-main-menu .mainmenu-appearance, #page-texts .mainmenu-appearance');if(old)old.style.display='none';
+ const title=card.querySelector('.sectionbar h3');setText(title,'Cores do Menu Principal');
+ const sub=card.querySelector('.sectionbar .subtle');setText(sub,'Edite as paletas 1P e 2P, visualize o resultado e aplique as cores à ROM Plus. Estes valores também são preservados no projeto.');
+ const old=document.querySelector('#page-main-menu .mainmenu-appearance, #page-texts .mainmenu-appearance');if(old&&old.style.display!=='none')old.style.display='none';
 }
 function hydrateDom(p){
  if(!p)return;
  const s=sem(p),sec=sections(p),direct=directProfile(p),pre=sec.preKickoff?.values||{},menu=sec.mainMenu?.values||{},gfx=sec.graphicIntents?.values||{};
  for(const [k,v] of Object.entries(direct))if(!touched.direct.has(k)){
-   setValue(`[data-profile-text="${esc(k)}"]`,v);const n=setId('gm610_'+k,v),c=document.getElementById('gm610c_'+k);if(n&&c)c.textContent=String(v??'').length+'/'+(n.maxLength||String(v??'').length);
+   setValue(`[data-profile-text="${esc(k)}"]`,v);const n=setId('gm610_'+k,v),c=document.getElementById('gm610c_'+k);if(n&&c)setText(c,String(v??'').length+'/'+(n.maxLength||String(v??'').length));
  }
  for(const [k,v] of Object.entries(pre))if(!touched.pre.has(k)){
-   setValue(`[data-pk-id="${esc(k)}"]`,v);const n=setId('pk_'+k,v),c=document.getElementById('pkc_'+k);if(n&&c)c.textContent=String(v??'').length+'/'+(n.maxLength||String(v??'').length);
+   setValue(`[data-pk-id="${esc(k)}"]`,v);const n=setId('pk_'+k,v),c=document.getElementById('pkc_'+k);if(n&&c)setText(c,String(v??'').length+'/'+(n.maxLength||String(v??'').length));
  }
  for(const [k,v] of Object.entries(menu))if(!touched.menu.has(k)){
    setValue(`[data-mm-real="${esc(k)}"]`,v);setValue(`[data-mainmenu-fb96="${esc(k)}"]`,v);
@@ -35,9 +36,8 @@ function hydrateDom(p){
  }
  if(!touched.internalTitle){
    const title=String(s.romInternalTitle||s.romInternalTitleDesired||'').replace(/[^\x20-\x7E]/g,' ').slice(0,21);
-   if(title){setId('romMetaTitle',title);setId('romMetaTitleDesired',String(s.romInternalTitleDesired||title));const c=document.getElementById('romMetaTitleCount');if(c)c.textContent=String(title.length);const st=document.getElementById('romMetaTitleImplementStatus');if(st){st.textContent='Implementado';st.className='badge ok'}}
+   if(title){setId('romMetaTitle',title);setId('romMetaTitleDesired',String(s.romInternalTitleDesired||title));setText(document.getElementById('romMetaTitleCount'),String(title.length));const st=document.getElementById('romMetaTitleImplementStatus');if(st){setText(st,'Implementado');st.className='badge ok'}}
  }
- normalizeMainMenuColorUi();
 }
 function applyFull(p){
  if(!p)return;
@@ -45,7 +45,8 @@ function applyFull(p){
  hydrateDom(p);
  try{window.__ISSSD_TEAM_STATE_API__?.refresh?.()}catch(_){}
 }
-function scheduleHydration(){if(!currentProject)return;queueMicrotask(()=>hydrateDom(currentProject));setTimeout(()=>hydrateDom(currentProject),40)}
+let hydrateTimer=0;
+function scheduleHydration(){if(!currentProject)return;clearTimeout(hydrateTimer);hydrateTimer=setTimeout(()=>hydrateDom(currentProject),20)}
 function markTouched(t){
  if(!t)return;
  let k;
@@ -67,14 +68,14 @@ window.__ISSSD_GIT_AFTER_PROJECT_OPEN__=async function(file){
  try{await previousAfterOpen?.(file)}catch(e){console.warn('V11 previous import hook',e)}
  try{currentProject=JSON.parse(await file.text())}catch(e){console.error('V11 project parse',e);return}
  anyUserEdit=false;for(const s of [touched.direct,touched.pre,touched.menu,touched.gfx])s.clear();touched.internalTitle=false;touched.titleScreen=false;
- applyFull(currentProject);
+ applyFull(currentProject);normalizeMainMenuColorUi();
  for(const ms of [80,220,560,1100])setTimeout(()=>{if(!anyUserEdit)applyFull(currentProject);else hydrateDom(currentProject)},ms);
  window.ISSSDLog?.add?.('Projetos','info','V11: projeto reaplicado e campos visíveis sincronizados',{build:V11});
 };
 document.addEventListener('input',e=>markTouched(e.target),true);
 document.addEventListener('change',e=>{if(e.target?.id!=='projectFile')markTouched(e.target)},true);
 document.addEventListener('click',e=>{if(e.target?.closest?.('.navbtn[data-page], [data-page]'))setTimeout(()=>{scheduleHydration();normalizeMainMenuColorUi()},0)},true);
-const mo=new MutationObserver(()=>{scheduleHydration();normalizeMainMenuColorUi()});
+const mo=new MutationObserver(()=>scheduleHydration());
 if(document.documentElement)mo.observe(document.documentElement,{subtree:true,childList:true});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',normalizeMainMenuColorUi,{once:true});else normalizeMainMenuColorUi();
 setTimeout(normalizeMainMenuColorUi,250);setTimeout(normalizeMainMenuColorUi,900);
