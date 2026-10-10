@@ -12,53 +12,33 @@ const cssFile=path.join(root,'editor-src','visual-bridge-overrides.css');
 const jsFile=path.join(root,'editor-src','visual-bridge-overrides.mjs');
 
 const legacyContainer=path.join(parent,'ISSSD-Studio-OLD');
-const legacyRoots=[
- path.join(parent,'ISSSD-Studio-Visual-Bridge'),
- path.join(legacyContainer,'ISSSD-Studio-Visual-Bridge'),
- path.join(legacyContainer,'ISSSD-Studio-Preview'),
- path.join(legacyContainer,'ISSSD-Studio-ANTIGO'),
- path.join(legacyContainer,'ISSSD-Studio-OLD'),
- path.join(parent,'ISSSD-Studio-ANTIGO'),
- path.join(root,'legacy-ui'),
- root
-];
-
+const legacyRoots=[path.join(parent,'ISSSD-Studio-Visual-Bridge'),path.join(legacyContainer,'ISSSD-Studio-Visual-Bridge'),path.join(legacyContainer,'ISSSD-Studio-Preview'),path.join(legacyContainer,'ISSSD-Studio-ANTIGO'),path.join(legacyContainer,'ISSSD-Studio-OLD'),path.join(parent,'ISSSD-Studio-ANTIGO'),path.join(root,'legacy-ui'),root];
 const candidates=[cachedHtml];
 for(const legacyRoot of legacyRoots)candidates.push(path.join(legacyRoot,'legacy-ui','ISSSD-Studio.html'),path.join(legacyRoot,'ISSSD-Studio.html'));
 let source=candidates.find(p=>fs.existsSync(p));
-if(!source){
- console.error('ISSSD Studio: não encontrei a interface legada/Visual Bridge.');
- console.error('Locais verificados:\n- '+candidates.join('\n- '));
- process.exit(2);
-}
-if(source!==cachedHtml){
- const sourceDir=path.dirname(source);
- fs.rmSync(path.join(root,'.editor-vendor'),{recursive:true,force:true});
- fs.mkdirSync(vendorDir,{recursive:true});
- fs.copyFileSync(source,cachedHtml);
- for(const name of ['assets','docs','schemas']){const from=path.join(sourceDir,name),to=path.join(vendorDir,name);if(fs.existsSync(from))fs.cpSync(from,to,{recursive:true});}
- source=cachedHtml;
- console.log('Interface legada importada para cache local: '+cachedHtml);
-}
+if(!source){console.error('ISSSD Studio: não encontrei a interface legada/Visual Bridge.');console.error('Locais verificados:\n- '+candidates.join('\n- '));process.exit(2)}
+if(source!==cachedHtml){const sourceDir=path.dirname(source);fs.rmSync(path.join(root,'.editor-vendor'),{recursive:true,force:true});fs.mkdirSync(vendorDir,{recursive:true});fs.copyFileSync(source,cachedHtml);for(const name of ['assets','docs','schemas']){const from=path.join(sourceDir,name),to=path.join(vendorDir,name);if(fs.existsSync(from))fs.cpSync(from,to,{recursive:true})}source=cachedHtml;console.log('Interface legada importada para cache local: '+cachedHtml)}
 
 let html=fs.readFileSync(source,'utf8');
 const marker='ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE';
-html=html
- .replace(/<!--\s*ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE\s*-->\s*/g,'')
- .replace(/<style\s+id=["']isssd-git-visual-bridge-overrides["'][^>]*>[\s\S]*?<\/style>\s*/g,'')
- .replace(/<script\s+type=["']module["']\s+id=["']isssd-git-visual-bridge-runtime["'][^>]*>[\s\S]*?<\/script>\s*/g,'');
+html=html.replace(/<!--\s*ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE\s*-->\s*/g,'').replace(/<style\s+id=["']isssd-git-visual-bridge-overrides["'][^>]*>[\s\S]*?<\/style>\s*/g,'').replace(/<script\s+type=["']module["']\s+id=["']isssd-git-visual-bridge-runtime["'][^>]*>[\s\S]*?<\/script>\s*/g,'');
 
 const unsafeDeferredLength='(studioDeferredPlayerPatches.length-deferredNative.length)';
 const safeDeferredLength='((studioDeferredPlayerPatches||[]).length-deferredNative.length)';
 if(html.includes(unsafeDeferredLength))html=html.replaceAll(unsafeDeferredLength,safeDeferredLength);
 
 const saveHook='window.__ISSSD_GIT_SYNC_TEXT_STATE_BEFORE_SAVE__?.();';
-if(!html.includes(saveHook)){
- const needle='async function studioProjectObject(){';
- if(!html.includes(needle))throw new Error('Build interrompido: não encontrei studioProjectObject para instalar sincronização pré-salvamento.');
- html=html.replace(needle,needle+'\n '+saveHook);
-}
+if(!html.includes(saveHook)){const needle='async function studioProjectObject(){';if(!html.includes(needle))throw new Error('Build interrompido: não encontrei studioProjectObject para instalar sincronização pré-salvamento.');html=html.replace(needle,needle+'\n '+saveHook)}
 if(!html.includes(saveHook))throw new Error('Build interrompido: hook pré-salvamento não foi instalado.');
+
+// Ponte clássica: executa no mesmo contexto dos scripts legados e consegue acessar
+// funções/variáveis que o runtime type=module não enxerga diretamente.
+const applyNeedle='async function studioApplyProjectWithBase(d,baseBytes,baseName){';
+const restoreBridge=`\n window.__ISSSD_GIT_REAPPLY_PROJECT_STATE__=function(project){\n  const sem=project?.state?.semantic||{};\n  try{if(sem.teamsV1?.schema==='isssd-teams-v1')studioRestoreTeamsV1(sem.teamsV1)}catch(e){console.warn('Git Bridge: equipes/jogadores',e)}\n  try{if(studioCore()?.restorePlusGroupsProjectState)studioCore().restorePlusGroupsProjectState(sem.plusGroups||null)}catch(e){console.warn('Git Bridge: grupos',e)}\n  try{if(studioCore()?.restoreGospelGolProjectState)studioCore().restoreGospelGolProjectState(sem.plusGospelGol||null)}catch(e){console.warn('Git Bridge: Gospel-Gol',e)}\n  try{if(typeof studioVariantState!=='undefined'&&sem.studioVariant)studioVariantState=JSON.parse(JSON.stringify(sem.studioVariant));studioVariantRender?.()}catch(e){console.warn('Git Bridge: variante',e)}\n  try{window.ISSSDMenuScreen?.restore?.(sem.menuScreenV1||null)}catch(e){console.warn('Git Bridge: menu visual',e)}\n  try{if(typeof mainMenuColors!=='undefined'&&sem.mainMenuColors){mainMenuColors={...window.MAIN_MENU_ORIGINAL_COLORS,...JSON.parse(JSON.stringify(sem.mainMenuColors))};const rs=sem.mainMenuColorsRomState;studioMainMenuColorsAppliedToRom=!!rs?.applied;studioMainMenuColorsAppliedSnapshot=rs?.colors?JSON.parse(JSON.stringify(rs.colors)):null;renderMainMenuFb96Fields?.()}}catch(e){console.warn('Git Bridge: cores do menu',e)}\n  try{if(sem.preKickoffGraphicAssets)window.ISSSDPrekickNative?.restoreCommitted?.(sem.preKickoffGraphicAssets)}catch(e){console.warn('Git Bridge: gráficos pré-kickoff',e)}\n  try{renderEverything?.();renderPlusGroupOrganizer?.();window.__ISSSD_TEAM_STATE_API__?.refresh?.()}catch(e){console.warn('Git Bridge: render final',e)}\n  return true;\n };\n`;
+if(!html.includes('__ISSSD_GIT_REAPPLY_PROJECT_STATE__')){
+ if(!html.includes(applyNeedle))throw new Error('Build interrompido: não encontrei studioApplyProjectWithBase para expor restauração integral do projeto.');
+ html=html.replace(applyNeedle,applyNeedle+restoreBridge);
+}
 
 const openHook='await window.__ISSSD_GIT_AFTER_PROJECT_OPEN__?.(f);';
 html=html.replaceAll(openHook,'');
@@ -70,8 +50,6 @@ const openHookCount=(html.match(/await window\.__ISSSD_GIT_AFTER_PROJECT_OPEN__\
 if(openHookCount!==1)throw new Error(`Build interrompido: hook pós-importação deveria existir uma vez, encontrado ${openHookCount}.`);
 if(/studioImportProject\(f\);\s*await window\.__ISSSD_GIT_AFTER_PROJECT_OPEN__\?\.\(f\);\s*else\b/.test(html))throw new Error('Build interrompido: hook pós-importação foi inserido entre if/else legado.');
 
-// Finalização defensiva: depois de studioProjectObject montar o documento, a baseline
-// segura do projeto aberto pode restaurar seções não editadas antes da validação/download.
 const finalizeHook='window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__?.(obj);';
 html=html.replaceAll(finalizeHook,'');
 const projectObjectNeedle='const obj=await studioProjectObject();';
@@ -83,18 +61,12 @@ const css=fs.existsSync(cssFile)?fs.readFileSync(cssFile,'utf8'):'';
 const js=fs.existsSync(jsFile)?fs.readFileSync(jsFile,'utf8'):'';
 const patch=`\n<!-- ${marker} -->\n<style id="isssd-git-visual-bridge-overrides">\n${css}\n</style>\n<script type="module" id="isssd-git-visual-bridge-runtime">\n${js}\n</script>\n`;
 if(html.includes('</body>'))html=html.replace('</body>',patch+'\n</body>');else html+=patch;
-
-const markerCount=(html.match(/ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE/g)||[]).length;
-const runtimeCount=(html.match(/id=["']isssd-git-visual-bridge-runtime["']/g)||[]).length;
-const styleCount=(html.match(/id=["']isssd-git-visual-bridge-overrides["']/g)||[]).length;
+const markerCount=(html.match(/ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE/g)||[]).length,runtimeCount=(html.match(/id=["']isssd-git-visual-bridge-runtime["']/g)||[]).length,styleCount=(html.match(/id=["']isssd-git-visual-bridge-overrides["']/g)||[]).length;
 if(markerCount!==1||runtimeCount!==1||styleCount!==1)throw new Error(`Build interrompido: injeção Git duplicada/incompleta (marker=${markerCount}, runtime=${runtimeCount}, style=${styleCount}).`);
-if(!html.includes('git-visual-bridge-v8-safe-project-save'))throw new Error('Build interrompido: runtime v8 de salvamento seguro não foi injetado.');
+if(!html.includes('git-visual-bridge-v9-full-project-import'))throw new Error('Build interrompido: runtime v9 de importação integral não foi injetado.');
+if(!html.includes('__ISSSD_GIT_REAPPLY_PROJECT_STATE__'))throw new Error('Build interrompido: ponte de restauração integral não foi instalada.');
 if(html.includes('isssdProjectHydrationDiagnostic')||html.includes('Aplicar dados do projeto aos campos'))throw new Error('Build interrompido: painel manual de diagnóstico ainda está presente na interface gerada.');
 
-fs.mkdirSync(outDir,{recursive:true});
-fs.writeFileSync(outHtml,html,'utf8');
-for(const name of ['assets','docs','schemas']){const from=path.join(vendorDir,name),to=path.join(outDir,name);if(fs.existsSync(from)){fs.rmSync(to,{recursive:true,force:true});fs.cpSync(from,to,{recursive:true});}}
-console.log('ISSSD Studio editor build concluído.');
-console.log('Fonte visual em cache: '+source);
-console.log('Saída: '+outHtml);
-console.log('Runtime Git v8: abertura automática + baseline protegida + finalização defensiva do projeto.');
+fs.mkdirSync(outDir,{recursive:true});fs.writeFileSync(outHtml,html,'utf8');
+for(const name of ['assets','docs','schemas']){const from=path.join(vendorDir,name),to=path.join(outDir,name);if(fs.existsSync(from)){fs.rmSync(to,{recursive:true,force:true});fs.cpSync(from,to,{recursive:true})}}
+console.log('ISSSD Studio editor build concluído.');console.log('Fonte visual em cache: '+source);console.log('Saída: '+outHtml);console.log('Runtime Git v9: importação integral automática + baseline protegida.');
