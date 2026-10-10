@@ -11,6 +11,7 @@ const cachedHtml=path.join(vendorDir,'ISSSD-Studio.html');
 const cssFile=path.join(root,'editor-src','visual-bridge-overrides.css');
 const jsFile=path.join(root,'editor-src','visual-bridge-overrides.mjs');
 const v11File=path.join(root,'editor-src','project-import-v11.mjs');
+const v17File=path.join(root,'editor-src','controller-ui-v17.mjs');
 
 const legacyContainer=path.join(parent,'ISSSD-Studio-OLD');
 const legacyRoots=[path.join(parent,'ISSSD-Studio-Visual-Bridge'),path.join(legacyContainer,'ISSSD-Studio-Visual-Bridge'),path.join(legacyContainer,'ISSSD-Studio-Preview'),path.join(legacyContainer,'ISSSD-Studio-ANTIGO'),path.join(legacyContainer,'ISSSD-Studio-OLD'),path.join(parent,'ISSSD-Studio-ANTIGO'),path.join(root,'legacy-ui'),root];
@@ -24,7 +25,8 @@ const marker='ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE';
 html=html.replace(/<!--\s*ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE\s*-->\s*/g,'')
  .replace(/<style\s+id=["']isssd-git-visual-bridge-overrides["'][^>]*>[\s\S]*?<\/style>\s*/g,'')
  .replace(/<script\s+type=["']module["']\s+id=["']isssd-git-visual-bridge-runtime["'][^>]*>[\s\S]*?<\/script>\s*/g,'')
- .replace(/<script\s+type=["']module["']\s+id=["']isssd-git-project-import-v11["'][^>]*>[\s\S]*?<\/script>\s*/g,'');
+ .replace(/<script\s+type=["']module["']\s+id=["']isssd-git-project-import-v11["'][^>]*>[\s\S]*?<\/script>\s*/g,'')
+ .replace(/<script\s+type=["']module["']\s+id=["']isssd-git-controller-v17["'][^>]*>[\s\S]*?<\/script>\s*/g,'');
 
 const unsafeDeferredLength='(studioDeferredPlayerPatches.length-deferredNative.length)',safeDeferredLength='((studioDeferredPlayerPatches||[]).length-deferredNative.length)';if(html.includes(unsafeDeferredLength))html=html.replaceAll(unsafeDeferredLength,safeDeferredLength);
 
@@ -70,16 +72,17 @@ const finalizeHook='window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__?.(obj);';html=h
 const css=fs.existsSync(cssFile)?fs.readFileSync(cssFile,'utf8'):'';
 const js=fs.existsSync(jsFile)?fs.readFileSync(jsFile,'utf8'):'';
 const v11=fs.existsSync(v11File)?fs.readFileSync(v11File,'utf8'):'';
-try{new Function(js);new Function(v11)}catch(e){throw new Error('Build interrompido: JavaScript Git inválido: '+e.message)}
-const patch=`\n<!-- ${marker} -->\n<style id="isssd-git-visual-bridge-overrides">\n${css}\n</style>\n<script type="module" id="isssd-git-visual-bridge-runtime">\n${js}\n</script>\n<script type="module" id="isssd-git-project-import-v11">\n${v11}\n</script>\n`;
+const v17=fs.existsSync(v17File)?fs.readFileSync(v17File,'utf8'):'';
+try{new Function(js);new Function(v11);new Function(v17)}catch(e){throw new Error('Build interrompido: JavaScript Git inválido: '+e.message)}
+const patch=`\n<!-- ${marker} -->\n<style id="isssd-git-visual-bridge-overrides">\n${css}\n</style>\n<script type="module" id="isssd-git-visual-bridge-runtime">\n${js}\n</script>\n<script type="module" id="isssd-git-project-import-v11">\n${v11}\n</script>\n<script type="module" id="isssd-git-controller-v17">\n${v17}\n</script>\n`;
 if(html.includes('</body>'))html=html.replace('</body>',patch+'\n</body>');else html+=patch;
-const markerCount=(html.match(/ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE/g)||[]).length,runtimeCount=(html.match(/id=["']isssd-git-visual-bridge-runtime["']/g)||[]).length,styleCount=(html.match(/id=["']isssd-git-visual-bridge-overrides["']/g)||[]).length,v11Count=(html.match(/id=["']isssd-git-project-import-v11["']/g)||[]).length;
-if(markerCount!==1||runtimeCount!==1||styleCount!==1||v11Count!==1)throw new Error(`Build interrompido: injeção Git duplicada/incompleta (marker=${markerCount}, runtime=${runtimeCount}, style=${styleCount}, v11=${v11Count}).`);
-if(!html.includes('git-visual-bridge-v10-deterministic-project-import')||!html.includes('git-project-import-v11'))throw new Error('Build interrompido: runtimes de importação não foram injetados.');
+const markerCount=(html.match(/ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE/g)||[]).length,runtimeCount=(html.match(/id=["']isssd-git-visual-bridge-runtime["']/g)||[]).length,styleCount=(html.match(/id=["']isssd-git-visual-bridge-overrides["']/g)||[]).length,v11Count=(html.match(/id=["']isssd-git-project-import-v11["']/g)||[]).length,v17Count=(html.match(/id=["']isssd-git-controller-v17["']/g)||[]).length;
+if(markerCount!==1||runtimeCount!==1||styleCount!==1||v11Count!==1||v17Count!==1)throw new Error(`Build interrompido: injeção Git duplicada/incompleta (marker=${markerCount}, runtime=${runtimeCount}, style=${styleCount}, v11=${v11Count}, v17=${v17Count}).`);
+if(!html.includes('git-visual-bridge-v10-deterministic-project-import')||!html.includes('git-project-import-v11')||!html.includes('git-controller-ui-v17-native-font'))throw new Error('Build interrompido: runtimes de importação/controles não foram injetados.');
 if(!html.includes('__ISSSD_GIT_REAPPLY_PROJECT_STATE__'))throw new Error('Build interrompido: ponte de restauração integral não foi instalada.');
 if(!html.includes('__ISSSD_FIXED_PLUS_ROM_PATH__')||!html.includes('/__isssd/default-plus-rom'))throw new Error('Build interrompido: resolvedor automático da ROM-base Plus não foi instalado.');
 if(!html.includes('profileTextDraft=directPid?JSON.parse(JSON.stringify(directBy[directPid]||{})):{}'))throw new Error('Build interrompido: rascunho textual direto ainda não é restaurado da baseline do projeto.');
 if(html.includes('isssdProjectHydrationDiagnostic')||html.includes('Aplicar dados do projeto aos campos'))throw new Error('Build interrompido: painel manual de diagnóstico ainda está presente.');
 
 fs.mkdirSync(outDir,{recursive:true});fs.writeFileSync(outHtml,html,'utf8');for(const name of ['assets','docs','schemas']){const from=path.join(vendorDir,name),to=path.join(outDir,name);if(fs.existsSync(from)){fs.rmSync(to,{recursive:true,force:true});fs.cpSync(from,to,{recursive:true})}}
-console.log('ISSSD Studio editor build concluído.');console.log('Fonte visual em cache: '+source);console.log('Saída: '+outHtml);console.log('ROM-base Plus fixa: '+fixedPlusPath);console.log('Git Bridge v11: projeto reidratado após o lifecycle legado e após renderizações tardias.');
+console.log('ISSSD Studio editor build concluído.');console.log('Fonte visual em cache: '+source);console.log('Saída: '+outHtml);console.log('ROM-base Plus fixa: '+fixedPlusPath);console.log('Git Bridge v17: projeto reidratado + controles exatos com fonte nativa.');
