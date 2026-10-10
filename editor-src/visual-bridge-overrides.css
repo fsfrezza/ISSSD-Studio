@@ -27,3 +27,11 @@
 #strategy612Mount .st612-item pre{font-size:12px!important;padding:5px!important}
 @media(max-width:1300px){#strategy612Mount .st612-grid{grid-template-columns:repeat(2,minmax(240px,1fr))!important}}
 @media(max-width:800px){#strategy612Mount .st612-grid{grid-template-columns:1fr!important}}
+
+/* Menu Principal: manter somente o editor operacional de paletas (#mmColorGrid).
+   Interfaces antigas usam .mainmenu-appearance e não devem aparecer duplicadas. */
+#page-main-menu .mainmenu-appearance,
+#page-texts .mainmenu-appearance,
+#gitMainMenuColorsV12{
+  display:none!important;
+}
