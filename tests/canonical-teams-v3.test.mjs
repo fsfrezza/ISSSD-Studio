@@ -8,22 +8,23 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const patch=fs.readFileSync(path.join(root,'scripts','patch-canonical-teams-v3.mjs'),'utf8');
 const ensure=fs.readFileSync(path.join(root,'scripts','ensure-plus-preparation-project.mjs'),'utf8');
 const pkg=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8'));
+const runtime=patch.match(/const replacement=String\.raw`([\s\S]*?)`;\n\nhtml=/)?.[1]||'';
 
 test('teamsV1 v3 é a única persistência canônica de jogadores',()=>{
- assert.match(patch,/schema:'isssd-teams-v1',version:3,teams:\{\}/);
- assert.match(patch,/skills:\{acceleration:/);
- assert.match(patch,/appearance:\{hair:/);
- assert.match(patch,/tactical:null/);
- assert.match(patch,/studioTeamsV3RestoreAttrs/);
- assert.match(patch,/studioTeamsV3RestoreTactics/);
+ assert.match(runtime,/schema:'isssd-teams-v1',version:3,teams:\{\}/);
+ assert.match(runtime,/skills:\{acceleration:/);
+ assert.match(runtime,/appearance:\{hair:/);
+ assert.match(runtime,/tactical:null/);
+ assert.match(runtime,/studioTeamsV3RestoreAttrs/);
+ assert.match(runtime,/studioTeamsV3RestoreTactics/);
  assert.doesNotMatch(pkg.scripts['build:editor'],/patch-player-tactical-persistence/);
  assert.match(pkg.scripts['build:editor'],/patch-canonical-teams-v3/);
 });
 
 test('runtime v3 não depende de fo() e calcula file offset de forma autônoma',()=>{
- assert.match(patch,/function studioTeamsV3FileOffset\(pc\)/);
- assert.match(patch,/studioTeamsV3FileOffset\(rec\.recordPc\)/);
- assert.doesNotMatch(patch,/const off=fo\(rec\.recordPc\)/);
+ assert.match(runtime,/function studioTeamsV3FileOffset\(pc\)/);
+ assert.match(runtime,/studioTeamsV3FileOffset\(rec\.recordPc\)/);
+ assert.doesNotMatch(runtime,/\bfo\s*\(/);
 });
 
 test('migração elimina estruturas redundantes e decodifica attrHex em campos semânticos',()=>{
