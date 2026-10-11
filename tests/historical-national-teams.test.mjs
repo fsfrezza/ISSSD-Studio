@@ -65,9 +65,8 @@ test('teamsV1 v3 vincula dados completos e coordenadas ao próprio jogador',()=>
  assert.match(patch,/skills:attrs\.skills/);
  assert.match(patch,/appearance:attrs\.appearance/);
  assert.match(patch,/tactical:null/);
- assert.match(ensure,/Lista permanece GO, Cafu, zagueiros, R\.Carlos/);
- assert.match(ensure,/dx:8,dy:32/);
- assert.match(ensure,/dx:8,dy:-32/);
+ assert.match(ensure,/src\.players\[0\]=\{\.\.\.src\.players\[0\],dx:8,dy:32\}/);
+ assert.match(ensure,/src\.players\[3\]=\{\.\.\.src\.players\[3\],dx:8,dy:-32\}/);
  assert.match(pkg.scripts['build:editor'],/patch-canonical-teams-v3\.mjs/);
  assert.doesNotMatch(pkg.scripts['build:editor'],/patch-player-tactical-persistence/);
 });
