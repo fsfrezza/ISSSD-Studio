@@ -8,7 +8,7 @@
     "restore:project": "node scripts/restore-canonical-project.mjs --force",
     "ensure:project": "node scripts/restore-canonical-project.mjs",
     "ensure:plus-preparation": "node scripts/ensure-plus-preparation-project.mjs",
-    "build:editor": "node scripts/build-editor.mjs && node scripts/fix-lineup-swap.mjs && node scripts/patch-tactical-project-safety.mjs && node scripts/patch-player-tactical-persistence.mjs && node scripts/post-build-project-structure.mjs",
+    "build:editor": "node scripts/build-editor.mjs && node scripts/fix-lineup-swap.mjs && node scripts/patch-tactical-project-safety.mjs && node scripts/patch-canonical-teams-v3.mjs && node scripts/post-build-project-structure.mjs",
     "serve:editor": "node scripts/serve-editor.mjs",
     "editor": "npm run ensure:project && npm run ensure:plus-preparation && npm run build:editor && npm run serve:editor",
     "compare:v692-v693": "node scripts/compare-v692-v693.mjs",
