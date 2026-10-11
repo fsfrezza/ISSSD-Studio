@@ -37,31 +37,31 @@ project.state.semantic.plusPreparationV1={
 };
 
 const sem=project.state.semantic;
-const teams=sem.teamsV1&&typeof sem.teamsV1==='object'?sem.teamsV1:(sem.teamsV1={});
-teams.schema='isssd-teams-v1';
-teams.version=2;
-teams.names=teams.names&&typeof teams.names==='object'?teams.names:{};
-teams.names.schema='isssd-name-roster-v1';
-teams.names.version=1;
-teams.names.mode='names-only';
-teams.names.teams=teams.names.teams&&typeof teams.names.teams==='object'?teams.names.teams:{};
-teams.tactics=teams.tactics&&typeof teams.tactics==='object'?teams.tactics:{};
-teams.tactics.schema='isssd-custom-tactics-v1';
-teams.tactics.version=2;
-teams.tactics.mode='overrides-only';
-teams.tactics.teams=teams.tactics.teams&&typeof teams.tactics.teams==='object'?teams.tactics.teams:{};
-
-for(const id of ['8','30','31']){
- const src=historical.teams[id];
- teams.names.teams[id]={teamId:Number(id),teamName:src.teamName,players:clone(src.players)};
- teams.tactics.teams[id]=clone(src.tactic);
+const alreadySeeded=sem.historicalNationalTeamsV1?.schema==='isssd-historical-national-teams-v1'&&Number(sem.historicalNationalTeamsV1?.version)===1;
+if(!alreadySeeded){
+ const teams=sem.teamsV1&&typeof sem.teamsV1==='object'?sem.teamsV1:(sem.teamsV1={});
+ teams.schema='isssd-teams-v1';
+ teams.version=2;
+ teams.names=teams.names&&typeof teams.names==='object'?teams.names:{};
+ teams.names.schema='isssd-name-roster-v1';
+ teams.names.version=1;
+ teams.names.mode='names-only';
+ teams.names.teams=teams.names.teams&&typeof teams.names.teams==='object'?teams.names.teams:{};
+ teams.tactics=teams.tactics&&typeof teams.tactics==='object'?teams.tactics:{};
+ teams.tactics.schema='isssd-custom-tactics-v1';
+ teams.tactics.version=2;
+ teams.tactics.mode='overrides-only';
+ teams.tactics.teams=teams.tactics.teams&&typeof teams.tactics.teams==='object'?teams.tactics.teams:{};
+ for(const id of ['8','30','31']){
+  const src=historical.teams[id];
+  teams.names.teams[id]={teamId:Number(id),teamName:src.teamName,players:clone(src.players)};
+  teams.tactics.teams[id]=clone(src.tactic);
+ }
+ sem.historicalNationalTeamsV1={schema:'isssd-historical-national-teams-v1',version:1,appliedTeamIds:[8,30,31],source:'project-data/historical-national-teams-v1.json'};
+ console.log('Brasil, Argentina e Alemanha históricas instaladas uma única vez no projeto canônico.');
+}else{
+ console.log('Seleções históricas já inicializadas: alterações posteriores do usuário serão preservadas.');
 }
-sem.historicalNationalTeamsV1={
- schema:'isssd-historical-national-teams-v1',
- version:1,
- appliedTeamIds:[8,30,31],
- source:'project-data/historical-national-teams-v1.json'
-};
 
 fs.writeFileSync(projectPath,JSON.stringify(project,null,2)+'\n','utf8');
-console.log('Projeto Plus: 4 MiB + táticas individualizadas registrados; Brasil, Argentina e Alemanha históricas reaplicadas em teamsV1.');
+console.log('Projeto Plus: preparação 4 MiB + táticas individualizadas registrada sem sobrescrever edições existentes.');
