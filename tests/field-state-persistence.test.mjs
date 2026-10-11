@@ -9,7 +9,9 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const file=path.join(root,'scripts','patch-team-field-state.mjs');
 const src=fs.readFileSync(file,'utf8');
 const pkg=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8'));
-const snapshotBlock=src.match(/const snapshot=String\.raw`([\s\S]*?)`;\nreplaceBlock\('function studioTeamsV3Snapshot\(\)'/)?.[1]||'';
+const snapshotStart=src.indexOf('const snapshot=String.raw`');
+const snapshotEnd=src.indexOf("replaceBlock('function studioTeamsV3Snapshot(){",snapshotStart);
+const snapshotBlock=snapshotStart>=0&&snapshotEnd>snapshotStart?src.slice(snapshotStart,snapshotEnd):'';
 
 test('patch de sparse overrides é JavaScript válido e integra o build',()=>{
  execFileSync(process.execPath,['--check',file],{stdio:'pipe'});
