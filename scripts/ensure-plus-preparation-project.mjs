@@ -33,7 +33,6 @@ for(const id of ['8','30','31']){
 
 project.state=project.state||{};
 project.state.semantic=project.state.semantic||{};
-// A expansão é estado estrutural semântico; não persistir targetLength expandido como patch/estado físico.
 delete project.state.targetLength;
 project.state.semantic.plusPreparationV1={schema:'isssd-plus-preparation-v1',version:1,expanded4MiB:true,bodyLength:0x400000,expansionMode:4,tacticsIndividualized:true};
 const sem=project.state.semantic;
@@ -41,7 +40,6 @@ const sem=project.state.semantic;
 function curatedLegacyTactic(id){
  const src=clone(historical.teams?.[id]?.tactic);if(!src)return null;
  if(String(id)==='30'){
-  // Lista permanece GO, Cafu, zagueiros, R.Carlos...; apenas os lados no campo são trocados.
   src.players[0]={...src.players[0],dx:8,dy:32};
   src.players[3]={...src.players[3],dx:8,dy:-32};
  }
@@ -93,7 +91,46 @@ if(Number(old.version)!==3||!old.teams||typeof old.teams!=='object'){
  console.log('teamsV1 v3 já presente: dados semânticos dos jogadores serão preservados.');
 }
 
-// v3 é a única fonte de equipes/jogadores. Remova estruturas antigas redundantes se restarem.
+// Revisão canônica de skills do Brasil. Altera somente skills; camisa, posição,
+// aparência, ordem e coordenadas táticas permanecem exatamente como estão no projeto.
+const BRAZIL_SKILLS_REVISION_VERSION=1;
+const BRAZIL_SKILLS={
+ 'Taffarel':[5,5,3,3,7,9,4,9,8],
+ 'Cafu':[9,9,6,7,8,8,8,7,10],
+ 'D.daGuia':[8,8,8,7,9,8,7,10,8],
+ 'Lucio':[8,9,8,6,9,9,8,10,9],
+ 'R.Carlos':[10,10,10,9,9,8,8,7,10],
+ 'Dunga':[9,9,6,9,9,9,9,9,8],
+ 'Gerson':[6,6,8,10,7,10,8,6,8],
+ 'R.Gaucho':[9,8,8,10,8,9,10,7,7],
+ "Pele'":[10,10,10,9,10,10,10,10,9],
+ 'Ronaldo':[10,10,10,8,10,9,10,8,8],
+ 'Garrinch':[10,10,8,9,8,9,10,6,8],
+ 'Gilmar':[5,5,3,3,7,9,4,9,8],
+ 'D.Santos':[8,8,9,8,9,7,7,10,8],
+ 'N.Santos':[8,8,7,7,8,10,8,8,9],
+ 'Aldair':[6,7,5,5,9,9,6,9,8],
+ 'Falcao':[7,7,8,8,8,10,9,7,9],
+ 'Rivaldo':[8,8,10,9,9,9,9,8,9],
+ 'Zico':[8,8,10,10,8,10,10,7,9],
+ 'Neymar':[10,9,9,9,7,9,10,6,8],
+ 'Romario':[10,9,10,8,8,10,10,7,7]
+};
+const skillKeys=['acceleration','speed','shot','curve','balance','intelligence','dribbling','jump','energy'];
+const brazil=sem.teamsV1?.teams?.['30']||sem.teamsV1?.teams?.[30];
+const currentRevision=Number(sem.brazilSkillsRevisionV1?.version)||0;
+if(brazil&&Array.isArray(brazil.players)&&currentRevision<BRAZIL_SKILLS_REVISION_VERSION){
+ const seen=new Set();
+ for(const p of brazil.players){
+  const vals=BRAZIL_SKILLS[String(p?.name||'')];if(!vals)continue;
+  p.skills=Object.fromEntries(skillKeys.map((k,i)=>[k,vals[i]]));seen.add(String(p.name));
+ }
+ const missing=Object.keys(BRAZIL_SKILLS).filter(n=>!seen.has(n));
+ if(missing.length)throw new Error('Brasil: jogadores sem correspondência para revisão de skills: '+missing.join(', '));
+ sem.brazilSkillsRevisionV1={schema:'isssd-brazil-skills-v1',version:BRAZIL_SKILLS_REVISION_VERSION,teamId:30,attributes:skillKeys,players:Object.keys(BRAZIL_SKILLS)};
+ console.log('Brasil: skills revisadas aplicadas aos 20 jogadores; demais propriedades preservadas.');
+}
+
 if(sem.teamsV1){delete sem.teamsV1.names;delete sem.teamsV1.tactics;delete sem.teamsV1.playerTactics}
 fs.writeFileSync(projectPath,JSON.stringify(project,null,2)+'\n','utf8');
 console.log('Projeto Plus: preparação estrutural semântica + teamsV1 v3 canônico; sem attrHex/táticas duplicadas.');
