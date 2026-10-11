@@ -125,6 +125,7 @@ const newMerge='const projectPatches=studioSanitizeProjectPatches(studioMergePat
 if(html.includes(oldMerge))html=html.replace(oldMerge,newMerge);
 if(!html.includes("schema:'isssd-teams-v1',version:3"))throw new Error('teamsV1 v3 não foi instalado.');
 if(html.includes('const off=fo(rec.recordPc)'))throw new Error('Dependência lexical insegura de fo() permaneceu no runtime de persistência.');
-if(/\bteams\?\./.test(replacement))throw new Error('Dependência lexical insegura de teams permaneceu no snapshot teamsV1 v3.');
+const bareTeamsOptional=/(?<![A-Za-z0-9_.$])teams\?\./;
+if(bareTeamsOptional.test(replacement))throw new Error('Dependência lexical insegura de teams permaneceu no snapshot teamsV1 v3.');
 fs.writeFileSync(htmlPath,html,'utf8');
 console.log('ISSSD Studio: teamsV1 v3 canônico instalado — jogador reúne nome, camisa, posição, skills, aparência e posição tática; sem dependências lexicais fo()/teams.');
