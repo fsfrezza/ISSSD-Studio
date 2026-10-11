@@ -17,19 +17,24 @@ function studioTeamsV3Hex(bytes){return Array.from(bytes||[]).map(v=>(Number(v)&
 function studioTeamsV3Unhex(hex,len){const s=String(hex||'').replace(/[^0-9a-f]/gi,'');if(s.length!==len*2)return null;const out=new Uint8Array(len);for(let i=0;i<len;i++)out[i]=parseInt(s.slice(i*2,i*2+2),16);return out}
 function studioTeamsV3FileOffset(pc){const hs=(rom?.length%0x8000===0x200)?0x200:0;return hs+(Number(pc)||0)}
 function studioTeamsV3AttrOffset(team,index){return studioTeamsV3FileOffset(0x150000+(Number(team)*20+Number(index))*7)}
+function studioTeamsV3AttrOffsets(team,index){
+ try{if(typeof plusPlayerAttrMirrorOffsets==='function')return [...new Set(plusPlayerAttrMirrorOffsets(Number(team),Number(index)).map(Number).filter(Number.isFinite))]}
+ catch(e){console.warn('teamsV1 v3: espelho de atributos indisponível; usando banco principal',e)}
+ return [studioTeamsV3AttrOffset(team,index)];
+}
 const STUDIO_TEAMS_V3_POS_TO_ID={NONE:0,GO:1,DF:2,VOL:3,MC:4,MO:5,AT:6};
 const STUDIO_TEAMS_V3_ID_TO_POS=['NONE','GO','DF','VOL','MC','MO','AT'];
 function studioTeamsV3DecodeAttr(bytes){
  const b=Array.from(bytes||[]);if(b.length!==7)return null;
  return {number:(b[5]&255)+1,position:STUDIO_TEAMS_V3_ID_TO_POS[(b[4]>>4)&15]||'NONE',
   skills:{acceleration:(b[0]>>4)+1,speed:(b[0]&15)+1,shot:(b[1]>>4)+1,curve:(b[1]&15)+1,balance:(b[2]>>4)+1,intelligence:(b[2]&15)+1,dribbling:(b[3]>>4)+1,jump:(b[3]&15)+1,energy:(b[4]&15)+1},
-  appearance:{hair:(b[6]>>4)&15,palette:b[6]&15}};
+  appearance:{hair:(b[6]>>4)&15,palette:b[6]&1}};
 }
 function studioTeamsV3Clamp(v,min,max,def=min){v=Number(v);return Number.isFinite(v)?Math.max(min,Math.min(max,Math.round(v))):def}
 function studioTeamsV3EncodeAttr(p){
  const s=p?.skills||{},ap=p?.appearance||{},pos=STUDIO_TEAMS_V3_POS_TO_ID[String(p?.position||'NONE').toUpperCase()]??0;
  const n=(k)=>studioTeamsV3Clamp(s[k],1,10,1)-1;
- return new Uint8Array([(n('acceleration')<<4)|n('speed'),(n('shot')<<4)|n('curve'),(n('balance')<<4)|n('intelligence'),(n('dribbling')<<4)|n('jump'),(pos<<4)|n('energy'),studioTeamsV3Clamp(p?.number,1,99,1)-1,(studioTeamsV3Clamp(ap.hair,0,15,0)<<4)|studioTeamsV3Clamp(ap.palette,0,15,0)]);
+ return new Uint8Array([(n('acceleration')<<4)|n('speed'),(n('shot')<<4)|n('curve'),(n('balance')<<4)|n('intelligence'),(n('dribbling')<<4)|n('jump'),(pos<<4)|n('energy'),studioTeamsV3Clamp(p?.number,1,99,1)-1,(studioTeamsV3Clamp(ap.hair,0,13,0)<<4)|studioTeamsV3Clamp(ap.palette,0,1,0)]);
 }
 function studioTeamsV3Class(v){v=String(v||'').toUpperCase();return v==='DF'?'DF':(v==='MC'||v==='MF')?'MC':(v==='AT'||v==='FW')?'AT':'DF'}
 function studioTeamsV3GlobalX(cls,dx){const c=studioTeamsV3Class(cls),base=c==='DF'?-39:c==='MC'?0:39;return studioTeamsV3Clamp(base+(Number(dx)||0),-57,57,base)}
@@ -74,7 +79,12 @@ function studioTeamsV3RestoreAttrs(state){
  let count=0;
  for(const [key,ts] of Object.entries(state?.teams||{})){
   const t=Number(ts?.teamId??key);if(!Number.isInteger(t)||t<0||t>=56||!Array.isArray(ts?.players))continue;
-  for(const p of ts.players){const i=Number(p?.slot)-1;if(!Number.isInteger(i)||i<0||i>=20)continue;rom.set(studioTeamsV3EncodeAttr(p),studioTeamsV3AttrOffset(t,i));count++}
+  for(const p of ts.players){
+   const i=Number(p?.slot)-1;if(!Number.isInteger(i)||i<0||i>=20)continue;
+   const encoded=studioTeamsV3EncodeAttr(p);
+   for(const off of studioTeamsV3AttrOffsets(t,i))rom.set(encoded,off);
+   count++;
+  }
  }
  return count;
 }
@@ -114,4 +124,4 @@ if(html.includes(oldMerge))html=html.replace(oldMerge,newMerge);
 if(!html.includes("schema:'isssd-teams-v1',version:3"))throw new Error('teamsV1 v3 não foi instalado.');
 if(html.includes('const off=fo(rec.recordPc)'))throw new Error('Dependência lexical insegura de fo() permaneceu no runtime de persistência.');
 fs.writeFileSync(htmlPath,html,'utf8');
-console.log('ISSSD Studio: teamsV1 v3 canônico instalado — jogador reúne nome, camisa, posição, skills, aparência e posição tática; sem fo().');
+console.log('ISSSD Studio: teamsV1 v3 canônico instalado — jogador reúne nome, camisa, posição, skills, aparência e posição tática; espelhos Plus preservados; sem fo().');
