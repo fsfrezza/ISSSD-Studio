@@ -28524,6 +28524,44 @@
           "note": "A ordem da lista representa a escalação. A posição tática X/Y acompanha o jogador e não muda ao reorganizar a lista."
         },
         "canonicalTeamsSchema": "isssd-teams-v1@3"
+      },
+      "brazilSkillsRevisionV1": {
+        "schema": "isssd-brazil-skills-v1",
+        "version": 1,
+        "teamId": 30,
+        "attributes": [
+          "acceleration",
+          "speed",
+          "shot",
+          "curve",
+          "balance",
+          "intelligence",
+          "dribbling",
+          "jump",
+          "energy"
+        ],
+        "players": [
+          "Taffarel",
+          "Cafu",
+          "D.daGuia",
+          "Lucio",
+          "R.Carlos",
+          "Dunga",
+          "Gerson",
+          "R.Gaucho",
+          "Pele'",
+          "Ronaldo",
+          "Garrinch",
+          "Gilmar",
+          "D.Santos",
+          "N.Santos",
+          "Aldair",
+          "Falcao",
+          "Rivaldo",
+          "Zico",
+          "Neymar",
+          "Romario"
+        ]
       }
     }
   },
