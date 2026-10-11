@@ -22,15 +22,17 @@ test('Visual Bridge restores canonical project deterministically and protects it
  assert.ok(!src.includes('isssdForceHydrate'));
 });
 
-test('file-offset bridge is installed before every runtime and audits module scope',()=>{
+test('final editor build eliminates bare fo call sites and keeps an explicit global offset helper',()=>{
  for(const token of [
   "const BOOT_ID='isssd-global-file-offset-bootstrap'",
-  'var fo=function(internal)',
-  'globalThis.__ISSSD_FILE_OFFSET__=fo',
-  'const fo=globalThis.__ISSSD_FILE_OFFSET__||globalThis.fo',
-  'O bootstrap de fo() não é o primeiro script executável do Editor.',
-  'ES module(s) usando fo() sem binding lexical'
+  "const BUILD_FIX='fo-callsite-free-v1'",
+  'globalThis.__ISSSD_FILE_OFFSET__=fileOffset',
+  'globalThis.fo=fileOffset',
+  "const bareCallRe=/(?<![A-Za-z0-9_.$])fo\\s*\\(/g",
+  "return 'globalThis.__ISSSD_FILE_OFFSET__('",
+  'Build inválido: restaram ${leftovers.length} chamada(s) bare fo(...) no HTML final.',
+  'Build: '
  ])assert.ok(offsetPatch.includes(token),`missing file-offset safety token: ${token}`);
  assert.ok(offsetPatch.includes("html=html.replace(head[0],head[0]+'\\n'+bootstrap)"));
- assert.ok(offsetPatch.includes('/\\bfo\\s*\\(/'));
+ assert.ok(offsetPatch.includes("function fo(internal){return globalThis.__ISSSD_FILE_OFFSET__(internal)}"));
 });
