@@ -1,6 +1,6 @@
 name: Migrate canonical project to teamsV1 v3
 
-# Final one-shot retry after the v3 suite is green.
+# One-shot canonical refresh: teamsV1 v3 + Brazil skills revision v1.
 on:
   push:
     paths:
@@ -34,11 +34,11 @@ jobs:
         shell: bash
         run: |
           if git diff --quiet -- International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj; then
-            echo 'Canonical project already uses teamsV1 v3.'
+            echo 'Canonical project already uses teamsV1 v3 and Brazil skills revision v1.'
             exit 0
           fi
           git config user.name 'ISSSD Studio automation'
           git config user.email 'actions@users.noreply.github.com'
           git add International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj
-          git commit -m 'Migrate canonical project to teamsV1 v3'
+          git commit -m 'Apply reviewed Brazil skills to canonical project'
           git push
