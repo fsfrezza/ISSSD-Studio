@@ -1,6 +1,11 @@
 {
   "schema": "isssd-historical-national-teams-v1",
-  "version": 1,
+  "version": 2,
+  "lineupConvention": {
+    "starterGroups": ["GO", "LD", "ZAG", "ZAG", "LE", "VOL", "VOL", "MEI", "MEI", "AT", "AT"],
+    "sameLineOrder": "esquerda-primeiro-exceto-laterais-direito-antes-do-esquerdo",
+    "note": "A ordem da lista representa a escalação. A posição tática X/Y acompanha o jogador e não muda ao reorganizar a lista."
+  },
   "teams": {
     "8": {
       "teamId": 8,
@@ -50,13 +55,13 @@
       "formationLabel": "4-4-2 · 4-2-2-2 assimétrico",
       "players": [
         {"slot":1,"name":"Taffarel","nameHex":"7B8287878293868D","attrHex":"44226838170000"},
-        {"slot":2,"name":"R.Carlos","nameHex":"79546A82938D9094","attrHex":"99988776290500"},
+        {"slot":2,"name":"Cafu","nameHex":"00006A8287960000","attrHex":"88567776290111"},
         {"slot":3,"name":"D.daGuia","nameHex":"6B5485826E968A82","attrHex":"77768769270300"},
         {"slot":4,"name":"Lucio","nameHex":"007396848A900000","attrHex":"78758879280200"},
-        {"slot":5,"name":"Cafu","nameHex":"00006A8287960000","attrHex":"88567776290111"},
-        {"slot":6,"name":"R.Gaucho","nameHex":"79546E8296848990","attrHex":"87797896560A00"},
-        {"slot":7,"name":"Dunga","nameHex":"006B968F88820000","attrHex":"88588888370400"},
-        {"slot":8,"name":"Gerson","nameHex":"006E869394908F00","attrHex":"55796975370700"},
+        {"slot":5,"name":"R.Carlos","nameHex":"79546A82938D9094","attrHex":"99988776290500"},
+        {"slot":6,"name":"Dunga","nameHex":"006B968F88820000","attrHex":"88588888370400"},
+        {"slot":7,"name":"Gerson","nameHex":"006E869394908F00","attrHex":"55796975370700"},
+        {"slot":8,"name":"R.Gaucho","nameHex":"79546E8296848990","attrHex":"87797896560A00"},
         {"slot":9,"name":"Pele'","nameHex":"0077868D865A0000","attrHex":"99989999580900"},
         {"slot":10,"name":"Ronaldo","nameHex":"79908F828D859000","attrHex":"99979897670800"},
         {"slot":11,"name":"Garrinch","nameHex":"6E8293938A8F8489","attrHex":"99787895670600"},
@@ -71,18 +76,18 @@
         {"slot":20,"name":"Romario","nameHex":"79908E82938A9000","attrHex":"98977996661300"}
       ],
       "tactic": {
-        "teamId":30,"formationIndex":1,"formationLabel":"4-4-2","rawHex":"0108E000F5000B082000E0F0F5F00B002000F0001005010105060202060303",
+        "teamId":30,"formationIndex":1,"formationLabel":"4-4-2","rawHex":"0108E000F5000B0820F0F5F00B0AE20500FCFBF71E05010105060202060303",
         "players":[
           {"index":0,"dx":8,"dy":-32,"className":"DF","attack":true},
           {"index":1,"dx":0,"dy":-11,"className":"DF","attack":false},
           {"index":2,"dx":0,"dy":11,"className":"DF","attack":false},
           {"index":3,"dx":8,"dy":32,"className":"DF","attack":true},
-          {"index":4,"dx":0,"dy":-32,"className":"MC","attack":true},
-          {"index":5,"dx":-16,"dy":-11,"className":"MC","attack":false},
-          {"index":6,"dx":-16,"dy":11,"className":"MC","attack":false},
-          {"index":7,"dx":0,"dy":32,"className":"MC","attack":true},
-          {"index":8,"dx":0,"dy":-16,"className":"AT","attack":false},
-          {"index":9,"dx":0,"dy":16,"className":"AT","attack":false}
+          {"index":4,"dx":-16,"dy":-11,"className":"MC","attack":true},
+          {"index":5,"dx":-16,"dy":11,"className":"MC","attack":false},
+          {"index":6,"dx":10,"dy":-30,"className":"MC","attack":false},
+          {"index":7,"dx":5,"dy":0,"className":"MC","attack":true},
+          {"index":8,"dx":-4,"dy":-5,"className":"AT","attack":false},
+          {"index":9,"dx":-9,"dy":30,"className":"AT","attack":false}
         ],"custom":false,"customState":null
       }
     },
