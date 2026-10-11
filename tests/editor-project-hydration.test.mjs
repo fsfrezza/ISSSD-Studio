@@ -8,6 +8,7 @@ const here=dirname(fileURLToPath(import.meta.url));
 const src=await readFile(join(here,'..','editor-src','visual-bridge-overrides.mjs'),'utf8');
 const v11=await readFile(join(here,'..','editor-src','project-import-v11.mjs'),'utf8');
 const build=await readFile(join(here,'..','scripts','build-editor.mjs'),'utf8');
+const offsetPatch=await readFile(join(here,'..','scripts','patch-global-file-offset.mjs'),'utf8');
 
 test('Visual Bridge restores canonical project deterministically and protects it on save',()=>{
  for(const token of ['git-visual-bridge-v10-deterministic-project-import','textWorkspaceV2','studioTextProjectDrafts','gm610_','data-pk-id','data-mainmenu-fb96','st612_','romMetaTitle','auditProjectHydration','__ISSSD_GIT_AFTER_PROJECT_OPEN__','__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__'])assert.ok(src.includes(token),`missing runtime hydration token: ${token}`);
@@ -19,4 +20,17 @@ test('Visual Bridge restores canonical project deterministically and protects it
  assert.ok(build.includes("const applyBadge=html.lastIndexOf('studioUpdateBadge();',applyNext);"));
  assert.ok(!build.includes('const applyEndNeedle='));
  assert.ok(!src.includes('isssdForceHydrate'));
+});
+
+test('file-offset bridge is installed before every runtime and audits module scope',()=>{
+ for(const token of [
+  "const BOOT_ID='isssd-global-file-offset-bootstrap'",
+  'var fo=function(internal)',
+  'globalThis.__ISSSD_FILE_OFFSET__=fo',
+  'const fo=globalThis.__ISSSD_FILE_OFFSET__||globalThis.fo',
+  'O bootstrap de fo() não é o primeiro script executável do Editor.',
+  'ES module(s) usando fo() sem binding lexical'
+ ])assert.ok(offsetPatch.includes(token),`missing file-offset safety token: ${token}`);
+ assert.ok(offsetPatch.includes("html=html.replace(head[0],head[0]+'\\n'+bootstrap)"));
+ assert.ok(offsetPatch.includes('/\\bfo\\s*\\(/'));
 });
