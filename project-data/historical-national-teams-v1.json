@@ -1,0 +1,132 @@
+{
+  "schema": "isssd-historical-national-teams-v1",
+  "version": 1,
+  "teams": {
+    "8": {
+      "teamId": 8,
+      "teamName": "Alemanha",
+      "formationLabel": "4-4-2",
+      "players": [
+        {"slot":1,"name":"Neuer","nameHex":"7586968693000000","attrHex":"87448756190000"},
+        {"slot":2,"name":"Lahm","nameHex":"7382898E00000000","attrHex":"78768868280100"},
+        {"slot":3,"name":"Beckenba","nameHex":"6986848C868F8382","attrHex":"78979867290910"},
+        {"slot":4,"name":"Kohler","nameHex":"7290898D86930000","attrHex":"87658768280310"},
+        {"slot":5,"name":"Brehme","nameHex":"699386898E860000","attrHex":"78788877280200"},
+        {"slot":6,"name":"Matthaus","nameHex":"7482959589829694","attrHex":"78778868380400"},
+        {"slot":7,"name":"Kroos","nameHex":"7293909094000000","attrHex":"78779787480500"},
+        {"slot":8,"name":"Walter","nameHex":"7E828D9586930000","attrHex":"88798795490710"},
+        {"slot":9,"name":"Rummenig","nameHex":"79968E8E868F8A88","attrHex":"78789887580600"},
+        {"slot":10,"name":"Muller","nameHex":"74968D8D86930000","attrHex":"88678768690A10"},
+        {"slot":11,"name":"Klose","nameHex":"728D909486000000","attrHex":"89769768680809"},
+        {"slot":12,"name":"Maier","nameHex":"74828A8693000000","attrHex":"77547758180B10"},
+        {"slot":13,"name":"Vogts","nameHex":"7D90889594000000","attrHex":"78658768290C10"},
+        {"slot":14,"name":"Sammer","nameHex":"7A828E8E86930000","attrHex":"67648657280D00"},
+        {"slot":15,"name":"Breitner","nameHex":"6993868A958F8693","attrHex":"77548767270E00"},
+        {"slot":16,"name":"Schweins","nameHex":"7A848998868A8F94","attrHex":"87478867480F00"},
+        {"slot":17,"name":"Ballack","nameHex":"69828D8D82848C00","attrHex":"87688768681001"},
+        {"slot":18,"name":"Ozil","nameHex":"769B8A8D00000000","attrHex":"67778666681100"},
+        {"slot":19,"name":"Klinsman","nameHex":"728D8A8F948E828F","attrHex":"68587785671210"},
+        {"slot":20,"name":"Seeler","nameHex":"7A86868D86930000","attrHex":"77468686691300"}
+      ],
+      "tactic": {
+        "teamId":8,"formationIndex":1,"formationLabel":"4-4-2","rawHex":"01E01EDCF6DC0AE0E2F6F6F60A081C08E422F6220A05010105020206060303",
+        "players":[
+          {"index":0,"dx":-32,"dy":30,"className":"DF","attack":true},
+          {"index":1,"dx":-36,"dy":-10,"className":"DF","attack":false},
+          {"index":2,"dx":-36,"dy":10,"className":"DF","attack":false},
+          {"index":3,"dx":-32,"dy":-30,"className":"DF","attack":true},
+          {"index":4,"dx":-10,"dy":-10,"className":"MC","attack":false},
+          {"index":5,"dx":-10,"dy":10,"className":"MC","attack":false},
+          {"index":6,"dx":8,"dy":28,"className":"MC","attack":true},
+          {"index":7,"dx":8,"dy":-28,"className":"MC","attack":true},
+          {"index":8,"dx":34,"dy":-10,"className":"AT","attack":false},
+          {"index":9,"dx":34,"dy":10,"className":"AT","attack":false}
+        ],"custom":false,"customState":null
+      }
+    },
+    "30": {
+      "teamId": 30,
+      "teamName": "Brasil",
+      "formationLabel": "4-4-2 · 4-2-2-2 assimétrico",
+      "players": [
+        {"slot":1,"name":"Taffarel","nameHex":"7B8287878293868D","attrHex":"44226838170000"},
+        {"slot":2,"name":"R.Carlos","nameHex":"79546A82938D9094","attrHex":"99988776290500"},
+        {"slot":3,"name":"D.daGuia","nameHex":"6B5485826E968A82","attrHex":"77768769270300"},
+        {"slot":4,"name":"Lucio","nameHex":"007396848A900000","attrHex":"78758879280200"},
+        {"slot":5,"name":"Cafu","nameHex":"00006A8287960000","attrHex":"88567776290111"},
+        {"slot":6,"name":"R.Gaucho","nameHex":"79546E8296848990","attrHex":"87797896560A00"},
+        {"slot":7,"name":"Dunga","nameHex":"006B968F88820000","attrHex":"88588888370400"},
+        {"slot":8,"name":"Gerson","nameHex":"006E869394908F00","attrHex":"55796975370700"},
+        {"slot":9,"name":"Pele'","nameHex":"0077868D865A0000","attrHex":"99989999580900"},
+        {"slot":10,"name":"Ronaldo","nameHex":"79908F828D859000","attrHex":"99979897670800"},
+        {"slot":11,"name":"Garrinch","nameHex":"6E8293938A8F8489","attrHex":"99787895670600"},
+        {"slot":12,"name":"Gilmar","nameHex":"006E8A8D8E829300","attrHex":"44226838170B10"},
+        {"slot":13,"name":"D.Santos","nameHex":"6B547A828F959094","attrHex":"77878669270C00"},
+        {"slot":14,"name":"N.Santos","nameHex":"75547A828F959094","attrHex":"77667977280D00"},
+        {"slot":15,"name":"Aldair","nameHex":"00688D85828A9300","attrHex":"56448858270E00"},
+        {"slot":16,"name":"Falcao","nameHex":"006D828D84829000","attrHex":"66777986480F00"},
+        {"slot":17,"name":"Rivaldo","nameHex":"798A97828D859000","attrHex":"77988887581000"},
+        {"slot":18,"name":"Zico","nameHex":"0000818A84900000","attrHex":"77997996581100"},
+        {"slot":19,"name":"Neymar","nameHex":"0075869A8E829300","attrHex":"98886895671200"},
+        {"slot":20,"name":"Romario","nameHex":"79908E82938A9000","attrHex":"98977996661300"}
+      ],
+      "tactic": {
+        "teamId":30,"formationIndex":1,"formationLabel":"4-4-2","rawHex":"0108E000F5000B082000E0F0F5F00B002000F0001005010105060202060303",
+        "players":[
+          {"index":0,"dx":8,"dy":-32,"className":"DF","attack":true},
+          {"index":1,"dx":0,"dy":-11,"className":"DF","attack":false},
+          {"index":2,"dx":0,"dy":11,"className":"DF","attack":false},
+          {"index":3,"dx":8,"dy":32,"className":"DF","attack":true},
+          {"index":4,"dx":0,"dy":-32,"className":"MC","attack":true},
+          {"index":5,"dx":-16,"dy":-11,"className":"MC","attack":false},
+          {"index":6,"dx":-16,"dy":11,"className":"MC","attack":false},
+          {"index":7,"dx":0,"dy":32,"className":"MC","attack":true},
+          {"index":8,"dx":0,"dy":-16,"className":"AT","attack":false},
+          {"index":9,"dx":0,"dy":16,"className":"AT","attack":false}
+        ],"custom":false,"customState":null
+      }
+    },
+    "31": {
+      "teamId": 31,
+      "teamName": "Argentina",
+      "formationLabel": "4-4-2 · duplo meia + dupla de ataque",
+      "players": [
+        {"slot":1,"name":"Fillol","nameHex":"6D8A8D8D908D0000","attrHex":"66438676150000"},
+        {"slot":2,"name":"Zanetti","nameHex":"81828F8695958A00","attrHex":"78658778280100"},
+        {"slot":3,"name":"Passarel","nameHex":"778294948293868D","attrHex":"88658778280210"},
+        {"slot":4,"name":"Ruggeri","nameHex":"7996888886938A00","attrHex":"78557686260300"},
+        {"slot":5,"name":"Olartico","nameHex":"768D8293958A8490","attrHex":"78568787270500"},
+        {"slot":6,"name":"Maschera","nameHex":"7482948489869382","attrHex":"89787887370414"},
+        {"slot":7,"name":"Redondo","nameHex":"798685908F859000","attrHex":"88577886360700"},
+        {"slot":8,"name":"Messi","nameHex":"748694948A000000","attrHex":"99998996580A00"},
+        {"slot":9,"name":"Maradona","nameHex":"7482938285908F82","attrHex":"99999997580900"},
+        {"slot":10,"name":"Di Maria","nameHex":"6B8A007482938A82","attrHex":"8978788668061A"},
+        {"slot":11,"name":"Batistut","nameHex":"6982958A94959695","attrHex":"78979878680812"},
+        {"slot":12,"name":"Martinez","nameHex":"748293958A8F869B","attrHex":"77648667160B00"},
+        {"slot":13,"name":"Perfumo","nameHex":"77869387968E9000","attrHex":"78748677260C00"},
+        {"slot":14,"name":"Ayala","nameHex":"689A828D82000000","attrHex":"88648678270D00"},
+        {"slot":15,"name":"Sorin","nameHex":"7A90938A8F000000","attrHex":"87568786460E00"},
+        {"slot":16,"name":"Simeone","nameHex":"7A8A8E86908F8600","attrHex":"88677686570F00"},
+        {"slot":17,"name":"Kempes","nameHex":"72868E9186940000","attrHex":"78678788671000"},
+        {"slot":18,"name":"Riquelme","nameHex":"798A9296868D8E86","attrHex":"88468686671100"},
+        {"slot":19,"name":"Caniggia","nameHex":"6A828F8A88888A82","attrHex":"88477886671200"},
+        {"slot":20,"name":"Crespo","nameHex":"6A93869491900000","attrHex":"88578787681300"}
+      ],
+      "tactic": {
+        "teamId":31,"formationIndex":1,"formationLabel":"4-4-2","rawHex":"01E020DCF5DC0BE0E0F2F5F40A081B08FC17E7220705010105020206060303",
+        "players":[
+          {"index":0,"dx":-32,"dy":32,"className":"DF","attack":true},
+          {"index":1,"dx":-36,"dy":-11,"className":"DF","attack":false},
+          {"index":2,"dx":-36,"dy":11,"className":"DF","attack":false},
+          {"index":3,"dx":-32,"dy":-32,"className":"DF","attack":true},
+          {"index":4,"dx":-14,"dy":-11,"className":"MC","attack":false},
+          {"index":5,"dx":-12,"dy":10,"className":"MC","attack":false},
+          {"index":6,"dx":8,"dy":27,"className":"MC","attack":true},
+          {"index":7,"dx":8,"dy":-4,"className":"MC","attack":true},
+          {"index":8,"dx":23,"dy":-25,"className":"AT","attack":false},
+          {"index":9,"dx":34,"dy":7,"className":"AT","attack":false}
+        ],"custom":false,"customState":null
+      }
+    }
+  }
+}
