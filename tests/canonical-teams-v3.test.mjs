@@ -7,6 +7,7 @@ import {fileURLToPath} from 'node:url';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const patch=fs.readFileSync(path.join(root,'scripts','patch-canonical-teams-v3.mjs'),'utf8');
 const ensure=fs.readFileSync(path.join(root,'scripts','ensure-plus-preparation-project.mjs'),'utf8');
+const restore=fs.readFileSync(path.join(root,'scripts','restore-canonical-project.mjs'),'utf8');
 const pkg=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8'));
 const runtime=patch.match(/const replacement=String\.raw`([\s\S]*?)`;\n\nhtml=/)?.[1]||'';
 
@@ -39,14 +40,28 @@ test('snapshot v3 salva sem depender da variável lexical teams',()=>{
  assert.match(patch,/Dependência lexical insegura de teams permaneceu no snapshot teamsV1 v3/);
 });
 
-test('migração elimina estruturas redundantes e decodifica attrHex em campos semânticos',()=>{
- assert.match(ensure,/const decodeAttr=hex=>/);
+test('migração v2 aceita jogadores recuperados sem attrHex e usa ROM-base como fallback',()=>{
+ assert.match(ensure,/const romPath=path\.join\(root,'roms','International Superstar Soccer Deluxe Plus\.sfc'\)/);
+ assert.match(ensure,/const semanticAttr=p=>/);
+ assert.match(ensure,/const canonicalAttrHex=\(teamId,slot\)=>/);
+ assert.match(ensure,/0x150000\+\(t\*20\+i\)\*7/);
+ assert.match(ensure,/const decodeAttr=\(p,teamId,slot\)=>/);
+ assert.match(ensure,/isHex\(p\?\.attrHex,7\).*canonicalAttrHex\(teamId,slot\)/s);
+ assert.match(ensure,/attrs=decodeAttr\(p,teamId,slot\)/);
  assert.match(ensure,/number:b\[5\]\+1/);
  assert.match(ensure,/skills:\{acceleration:/);
  assert.match(ensure,/appearance:\{hair:/);
  assert.match(ensure,/delete sem\.teamsV1\.names/);
  assert.match(ensure,/delete sem\.teamsV1\.tactics/);
  assert.match(ensure,/delete sem\.teamsV1\.playerTactics/);
+});
+
+test('ensure:project reconhece teamsV1 v3 como íntegro e não o sobrescreve',()=>{
+ assert.match(restore,/function teamsState\(project\)/);
+ assert.match(restore,/Number\(ts\?\.version\)===3&&ts\?\.teams/);
+ assert.match(restore,/Object\.keys\(ts\.teams\)\.length/);
+ assert.match(restore,/Object\.values\(ts\.teams\)\.reduce/);
+ assert.match(restore,/if\(structurallyGood\(current\)\)/);
 });
 
 test('migração preserva Cafu no slot 2 e troca somente o lado com R.Carlos',()=>{
