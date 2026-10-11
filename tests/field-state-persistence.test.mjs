@@ -9,6 +9,7 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const file=path.join(root,'scripts','patch-team-field-state.mjs');
 const src=fs.readFileSync(file,'utf8');
 const pkg=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8'));
+const snapshotBlock=src.match(/const snapshot=String\.raw`([\s\S]*?)`;\nreplaceBlock\('function studioTeamsV3Snapshot\(\)'/)?.[1]||'';
 
 test('patch de sparse overrides é JavaScript válido e integra o build',()=>{
  execFileSync(process.execPath,['--check',file],{stdio:'pipe'});
@@ -16,11 +17,13 @@ test('patch de sparse overrides é JavaScript válido e integra o build',()=>{
 });
 
 test('snapshot salva somente overrides e não persiste fieldState',()=>{
- assert.match(src,/mode:'sparse-overrides'/);
- assert.match(src,/const p=\{slot:i\+1\};if\(Object\.keys\(custom\)\.length\)p\.custom=custom/);
- assert.match(src,/if\(Object\.keys\(teamCustom\)\.length\)entry\.custom=teamCustom/);
+ assert.ok(snapshotBlock.length>0,'bloco de snapshot sparse não encontrado');
+ assert.match(snapshotBlock,/mode:'sparse-overrides'/);
+ assert.match(snapshotBlock,/const p=\{slot:i\+1\};if\(Object\.keys\(custom\)\.length\)p\.custom=custom/);
+ assert.match(snapshotBlock,/if\(Object\.keys\(teamCustom\)\.length\)entry\.custom=teamCustom/);
+ assert.doesNotMatch(snapshotBlock,/fieldState\s*:/);
+ assert.doesNotMatch(snapshotBlock,/name:'original',number:'original',position:'original'/);
  assert.match(src,/fieldState removido do formato salvo/);
- assert.doesNotMatch(src,/name:'original',number:'original',position:'original'/);
 });
 
 test('baseline é capturado antes de restaurar overrides',()=>{
