@@ -8,61 +8,64 @@ if(!fs.existsSync(htmlPath))throw new Error('Editor gerado não encontrado: '+ht
 let html=fs.readFileSync(htmlPath,'utf8');
 
 const BOOT_ID='isssd-global-file-offset-bootstrap';
+const BUILD_FIX='fo-callsite-free-v1';
 html=html.replace(new RegExp(`<script\\s+id=["']${BOOT_ID}["'][^>]*>[\\s\\S]*?<\\/script>\\s*`,'gi'),'');
 
-// Cria um binding global REAL antes de qualquer runtime legado ou ES module.
-// A correção anterior apenas fazia window.fo=fo depois da declaração legada,
-// o que não protege consumidores executados em outro escopo/módulo.
+// v2026-10-11: não dependemos mais da resolução lexical de `fo`.
+// O helper canônico consulta o snapshot do core para obter o header atual.
 const bootstrap=`<script id="${BOOT_ID}">
-var fo=function(internal){
-  var hs=0;
-  try{
-    if(typeof headerSize!=='undefined'&&Number.isFinite(Number(headerSize)))hs=Number(headerSize);
-    else if(globalThis.rom&&Number.isFinite(Number(globalThis.rom.length)))hs=(globalThis.rom.length%0x8000===0x200)?0x200:0;
-    else if(Number.isFinite(Number(globalThis.__ISSSD_HEADER_SIZE__)))hs=Number(globalThis.__ISSSD_HEADER_SIZE__);
-  }catch(_){}
-  return hs+(Number(internal)||0);
-};
-globalThis.fo=fo;
-globalThis.__ISSSD_FILE_OFFSET__=fo;
+(function(){
+  'use strict';
+  function fileOffset(internal){
+    var hs=0;
+    try{
+      var core=globalThis.__ISSD_CORE__||globalThis.__ISSSD_CORE__||null;
+      var snap=core&&typeof core.snapshot==='function'?core.snapshot():null;
+      if(snap&&Number.isFinite(Number(snap.headerSize)))hs=Number(snap.headerSize);
+      else if(Number.isFinite(Number(globalThis.__ISSSD_HEADER_SIZE__)))hs=Number(globalThis.__ISSSD_HEADER_SIZE__);
+    }catch(_){}
+    return hs+(Number(internal)||0);
+  }
+  globalThis.__ISSSD_FILE_OFFSET__=fileOffset;
+  globalThis.fo=fileOffset;
+  globalThis.__ISSSD_BUILD_FIX__='${BUILD_FIX}';
+})();
 </script>`;
 
 const head=html.match(/<head(?:\s[^>]*)?>/i);
-if(!head)throw new Error('Não encontrei <head> para instalar o bootstrap global de fo().');
+if(!head)throw new Error('Não encontrei <head> para instalar o helper global de offset.');
 html=html.replace(head[0],head[0]+'\n'+bootstrap);
 
-// Se existir a implementação legada, mantenha-a como fonte preferencial depois que
-// headerSize estiver inicializado, mas publique-a também no helper canônico.
+// Protege temporariamente a declaração legada para que a substituição abaixo
+// elimine apenas USOS de fo(...), não gere sintaxe inválida na própria declaração.
+const LEGACY_TOKEN='/*__ISSSD_LEGACY_FO_DEFINITION__*/';
+const legacyRe=/function\s+fo\s*\(\s*internal\s*\)\s*\{\s*return\s+headerSize\s*\+\s*internal\s*;?\s*\}/;
+let hadLegacy=false;
+html=html.replace(legacyRe,()=>{hadLegacy=true;return LEGACY_TOKEN;});
+
+// Elimina bare calls em TODO o HTML final, inclusive runtimes adicionados pelo pós-build.
+// O lookbehind evita propriedades como obj.fo(...), caso existam no futuro.
+const bareCallRe=/(?<![A-Za-z0-9_.$])fo\s*\(/g;
+let replaced=0;
+html=html.replace(bareCallRe,()=>{replaced++;return 'globalThis.__ISSSD_FILE_OFFSET__(';});
+
+if(hadLegacy){
+  html=html.replace(LEGACY_TOKEN,"function fo(internal){return globalThis.__ISSSD_FILE_OFFSET__(internal)}\nglobalThis.fo=globalThis.__ISSSD_FILE_OFFSET__;");
+}
+
+// Mensagem diagnóstica: se qualquer outro erro ocorrer na abertura, a próxima captura
+// mostra stack e marcador do build em vez de esconder a origem com apenas e.message.
 html=html.replace(
-  /function\s+fo\s*\(\s*internal\s*\)\s*\{\s*return\s+headerSize\s*\+\s*internal\s*;?\s*\}/,
-  `function fo(internal){return headerSize+internal}\nglobalThis.fo=fo;globalThis.__ISSSD_FILE_OFFSET__=fo;`
+  'alert("Falha ao abrir projeto: "+(e.message||e));',
+  'alert("Falha ao abrir projeto: "+(e.message||e)+"\\n\\nBuild: "+(globalThis.__ISSSD_BUILD_FIX__||"sem-marcador")+"\\n"+(e&&e.stack?e.stack:""));'
 );
 
-// ES modules recebem um binding lexical explícito quando usam fo(...).
-// Isso elimina dependência da resolução implícita de propriedades de window.
-let moduleBindings=0;
-html=html.replace(/<script\b([^>]*\btype=["']module["'][^>]*)>([\s\S]*?)<\/script>/gi,(all,attrs,body)=>{
-  if(!/\bfo\s*\(/.test(body))return all;
-  if(/\b(?:const|let|var|function)\s+fo\b/.test(body))return all;
-  moduleBindings++;
-  return `<script${attrs}>\nconst fo=globalThis.__ISSSD_FILE_OFFSET__||globalThis.fo;\n${body}</script>`;
-});
-
-// Auditoria estrutural do HTML FINAL. O build deve falhar aqui em vez de entregar
-// novamente um Editor que só quebra quando o usuário abre o .issdproj.
-const firstScript=html.match(/<script\b[^>]*>/i)?.[0]||'';
-if(!firstScript.includes(`id="${BOOT_ID}"`)&&!firstScript.includes(`id='${BOOT_ID}'`)){
-  throw new Error('O bootstrap de fo() não é o primeiro script executável do Editor.');
-}
-if(!html.includes('var fo=function(internal)'))throw new Error('Binding global lexical de fo() ausente.');
-if(!html.includes('globalThis.__ISSSD_FILE_OFFSET__=fo'))throw new Error('Helper canônico __ISSSD_FILE_OFFSET__ ausente.');
-
-const moduleFoWithoutBinding=[];
-for(const m of html.matchAll(/<script\b([^>]*\btype=["']module["'][^>]*)>([\s\S]*?)<\/script>/gi)){
-  const body=m[2]||'';
-  if(/\bfo\s*\(/.test(body)&&!/\b(?:const|let|var|function)\s+fo\b/.test(body))moduleFoWithoutBinding.push(m[1]);
-}
-if(moduleFoWithoutBinding.length)throw new Error(`Há ${moduleFoWithoutBinding.length} ES module(s) usando fo() sem binding lexical.`);
+// Auditoria do ARTEFATO FINAL. Não aceitamos nenhuma chamada bare fo(...).
+const bodyWithoutLegacy=html.replace(/function\s+fo\s*\([^)]*\)\s*\{[\s\S]*?\}/g,'');
+const leftovers=[...bodyWithoutLegacy.matchAll(/(?<![A-Za-z0-9_.$])fo\s*\(/g)];
+if(leftovers.length)throw new Error(`Build inválido: restaram ${leftovers.length} chamada(s) bare fo(...) no HTML final.`);
+if(!html.includes(`__ISSSD_BUILD_FIX__='${BUILD_FIX}'`))throw new Error('Marcador do build de correção fo ausente.');
+if(!html.includes('globalThis.__ISSSD_FILE_OFFSET__'))throw new Error('Helper canônico __ISSSD_FILE_OFFSET__ ausente.');
 
 fs.writeFileSync(htmlPath,html,'utf8');
-console.log(`ISSSD Studio: fo() protegido por bootstrap global pré-runtime; ${moduleBindings} módulo(s) receberam binding lexical explícito.`);
+console.log(`ISSSD Studio: ${BUILD_FIX}; ${replaced} chamada(s) fo(...) convertidas para helper explícito no HTML final.`);
