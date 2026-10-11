@@ -8,6 +8,7 @@ import {fileURLToPath} from 'node:url';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const patchPath=path.join(root,'scripts','patch-desired-internal-title-button.mjs');
 const src=fs.readFileSync(patchPath,'utf8');
+const bridge=fs.readFileSync(path.join(root,'editor-src','visual-bridge-overrides.mjs'),'utf8');
 const pkg=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8'));
 
 test('patch do nome interno desejado é JavaScript válido e integra o build',()=>{
@@ -21,10 +22,13 @@ test('patch do nome interno desejado é JavaScript válido e integra o build',()
  assert.ok(fo>desired,'patch-global-file-offset.mjs deve permanecer depois do patch do nome interno');
 });
 
-test('botão é instalado no campo romMetaTitleDesired',()=>{
- assert.match(src,/romMetaTitleDesired/);
- assert.match(src,/romMetaTitleDesiredImplementBtn/);
+test('botão e status ficam embutidos no helper que cria romMetaTitleDesired',()=>{
+ assert.match(src,/helperTail/);
+ assert.match(src,/helperReplacement/);
+ assert.match(src,/id=\"romMetaTitleDesiredImplementBtn\"/);
+ assert.match(src,/id=\"romMetaTitleDesiredImplementStatus\"/);
  assert.match(src,/Implementar nome desejado/);
+ assert.match(src,/if\(!html\.includes\(helperTail\)\)throw new Error/);
 });
 
 test('nome completo permanece no projeto e ROM recebe até 21 bytes',()=>{
@@ -32,6 +36,8 @@ test('nome completo permanece no projeto e ROM recebe até 21 bytes',()=>{
  assert.match(src,/window\.__ISSSD_INTERNAL_TITLE_IMPLEMENTED__=romTitle/);
  assert.match(src,/slice\(0,21\)/);
  assert.match(src,/full\.length>21\?'Implementado · ROM: 21 bytes':'Implementado'/);
+ // A estrutura canônica do projeto deve persistir explicitamente o valor completo.
+ assert.match(bridge,/__ISSSD_INTERNAL_TITLE_DESIRED__/);
 });
 
 test('implementação usa o gravador canônico já existente',()=>{
