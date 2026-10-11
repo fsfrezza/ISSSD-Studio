@@ -19,10 +19,16 @@ if(!html.includes(marker)){
  html=html.replace('</body>',runtime+'\n</body>');
 }
 
-// Sanity checks: preparation must occur before the first teamsV1 restoration.
-const prepPos=html.indexOf('if(activeRomProfile?.id==="iss-deluxe-plus")await studioAutoPreparePlusTactics();');
-const restorePos=html.indexOf('studioRestoreTeamsV1(sem.teamsV1)');
-if(prepPos<0||restorePos<0||prepPos>restorePos)throw new Error('Ordem insegura: teamsV1 ainda seria restaurado antes da individualização tática.');
+// Sanity checks: confira a ORDEM DE EXECUÇÃO dentro de studioApplyProjectWithBase.
+// Não use indexOf('studioRestoreTeamsV1(...)') globalmente: existe também a definição
+// da função muito antes deste fluxo, o que produzia falso positivo e quebrava o build.
+const applyPos=html.indexOf(apply);
+const prepPos=html.indexOf('if(activeRomProfile?.id==="iss-deluxe-plus")await studioAutoPreparePlusTactics();',applyPos);
+const restoreNeedle='restoredNamesOnly=studioRestoreTeamsV1(sem.teamsV1);';
+const restorePos=html.indexOf(restoreNeedle,applyPos);
+if(applyPos<0||prepPos<0||restorePos<0||!(applyPos<prepPos&&prepPos<restorePos)){
+ throw new Error('Ordem insegura no fluxo de abertura: esperado applyProject -> preparar 4 MiB/táticas -> restaurar teamsV1.');
+}
 if((html.match(/await studioAutoPreparePlusTactics\(\)/g)||[]).length!==1)throw new Error('Preparação tática automática deve ocorrer exatamente uma vez ao abrir projeto.');
 
 fs.writeFileSync(htmlPath,html,'utf8');
