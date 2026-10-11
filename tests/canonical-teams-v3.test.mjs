@@ -27,6 +27,16 @@ test('runtime v3 não depende de fo() e calcula file offset de forma autônoma',
  assert.doesNotMatch(runtime,/\bfo\s*\(/);
 });
 
+test('snapshot v3 salva sem depender da variável lexical teams',()=>{
+ assert.match(runtime,/function studioTeamsV3PreviousPlayer\(t,i\)/);
+ assert.match(runtime,/window\.__ISSSD_TEAMS_V1__\?\.teams\?\.\[String\(t\)\]/);
+ assert.match(runtime,/const previous=studioTeamsV3PreviousPlayer\(t,i\)\|\|\{\}/);
+ assert.match(runtime,/name:String\(nr\?\.name\|\|previous\.name\|\|\('Jogador '/);
+ assert.match(runtime,/window\.__ISSSD_TEAMS_V1__=studioTeamsV3Clone\(out\)/);
+ assert.doesNotMatch(runtime,/\bteams\?\./);
+ assert.match(patch,/Dependência lexical insegura de teams permaneceu no snapshot teamsV1 v3/);
+});
+
 test('migração elimina estruturas redundantes e decodifica attrHex em campos semânticos',()=>{
  assert.match(ensure,/const decodeAttr=hex=>/);
  assert.match(ensure,/number:b\[5\]\+1/);
