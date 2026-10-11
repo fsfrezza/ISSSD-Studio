@@ -18,17 +18,26 @@ function verifyTactic(team){
  }
 }
 
+const rank=pos=>pos===1?0:pos===2?1:pos===3?2:(pos===4||pos===5)?3:pos===6?4:9;
+function assertNaturalGroups(team){
+ const starterPos=team.players.slice(0,11).map(p=>attr(p.attrHex).pos);
+ assert.equal(starterPos[0],1,`${team.teamName}: primeiro titular deve ser GO`);
+ for(let i=2;i<starterPos.length;i++)assert.ok(rank(starterPos[i])>=rank(starterPos[i-1]),`${team.teamName}: grupos de posição fora da ordem natural em ${i+1}`);
+ assert.equal(starterPos.filter(x=>x===2).length,4,`${team.teamName}: esperado quarteto defensivo`);
+}
+
 test('Brasil, Argentina e Alemanha históricas têm 20 jogadores e táticas lossless',()=>{
- assert.equal(data.schema,'isssd-historical-national-teams-v1');
- for(const id of ['8','30','31']){const t=data.teams[id];assert.equal(t.players.length,20);t.players.forEach((p,i)=>{assert.equal(p.slot,i+1);assert.match(p.nameHex,/^[0-9A-F]{16}$/);assert.match(p.attrHex,/^[0-9A-F]{14}$/)});verifyTactic(t)}
+ assert.equal(data.schema,'isssd-historical-national-teams-v1');assert.equal(data.version,2);
+ assert.deepEqual(data.lineupConvention.starterGroups,['GO','LD','ZAG','ZAG','LE','VOL','VOL','MEI','MEI','AT','AT']);
+ for(const id of ['8','30','31']){const t=data.teams[id];assert.equal(t.players.length,20);t.players.forEach((p,i)=>{assert.equal(p.slot,i+1);assert.match(p.nameHex,/^[0-9A-F]{16}$/);assert.match(p.attrHex,/^[0-9A-F]{14}$/)});verifyTactic(t);assertNaturalGroups(t)}
 });
 
-test('Brasil traz o XI histórico e a disposição assimétrica definida',()=>{
+test('Brasil segue GO, LD, zagueiros, LE, volantes, meias e atacantes, mantendo o campo da referência',()=>{
  const t=data.teams['30'];
- assert.deepEqual(t.players.slice(0,11).map(p=>p.name),['Taffarel','R.Carlos','D.daGuia','Lucio','Cafu','R.Gaucho','Dunga','Gerson',"Pele'",'Ronaldo','Garrinch']);
- assert.deepEqual(t.players.slice(0,11).map(p=>attr(p.attrHex).shirt),[1,6,4,3,2,11,5,8,10,9,7]);
- assert.deepEqual(t.players.slice(0,11).map(p=>attr(p.attrHex).pos),[1,2,2,2,2,5,3,3,5,6,6]);
- assert.deepEqual(t.tactic.players.map(p=>[p.dx,p.dy,p.className,p.attack]),[[8,-32,'DF',true],[0,-11,'DF',false],[0,11,'DF',false],[8,32,'DF',true],[0,-32,'MC',true],[-16,-11,'MC',false],[-16,11,'MC',false],[0,32,'MC',true],[0,-16,'AT',false],[0,16,'AT',false]]);
+ assert.deepEqual(t.players.slice(0,11).map(p=>p.name),['Taffarel','Cafu','D.daGuia','Lucio','R.Carlos','Dunga','Gerson','R.Gaucho',"Pele'",'Ronaldo','Garrinch']);
+ assert.deepEqual(t.players.slice(0,11).map(p=>attr(p.attrHex).shirt),[1,2,4,3,6,5,8,11,10,9,7]);
+ assert.deepEqual(t.players.slice(0,11).map(p=>attr(p.attrHex).pos),[1,2,2,2,2,3,3,5,5,6,6]);
+ assert.deepEqual(t.tactic.players.map(p=>[p.dx,p.dy,p.className,p.attack]),[[8,-32,'DF',true],[0,-11,'DF',false],[0,11,'DF',false],[8,32,'DF',true],[-16,-11,'MC',true],[-16,11,'MC',false],[10,-30,'MC',false],[5,0,'MC',true],[-4,-5,'AT',false],[-9,30,'AT',false]]);
 });
 
 test('Argentina traz Messi e Maradona no meio e Di Maria/Batistuta na frente com skills finais conhecidos',()=>{
@@ -42,7 +51,7 @@ test('Argentina traz Messi e Maradona no meio e Di Maria/Batistuta na frente com
  assert.equal(by.Messi.pos,5);assert.equal(by.Maradona.pos,5);assert.equal(by['Di Maria'].pos,6);assert.equal(by.Batistut.pos,6);
 });
 
-test('Alemanha mantém XI histórico 4-4-2 e posições de campo explícitas',()=>{
+test('Alemanha mantém XI histórico 4-4-2 e a sequência natural dos grupos',()=>{
  const t=data.teams['8'];assert.equal(t.tactic.formationIndex,1);
  assert.deepEqual(t.players.slice(0,11).map(p=>p.name),['Neuer','Lahm','Beckenba','Kohler','Brehme','Matthaus','Kroos','Walter','Rummenig','Muller','Klose']);
  assert.deepEqual(t.tactic.players.map(p=>p.className),['DF','DF','DF','DF','MC','MC','MC','MC','AT','AT']);
