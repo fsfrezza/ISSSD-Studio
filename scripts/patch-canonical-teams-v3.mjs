@@ -42,6 +42,7 @@ function studioTeamsV3NativeDx(cls,x){const c=studioTeamsV3Class(cls),base=c==='
 function studioTeamsV3ClassBits(cls){const c=studioTeamsV3Class(cls);return c==='DF'?1:c==='MC'?2:3}
 function studioTeamsV3TeamName(t){try{return String(TEAM_NAMES?.[t]||BASE_TEAM_NAMES?.[t]||('TEAM '+t))}catch(_){return 'TEAM '+t}}
 function studioTeamsV3NameRecord(t,i){try{return readPlayerRecordFromRom(t,i,rom)}catch(_){return null}}
+function studioTeamsV3PreviousPlayer(t,i){try{return window.__ISSSD_TEAMS_V1__?.teams?.[String(t)]?.players?.[i]||null}catch(_){return null}}
 function studioTeamsV3Snapshot(){
  const out={schema:'isssd-teams-v1',version:3,teams:{}};
  if(activeRomProfile?.id!=='iss-deluxe-plus'||!rom)return out;
@@ -54,10 +55,10 @@ function studioTeamsV3Snapshot(){
   }
   const players=[];
   for(let i=0;i<20;i++){
-   const live=teams?.[t]?.players?.[i]||{};
-   const nr=studioTeamsV3NameRecord(t,i),nameHex=nr?.no!=null?studioTeamsV3Hex(rom.slice(nr.no,nr.no+8)):null;
+   const previous=studioTeamsV3PreviousPlayer(t,i)||{};
+   const nr=studioTeamsV3NameRecord(t,i),nameHex=nr?.no!=null?studioTeamsV3Hex(rom.slice(nr.no,nr.no+8)):String(previous.nameHex||'')||null;
    const attrs=studioTeamsV3DecodeAttr(rom.slice(studioTeamsV3AttrOffset(t,i),studioTeamsV3AttrOffset(t,i)+7))||{};
-   const p={slot:i+1,name:String(live.name||('Jogador '+(i+1))),nameHex,number:attrs.number||i+1,position:attrs.position||'NONE',skills:attrs.skills||{},appearance:attrs.appearance||{},tactical:null};
+   const p={slot:i+1,name:String(nr?.name||previous.name||('Jogador '+(i+1))),nameHex,number:attrs.number||i+1,position:attrs.position||'NONE',skills:attrs.skills||{},appearance:attrs.appearance||{},tactical:null};
    if(i===0)p.tactical={x:-57,y:0,className:'GO',attack:false,fixed:true};
    else if(i<=10)p.tactical=tacBySlot.get(i+1)||null;
    players.push(p);
@@ -65,6 +66,7 @@ function studioTeamsV3Snapshot(){
   const custom=!!studioCustomTeamState(t);
   out.teams[String(t)]={teamId:t,teamName:studioTeamsV3TeamName(t),formation:{index:Number(rec?.formationIndex)||0,label:String(rec?.formationLabel||''),custom},players};
  }
+ window.__ISSSD_TEAMS_V1__=studioTeamsV3Clone(out);
  return out;
 }
 function studioTeamsV3RestoreNames(state){
@@ -123,5 +125,6 @@ const newMerge='const projectPatches=studioSanitizeProjectPatches(studioMergePat
 if(html.includes(oldMerge))html=html.replace(oldMerge,newMerge);
 if(!html.includes("schema:'isssd-teams-v1',version:3"))throw new Error('teamsV1 v3 não foi instalado.');
 if(html.includes('const off=fo(rec.recordPc)'))throw new Error('Dependência lexical insegura de fo() permaneceu no runtime de persistência.');
+if(/\bteams\?\./.test(replacement))throw new Error('Dependência lexical insegura de teams permaneceu no snapshot teamsV1 v3.');
 fs.writeFileSync(htmlPath,html,'utf8');
-console.log('ISSSD Studio: teamsV1 v3 canônico instalado — jogador reúne nome, camisa, posição, skills, aparência e posição tática; espelhos Plus preservados; sem fo().');
+console.log('ISSSD Studio: teamsV1 v3 canônico instalado — jogador reúne nome, camisa, posição, skills, aparência e posição tática; sem dependências lexicais fo()/teams.');
