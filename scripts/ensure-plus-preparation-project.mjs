@@ -5,21 +5,47 @@ import {fileURLToPath} from 'node:url';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const projectPath=path.join(root,'International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj');
 const historicalPath=path.join(root,'project-data','historical-national-teams-v1.json');
+const romPath=path.join(root,'roms','International Superstar Soccer Deluxe Plus.sfc');
 if(!fs.existsSync(projectPath))throw new Error('Projeto canônico Plus não encontrado: '+projectPath);
 if(!fs.existsSync(historicalPath))throw new Error('Dados históricos de Brasil/Argentina/Alemanha não encontrados: '+historicalPath);
+if(!fs.existsSync(romPath))throw new Error('ROM-base Plus não encontrada para migração de atributos: '+romPath);
 
 const project=JSON.parse(fs.readFileSync(projectPath,'utf8'));
 const historical=JSON.parse(fs.readFileSync(historicalPath,'utf8'));
+const baseRom=fs.readFileSync(romPath);
+const baseHeader=(baseRom.length%0x8000===0x200)?0x200:0;
 if(project?.base?.profile!=='iss-deluxe-plus')throw new Error('O projeto canônico não é do perfil iss-deluxe-plus.');
 if(historical?.schema!=='isssd-historical-national-teams-v1')throw new Error('Schema histórico de seleções inválido.');
 
 const clone=v=>v==null?v:JSON.parse(JSON.stringify(v));
 const isHex=(v,n)=>new RegExp(`^[0-9A-F]{${n*2}}$`,'i').test(String(v||''));
 const POS=['NONE','GO','DF','VOL','MC','MO','AT'];
-const decodeAttr=hex=>{
- if(!isHex(hex,7))throw new Error('attrHex inválido durante migração teamsV1 v3: '+hex);
+const skillKeys=['acceleration','speed','shot','curve','balance','intelligence','dribbling','jump','energy'];
+const decodeAttrHex=hex=>{
  const b=Array.from(Buffer.from(hex,'hex'));
  return {number:b[5]+1,position:POS[(b[4]>>4)&15]||'NONE',skills:{acceleration:(b[0]>>4)+1,speed:(b[0]&15)+1,shot:(b[1]>>4)+1,curve:(b[1]&15)+1,balance:(b[2]>>4)+1,intelligence:(b[2]&15)+1,dribbling:(b[3]>>4)+1,jump:(b[3]&15)+1,energy:(b[4]&15)+1},appearance:{hair:Math.min(13,(b[6]>>4)&15),palette:b[6]&1}};
+};
+const semanticAttr=p=>{
+ if(!p||typeof p!=='object')return null;
+ const number=Number(p.number),position=String(p.position||'').toUpperCase(),hair=Number(p.appearance?.hair),palette=Number(p.appearance?.palette);
+ if(!Number.isInteger(number)||number<1||number>99||!POS.includes(position))return null;
+ if(!Number.isInteger(hair)||hair<0||hair>13||!Number.isInteger(palette)||palette<0||palette>1)return null;
+ const skills={};
+ for(const k of skillKeys){const v=Number(p.skills?.[k]);if(!Number.isInteger(v)||v<1||v>10)return null;skills[k]=v}
+ return {number,position,skills,appearance:{hair,palette}};
+};
+const canonicalAttrHex=(teamId,slot)=>{
+ const t=Number(teamId),i=Number(slot)-1;
+ if(!Number.isInteger(t)||t<0||t>=56||!Number.isInteger(i)||i<0||i>=20)throw new Error(`Equipe/slot inválido durante migração de atributos: ${teamId}/${slot}`);
+ const off=baseHeader+0x150000+(t*20+i)*7;
+ if(off<0||off+7>baseRom.length)throw new Error(`Atributos fora da ROM-base durante migração: equipe ${teamId}, slot ${slot}, offset ${off.toString(16)}`);
+ return baseRom.subarray(off,off+7).toString('hex').toUpperCase();
+};
+const decodeAttr=(p,teamId,slot)=>{
+ const semantic=semanticAttr(p);if(semantic)return semantic;
+ const hex=isHex(p?.attrHex,7)?String(p.attrHex).toUpperCase():canonicalAttrHex(teamId,slot);
+ if(!isHex(hex,7))throw new Error(`attrHex/fallback inválido durante migração teamsV1 v3: equipe ${teamId}, slot ${slot}`);
+ return decodeAttrHex(hex);
 };
 const cls=v=>{v=String(v||'').toUpperCase();return v==='DF'?'DF':(v==='MC'||v==='MF')?'MC':(v==='AT'||v==='FW')?'AT':'DF'};
 const globalX=(c,dx)=>{c=cls(c);const base=c==='DF'?-39:c==='MC'?0:39;return Math.max(-57,Math.min(57,base+(Number(dx)||0)))};
@@ -75,7 +101,7 @@ if(Number(old.version)!==3||!old.teams||typeof old.teams!=='object'){
   const oldPlayers=legacyPlayersFor(old,id);if(!Array.isArray(oldPlayers)||!oldPlayers.length)continue;
   const legacyTac=legacyTacticFor(old,id),tm=tacticalMap(legacyTac);
   const players=oldPlayers.map((p,i)=>{
-   const slot=Number(p?.slot)||i+1,attrs=decodeAttr(p.attrHex);
+   const slot=Number(p?.slot)||i+1,attrs=decodeAttr(p,teamId,slot);
    const q={slot,name:String(p?.name||('Jogador '+slot)),number:attrs.number,position:attrs.position,skills:attrs.skills,appearance:attrs.appearance,tactical:null};
    if(isHex(p?.nameHex,8))q.nameHex=String(p.nameHex).toUpperCase();
    if(slot===1)q.tactical={x:-57,y:0,className:'GO',attack:false,fixed:true};
@@ -86,7 +112,7 @@ if(Number(old.version)!==3||!old.teams||typeof old.teams!=='object'){
  }
  sem.teamsV1=v3;
  sem.historicalNationalTeamsV1={schema:'isssd-historical-national-teams-v1',version:4,appliedTeamIds:[8,30,31],source:'project-data/historical-national-teams-v1.json',lineupConvention:clone(historical.lineupConvention||null),canonicalTeamsSchema:'isssd-teams-v1@3'};
- console.log('Migração teamsV1 v3 aplicada: cada jogador agora contém camisa, posição, skills, aparência e coordenadas táticas próprias.');
+ console.log('Migração teamsV1 v3 aplicada: cada jogador agora contém camisa, posição, skills, aparência e coordenadas táticas próprias; atributos ausentes vieram da ROM-base Plus.');
 }else{
  console.log('teamsV1 v3 já presente: dados semânticos dos jogadores serão preservados.');
 }
@@ -116,7 +142,6 @@ const BRAZIL_SKILLS={
  'Neymar':[10,9,9,9,7,9,10,6,8],
  'Romario':[10,9,10,8,8,10,10,7,7]
 };
-const skillKeys=['acceleration','speed','shot','curve','balance','intelligence','dribbling','jump','energy'];
 const brazil=sem.teamsV1?.teams?.['30']||sem.teamsV1?.teams?.[30];
 const currentRevision=Number(sem.brazilSkillsRevisionV1?.version)||0;
 if(brazil&&Array.isArray(brazil.players)&&currentRevision<BRAZIL_SKILLS_REVISION_VERSION){
