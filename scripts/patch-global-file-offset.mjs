@@ -50,14 +50,10 @@ html=html.replace(/<script\b([^>]*\btype=["']module["'][^>]*)>([\s\S]*?)<\/scrip
 
 // Auditoria estrutural do HTML FINAL. O build deve falhar aqui em vez de entregar
 // novamente um Editor que só quebra quando o usuário abre o .issdproj.
-const bootPos=html.indexOf(`id="${BOOT_ID}"`);
-const firstScriptPos=html.search(/<script\b/i);
-if(bootPos<0||firstScriptPos<0||bootPos!==firstScriptPos+html.slice(firstScriptPos,bootPos).indexOf(`id="${BOOT_ID}"`)){
-  // A checagem real abaixo usa índices absolutos e permanece simples/robusta.
+const firstScript=html.match(/<script\b[^>]*>/i)?.[0]||'';
+if(!firstScript.includes(`id="${BOOT_ID}"`)&&!firstScript.includes(`id='${BOOT_ID}'`)){
+  throw new Error('O bootstrap de fo() não é o primeiro script executável do Editor.');
 }
-if(bootPos<0)throw new Error('Bootstrap global de fo() não foi instalado.');
-const firstExecutable=html.search(/<script\b/i);
-if(firstExecutable<0||bootPos<firstExecutable)throw new Error('Bootstrap global de fo() não ficou antes dos demais scripts.');
 if(!html.includes('var fo=function(internal)'))throw new Error('Binding global lexical de fo() ausente.');
 if(!html.includes('globalThis.__ISSSD_FILE_OFFSET__=fo'))throw new Error('Helper canônico __ISSSD_FILE_OFFSET__ ausente.');
 
