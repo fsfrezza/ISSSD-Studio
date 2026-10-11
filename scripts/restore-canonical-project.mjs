@@ -9,8 +9,17 @@ const output=path.join(root,'International-Superstar-Soccer-Deluxe-Plus-projeto.
 const force=process.argv.includes('--force');
 
 function gunzipJson(name){return JSON.parse(zlib.gunzipSync(Buffer.from(fs.readFileSync(path.join(recovery,name),'utf8').trim(),'base64')).toString('utf8'))}
-function countTeams(project){return Object.keys(project?.state?.semantic?.teamsV1?.names?.teams||{}).length}
-function countPlayers(project){return Object.values(project?.state?.semantic?.teamsV1?.names?.teams||{}).reduce((n,t)=>n+(t?.players?.length||0),0)}
+function teamsState(project){return project?.state?.semantic?.teamsV1||null}
+function countTeams(project){
+ const ts=teamsState(project);
+ if(Number(ts?.version)===3&&ts?.teams&&typeof ts.teams==='object')return Object.keys(ts.teams).length;
+ return Object.keys(ts?.names?.teams||{}).length;
+}
+function countPlayers(project){
+ const ts=teamsState(project);
+ if(Number(ts?.version)===3&&ts?.teams&&typeof ts.teams==='object')return Object.values(ts.teams).reduce((n,t)=>n+(t?.players?.length||0),0);
+ return Object.values(ts?.names?.teams||{}).reduce((n,t)=>n+(t?.players?.length||0),0);
+}
 function countAssets(project){return Object.keys(project?.state?.titleComposerV2?.assets||{}).length}
 function structurallyGood(project){return countTeams(project)>=54&&countPlayers(project)>=1080&&countAssets(project)>=7}
 
