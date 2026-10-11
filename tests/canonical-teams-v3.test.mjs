@@ -9,9 +9,13 @@ const patch=fs.readFileSync(path.join(root,'scripts','patch-canonical-teams-v3.m
 const ensure=fs.readFileSync(path.join(root,'scripts','ensure-plus-preparation-project.mjs'),'utf8');
 const restore=fs.readFileSync(path.join(root,'scripts','restore-canonical-project.mjs'),'utf8');
 const pkg=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8'));
-const runtime=patch.match(/const replacement=String\.raw`([\s\S]*?)`;\n\nhtml=/)?.[1]||'';
+const runtimeStart=patch.indexOf('const replacement=String.raw`');
+const runtimeBodyStart=runtimeStart<0?-1:runtimeStart+'const replacement=String.raw`'.length;
+const runtimeEnd=runtimeBodyStart<0?-1:patch.indexOf('`;',runtimeBodyStart);
+const runtime=runtimeBodyStart>=0&&runtimeEnd>runtimeBodyStart?patch.slice(runtimeBodyStart,runtimeEnd):'';
 
 test('teamsV1 v3 é a única persistência canônica de jogadores',()=>{
+ assert.ok(runtime.length>0,'runtime teamsV1 v3 não foi extraído de patch-canonical-teams-v3.mjs');
  assert.match(runtime,/schema:'isssd-teams-v1',version:3,teams:\{\}/);
  assert.match(runtime,/skills:\{acceleration:/);
  assert.match(runtime,/appearance:\{hair:/);
@@ -71,7 +75,7 @@ test('migração preserva Cafu no slot 2 e troca somente o lado com R.Carlos',()
 
 test('Brasil tem revisão explícita de skills para os 20 jogadores',()=>{
  assert.match(ensure,/const BRAZIL_SKILLS_REVISION_VERSION=1/);
- const block=ensure.match(/const BRAZIL_SKILLS=\{([\s\S]*?)\n\};/)?.[1]||'';
+ const block=ensure.match(/const BRAZIL_SKILLS=\{([\s\S]*?)\r?\n\};/)?.[1]||'';
  const names=['Taffarel','Cafu','D.daGuia','Lucio','R.Carlos','Dunga','Gerson','R.Gaucho',"Pele'",'Ronaldo','Garrinch','Gilmar','D.Santos','N.Santos','Aldair','Falcao','Rivaldo','Zico','Neymar','Romario'];
  for(const name of names)assert.ok(block.includes(`'${name}'`)||block.includes(`"${name}"`),`skill ausente: ${name}`);
  assert.match(ensure,/skillKeys=\['acceleration','speed','shot','curve','balance','intelligence','dribbling','jump','energy'\]/);
