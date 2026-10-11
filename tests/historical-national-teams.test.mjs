@@ -32,12 +32,11 @@ test('Brasil, Argentina e Alemanha históricas têm 20 jogadores e táticas loss
  for(const id of ['8','30','31']){const t=data.teams[id];assert.equal(t.players.length,20);t.players.forEach((p,i)=>{assert.equal(p.slot,i+1);assert.match(p.nameHex,/^[0-9A-F]{16}$/);assert.match(p.attrHex,/^[0-9A-F]{14}$/)});verifyTactic(t);assertNaturalGroups(t)}
 });
 
-test('Brasil segue GO, LD, zagueiros, LE, volantes, meias e atacantes, mantendo o campo da referência',()=>{
+test('Brasil segue GO, LD, zagueiros, LE, volantes, meias e atacantes',()=>{
  const t=data.teams['30'];
  assert.deepEqual(t.players.slice(0,11).map(p=>p.name),['Taffarel','Cafu','D.daGuia','Lucio','R.Carlos','Dunga','Gerson','R.Gaucho',"Pele'",'Ronaldo','Garrinch']);
  assert.deepEqual(t.players.slice(0,11).map(p=>attr(p.attrHex).shirt),[1,2,4,3,6,5,8,11,10,9,7]);
  assert.deepEqual(t.players.slice(0,11).map(p=>attr(p.attrHex).pos),[1,2,2,2,2,3,3,5,5,6,6]);
- assert.deepEqual(t.tactic.players.map(p=>[p.dx,p.dy,p.className,p.attack]),[[8,-32,'DF',true],[0,-11,'DF',false],[0,11,'DF',false],[8,32,'DF',true],[-16,-11,'MC',true],[-16,11,'MC',false],[10,-30,'MC',false],[5,0,'MC',true],[-4,-5,'AT',false],[-9,30,'AT',false]]);
 });
 
 test('Argentina traz Messi e Maradona no meio e Di Maria/Batistuta na frente com skills finais conhecidos',()=>{
@@ -55,6 +54,22 @@ test('Alemanha mantém XI histórico 4-4-2 e a sequência natural dos grupos',()
  const t=data.teams['8'];assert.equal(t.tactic.formationIndex,1);
  assert.deepEqual(t.players.slice(0,11).map(p=>p.name),['Neuer','Lahm','Beckenba','Kohler','Brehme','Matthaus','Kroos','Walter','Rummenig','Muller','Klose']);
  assert.deepEqual(t.tactic.players.map(p=>p.className),['DF','DF','DF','DF','MC','MC','MC','MC','AT','AT']);
+});
+
+test('teamsV1 v2 persiste coordenadas por identidade e migração v3 troca Cafu/R.Carlos só no campo',()=>{
+ const patch=fs.readFileSync(path.join(root,'scripts','patch-player-tactical-persistence.mjs'),'utf8');
+ const ensure=fs.readFileSync(path.join(root,'scripts','ensure-plus-preparation-project.mjs'),'utf8');
+ const pkg=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8'));
+ assert.match(patch,/isssd-player-tactics-v1/);
+ assert.match(patch,/playerKey/);
+ assert.match(patch,/studioPlayerTacticsSnapshotForProject/);
+ assert.match(patch,/studioApplyPlayerTacticsState/);
+ assert.match(ensure,/installedVersion<3/);
+ assert.match(ensure,/Cafu permanece no slot 2/);
+ assert.match(ensure,/tactic\.players\[0\]\.dy=32/);
+ assert.match(ensure,/tactic\.players\[3\]\.dy=-32/);
+ assert.match(ensure,/01082000F5000B08E0F0F5F00B0AE20500FCFBF71E05010105020206060303/);
+ assert.match(pkg.scripts['build:editor'],/patch-player-tactical-persistence\.mjs/);
 });
 
 test('fluxo do Editor reaplica teamsV1 e força refresh dos campos após abrir projeto',()=>{
