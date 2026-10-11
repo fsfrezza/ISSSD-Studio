@@ -56,20 +56,20 @@ test('Alemanha mantém XI histórico 4-4-2 e a sequência natural dos grupos',()
  assert.deepEqual(t.tactic.players.map(p=>p.className),['DF','DF','DF','DF','MC','MC','MC','MC','AT','AT']);
 });
 
-test('teamsV1 v2 persiste coordenadas por identidade e migração v3 troca Cafu/R.Carlos só no campo',()=>{
- const patch=fs.readFileSync(path.join(root,'scripts','patch-player-tactical-persistence.mjs'),'utf8');
+test('teamsV1 v3 vincula dados completos e coordenadas ao próprio jogador',()=>{
+ const patch=fs.readFileSync(path.join(root,'scripts','patch-canonical-teams-v3.mjs'),'utf8');
  const ensure=fs.readFileSync(path.join(root,'scripts','ensure-plus-preparation-project.mjs'),'utf8');
  const pkg=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8'));
- assert.match(patch,/isssd-player-tactics-v1/);
- assert.match(patch,/playerKey/);
- assert.match(patch,/studioPlayerTacticsSnapshotForProject/);
- assert.match(patch,/studioApplyPlayerTacticsState/);
- assert.match(ensure,/installedVersion<3/);
+ assert.match(patch,/version:3,teams:\{\}/);
+ assert.match(patch,/number:attrs\.number/);
+ assert.match(patch,/skills:attrs\.skills/);
+ assert.match(patch,/appearance:attrs\.appearance/);
+ assert.match(patch,/tactical:null/);
  assert.match(ensure,/Cafu permanece no slot 2/);
- assert.match(ensure,/tactic\.players\[0\]\.dy=32/);
- assert.match(ensure,/tactic\.players\[3\]\.dy=-32/);
- assert.match(ensure,/01082000F5000B08E0F0F5F00B0AE20500FCFBF71E05010105020206060303/);
- assert.match(pkg.scripts['build:editor'],/patch-player-tactical-persistence\.mjs/);
+ assert.match(ensure,/dx:8,dy:32/);
+ assert.match(ensure,/dx:8,dy:-32/);
+ assert.match(pkg.scripts['build:editor'],/patch-canonical-teams-v3\.mjs/);
+ assert.doesNotMatch(pkg.scripts['build:editor'],/patch-player-tactical-persistence/);
 });
 
 test('fluxo do Editor reaplica teamsV1 e força refresh dos campos após abrir projeto',()=>{
