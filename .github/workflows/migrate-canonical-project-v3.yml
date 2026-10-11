@@ -1,5 +1,6 @@
 name: Migrate canonical project to teamsV1 v3
 
+# One-shot retry after teamsV1 v3 regression tests and mirror handling were corrected.
 on:
   push:
     paths:
