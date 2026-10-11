@@ -65,7 +65,7 @@ test('teamsV1 v3 vincula dados completos e coordenadas ao próprio jogador',()=>
  assert.match(patch,/skills:attrs\.skills/);
  assert.match(patch,/appearance:attrs\.appearance/);
  assert.match(patch,/tactical:null/);
- assert.match(ensure,/Cafu permanece no slot 2/);
+ assert.match(ensure,/Lista permanece GO, Cafu, zagueiros, R\.Carlos/);
  assert.match(ensure,/dx:8,dy:32/);
  assert.match(ensure,/dx:8,dy:-32/);
  assert.match(pkg.scripts['build:editor'],/patch-canonical-teams-v3\.mjs/);
