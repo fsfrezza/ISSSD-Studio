@@ -1,6 +1,6 @@
 name: Migrate canonical project to teamsV1 v3
 
-# One-shot canonical refresh: teamsV1 v3 + Brazil skills revision v1.
+# One-shot canonical refresh: teamsV1 v3 + Brazil skills revision v1 (retry after test fix).
 on:
   push:
     paths:
