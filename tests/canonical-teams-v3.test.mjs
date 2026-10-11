@@ -33,7 +33,9 @@ test('snapshot v3 salva sem depender da variável lexical teams',()=>{
  assert.match(runtime,/const previous=studioTeamsV3PreviousPlayer\(t,i\)\|\|\{\}/);
  assert.match(runtime,/name:String\(nr\?\.name\|\|previous\.name\|\|\('Jogador '/);
  assert.match(runtime,/window\.__ISSSD_TEAMS_V1__=studioTeamsV3Clone\(out\)/);
- assert.doesNotMatch(runtime,/\bteams\?\./);
+ const bareTeamsOptional=/(?<![A-Za-z0-9_.$])teams\?\./;
+ assert.doesNotMatch(runtime,bareTeamsOptional);
+ assert.match(patch,/const bareTeamsOptional=\/\(\?<\!\[A-Za-z0-9_\.\$\]\)teams/);
  assert.match(patch,/Dependência lexical insegura de teams permaneceu no snapshot teamsV1 v3/);
 });
 
