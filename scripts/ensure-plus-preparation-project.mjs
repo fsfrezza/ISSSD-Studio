@@ -11,60 +11,88 @@ if(!fs.existsSync(historicalPath))throw new Error('Dados históricos de Brasil/A
 const project=JSON.parse(fs.readFileSync(projectPath,'utf8'));
 const historical=JSON.parse(fs.readFileSync(historicalPath,'utf8'));
 if(project?.base?.profile!=='iss-deluxe-plus')throw new Error('O projeto canônico não é do perfil iss-deluxe-plus.');
-if(historical?.schema!=='isssd-historical-national-teams-v1'||Number(historical.version)!==2)throw new Error('Schema histórico de seleções inválido.');
+if(historical?.schema!=='isssd-historical-national-teams-v1')throw new Error('Schema histórico de seleções inválido.');
 
-const clone=v=>JSON.parse(JSON.stringify(v));
+const clone=v=>v==null?v:JSON.parse(JSON.stringify(v));
 const isHex=(v,n)=>new RegExp(`^[0-9A-F]{${n*2}}$`,'i').test(String(v||''));
-const playerKey=p=>`namehex:${String(p?.nameHex||'').toUpperCase()}`;
+const POS=['NONE','GO','DF','VOL','MC','MO','AT'];
+const decodeAttr=hex=>{
+ if(!isHex(hex,7))throw new Error('attrHex inválido durante migração teamsV1 v3: '+hex);
+ const b=Array.from(Buffer.from(hex,'hex'));
+ return {number:b[5]+1,position:POS[(b[4]>>4)&15]||'NONE',skills:{acceleration:(b[0]>>4)+1,speed:(b[0]&15)+1,shot:(b[1]>>4)+1,curve:(b[1]&15)+1,balance:(b[2]>>4)+1,intelligence:(b[2]&15)+1,dribbling:(b[3]>>4)+1,jump:(b[3]&15)+1,energy:(b[4]&15)+1},appearance:{hair:(b[6]>>4)&15,palette:b[6]&15}};
+};
+const cls=v=>{v=String(v||'').toUpperCase();return v==='DF'?'DF':(v==='MC'||v==='MF')?'MC':(v==='AT'||v==='FW')?'AT':'DF'};
+const globalX=(c,dx)=>{c=cls(c);const base=c==='DF'?-39:c==='MC'?0:39;return Math.max(-57,Math.min(57,base+(Number(dx)||0)))};
+const tacticalFromLegacy=p=>p?{x:globalX(p.className,p.dx),y:Math.max(-39,Math.min(39,Number(p.dy)||0)),className:cls(p.className),attack:!!p.attack}:null;
+
 for(const id of ['8','30','31']){
  const t=historical.teams?.[id];
- if(!t||Number(t.teamId)!==Number(id)||!Array.isArray(t.players)||t.players.length!==20)throw new Error('Seleção histórica inválida: '+id);
- for(let i=0;i<20;i++){
-  const p=t.players[i];
-  if(Number(p?.slot)!==i+1||!isHex(p?.nameHex,8)||!isHex(p?.attrHex,7))throw new Error(`Jogador histórico inválido: equipe ${id}, slot ${i+1}`);
- }
- if(!t.tactic||Number(t.tactic.teamId)!==Number(id)||!isHex(t.tactic.rawHex,31)||!Array.isArray(t.tactic.players)||t.tactic.players.length!==10)throw new Error('Tática histórica inválida: '+id);
+ if(!t||!Array.isArray(t.players)||t.players.length!==20)throw new Error('Seleção histórica inválida: '+id);
+ for(let i=0;i<20;i++)if(Number(t.players[i]?.slot)!==i+1||!isHex(t.players[i]?.attrHex,7))throw new Error(`Jogador histórico inválido: equipe ${id}, slot ${i+1}`);
 }
 
 project.state=project.state||{};
 project.state.semantic=project.state.semantic||{};
 project.state.targetLength=0x400000;
 project.state.semantic.plusPreparationV1={schema:'isssd-plus-preparation-v1',version:1,expanded4MiB:true,bodyLength:0x400000,expansionMode:4,tacticsIndividualized:true};
-
 const sem=project.state.semantic;
-const installedVersion=(sem.historicalNationalTeamsV1?.schema==='isssd-historical-national-teams-v1')?Number(sem.historicalNationalTeamsV1?.version)||0:0;
-const teams=sem.teamsV1&&typeof sem.teamsV1==='object'?sem.teamsV1:(sem.teamsV1={});
-teams.schema='isssd-teams-v1';teams.version=2;
-teams.names=teams.names&&typeof teams.names==='object'?teams.names:{schema:'isssd-name-roster-v1',version:1,mode:'names-only',teams:{}};
-teams.names.schema='isssd-name-roster-v1';teams.names.version=1;teams.names.mode='names-only';teams.names.teams=teams.names.teams&&typeof teams.names.teams==='object'?teams.names.teams:{};
-teams.tactics=teams.tactics&&typeof teams.tactics==='object'?teams.tactics:{schema:'isssd-custom-tactics-v1',version:1,teams:{}};
-teams.tactics.schema='isssd-custom-tactics-v1';teams.tactics.version=1;teams.tactics.teams=teams.tactics.teams&&typeof teams.tactics.teams==='object'?teams.tactics.teams:{};
-teams.playerTactics=teams.playerTactics&&typeof teams.playerTactics==='object'?teams.playerTactics:{schema:'isssd-player-tactics-v1',version:1,mode:'player-bound',teams:{}};
-teams.playerTactics.schema='isssd-player-tactics-v1';teams.playerTactics.version=1;teams.playerTactics.mode='player-bound';teams.playerTactics.teams=teams.playerTactics.teams&&typeof teams.playerTactics.teams==='object'?teams.playerTactics.teams:{};
 
-if(installedVersion<3){
- for(const id of ['8','30','31']){
-  const src=historical.teams[id];
-  teams.names.teams[id]={teamId:Number(id),teamName:src.teamName,players:clone(src.players)};
-  const tactic=clone(src.tactic);
-  if(id==='30'){
-   // Pedido explícito: Cafu permanece no slot 2, mas ocupa o lado esquerdo do campo;
-   // R.Carlos permanece no slot 5 e ocupa o lado direito. A lista não muda.
-   tactic.players[0].dx=8;tactic.players[0].dy=32;
-   tactic.players[3].dx=8;tactic.players[3].dy=-32;
-   tactic.rawHex='01082000F5000B08E0F0F5F00B0AE20500FCFBF71E05010105020206060303';
-  }
-  tactic.players=tactic.players.map((p,i)=>({...p,rosterSlot:i+2,playerKey:playerKey(src.players[i+1]),name:src.players[i+1]?.name||null}));
-  teams.playerTactics.teams[id]=tactic;
-  // versões intermediárias gravavam o registro físico em tactics; remover somente
-  // essas três entradas evita que o modo de formação personalizada confunda estado físico com metadado UI.
-  delete teams.tactics.teams[id];
+function curatedLegacyTactic(id){
+ const src=clone(historical.teams?.[id]?.tactic);if(!src)return null;
+ if(String(id)==='30'){
+  // Lista permanece GO, Cafu, zagueiros, R.Carlos...; apenas os lados no campo são trocados.
+  src.players[0]={...src.players[0],dx:8,dy:32};
+  src.players[3]={...src.players[3],dx:8,dy:-32};
  }
- sem.historicalNationalTeamsV1={schema:'isssd-historical-national-teams-v1',version:3,appliedTeamIds:[8,30,31],source:'project-data/historical-national-teams-v1.json',lineupConvention:clone(historical.lineupConvention||null),playerTactics:'isssd-player-tactics-v1'};
- console.log('Migração v3 aplicada: tática passa a ser vinculada ao jogador; Cafu e R.Carlos trocados apenas no campo.');
-}else{
- console.log('Seleções históricas v3 já inicializadas: alterações posteriores do usuário serão preservadas.');
+ return src;
+}
+function legacyTacticFor(old,id){
+ if(['8','30','31'].includes(String(id)))return curatedLegacyTactic(String(id));
+ const pt=old?.playerTactics?.teams?.[String(id)]||old?.playerTactics?.teams?.[id];
+ if(pt&&Array.isArray(pt.players))return pt;
+ const t=old?.tactics?.teams?.[String(id)]||old?.tactics?.teams?.[id];
+ return t&&Array.isArray(t.players)?t:null;
+}
+function legacyPlayersFor(old,id){
+ if(['8','30','31'].includes(String(id)))return clone(historical.teams[String(id)].players);
+ return clone(old?.names?.teams?.[String(id)]?.players||old?.names?.teams?.[id]?.players||[]);
+}
+function legacyTeamName(old,id){
+ if(['8','30','31'].includes(String(id)))return historical.teams[String(id)].teamName;
+ return String(old?.names?.teams?.[String(id)]?.teamName||old?.names?.teams?.[id]?.teamName||('TEAM '+id));
+}
+function tacticalMap(legacy){
+ const map=new Map();if(!legacy||!Array.isArray(legacy.players))return map;
+ legacy.players.forEach((p,i)=>{const slot=Number(p?.rosterSlot)||i+2;if(slot>=2&&slot<=11)map.set(slot,tacticalFromLegacy(p))});return map;
 }
 
+const old=sem.teamsV1&&typeof sem.teamsV1==='object'?clone(sem.teamsV1):{};
+if(Number(old.version)!==3||!old.teams||typeof old.teams!=='object'){
+ const v3={schema:'isssd-teams-v1',version:3,teams:{}};
+ const ids=new Set(Object.keys(old?.names?.teams||{}).map(String));
+ ['8','30','31'].forEach(x=>ids.add(x));
+ for(const id of [...ids].sort((a,b)=>Number(a)-Number(b))){
+  const teamId=Number(id);if(!Number.isInteger(teamId)||teamId<0||teamId>=56)continue;
+  const oldPlayers=legacyPlayersFor(old,id);if(!Array.isArray(oldPlayers)||!oldPlayers.length)continue;
+  const legacyTac=legacyTacticFor(old,id),tm=tacticalMap(legacyTac);
+  const players=oldPlayers.map((p,i)=>{
+   const slot=Number(p?.slot)||i+1,attrs=decodeAttr(p.attrHex);
+   const q={slot,name:String(p?.name||('Jogador '+slot)),number:attrs.number,position:attrs.position,skills:attrs.skills,appearance:attrs.appearance,tactical:null};
+   if(isHex(p?.nameHex,8))q.nameHex=String(p.nameHex).toUpperCase();
+   if(slot===1)q.tactical={x:-57,y:0,className:'GO',attack:false,fixed:true};
+   else if(slot>=2&&slot<=11)q.tactical=tm.get(slot)||null;
+   return q;
+  });
+  v3.teams[id]={teamId,teamName:legacyTeamName(old,id),formation:{index:Number.isInteger(Number(legacyTac?.formationIndex))?Number(legacyTac.formationIndex):null,label:String(legacyTac?.formationLabel||historical.teams?.[id]?.formationLabel||''),custom:!!legacyTac?.custom},players};
+ }
+ sem.teamsV1=v3;
+ sem.historicalNationalTeamsV1={schema:'isssd-historical-national-teams-v1',version:4,appliedTeamIds:[8,30,31],source:'project-data/historical-national-teams-v1.json',lineupConvention:clone(historical.lineupConvention||null),canonicalTeamsSchema:'isssd-teams-v1@3'};
+ console.log('Migração teamsV1 v3 aplicada: cada jogador agora contém camisa, posição, skills, aparência e coordenadas táticas próprias.');
+}else{
+ console.log('teamsV1 v3 já presente: dados semânticos dos jogadores serão preservados.');
+}
+
+// v3 é a única fonte de equipes/jogadores. Remova estruturas antigas redundantes se restarem.
+if(sem.teamsV1){delete sem.teamsV1.names;delete sem.teamsV1.tactics;delete sem.teamsV1.playerTactics}
 fs.writeFileSync(projectPath,JSON.stringify(project,null,2)+'\n','utf8');
-console.log('Projeto Plus: 4 MiB + táticas individualizadas; X/Y persistidos por identidade do jogador.');
+console.log('Projeto Plus: 4 MiB + táticas individualizadas; teamsV1 v3 canônico e sem attrHex/táticas duplicadas.');
