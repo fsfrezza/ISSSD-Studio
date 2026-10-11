@@ -4,6 +4,7 @@ import {fileURLToPath} from 'node:url';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const projectPath=path.join(root,'International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj');
+const backupPath=path.join(root,'International-Superstar-Soccer-Deluxe-Plus-projeto.before-sparse-overrides.issdproj');
 const romPath=path.join(root,'roms','International Superstar Soccer Deluxe Plus.sfc');
 if(!fs.existsSync(projectPath))throw new Error('Projeto canônico Plus não encontrado: '+projectPath);
 if(!fs.existsSync(romPath))throw new Error('ROM-base Plus não encontrada: '+romPath);
@@ -60,7 +61,6 @@ function teamCustomFromFull(ts){
  const fs=ts?.fieldState||{},out={};
  if(fs.teamName==='custom')out.teamName=ts.teamName;
  if(fs?.formation?.index==='custom')out.formation={index:ts?.formation?.index};
- // Sem fieldState antigo, formação explícita é preservada conservadoramente.
  if(fs?.formation?.index==null&&ts?.formation?.index!=null&&src.mode!=='sparse-overrides')out.formation={index:ts.formation.index};
  return Object.keys(out).length?out:null;
 }
@@ -81,6 +81,10 @@ for(const [id,ts] of Object.entries(src.teams||{})){
  out.teams[String(teamId)]=entry;
 }
 
+if(src.mode!=='sparse-overrides'&&!fs.existsSync(backupPath)){
+ fs.copyFileSync(projectPath,backupPath);
+ console.log('Sparse overrides: backup criado em '+backupPath);
+}
 sem.teamsV1=out;
 sem.teamsOverrideModelV1={schema:'isssd-teams-override-model-v1',version:1,mode:'sparse-overrides',originalSource:'immutable-base-rom',rule:'field-present-means-override; field-absent-means-preserve-rom'};
 fs.writeFileSync(projectPath,JSON.stringify(project,null,2)+'\n','utf8');
