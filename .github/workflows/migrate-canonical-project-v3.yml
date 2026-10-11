@@ -1,0 +1,43 @@
+name: Migrate canonical project to teamsV1 v3
+
+on:
+  push:
+    paths:
+      - '.github/workflows/migrate-canonical-project-v3.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Migrate canonical project
+        run: node scripts/ensure-plus-preparation-project.mjs
+
+      - name: Regression tests
+        run: npm test
+
+      - name: Commit migrated project
+        shell: bash
+        run: |
+          if git diff --quiet -- International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj; then
+            echo 'Canonical project already uses teamsV1 v3.'
+            exit 0
+          fi
+          git config user.name 'ISSSD Studio automation'
+          git config user.email 'actions@users.noreply.github.com'
+          git add International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj
+          git commit -m 'Migrate canonical project to teamsV1 v3'
+          git push
