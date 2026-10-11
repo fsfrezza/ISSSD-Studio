@@ -19,7 +19,7 @@ const POS=['NONE','GO','DF','VOL','MC','MO','AT'];
 const decodeAttr=hex=>{
  if(!isHex(hex,7))throw new Error('attrHex inválido durante migração teamsV1 v3: '+hex);
  const b=Array.from(Buffer.from(hex,'hex'));
- return {number:b[5]+1,position:POS[(b[4]>>4)&15]||'NONE',skills:{acceleration:(b[0]>>4)+1,speed:(b[0]&15)+1,shot:(b[1]>>4)+1,curve:(b[1]&15)+1,balance:(b[2]>>4)+1,intelligence:(b[2]&15)+1,dribbling:(b[3]>>4)+1,jump:(b[3]&15)+1,energy:(b[4]&15)+1},appearance:{hair:(b[6]>>4)&15,palette:b[6]&15}};
+ return {number:b[5]+1,position:POS[(b[4]>>4)&15]||'NONE',skills:{acceleration:(b[0]>>4)+1,speed:(b[0]&15)+1,shot:(b[1]>>4)+1,curve:(b[1]&15)+1,balance:(b[2]>>4)+1,intelligence:(b[2]&15)+1,dribbling:(b[3]>>4)+1,jump:(b[3]&15)+1,energy:(b[4]&15)+1},appearance:{hair:Math.min(13,(b[6]>>4)&15),palette:b[6]&1}};
 };
 const cls=v=>{v=String(v||'').toUpperCase();return v==='DF'?'DF':(v==='MC'||v==='MF')?'MC':(v==='AT'||v==='FW')?'AT':'DF'};
 const globalX=(c,dx)=>{c=cls(c);const base=c==='DF'?-39:c==='MC'?0:39;return Math.max(-57,Math.min(57,base+(Number(dx)||0)))};
@@ -33,7 +33,8 @@ for(const id of ['8','30','31']){
 
 project.state=project.state||{};
 project.state.semantic=project.state.semantic||{};
-project.state.targetLength=0x400000;
+// A expansão é estado estrutural semântico; não persistir targetLength expandido como patch/estado físico.
+delete project.state.targetLength;
 project.state.semantic.plusPreparationV1={schema:'isssd-plus-preparation-v1',version:1,expanded4MiB:true,bodyLength:0x400000,expansionMode:4,tacticsIndividualized:true};
 const sem=project.state.semantic;
 
@@ -95,4 +96,4 @@ if(Number(old.version)!==3||!old.teams||typeof old.teams!=='object'){
 // v3 é a única fonte de equipes/jogadores. Remova estruturas antigas redundantes se restarem.
 if(sem.teamsV1){delete sem.teamsV1.names;delete sem.teamsV1.tactics;delete sem.teamsV1.playerTactics}
 fs.writeFileSync(projectPath,JSON.stringify(project,null,2)+'\n','utf8');
-console.log('Projeto Plus: 4 MiB + táticas individualizadas; teamsV1 v3 canônico e sem attrHex/táticas duplicadas.');
+console.log('Projeto Plus: preparação estrutural semântica + teamsV1 v3 canônico; sem attrHex/táticas duplicadas.');
