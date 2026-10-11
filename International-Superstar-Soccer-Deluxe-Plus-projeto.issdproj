@@ -2,8 +2,8 @@
   "format": "ISSSD_PROJECT",
   "version": 2,
   "app": "ISSSD Studio",
-  "appVersion": "6.63",
-  "createdAt": "2026-10-10T20:42:36.717Z",
+  "appVersion": "6.28-ROSTER-SONS-FIX",
+  "createdAt": "2026-10-11T01:59:31.137Z",
   "name": "International-Superstar-Soccer-Deluxe-Plus-projeto",
   "base": {
     "sha256": "ca2d73b226ab252649d4c9c35bb6b81937586d908c1d9dc9d447db7babfaad0a",
@@ -90,7 +90,7 @@
         "All Stars"
       ],
       "teamSelectLayout": "original",
-      "currentTeam": 0,
+      "currentTeam": 30,
       "currentPlayer": 0,
       "teamNameEdits": {},
       "originalGroupLabels": [
@@ -649,6 +649,36 @@
     "patchFormat": "rle-base64-v1",
     "patchesCompact": [
       {
+        "off": 30932,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BZmYh3YpBQ=="
+      },
+      {
+        "off": 30939,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AohYiA=="
+      },
+      {
+        "off": 30943,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ADc="
+      },
+      {
+        "off": 30946,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BFV5aXU3"
+      },
+      {
+        "off": 30953,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BYd5eJZWCg=="
+      },
+      {
         "off": 32704,
         "len": 1,
         "encoding": "rle-base64",
@@ -661,10 +691,16 @@
         "data": "EVRFUk5FVFNTVUNLRVJSRUxBWA=="
       },
       {
+        "off": 32727,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAw="
+      },
+      {
         "off": 32732,
         "len": 4,
         "encoding": "rle-base64",
-        "data": "A4cgeN8="
+        "data": "AzefyGA="
       },
       {
         "off": 95150,
@@ -707,6 +743,24 @@
         "len": 1,
         "encoding": "rle-base64",
         "data": "ANA="
+      },
+      {
+        "off": 174734,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BCIAgsDq"
+      },
+      {
+        "off": 176486,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BCIQgsDq"
+      },
+      {
+        "off": 203066,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BCIggsDq"
       },
       {
         "off": 248017,
@@ -863,6 +917,102 @@
         "len": 32,
         "encoding": "rle-base64",
         "data": "H+BjgBmAGWEZYRlCGUIZQxkjGSQZBBkEGeUY5RjmGMYY"
+      },
+      {
+        "off": 389456,
+        "len": 22,
+        "encoding": "rle-base64",
+        "data": "FQHgHtz23Arg4vb29goIHAjkIvYiCgU="
+      },
+      {
+        "off": 389456,
+        "len": 22,
+        "encoding": "rle-base64",
+        "data": "FQHgHtz23Arg4vb29goIHAjkIvYiCgU="
+      },
+      {
+        "off": 389480,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAU="
+      },
+      {
+        "off": 389480,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAU="
+      },
+      {
+        "off": 389482,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AgIGBg=="
+      },
+      {
+        "off": 389482,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AgIGBg=="
+      },
+      {
+        "off": 390015,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AuAg3A=="
+      },
+      {
+        "off": 390015,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AuAg3A=="
+      },
+      {
+        "off": 390019,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ANw="
+      },
+      {
+        "off": 390019,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ANw="
+      },
+      {
+        "off": 390021,
+        "len": 15,
+        "encoding": "rle-base64",
+        "data": "DuDg8vX0CggbCPwX5yIHBQ=="
+      },
+      {
+        "off": 390021,
+        "len": 15,
+        "encoding": "rle-base64",
+        "data": "DuDg8vX0CggbCPwX5yIHBQ=="
+      },
+      {
+        "off": 390038,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AgUCAg=="
+      },
+      {
+        "off": 390038,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AgUCAg=="
+      },
+      {
+        "off": 390116,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AfD1"
+      },
+      {
+        "off": 390119,
+        "len": 9,
+        "encoding": "rle-base64",
+        "data": "CAsK4gUA/Pv3Hg=="
       },
       {
         "off": 794552,
@@ -1858,307 +2008,49 @@
         "off": 1081698,
         "len": 1,
         "encoding": "rle-base64",
-        "data": "AIQ="
+        "data": "ADg="
       },
       {
-        "off": 1081700,
-        "len": 1,
+        "off": 1081701,
+        "len": 14,
         "encoding": "rle-base64",
-        "data": "AIk="
+        "data": "DSPCIhPfwDvgwKEj4cC6"
       },
       {
-        "off": 1081702,
-        "len": 1,
+        "off": 1081716,
+        "len": 28,
         "encoding": "rle-base64",
-        "data": "AP8="
+        "data": "G8ABwoLAg8SC4MAjwqLAo8KiC/vAEMKowDjEqOA="
       },
       {
-        "off": 1081712,
-        "len": 1,
+        "off": 1081745,
+        "len": 141,
         "encoding": "rle-base64",
-        "data": "AAM="
+        "data": "f2LCVcBnxFXgwDPIRMAz4MAgyFDAIODADcgRwA3gxFXA1cJVwF3gwIjCVMCUwlTASPDAA8gEwAPgwHfCQsBiwkLAcuDAcsglwCLwwCfCVMB2wlTAV+DAQshFwHIIrcIkwCbCJMAn4Jp/f67Z/6u+2U97/6uu2X9/vLz9Vf8Xv1X/DFcBIQUpif37+1+1/1U="
       },
       {
-        "off": 1081714,
+        "off": 1081887,
+        "len": 35,
+        "encoding": "rle-base64",
+        "data": "IhUFM4NV9VvC/oT1G/+1EUOK9bvu7gMDBQYHBQVTgQQNU4cH"
+      },
+      {
+        "off": 1081923,
         "len": 3,
         "encoding": "rle-base64",
-        "data": "AgffiQ=="
+        "data": "Av+/bQ=="
       },
       {
-        "off": 1081726,
-        "len": 2,
+        "off": 1081927,
+        "len": 55,
         "encoding": "rle-base64",
-        "data": "AQPz"
+        "data": "Nq0FY40t/63ts/7+///2Gf+2EXOC9rnA7+DKgOCHGxsfFR8RGwGSDZbAHwkvh/tV/xH/UfsFOMA="
       },
       {
-        "off": 1081738,
-        "len": 1,
+        "off": 1081983,
+        "len": 44,
         "encoding": "rle-base64",
-        "data": "AAg="
-      },
-      {
-        "off": 1081740,
-        "len": 3,
-        "encoding": "rle-base64",
-        "data": "AggDkA=="
-      },
-      {
-        "off": 1081744,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "AB0="
-      },
-      {
-        "off": 1081746,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "AP0="
-      },
-      {
-        "off": 1081759,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "AMA="
-      },
-      {
-        "off": 1081780,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "AII="
-      },
-      {
-        "off": 1081783,
-        "len": 6,
-        "encoding": "rle-base64",
-        "data": "BZ+a/7rvqg=="
-      },
-      {
-        "off": 1081790,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "AO8="
-      },
-      {
-        "off": 1081792,
-        "len": 8,
-        "encoding": "rle-base64",
-        "data": "B+5Vu/9VdrqZ"
-      },
-      {
-        "off": 1081801,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "AP8="
-      },
-      {
-        "off": 1081803,
-        "len": 2,
-        "encoding": "rle-base64",
-        "data": "AVW7"
-      },
-      {
-        "off": 1081806,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "AO4="
-      },
-      {
-        "off": 1081808,
-        "len": 5,
-        "encoding": "rle-base64",
-        "data": "BAMFBgcF"
-      },
-      {
-        "off": 1081817,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "AIw="
-      },
-      {
-        "off": 1081819,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "AAU="
-      },
-      {
-        "off": 1081832,
-        "len": 5,
-        "encoding": "rle-base64",
-        "data": "BIz/rb9t"
-      },
-      {
-        "off": 1081838,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "AP4="
-      },
-      {
-        "off": 1081840,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "AP8="
-      },
-      {
-        "off": 1081847,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "AII="
-      },
-      {
-        "off": 1081850,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "AMA="
-      },
-      {
-        "off": 1081857,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "AIE="
-      },
-      {
-        "off": 1081859,
-        "len": 3,
-        "encoding": "rle-base64",
-        "data": "AgBZEA=="
-      },
-      {
-        "off": 1081863,
-        "len": 2,
-        "encoding": "rle-base64",
-        "data": "AQSR"
-      },
-      {
-        "off": 1081876,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "AAA="
-      },
-      {
-        "off": 1081878,
-        "len": 3,
-        "encoding": "rle-base64",
-        "data": "AgB5wA=="
-      },
-      {
-        "off": 1081884,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "AIc="
-      },
-      {
-        "off": 1081892,
-        "len": 3,
-        "encoding": "rle-base64",
-        "data": "AgCzAA=="
-      },
-      {
-        "off": 1081896,
-        "len": 5,
-        "encoding": "rle-base64",
-        "data": "BBAdIMHA"
-      },
-      {
-        "off": 1081903,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "AIg="
-      },
-      {
-        "off": 1081905,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "AG8="
-      },
-      {
-        "off": 1081912,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "AAA="
-      },
-      {
-        "off": 1081915,
-        "len": 3,
-        "encoding": "rle-base64",
-        "data": "AucE4Q=="
-      },
-      {
-        "off": 1081948,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "AIw="
-      },
-      {
-        "off": 1081950,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "AP4="
-      },
-      {
-        "off": 1081952,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "AH8="
-      },
-      {
-        "off": 1081961,
-        "len": 5,
-        "encoding": "rle-base64",
-        "data": "BAETARHA"
-      },
-      {
-        "off": 1081967,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "AMA="
-      },
-      {
-        "off": 1081976,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "AAA="
-      },
-      {
-        "off": 1081978,
-        "len": 2,
-        "encoding": "rle-base64",
-        "data": "AQUp"
-      },
-      {
-        "off": 1082001,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "AAA="
-      },
-      {
-        "off": 1082003,
-        "len": 2,
-        "encoding": "rle-base64",
-        "data": "ARFD"
-      },
-      {
-        "off": 1082007,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "ABQ="
-      },
-      {
-        "off": 1082009,
-        "len": 5,
-        "encoding": "rle-base64",
-        "data": "BAiXEJHA"
-      },
-      {
-        "off": 1082015,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "AAg="
-      },
-      {
-        "off": 1082017,
-        "len": 2,
-        "encoding": "rle-base64",
-        "data": "AQyj"
+        "data": "K8D/ATsBNwGnCTcBocDvwcCBQBHBhPBw8BDA8AGhwO/BwIFAEcGE8HDwEMDw"
       },
       {
         "off": 1082034,
@@ -2351,6 +2243,768 @@
         "len": 29,
         "encoding": "rle-base64",
         "data": "DPZ/F384f1l/en+bf7yPAA=="
+      },
+      {
+        "off": 1377388,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAE="
+      },
+      {
+        "off": 1377388,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAE="
+      },
+      {
+        "off": 1377394,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ACk="
+      },
+      {
+        "off": 1377394,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ACk="
+      },
+      {
+        "off": 1377408,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "ASgC"
+      },
+      {
+        "off": 1377408,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "ASgC"
+      },
+      {
+        "off": 1377415,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ADg="
+      },
+      {
+        "off": 1377415,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ADg="
+      },
+      {
+        "off": 1377430,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAc="
+      },
+      {
+        "off": 1377430,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAc="
+      },
+      {
+        "off": 1377436,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AVgG"
+      },
+      {
+        "off": 1377436,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AVgG"
+      },
+      {
+        "off": 1377444,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAo="
+      },
+      {
+        "off": 1377444,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAo="
+      },
+      {
+        "off": 1377451,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAg="
+      },
+      {
+        "off": 1377451,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAg="
+      },
+      {
+        "off": 1380456,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A0QiaDg="
+      },
+      {
+        "off": 1380456,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A0QiaDg="
+      },
+      {
+        "off": 1380463,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BYhWd3YpAQ=="
+      },
+      {
+        "off": 1380463,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BJmYh3Yp"
+      },
+      {
+        "off": 1380469,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 1380484,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BZmYh3YpBQ=="
+      },
+      {
+        "off": 1380484,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BIhWd3Yp"
+      },
+      {
+        "off": 1380490,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "BhGHeXiWVgo="
+      },
+      {
+        "off": 1380491,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AohYiA=="
+      },
+      {
+        "off": 1380495,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ADc="
+      },
+      {
+        "off": 1380498,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BFV5aXU3"
+      },
+      {
+        "off": 1380502,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "ATcE"
+      },
+      {
+        "off": 1380505,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BYd5eJZWCg=="
+      },
+      {
+        "off": 1380505,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BVV5aXU3Bw=="
+      },
+      {
+        "off": 1380512,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BJmYmZlY"
+      },
+      {
+        "off": 1380512,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BJmYmZlY"
+      },
+      {
+        "off": 1380520,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BJeYl2cI"
+      },
+      {
+        "off": 1380520,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BJeYl2cI"
+      },
+      {
+        "off": 1380527,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A3h4lWc="
+      },
+      {
+        "off": 1380527,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A3h4lWc="
+      },
+      {
+        "off": 1380533,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A0QiaDg="
+      },
+      {
+        "off": 1380533,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A0QiaDg="
+      },
+      {
+        "off": 1380547,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BHdmeXco"
+      },
+      {
+        "off": 1380547,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BHdmeXco"
+      },
+      {
+        "off": 1380554,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BFZEiFgn"
+      },
+      {
+        "off": 1380554,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BFZEiFgn"
+      },
+      {
+        "off": 1380561,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A2Z3eYY="
+      },
+      {
+        "off": 1380561,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A2Z3eYY="
+      },
+      {
+        "off": 1380568,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BHeYiIdY"
+      },
+      {
+        "off": 1380568,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BHeYiIdY"
+      },
+      {
+        "off": 1380575,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A3eZeZY="
+      },
+      {
+        "off": 1380575,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A3eZeZY="
+      },
+      {
+        "off": 1380582,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A5iIaJU="
+      },
+      {
+        "off": 1380582,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A5iIaJU="
+      },
+      {
+        "off": 1380589,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BJiXeZZm"
+      },
+      {
+        "off": 1380589,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BJiXeZZm"
+      },
+      {
+        "off": 1380607,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ACg="
+      },
+      {
+        "off": 1380607,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ACg="
+      },
+      {
+        "off": 1380642,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ADY="
+      },
+      {
+        "off": 1380642,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ADY="
+      },
+      {
+        "off": 1380645,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BJmZiZZY"
+      },
+      {
+        "off": 1380645,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BJmZiZZY"
+      },
+      {
+        "off": 1380652,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AZmZ"
+      },
+      {
+        "off": 1380652,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AZmZ"
+      },
+      {
+        "off": 1380655,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AZdY"
+      },
+      {
+        "off": 1380655,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AZdY"
+      },
+      {
+        "off": 1380659,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AIk="
+      },
+      {
+        "off": 1380659,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AIk="
+      },
+      {
+        "off": 1380661,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AXiG"
+      },
+      {
+        "off": 1380661,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AXiG"
+      },
+      {
+        "off": 1380666,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AXiX"
+      },
+      {
+        "off": 1380666,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AXiX"
+      },
+      {
+        "off": 1380669,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AHg="
+      },
+      {
+        "off": 1380669,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AHg="
+      },
+      {
+        "off": 1557024,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "BnWGloaTAAA="
+      },
+      {
+        "off": 1557032,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "BnOCiY4AAAA="
+      },
+      {
+        "off": 1557040,
+        "len": 12,
+        "encoding": "rle-base64",
+        "data": "C2mGhIyGj4OCcpCJjQ=="
+      },
+      {
+        "off": 1557053,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AJM="
+      },
+      {
+        "off": 1557056,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AWmT"
+      },
+      {
+        "off": 1557059,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AIk="
+      },
+      {
+        "off": 1557061,
+        "len": 25,
+        "encoding": "rle-base64",
+        "data": "GIYAAHSClZWJgpaUcpOQkJQAAAB+go2VhpM="
+      },
+      {
+        "off": 1557088,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BHmWjo6G"
+      },
+      {
+        "off": 1557094,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AoqIdA=="
+      },
+      {
+        "off": 1557098,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AY2N"
+      },
+      {
+        "off": 1557102,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 1557104,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BXKNkJSGAA=="
+      },
+      {
+        "off": 1557112,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AHQ="
+      },
+      {
+        "off": 1557114,
+        "len": 13,
+        "encoding": "rle-base64",
+        "data": "DIqGkwAAAH2QiJWUAAA="
+      },
+      {
+        "off": 1557128,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A3qCjo4="
+      },
+      {
+        "off": 1557133,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AJM="
+      },
+      {
+        "off": 1557136,
+        "len": 8,
+        "encoding": "rle-base64",
+        "data": "B2mThoqVj4aT"
+      },
+      {
+        "off": 1557147,
+        "len": 12,
+        "encoding": "rle-base64",
+        "data": "C5iGio+UaYKNjYKEjA=="
+      },
+      {
+        "off": 1557160,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "Bnabio0AAAA="
+      },
+      {
+        "off": 1557168,
+        "len": 16,
+        "encoding": "rle-base64",
+        "data": "D3KNio+UjoKPeoaGjYaTAAA="
+      },
+      {
+        "off": 1560544,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AHs="
+      },
+      {
+        "off": 1560546,
+        "len": 22,
+        "encoding": "rle-base64",
+        "data": "FYeHgpOGjQAAaoKHlgAAa1SFgm6WioI="
+      },
+      {
+        "off": 1560569,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A3OWhIo="
+      },
+      {
+        "off": 1560576,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BXlUaoKTjQ=="
+      },
+      {
+        "off": 1560583,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AJQ="
+      },
+      {
+        "off": 1560585,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A2uWj4g="
+      },
+      {
+        "off": 1560593,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A26Gk5Q="
+      },
+      {
+        "off": 1560598,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AI8="
+      },
+      {
+        "off": 1560600,
+        "len": 15,
+        "encoding": "rle-base64",
+        "data": "DnlUboKWhImQAHeGjYZaAA=="
+      },
+      {
+        "off": 1560616,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "BnmQj4KNhZA="
+      },
+      {
+        "off": 1560624,
+        "len": 8,
+        "encoding": "rle-base64",
+        "data": "B26Ck5OKj4SJ"
+      },
+      {
+        "off": 1560633,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A26KjY4="
+      },
+      {
+        "off": 1560638,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AJM="
+      },
+      {
+        "off": 1560640,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A2tUeoI="
+      },
+      {
+        "off": 1560645,
+        "len": 11,
+        "encoding": "rle-base64",
+        "data": "CpWQlHVUeoKPlZCU"
+      },
+      {
+        "off": 1560657,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BWiNhYKKkw=="
+      },
+      {
+        "off": 1560665,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BW2CjYSCkA=="
+      },
+      {
+        "off": 1560672,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "BnmKl4KNhZA="
+      },
+      {
+        "off": 1560680,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "BgAAgYqEkAA="
+      },
+      {
+        "off": 1560689,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AHU="
+      },
+      {
+        "off": 1560691,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "ApqOgg=="
+      },
+      {
+        "off": 1560696,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "BnmQjoKTipA="
+      },
+      {
+        "off": 1560704,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "Bm2KjY2QjQA="
+      },
+      {
+        "off": 1560712,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AIE="
+      },
+      {
+        "off": 1560714,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BI+GlZWK"
+      },
+      {
+        "off": 1560720,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AneClA=="
+      },
+      {
+        "off": 1560724,
+        "len": 11,
+        "encoding": "rle-base64",
+        "data": "CoKTho15loiIhpOK"
+      },
+      {
+        "off": 1560736,
+        "len": 17,
+        "encoding": "rle-base64",
+        "data": "EHaNgpOVioSQdIKUhImGk4J5"
+      },
+      {
+        "off": 1560754,
+        "len": 12,
+        "encoding": "rle-base64",
+        "data": "C4WQj4WQAHSGlJSKAA=="
+      },
+      {
+        "off": 1560768,
+        "len": 17,
+        "encoding": "rle-base64",
+        "data": "EHSCk4KFkI+Ca4oAdIKTioJp"
+      },
+      {
+        "off": 1560786,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AJU="
+      },
+      {
+        "off": 1560788,
+        "len": 19,
+        "encoding": "rle-base64",
+        "data": "EpSVlpV0gpOVio+Gm3eGk4eWjpA="
+      },
+      {
+        "off": 1560808,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "Bmiago2CAAA="
+      },
+      {
+        "off": 1560816,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "BnqQk4qPAAA="
+      },
+      {
+        "off": 1560824,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "BnqKjoaQj4Y="
+      },
+      {
+        "off": 1560832,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BXKGjpGGlA=="
+      },
+      {
+        "off": 1560840,
+        "len": 23,
+        "encoding": "rle-base64",
+        "data": "FnmKkpaGjY6GaoKPioiIioJqk4aUkZAA"
       }
     ],
     "semantic": {
@@ -3212,106 +3866,126 @@
             },
             "8": {
               "teamId": 8,
-              "teamName": "Bélgica",
+              "teamName": "Alemanha",
               "players": [
                 {
                   "slot": 1,
-                  "name": "Courtois",
+                  "name": "Neuer",
+                  "nameHex": "7586968693000000",
                   "attrHex": "87448756190000"
                 },
                 {
                   "slot": 2,
-                  "name": "Pfaff",
-                  "attrHex": "78768868280200"
+                  "name": "Lahm",
+                  "nameHex": "7382898E00000000",
+                  "attrHex": "78768868280100"
                 },
                 {
                   "slot": 3,
-                  "name": "Kompany",
-                  "attrHex": "78979867390910"
+                  "name": "Beckenba",
+                  "nameHex": "6986848C868F8382",
+                  "attrHex": "78979867290910"
                 },
                 {
                   "slot": 4,
-                  "name": "Vertongh",
+                  "name": "Kohler",
+                  "nameHex": "7290898D86930000",
                   "attrHex": "87658768280310"
                 },
                 {
                   "slot": 5,
-                  "name": "Alderwei",
-                  "attrHex": "78788877480100"
+                  "name": "Brehme",
+                  "nameHex": "699386898E860000",
+                  "attrHex": "78788877280200"
                 },
                 {
                   "slot": 6,
-                  "name": "Gerets",
-                  "attrHex": "78778868480400"
+                  "name": "Matthaus",
+                  "nameHex": "7482959589829694",
+                  "attrHex": "78778868380400"
                 },
                 {
                   "slot": 7,
-                  "name": "Vermaele",
+                  "name": "Kroos",
+                  "nameHex": "7293909094000000",
                   "attrHex": "78779787480500"
                 },
                 {
                   "slot": 8,
-                  "name": "DeBruyne",
-                  "attrHex": "88798795490610"
+                  "name": "Walter",
+                  "nameHex": "7E828D9586930000",
+                  "attrHex": "88798795490710"
                 },
                 {
                   "slot": 9,
-                  "name": "Hazard",
-                  "attrHex": "78789887480700"
+                  "name": "Rummenig",
+                  "nameHex": "79968E8E868F8A88",
+                  "attrHex": "78789887580600"
                 },
                 {
                   "slot": 10,
-                  "name": "Witsel",
-                  "attrHex": "88678768690810"
+                  "name": "Muller",
+                  "nameHex": "74968D8D86930000",
+                  "attrHex": "88678768690A10"
                 },
                 {
                   "slot": 11,
-                  "name": "Scifo",
-                  "attrHex": "89769768680A09"
+                  "name": "Klose",
+                  "nameHex": "728D909486000000",
+                  "attrHex": "89769768680809"
                 },
                 {
                   "slot": 12,
-                  "name": "Ceuleman",
+                  "name": "Maier",
+                  "nameHex": "74828A8693000000",
                   "attrHex": "77547758180B10"
                 },
                 {
                   "slot": 13,
-                  "name": "Mertens",
+                  "name": "Vogts",
+                  "nameHex": "7D90889594000000",
                   "attrHex": "78658768290C10"
                 },
                 {
                   "slot": 14,
-                  "name": "Lukaku",
+                  "name": "Sammer",
+                  "nameHex": "7A828E8E86930000",
                   "attrHex": "67648657280D00"
                 },
                 {
                   "slot": 15,
-                  "name": "Bentek",
+                  "name": "Breitner",
+                  "nameHex": "6993868A958F8693",
                   "attrHex": "77548767270E00"
                 },
                 {
                   "slot": 16,
-                  "name": "Wilmots",
+                  "name": "Schweins",
+                  "nameHex": "7A848998868A8F94",
                   "attrHex": "87478867480F00"
                 },
                 {
                   "slot": 17,
-                  "name": "Vossen",
+                  "name": "Ballack",
+                  "nameHex": "69828D8D82848C00",
                   "attrHex": "87688768681001"
                 },
                 {
                   "slot": 18,
-                  "name": "Mpenza",
+                  "name": "Ozil",
+                  "nameHex": "769B8A8D00000000",
                   "attrHex": "67778666681100"
                 },
                 {
                   "slot": 19,
-                  "name": "Batsua",
+                  "name": "Klinsman",
+                  "nameHex": "728D8A8F948E828F",
                   "attrHex": "68587785671210"
                 },
                 {
                   "slot": 20,
-                  "name": "Degryse",
+                  "name": "Seeler",
+                  "nameHex": "7A86868D86930000",
                   "attrHex": "77468686691300"
                 }
               ]
@@ -5544,212 +6218,252 @@
             },
             "30": {
               "teamId": 30,
-              "teamName": "Islândia",
+              "teamName": "Brasil",
               "players": [
                 {
                   "slot": 1,
-                  "name": "Halldors",
-                  "attrHex": "78758667170000"
+                  "name": "Taffarel",
+                  "nameHex": "7B8287878293868D",
+                  "attrHex": "44226838170000"
                 },
                 {
                   "slot": 2,
-                  "name": "Gunnleif",
-                  "attrHex": "89657897380511"
+                  "name": "Cafu",
+                  "nameHex": "00006A8287960000",
+                  "attrHex": "88567776290111"
                 },
                 {
                   "slot": 3,
-                  "name": "Sigurdss",
+                  "name": "D.daGuia",
+                  "nameHex": "6B5485826E968A82",
                   "attrHex": "77768769270300"
                 },
                 {
                   "slot": 4,
-                  "name": "Arnason",
+                  "name": "Lucio",
+                  "nameHex": "007396848A900000",
                   "attrHex": "78758879280200"
                 },
                 {
                   "slot": 5,
-                  "name": "R.Sigurds",
-                  "attrHex": "89657697370100"
+                  "name": "R.Carlos",
+                  "nameHex": "79546A82938D9094",
+                  "attrHex": "99988776290500"
                 },
                 {
                   "slot": 6,
-                  "name": "Saevarso",
-                  "attrHex": "77478788470400"
+                  "name": "Dunga",
+                  "nameHex": "006B968F88820000",
+                  "attrHex": "88588888370400"
                 },
                 {
                   "slot": 7,
-                  "name": "Skulason",
-                  "attrHex": "88588888470700"
+                  "name": "Gerson",
+                  "nameHex": "006E869394908F00",
+                  "attrHex": "55796975370700"
                 },
                 {
                   "slot": 8,
-                  "name": "G.Sigurd",
-                  "attrHex": "78478886480800"
+                  "name": "R.Gaucho",
+                  "nameHex": "79546E8296848990",
+                  "attrHex": "87797896560A00"
                 },
                 {
                   "slot": 9,
-                  "name": "Gunnarss",
-                  "attrHex": "87688888570900"
+                  "name": "Pele'",
+                  "nameHex": "0077868D865A0000",
+                  "attrHex": "99989999580900"
                 },
                 {
                   "slot": 10,
-                  "name": "Bjarnaso",
-                  "attrHex": "99688996680A00"
+                  "name": "Ronaldo",
+                  "nameHex": "79908F828D859000",
+                  "attrHex": "99979897670800"
                 },
                 {
                   "slot": 11,
-                  "name": "Gudmunds",
-                  "attrHex": "99779998680600"
+                  "name": "Garrinch",
+                  "nameHex": "6E8293938A8F8489",
+                  "attrHex": "99787895670600"
                 },
                 {
                   "slot": 12,
-                  "name": "Finnboga",
-                  "attrHex": "67767577170B10"
+                  "name": "Gilmar",
+                  "nameHex": "006E8A8D8E829300",
+                  "attrHex": "44226838170B10"
                 },
                 {
                   "slot": 13,
-                  "name": "Bodvarss",
+                  "name": "D.Santos",
+                  "nameHex": "6B547A828F959094",
                   "attrHex": "77878669270C00"
                 },
                 {
                   "slot": 14,
-                  "name": "Sigthors",
-                  "attrHex": "68568759370D00"
+                  "name": "N.Santos",
+                  "nameHex": "75547A828F959094",
+                  "attrHex": "77667977280D00"
                 },
                 {
                   "slot": 15,
-                  "name": "Gudjohns",
-                  "attrHex": "88576786470E00"
+                  "name": "Aldair",
+                  "nameHex": "00688D85828A9300",
+                  "attrHex": "56448858270E00"
                 },
                 {
                   "slot": 16,
-                  "name": "Kjartans",
-                  "attrHex": "78577876480F00"
+                  "name": "Falcao",
+                  "nameHex": "006D828D84829000",
+                  "attrHex": "66777986480F00"
                 },
                 {
                   "slot": 17,
-                  "name": "Traustas",
-                  "attrHex": "88577775571000"
+                  "name": "Rivaldo",
+                  "nameHex": "798A97828D859000",
+                  "attrHex": "77988887581000"
                 },
                 {
                   "slot": 18,
-                  "name": "Palsson",
-                  "attrHex": "88488888581100"
+                  "name": "Zico",
+                  "nameHex": "0000818A84900000",
+                  "attrHex": "77997996581100"
                 },
                 {
                   "slot": 19,
-                  "name": "Hallfred",
-                  "attrHex": "78678776671200"
+                  "name": "Neymar",
+                  "nameHex": "0075869A8E829300",
+                  "attrHex": "98886895671200"
                 },
                 {
                   "slot": 20,
-                  "name": "Ingason",
-                  "attrHex": "87576778671300"
+                  "name": "Romario",
+                  "nameHex": "79908E82938A9000",
+                  "attrHex": "98977996661300"
                 }
               ]
             },
             "31": {
               "teamId": 31,
-              "teamName": "País de Gales",
+              "teamName": "Argentina",
               "players": [
                 {
                   "slot": 1,
-                  "name": "Hennesse",
+                  "name": "Fillol",
+                  "nameHex": "6D8A8D8D908D0000",
                   "attrHex": "66438676150000"
                 },
                 {
                   "slot": 2,
-                  "name": "Ward",
-                  "attrHex": "78658778380100"
+                  "name": "Zanetti",
+                  "nameHex": "81828F8695958A00",
+                  "attrHex": "78658778280100"
                 },
                 {
                   "slot": 3,
-                  "name": "Williams",
+                  "name": "Passarel",
+                  "nameHex": "778294948293868D",
                   "attrHex": "88658778280210"
                 },
                 {
                   "slot": 4,
-                  "name": "Chester",
+                  "name": "Ruggeri",
+                  "nameHex": "7996888886938A00",
                   "attrHex": "78557686260300"
                 },
                 {
                   "slot": 5,
-                  "name": "Davies",
+                  "name": "Olartico",
+                  "nameHex": "768D8293958A8490",
                   "attrHex": "78568787270500"
                 },
                 {
                   "slot": 6,
-                  "name": "Gunter",
+                  "name": "Maschera",
+                  "nameHex": "7482948489869382",
                   "attrHex": "89787887370414"
                 },
                 {
                   "slot": 7,
-                  "name": "Taylor",
-                  "attrHex": "88577886460700"
+                  "name": "Redondo",
+                  "nameHex": "798685908F859000",
+                  "attrHex": "88577886360700"
                 },
                 {
                   "slot": 8,
-                  "name": "Ramsey",
-                  "attrHex": "88898785480A00"
+                  "name": "Messi",
+                  "nameHex": "748694948A000000",
+                  "attrHex": "99998996580A00"
                 },
                 {
                   "slot": 9,
-                  "name": "Allen",
-                  "attrHex": "98799996470900"
+                  "name": "Maradona",
+                  "nameHex": "7482938285908F82",
+                  "attrHex": "99999997580900"
                 },
                 {
                   "slot": 10,
-                  "name": "Bale",
-                  "attrHex": "9978888768061A"
+                  "name": "Di Maria",
+                  "nameHex": "6B8A007482938A82",
+                  "attrHex": "8978788668061A"
                 },
                 {
                   "slot": 11,
-                  "name": "Giggs",
-                  "attrHex": "98779888680812"
+                  "name": "Batistut",
+                  "nameHex": "6982958A94959695",
+                  "attrHex": "78979878680812"
                 },
                 {
                   "slot": 12,
-                  "name": "Bellamy",
+                  "name": "Martinez",
+                  "nameHex": "748293958A8F869B",
                   "attrHex": "77648667160B00"
                 },
                 {
                   "slot": 13,
-                  "name": "Rush",
+                  "name": "Perfumo",
+                  "nameHex": "77869387968E9000",
                   "attrHex": "78748677260C00"
                 },
                 {
                   "slot": 14,
-                  "name": "Hartson",
+                  "name": "Ayala",
+                  "nameHex": "689A828D82000000",
                   "attrHex": "88648678270D00"
                 },
                 {
                   "slot": 15,
-                  "name": "RobsonK",
+                  "name": "Sorin",
+                  "nameHex": "7A90938A8F000000",
                   "attrHex": "87568786460E00"
                 },
                 {
                   "slot": 16,
-                  "name": "Vokes",
+                  "name": "Simeone",
+                  "nameHex": "7A8A8E86908F8600",
                   "attrHex": "88677686570F00"
                 },
                 {
                   "slot": 17,
-                  "name": "Moore",
+                  "name": "Kempes",
+                  "nameHex": "72868E9186940000",
                   "attrHex": "78678788671000"
                 },
                 {
                   "slot": 18,
-                  "name": "James",
+                  "name": "Riquelme",
+                  "nameHex": "798A9296868D8E86",
                   "attrHex": "88468686671100"
                 },
                 {
                   "slot": 19,
-                  "name": "Wilson",
+                  "name": "Caniggia",
+                  "nameHex": "6A828F8A88888A82",
                   "attrHex": "88477886671200"
                 },
                 {
                   "slot": 20,
-                  "name": "Brooks",
+                  "name": "Crespo",
+                  "nameHex": "6A93869491900000",
                   "attrHex": "88578787681300"
                 }
               ]
@@ -8092,7 +8806,248 @@
           "schema": "isssd-custom-tactics-v1",
           "version": 2,
           "mode": "overrides-only",
-          "teams": {}
+          "teams": {
+            "8": {
+              "teamId": 8,
+              "formationIndex": 1,
+              "formationLabel": "4-4-2",
+              "rawHex": "01E01EDCF6DC0AE0E2F6F6F60A081C08E422F6220A05010105020206060303",
+              "players": [
+                {
+                  "index": 0,
+                  "dx": -32,
+                  "dy": 30,
+                  "className": "DF",
+                  "attack": true
+                },
+                {
+                  "index": 1,
+                  "dx": -36,
+                  "dy": -10,
+                  "className": "DF",
+                  "attack": false
+                },
+                {
+                  "index": 2,
+                  "dx": -36,
+                  "dy": 10,
+                  "className": "DF",
+                  "attack": false
+                },
+                {
+                  "index": 3,
+                  "dx": -32,
+                  "dy": -30,
+                  "className": "DF",
+                  "attack": true
+                },
+                {
+                  "index": 4,
+                  "dx": -10,
+                  "dy": -10,
+                  "className": "MC",
+                  "attack": false
+                },
+                {
+                  "index": 5,
+                  "dx": -10,
+                  "dy": 10,
+                  "className": "MC",
+                  "attack": false
+                },
+                {
+                  "index": 6,
+                  "dx": 8,
+                  "dy": 28,
+                  "className": "MC",
+                  "attack": true
+                },
+                {
+                  "index": 7,
+                  "dx": 8,
+                  "dy": -28,
+                  "className": "MC",
+                  "attack": true
+                },
+                {
+                  "index": 8,
+                  "dx": 34,
+                  "dy": -10,
+                  "className": "AT",
+                  "attack": false
+                },
+                {
+                  "index": 9,
+                  "dx": 34,
+                  "dy": 10,
+                  "className": "AT",
+                  "attack": false
+                }
+              ],
+              "custom": false,
+              "customState": null
+            },
+            "30": {
+              "teamId": 30,
+              "formationIndex": 1,
+              "formationLabel": "4-4-2",
+              "rawHex": "0108E000F5000B0820F0F5F00B0AE20500FCFBF71E05010105060202060303",
+              "players": [
+                {
+                  "index": 0,
+                  "dx": 8,
+                  "dy": -32,
+                  "className": "DF",
+                  "attack": true
+                },
+                {
+                  "index": 1,
+                  "dx": 0,
+                  "dy": -11,
+                  "className": "DF",
+                  "attack": false
+                },
+                {
+                  "index": 2,
+                  "dx": 0,
+                  "dy": 11,
+                  "className": "DF",
+                  "attack": false
+                },
+                {
+                  "index": 3,
+                  "dx": 8,
+                  "dy": 32,
+                  "className": "DF",
+                  "attack": true
+                },
+                {
+                  "index": 4,
+                  "dx": -16,
+                  "dy": -11,
+                  "className": "MC",
+                  "attack": true
+                },
+                {
+                  "index": 5,
+                  "dx": -16,
+                  "dy": 11,
+                  "className": "MC",
+                  "attack": false
+                },
+                {
+                  "index": 6,
+                  "dx": 10,
+                  "dy": -30,
+                  "className": "MC",
+                  "attack": false
+                },
+                {
+                  "index": 7,
+                  "dx": 5,
+                  "dy": 0,
+                  "className": "MC",
+                  "attack": true
+                },
+                {
+                  "index": 8,
+                  "dx": -4,
+                  "dy": -5,
+                  "className": "AT",
+                  "attack": false
+                },
+                {
+                  "index": 9,
+                  "dx": -9,
+                  "dy": 30,
+                  "className": "AT",
+                  "attack": false
+                }
+              ],
+              "custom": false,
+              "customState": null
+            },
+            "31": {
+              "teamId": 31,
+              "formationIndex": 1,
+              "formationLabel": "4-4-2",
+              "rawHex": "01E020DCF5DC0BE0E0F2F5F40A081B08FC17E7220705010105020206060303",
+              "players": [
+                {
+                  "index": 0,
+                  "dx": -32,
+                  "dy": 32,
+                  "className": "DF",
+                  "attack": true
+                },
+                {
+                  "index": 1,
+                  "dx": -36,
+                  "dy": -11,
+                  "className": "DF",
+                  "attack": false
+                },
+                {
+                  "index": 2,
+                  "dx": -36,
+                  "dy": 11,
+                  "className": "DF",
+                  "attack": false
+                },
+                {
+                  "index": 3,
+                  "dx": -32,
+                  "dy": -32,
+                  "className": "DF",
+                  "attack": true
+                },
+                {
+                  "index": 4,
+                  "dx": -14,
+                  "dy": -11,
+                  "className": "MC",
+                  "attack": false
+                },
+                {
+                  "index": 5,
+                  "dx": -12,
+                  "dy": 10,
+                  "className": "MC",
+                  "attack": false
+                },
+                {
+                  "index": 6,
+                  "dx": 8,
+                  "dy": 27,
+                  "className": "MC",
+                  "attack": true
+                },
+                {
+                  "index": 7,
+                  "dx": 8,
+                  "dy": -4,
+                  "className": "MC",
+                  "attack": true
+                },
+                {
+                  "index": 8,
+                  "dx": 23,
+                  "dy": -25,
+                  "className": "AT",
+                  "attack": false
+                },
+                {
+                  "index": 9,
+                  "dx": 34,
+                  "dy": 7,
+                  "className": "AT",
+                  "attack": false
+                }
+              ],
+              "custom": false,
+              "customState": null
+            }
+          }
         }
       },
       "plusGroups": {
@@ -8538,6 +9493,14 @@
       "titleComposerV2": {
         "storedIn": "state.titleComposerV2",
         "embeddedAssets": true
+      },
+      "plusPreparationV1": {
+        "schema": "isssd-plus-preparation-v1",
+        "version": 1,
+        "expanded4MiB": true,
+        "bodyLength": 4194304,
+        "expansionMode": 4,
+        "tacticsIndividualized": true
       }
     }
   },
@@ -8553,6 +9516,5 @@
     "Textos: rascunhos não são persistidos sem Implementar no projeto; faixas de texto direto não são gravadas como patches binários no .issdproj. A aplicação na ROM é independente.",
     "Patches derivados do runtime GOSPEL-GOL não são persistidos; são regenerados deterministicamente ao Salvar ROM.",
     "ATENÇÃO: os rótulos gráficos do menu principal estão preservados semanticamente no projeto, mas o asset gráfico do menu ainda não possui escrita segura na ROM."
-  ],
-  "savedAt": "2026-10-10T20:45:03.639Z"
+  ]
 }
