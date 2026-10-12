@@ -15,11 +15,14 @@ test('Visão Geral mínima integra o build e é JavaScript válido',()=>{
  assert.match(String(pkg.scripts['build:editor']||''),/patch-overview-minimal\.mjs/);
 });
 
-test('Visão Geral preserva somente fluxo e título interno',()=>{
+test('Visão Geral mostra somente fluxo e título sem remover nós exigidos pelo runtime',()=>{
  assert.match(src,/page-dashboard/);
  assert.match(src,/operationalDashboard/);
  assert.match(src,/dashboardBody/);
  assert.match(src,/dashboardInternalTitleCard/);
- assert.match(src,/dashboardEmpty.*remove/);
- assert.match(src,/if\(!isHead&&!hasFlow&&!hasBody\)child\.remove\(\)/);
+ assert.match(src,/hide\(document\.getElementById\('dashboardEmpty'\)\)/);
+ assert.match(src,/if\(child===branch\)show\(child\);else hide\(child\)/);
+ assert.match(src,/if\(isHead\|\|hasFlow\|\|hasBody\)show\(child\);else hide\(child\)/);
+ assert.match(src,/mChanges, diffCountBadge e diffOffsets/);
+ assert.doesNotMatch(src,/\.remove\(\)/);
 });
