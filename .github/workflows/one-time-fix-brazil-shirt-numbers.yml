@@ -43,7 +43,9 @@ jobs:
         shell: bash
         run: |
           node <<'NODE'
-          const d=require('./International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj');
+          const fs=require('fs');
+          const path='International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj';
+          const d=JSON.parse(fs.readFileSync(path,'utf8'));
           const ps=d.state.semantic.teamsV1.teams['30'].players;
           const n=s=>ps.find(p=>Number(p.slot)===s)?.custom?.number;
           if(n(2)!==2||n(5)!==6) throw new Error(`Falha de verificação: Cafu=${n(2)} R.Carlos=${n(5)}`);
