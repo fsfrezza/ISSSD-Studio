@@ -57,8 +57,8 @@ if(/(^|>)\s*window\.__ISSSD_MAIN_MENU_VERTICAL_OFFSET__=1;\s*(<|$)/m.test(tailWi
   throw new Error('Normalização HTML: JavaScript órfão de offset ainda está fora de <script>.');
 }
 if(/Manual técnico\s*(?:\\n\s*)+/i.test(html)){
-  throw new Error('Normalização HTML: escapes literais \\n ainda visíveis após “Manual técnico”.');
+  throw new Error('Normalização HTML: escapes literais de newline ainda visíveis após “Manual técnico”.');
 }
 
 fs.writeFileSync(htmlPath,html,'utf8');
-console.log('ISSSD Studio: HTML legado normalizado — conteúdo pós-</html> movido para <body>, JavaScript órfão encapsulado e escapes \\n visíveis removidos.');
+console.log('ISSSD Studio: HTML legado normalizado — conteúdo pós-</html> movido para <body>, JavaScript órfão encapsulado e escapes literais de newline visíveis removidos.');
