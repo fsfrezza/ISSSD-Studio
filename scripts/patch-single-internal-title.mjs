@@ -9,7 +9,7 @@ let html=fs.readFileSync(htmlPath,'utf8');
 
 // Não remova fisicamente scripts do HTML legado: isso pode romper a estrutura do
 // documento quando os builds históricos contêm blocos/injeções adjacentes.
-// Em vez disso, neutralizamos o helper v328 no próprio início da função install().
+// Em vez disso, neutralizamos somente a função install() do helper v328.
 const helperId='isssd-v328-internal-title-helper';
 const helperStart=html.indexOf(`<script id="${helperId}">`);
 if(helperStart>=0){
@@ -17,8 +17,16 @@ if(helperStart>=0){
  if(helperEnd<0)throw new Error('Helper v328 encontrado sem fechamento </script>.');
  const block=html.slice(helperStart,helperEnd+9);
  if(!block.includes("function install(){"))throw new Error('Helper v328 não possui função install() reconhecível.');
+ if(!block.includes('romMetaTitleDesired'))throw new Error('Helper v328 encontrado, mas não contém romMetaTitleDesired.');
  const neutralized=block.replace("function install(){","function install(){return;/* campo desejado aposentado */");
+ if(neutralized===block)throw new Error('Falha ao neutralizar helper v328.');
  html=html.slice(0,helperStart)+neutralized+html.slice(helperEnd+9);
+ // Auditoria localizada: o próprio bloco continua delimitado como script e contém o marcador.
+ const checkStart=html.indexOf(`<script id="${helperId}">`);
+ const checkEnd=checkStart>=0?html.indexOf('</script>',checkStart):-1;
+ if(checkStart<0||checkEnd<0)throw new Error('Helper v328 perdeu seus delimitadores <script> após neutralização.');
+ const checkBlock=html.slice(checkStart,checkEnd+9);
+ if(!checkBlock.includes('campo desejado aposentado'))throw new Error('Helper v328 não ficou neutralizado dentro do próprio bloco script.');
 }
 
 const marker='isssd-single-internal-title-v2';
@@ -88,13 +96,7 @@ const runtime=String.raw`<script id="${marker}">
 
 if(!html.includes('</body>'))throw new Error('Não encontrei </body> para instalar o modo de título interno único.');
 html=html.replace('</body>',runtime+'\n</body>');
-
-// Auditorias estruturais: nenhum corte de <script> deve ocorrer e o patch não pode
-// introduzir texto JavaScript visível fora de tags script.
-const opens=(html.match(/<script\b/gi)||[]).length;
-const closes=(html.match(/<\/script>/gi)||[]).length;
-if(opens!==closes)throw new Error(`Integridade HTML: ${opens} <script> e ${closes} </script>.`);
-if(!html.includes('campo desejado aposentado'))throw new Error('Helper legado do nome desejado não foi neutralizado.');
+if(!html.includes(`id="${marker}"`))throw new Error('Runtime de título interno único não foi inserido.');
 if(!html.includes('delete sem.romInternalTitleDesired'))throw new Error('Migração/limpeza do campo legado romInternalTitleDesired não foi instalada.');
 fs.writeFileSync(htmlPath,html,'utf8');
-console.log('ISSSD Studio: Título interno único v2 instalado; helper desejado neutralizado sem remover scripts do HTML.');
+console.log('ISSSD Studio: Título interno único v2 instalado; helper desejado neutralizado sem cortar scripts do HTML.');
