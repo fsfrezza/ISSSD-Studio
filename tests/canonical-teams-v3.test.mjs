@@ -73,12 +73,15 @@ test('migração preserva Cafu no slot 2 e troca somente o lado com R.Carlos',()
  assert.match(ensure,/src\.players\[3\]=\{\.\.\.src\.players\[3\],dx:8,dy:-32\}/);
 });
 
-test('Brasil tem revisão explícita de skills para os 20 jogadores',()=>{
- assert.match(ensure,/const BRAZIL_SKILLS_REVISION_VERSION=1/);
- const block=ensure.match(/const BRAZIL_SKILLS=\{([\s\S]*?)\r?\n\};/)?.[1]||'';
- const names=['Taffarel','Cafu','D.daGuia','Lucio','R.Carlos','Dunga','Gerson','R.Gaucho',"Pele'",'Ronaldo','Garrinch','Gilmar','D.Santos','N.Santos','Aldair','Falcao','Rivaldo','Zico','Neymar','Romario'];
- for(const name of names)assert.ok(block.includes(`'${name}'`)||block.includes(`"${name}"`),`skill ausente: ${name}`);
- assert.match(ensure,/skillKeys=\['acceleration','speed','shot','curve','balance','intelligence','dribbling','jump','energy'\]/);
- assert.match(ensure,/p\.skills=Object\.fromEntries/);
+test('Brasil tem revisão explícita de skills para os 20 jogadores por identidade',()=>{
+ assert.match(ensure,/const BRAZIL_SKILLS_REVISION_VERSION=2/);
+ assert.match(ensure,/const BRAZIL_SKILLS_BY_BASE_SLOT=\[/);
+ const block=ensure.match(/const BRAZIL_SKILLS_BY_BASE_SLOT=\[([\s\S]*?)\r?\n\];/)?.[1]||'';
+ const rows=(block.match(/\[[0-9,]+\]/g)||[]);
+ assert.equal(rows.length,20);
+ assert.match(ensure,/function brazilBaseSlot\(p\)/);
+ assert.match(ensure,/p\.playerId=`30:\$\{baseSlot\}`;p\.baseSlot=baseSlot/);
+ assert.match(ensure,/p\.custom\.skills=Object\.fromEntries/);
+ assert.match(ensure,/identityModel:'player-id-v1'/);
  assert.match(ensure,/schema:'isssd-brazil-skills-v1'/);
 });
