@@ -9,9 +9,15 @@ const patch=fs.readFileSync(path.join(root,'scripts','patch-player-identity-v1.m
 const swap=fs.readFileSync(path.join(root,'scripts','fix-lineup-swap.mjs'),'utf8');
 const pkg=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8'));
 
-test('player-id-v1 integra o build após sparse/baseline e antes dos patches visuais',()=>{
+test('player-id-v1 integra o build após baseline e antes do modelo de posição e patches visuais',()=>{
   const cmd=pkg.scripts['build:editor'];
-  assert.match(cmd,/patch-immutable-player-attr-baseline\.mjs && node scripts\/patch-player-identity-v1\.mjs && node scripts\/patch-single-internal-title\.mjs/);
+  const baseline=cmd.indexOf('patch-immutable-player-attr-baseline.mjs');
+  const identity=cmd.indexOf('patch-player-identity-v1.mjs');
+  const positions=cmd.indexOf('patch-player-position-model.mjs');
+  const title=cmd.indexOf('patch-single-internal-title.mjs');
+  assert.ok(baseline>=0&&identity>baseline,'player-id deve rodar depois do baseline imutável');
+  assert.ok(positions>identity,'modelo de posição deve rodar depois de player-id');
+  assert.ok(title>positions,'patches visuais devem rodar depois do modelo de posição');
 });
 
 test('snapshot salva identidade estável separada do slot atual',()=>{
