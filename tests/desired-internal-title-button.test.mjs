@@ -22,13 +22,14 @@ test('patch do nome interno desejado é JavaScript válido e integra o build',()
  assert.ok(fo>desired,'patch-global-file-offset.mjs deve permanecer depois do patch do nome interno');
 });
 
-test('botão e status ficam embutidos no helper que cria romMetaTitleDesired',()=>{
- assert.match(src,/helperTail/);
- assert.match(src,/helperReplacement/);
+test('botão e status nascem dentro do helper que cria romMetaTitleDesired',()=>{
+ assert.match(src,/isssd-v328-internal-title-helper/);
+ assert.match(src,/const helperRe=/);
+ assert.match(src,/romMetaTitleDesiredWrap/);
  assert.match(src,/id=\"romMetaTitleDesiredImplementBtn\"/);
  assert.match(src,/id=\"romMetaTitleDesiredImplementStatus\"/);
  assert.match(src,/Implementar nome desejado/);
- assert.match(src,/if\(!html\.includes\(helperTail\)\)throw new Error/);
+ assert.match(src,/html=html\.replace\(helperRe,helper\)/);
 });
 
 test('nome completo permanece no projeto e ROM recebe até 21 bytes',()=>{
@@ -36,7 +37,6 @@ test('nome completo permanece no projeto e ROM recebe até 21 bytes',()=>{
  assert.match(src,/window\.__ISSSD_INTERNAL_TITLE_IMPLEMENTED__=romTitle/);
  assert.match(src,/slice\(0,21\)/);
  assert.match(src,/full\.length>21\?'Implementado · ROM: 21 bytes':'Implementado'/);
- // A estrutura canônica do projeto deve persistir explicitamente o valor completo.
  assert.match(bridge,/__ISSSD_INTERNAL_TITLE_DESIRED__/);
 });
 
