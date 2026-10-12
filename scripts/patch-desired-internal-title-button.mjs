@@ -10,13 +10,36 @@ let html=fs.readFileSync(htmlPath,'utf8');
 const marker='isssd-desired-internal-title-button';
 html=html.replace(new RegExp(`<script id=["']${marker}["'][^>]*>[\\s\\S]*?<\\/script>\\s*`,'g'),'');
 
-// O campo romMetaTitleDesired é criado dinamicamente pelo helper v328.
-// Injeta os controles diretamente no HTML que esse helper materializa,
-// para que o botão exista deterministicamente sempre que o campo existir.
-const helperTail='<div class="subtle" style="margin-top:4px">O cabeçalho SNES possui 21 bytes fixos. Este campo preserva o nome completo no projeto; o campo “Título interno” acima é o valor realmente gravável no cabeçalho da ROM.</div>\';card.querySelector(\'.rommeta-grid\')?.appendChild(wrap);';
-const helperReplacement='<div id="romMetaTitleDesiredImplementRow" style="display:flex;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap"><button type="button" class="btn" id="romMetaTitleDesiredImplementBtn">Implementar nome desejado</button><span class="badge" id="romMetaTitleDesiredImplementStatus">Não implementado</span></div><div class="subtle" style="margin-top:8px">O cabeçalho SNES possui 21 bytes fixos. Este campo preserva o nome completo no projeto; o campo “Título interno” acima é o valor realmente gravável no cabeçalho da ROM.</div>\';card.querySelector(\'.rommeta-grid\')?.appendChild(wrap);';
-if(!html.includes(helperTail))throw new Error('Não encontrei o helper v328 que cria romMetaTitleDesired para inserir o botão de forma determinística.');
-html=html.replace(helperTail,helperReplacement);
+// Substitui o helper inteiro que cria o campo. Assim campo, botão e status nascem juntos.
+const helperRe=/<script\b(?=[^>]*\bid=["']isssd-v328-internal-title-helper["'])[^>]*>[\s\S]*?<\/script>/i;
+if(!helperRe.test(html))throw new Error('Não encontrei o helper #isssd-v328-internal-title-helper no HTML final.');
+const helper=String.raw`<script id="isssd-v328-internal-title-helper">
+(()=>{
+ function install(){
+  const card=document.getElementById('dashboardInternalTitleCard');
+  if(!card)return false;
+  let wrap=document.getElementById('romMetaTitleDesiredWrap');
+  if(!wrap){
+   wrap=document.createElement('div');
+   wrap.id='romMetaTitleDesiredWrap';
+   wrap.className='rommeta-field';
+   wrap.style='grid-column:span 2;margin-top:10px';
+   wrap.innerHTML='<label>Nome interno desejado no projeto</label><input autocomplete="off" id="romMetaTitleDesired" type="text" value="INTERNATIONAL SUPERSTARSUCKER DELUXO"><div id="romMetaTitleDesiredImplementRow" style="display:flex;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap"><button type="button" class="btn" id="romMetaTitleDesiredImplementBtn">Implementar nome desejado</button><span class="badge" id="romMetaTitleDesiredImplementStatus">Não implementado</span></div><div class="subtle" style="margin-top:8px">O cabeçalho SNES possui 21 bytes fixos. Este campo preserva o nome completo no projeto; o campo “Título interno” acima é o valor realmente gravável no cabeçalho da ROM.</div>';
+   card.querySelector('.rommeta-grid')?.appendChild(wrap);
+  }
+  const i=document.getElementById('romMetaTitleDesired');
+  if(!i)return false;
+  window.__ISSSD_INTERNAL_TITLE_DESIRED__=window.__ISSSD_INTERNAL_TITLE_DESIRED__||i.value;
+  i.value=window.__ISSSD_INTERNAL_TITLE_DESIRED__;
+  i.oninput=()=>window.__ISSSD_INTERNAL_TITLE_DESIRED__=i.value;
+  return true;
+ }
+ function boot(){if(install())return;let tries=0;const t=setInterval(()=>{tries++;if(install()||tries>80)clearInterval(t)},100)}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+ window.addEventListener('load',boot,{once:true});
+})();
+</script>`;
+html=html.replace(helperRe,helper);
 
 const runtime=String.raw`<script id="${marker}">
 (function(){
@@ -57,8 +80,8 @@ const runtime=String.raw`<script id="${marker}">
 
 if(!html.includes('</body>'))throw new Error('Não encontrei </body> para instalar handler do nome interno desejado.');
 html=html.replace('</body>',runtime+'\n</body>');
-if(!html.includes('id="romMetaTitleDesiredImplementBtn"'))throw new Error('Botão do nome interno desejado não ficou embutido no helper visual.');
-if(!html.includes('id="romMetaTitleDesiredImplementStatus"'))throw new Error('Status do nome interno desejado não ficou embutido no helper visual.');
+if(!html.includes('id="romMetaTitleDesiredImplementBtn"'))throw new Error('Botão do nome interno desejado não ficou dentro do helper final.');
+if(!html.includes('id="romMetaTitleDesiredImplementStatus"'))throw new Error('Status do nome interno desejado não ficou dentro do helper final.');
 if(!html.includes("__ISSSD_ROM_META_WRITE_TITLE__?.(romTitle,'Nome interno desejado do projeto')"))throw new Error('Botão do nome desejado não usa o gravador canônico de título interno.');
 fs.writeFileSync(htmlPath,html,'utf8');
-console.log('ISSSD Studio: botão “Implementar nome desejado” embutido no próprio campo; nome completo fica no projeto e até 21 bytes são gravados na ROM.');
+console.log('ISSSD Studio: campo “Nome interno desejado” recriado com botão “Implementar nome desejado” e status no próprio helper visual.');
