@@ -16918,7 +16918,10 @@
                   "className": "DF",
                   "attack": true
                 },
-                "nameHex": "00006A8287960000"
+                "nameHex": "00006A8287960000",
+                "custom": {
+                  "number": 2
+                }
               },
               {
                 "slot": 3,
@@ -17002,7 +17005,10 @@
                   "className": "DF",
                   "attack": true
                 },
-                "nameHex": "79546A82938D9094"
+                "nameHex": "79546A82938D9094",
+                "custom": {
+                  "number": 6
+                }
               },
               {
                 "slot": 6,
