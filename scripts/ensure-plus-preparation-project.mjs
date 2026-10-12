@@ -117,43 +117,53 @@ if(Number(old.version)!==3||!old.teams||typeof old.teams!=='object'){
  console.log('teamsV1 v3 já presente: dados semânticos dos jogadores serão preservados.');
 }
 
-// Revisão canônica de skills do Brasil. Altera somente skills; camisa, posição,
-// aparência, ordem e coordenadas táticas permanecem exatamente como estão no projeto.
-const BRAZIL_SKILLS_REVISION_VERSION=1;
-const BRAZIL_SKILLS={
- 'Taffarel':[5,5,3,3,7,9,4,9,8],
- 'Cafu':[9,9,6,7,8,8,8,7,10],
- 'D.daGuia':[8,8,8,7,9,8,7,10,8],
- 'Lucio':[8,9,8,6,9,9,8,10,9],
- 'R.Carlos':[10,10,10,9,9,8,8,7,10],
- 'Dunga':[9,9,6,9,9,9,9,9,8],
- 'Gerson':[6,6,8,10,7,10,8,6,8],
- 'R.Gaucho':[9,8,8,10,8,9,10,7,7],
- "Pele'":[10,10,10,9,10,10,10,10,9],
- 'Ronaldo':[10,10,10,8,10,9,10,8,8],
- 'Garrinch':[10,10,8,9,8,9,10,6,8],
- 'Gilmar':[5,5,3,3,7,9,4,9,8],
- 'D.Santos':[8,8,9,8,9,7,7,10,8],
- 'N.Santos':[8,8,7,7,8,10,8,8,9],
- 'Aldair':[6,7,5,5,9,9,6,9,8],
- 'Falcao':[7,7,8,8,8,10,9,7,9],
- 'Rivaldo':[8,8,10,9,9,9,9,8,9],
- 'Zico':[8,8,10,10,8,10,10,7,9],
- 'Neymar':[10,9,9,9,7,9,10,6,8],
- 'Romario':[10,9,10,8,8,10,10,7,7]
-};
+// Revisão canônica de skills do Brasil. No formato sparse, a identidade do jogador
+// é playerId/baseSlot; slot é apenas a ordem atual da escalação e nunca identifica atributos.
+const BRAZIL_SKILLS_REVISION_VERSION=2;
+const BRAZIL_SKILLS_BY_BASE_SLOT=[
+ null,
+ [5,5,3,3,7,9,4,9,8],
+ [9,9,6,7,8,8,8,7,10],
+ [8,8,8,7,9,8,7,10,8],
+ [8,9,8,6,9,9,8,10,9],
+ [10,10,10,9,9,8,8,7,10],
+ [9,9,6,9,9,9,9,9,8],
+ [6,6,8,10,7,10,8,6,8],
+ [9,8,8,10,8,9,10,7,7],
+ [10,10,10,9,10,10,10,10,9],
+ [10,10,10,8,10,9,10,8,8],
+ [10,10,8,9,8,9,10,6,8],
+ [5,5,3,3,7,9,4,9,8],
+ [8,8,9,8,9,7,7,10,8],
+ [8,8,7,7,8,10,8,8,9],
+ [6,7,5,5,9,9,6,9,8],
+ [7,7,8,8,8,10,9,7,9],
+ [8,8,10,9,9,9,9,8,9],
+ [8,8,10,10,8,10,10,7,9],
+ [10,9,9,9,7,9,10,6,8],
+ [10,9,10,8,8,10,10,7,7]
+];
+function brazilBaseSlot(p){
+ const direct=Number(p?.baseSlot);if(Number.isInteger(direct)&&direct>=1&&direct<=20)return direct;
+ const m=String(p?.playerId||'').match(/^30:(\d+)$/);if(m){const n=Number(m[1]);if(n>=1&&n<=20)return n}
+ const legacy=Number(p?.slot);return Number.isInteger(legacy)&&legacy>=1&&legacy<=20?legacy:null;
+}
 const brazil=sem.teamsV1?.teams?.['30']||sem.teamsV1?.teams?.[30];
 const currentRevision=Number(sem.brazilSkillsRevisionV1?.version)||0;
 if(brazil&&Array.isArray(brazil.players)&&currentRevision<BRAZIL_SKILLS_REVISION_VERSION){
  const seen=new Set();
  for(const p of brazil.players){
-  const vals=BRAZIL_SKILLS[String(p?.name||'')];if(!vals)continue;
-  p.skills=Object.fromEntries(skillKeys.map((k,i)=>[k,vals[i]]));seen.add(String(p.name));
+  const baseSlot=brazilBaseSlot(p),vals=baseSlot?BRAZIL_SKILLS_BY_BASE_SLOT[baseSlot]:null;if(!vals)continue;
+  p.playerId=`30:${baseSlot}`;p.baseSlot=baseSlot;
+  p.custom=p.custom&&typeof p.custom==='object'?p.custom:{};
+  p.custom.skills=Object.fromEntries(skillKeys.map((k,i)=>[k,vals[i]]));
+  seen.add(baseSlot);
  }
- const missing=Object.keys(BRAZIL_SKILLS).filter(n=>!seen.has(n));
- if(missing.length)throw new Error('Brasil: jogadores sem correspondência para revisão de skills: '+missing.join(', '));
- sem.brazilSkillsRevisionV1={schema:'isssd-brazil-skills-v1',version:BRAZIL_SKILLS_REVISION_VERSION,teamId:30,attributes:skillKeys,players:Object.keys(BRAZIL_SKILLS)};
- console.log('Brasil: skills revisadas aplicadas aos 20 jogadores; demais propriedades preservadas.');
+ const missing=[];for(let i=1;i<=20;i++)if(!seen.has(i))missing.push(i);
+ if(missing.length)throw new Error('Brasil: identidades sem correspondência para revisão de skills (baseSlot): '+missing.join(', '));
+ sem.teamsV1.identityModel='player-id-v1';
+ sem.brazilSkillsRevisionV1={schema:'isssd-brazil-skills-v1',version:BRAZIL_SKILLS_REVISION_VERSION,teamId:30,identityModel:'player-id-v1',attributes:skillKeys,playerIds:Array.from({length:20},(_,i)=>`30:${i+1}`)};
+ console.log('Brasil: skills revisadas v2 aplicadas aos 20 jogadores por playerId/baseSlot em custom.skills.');
 }
 
 if(sem.teamsV1){delete sem.teamsV1.names;delete sem.teamsV1.tactics;delete sem.teamsV1.playerTactics}
