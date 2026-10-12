@@ -18092,7 +18092,10 @@
                 },
                 "nameHex": "7B8287878293868D",
                 "baseSlot": 1,
-                "playerId": "30:1"
+                "playerId": "30:1",
+                "custom": {
+                  "position": "GO"
+                }
               },
               {
                 "slot": 2,
@@ -18122,7 +18125,8 @@
                 },
                 "nameHex": "00006A8287960000",
                 "custom": {
-                  "number": 2
+                  "number": 2,
+                  "position": "DF-MF"
                 },
                 "baseSlot": 2,
                 "playerId": "30:2"
@@ -18155,7 +18159,10 @@
                 },
                 "nameHex": "6B5485826E968A82",
                 "baseSlot": 3,
-                "playerId": "30:3"
+                "playerId": "30:3",
+                "custom": {
+                  "position": "DF"
+                }
               },
               {
                 "slot": 4,
@@ -18185,7 +18192,10 @@
                 },
                 "nameHex": "007396848A900000",
                 "baseSlot": 4,
-                "playerId": "30:4"
+                "playerId": "30:4",
+                "custom": {
+                  "position": "DF"
+                }
               },
               {
                 "slot": 5,
@@ -18215,7 +18225,8 @@
                 },
                 "nameHex": "79546A82938D9094",
                 "custom": {
-                  "number": 6
+                  "number": 6,
+                  "position": "DF-MF"
                 },
                 "baseSlot": 5,
                 "playerId": "30:5"
@@ -18248,7 +18259,10 @@
                 },
                 "nameHex": "006B968F88820000",
                 "baseSlot": 6,
-                "playerId": "30:6"
+                "playerId": "30:6",
+                "custom": {
+                  "position": "MF"
+                }
               },
               {
                 "slot": 7,
@@ -18278,7 +18292,10 @@
                 },
                 "nameHex": "006E869394908F00",
                 "baseSlot": 7,
-                "playerId": "30:7"
+                "playerId": "30:7",
+                "custom": {
+                  "position": "MF"
+                }
               },
               {
                 "slot": 8,
@@ -18308,7 +18325,10 @@
                 },
                 "nameHex": "79546E8296848990",
                 "baseSlot": 8,
-                "playerId": "30:8"
+                "playerId": "30:8",
+                "custom": {
+                  "position": "MF-FW"
+                }
               },
               {
                 "slot": 9,
@@ -18338,7 +18358,10 @@
                 },
                 "nameHex": "0077868D865A0000",
                 "baseSlot": 9,
-                "playerId": "30:9"
+                "playerId": "30:9",
+                "custom": {
+                  "position": "MF"
+                }
               },
               {
                 "slot": 10,
@@ -18368,7 +18391,10 @@
                 },
                 "nameHex": "79908F828D859000",
                 "baseSlot": 10,
-                "playerId": "30:10"
+                "playerId": "30:10",
+                "custom": {
+                  "position": "FW"
+                }
               },
               {
                 "slot": 11,
@@ -18398,7 +18424,10 @@
                 },
                 "nameHex": "6E8293938A8F8489",
                 "baseSlot": 11,
-                "playerId": "30:11"
+                "playerId": "30:11",
+                "custom": {
+                  "position": "FW"
+                }
               },
               {
                 "slot": 12,
@@ -30729,6 +30758,14 @@
           "Neymar",
           "Romario"
         ]
+      },
+      "teamsOverrideModelV1": {
+        "schema": "isssd-teams-override-model-v1",
+        "version": 1,
+        "mode": "sparse-overrides",
+        "identityModel": "player-id-v1",
+        "originalSource": "immutable-base-rom",
+        "rule": "field-present-means-override; field-absent-means-preserve-rom"
       }
     }
   },
