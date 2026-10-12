@@ -13,34 +13,45 @@ html=html.replace(new RegExp(`<script id=["']${marker}["'][^>]*>[\\s\\S]*?<\\/sc
 const runtime=String.raw`<script id="${marker}">
 (function(){
  'use strict';
+ function hide(node){
+  if(!node)return;
+  node.hidden=true;
+  node.style.display='none';
+  node.setAttribute('aria-hidden','true');
+ }
+ function show(node){
+  if(!node)return;
+  node.hidden=false;
+  node.style.display='';
+  node.removeAttribute('aria-hidden');
+ }
  function keepOnlyTitleBranch(body,title){
   if(!body||!title)return;
   body.classList.remove('hidden','doc-only');
-  body.hidden=false;
-  body.style.display='';
+  show(body);
   let branch=title;
   while(branch&&branch.parentElement&&branch.parentElement!==body)branch=branch.parentElement;
   for(const child of Array.from(body.children)){
-   if(child!==branch)child.remove();
+   if(child===branch)show(child);else hide(child);
   }
  }
  function normalizeOverview(){
   const page=document.getElementById('page-dashboard');
   if(!page)return false;
-  document.getElementById('dashboardEmpty')?.remove();
+  // Não remover nós: updateAllStatus() e outros runtimes ainda dependem de IDs
+  // como mChanges, diffCountBadge e diffOffsets mesmo quando não são exibidos.
+  hide(document.getElementById('dashboardEmpty'));
   const body=document.getElementById('dashboardBody');
   const title=document.getElementById('dashboardInternalTitleCard');
   keepOnlyTitleBranch(body,title);
-  // Fora do corpo técnico, a Visão Geral deve conservar somente o cabeçalho,
-  // o Fluxo de trabalho e o ramo que contém o Título interno.
   const flow=document.getElementById('operationalDashboard');
   for(const child of Array.from(page.children)){
    const isHead=child.classList?.contains('pagehead');
    const hasFlow=child===flow||child.contains?.(flow);
    const hasBody=child===body||child.contains?.(body);
-   if(!isHead&&!hasFlow&&!hasBody)child.remove();
+   if(isHead||hasFlow||hasBody)show(child);else hide(child);
   }
-  if(title){title.hidden=false;title.style.display='';}
+  show(flow);show(title);
   return true;
  }
  function boot(){
@@ -65,4 +76,4 @@ if(!html.includes('</body>'))throw new Error('Não encontrei </body> para instal
 html=html.replace('</body>',runtime+'\n</body>');
 if(!html.includes('isssd-overview-minimal-v1'))throw new Error('Patch da Visão Geral mínima não foi instalado.');
 fs.writeFileSync(htmlPath,html,'utf8');
-console.log('ISSSD Studio: Visão Geral reduzida a cabeçalho, Fluxo de trabalho e Título interno.');
+console.log('ISSSD Studio: Visão Geral reduzida visualmente sem remover nós exigidos pelo runtime.');
