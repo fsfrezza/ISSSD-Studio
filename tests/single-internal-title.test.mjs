@@ -18,10 +18,19 @@ test('título interno único integra o build e é JavaScript válido',()=>{
  assert.doesNotMatch(build,/patch-desired-internal-title-button\.mjs/);
 });
 
-test('helper visual do campo desejado é removido integralmente',()=>{
+test('helper visual do campo desejado é neutralizado sem cortar scripts do HTML',()=>{
  assert.match(src,/isssd-v328-internal-title-helper/);
- assert.match(src,/romMetaTitleDesired.*closest\('\.rommeta-field'\).*remove/s);
- assert.match(src,/O campo visual romMetaTitleDesired permaneceu no HTML final/);
+ assert.match(src,/campo desejado aposentado/);
+ assert.match(src,/html\.slice\(0,helperStart\)\+neutralized\+html\.slice\(helperEnd\+9\)/);
+ assert.doesNotMatch(src,/html=html\.replace\(\/<script id=.*isssd-v328-internal-title-helper/);
+ assert.match(src,/const opens=\(html\.match\(\/<script\\b\/gi\)\|\|\[\]\)\.length/);
+ assert.match(src,/if\(opens!==closes\)throw new Error/);
+});
+
+test('UI legado é removido em runtime caso algum código antigo tente recriá-lo',()=>{
+ assert.match(src,/getElementById\('romMetaTitleDesired'\)/);
+ assert.match(src,/closest\('\.rommeta-field'\)/);
+ assert.match(src,/MutationObserver/);
 });
 
 test('projeto novo não persiste romInternalTitleDesired',()=>{
