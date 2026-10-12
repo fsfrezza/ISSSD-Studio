@@ -7,22 +7,21 @@ const htmlPath=path.join(root,'editor','ISSSD-Studio.html');
 if(!fs.existsSync(htmlPath))throw new Error('Editor gerado não encontrado: '+htmlPath);
 let html=fs.readFileSync(htmlPath,'utf8');
 
-const MARKER='isssd-player-skill-restore-v1';
-if(html.includes(MARKER)){
- console.log('ISSSD Studio: botões de restauração de skills já instalados.');
- process.exit(0);
-}
+const MARKER='isssd-player-skill-restore-v2';
+html=html.replace(/<div[^>]*id=["']isssd-player-skill-restore-v[12]["'][^>]*>[\s\S]*?<\/div>\s*/g,'');
 
-const oldActions=`<button class="btn" id="restorePlayerBtn">\n             Restaurar jogador\n            </button>`;
-const newActions=`<div id="${MARKER}" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">\n<button class="btn" id="restoreSkillsProjectBtn" type="button">Restaurar skills do projeto</button>\n<button class="btn" id="restoreSkillsOriginalBtn" type="button">Restaurar skills originais</button>\n</div>\n<button class="btn" id="restorePlayerBtn" type="button" style="margin-top:8px">Restaurar jogador original</button>`;
-if(!html.includes(oldActions))throw new Error('Não encontrei o botão legado Restaurar jogador para instalar os controles de skills.');
-html=html.replace(oldActions,newActions);
+// Localiza o controle pelo ID estável; não depende do texto, indentação ou CRLF do HTML legado.
+const restoreButtonRe=/<button\b(?=[^>]*\bid=["']restorePlayerBtn["'])[^>]*>[\s\S]*?<\/button>/i;
+const restoreMatch=html.match(restoreButtonRe);
+if(!restoreMatch)throw new Error('Não encontrei o controle #restorePlayerBtn no HTML final para posicionar os botões de skills.');
+const newActions=`<div id="${MARKER}" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px">\n<button class="btn" id="restoreSkillsProjectBtn" type="button">Restaurar skills do projeto</button>\n<button class="btn" id="restoreSkillsOriginalBtn" type="button">Restaurar skills originais</button>\n</div>\n${restoreMatch[0].replace(/>\s*[\s\S]*?\s*<\/button>$/i,'>Restaurar jogador original</button>')}`;
+html=html.replace(restoreButtonRe,newActions);
 
 const hook='$("restorePlayerBtn").onclick=restorePlayer;';
-if(!html.includes(hook))throw new Error('Não encontrei o binding restorePlayerBtn.');
+if(!html.includes(hook))throw new Error('Não encontrei o binding estável #restorePlayerBtn no runtime final.');
 
 const runtime=String.raw`
-// ISSSD_PLAYER_SKILL_RESTORE_RUNTIME_V1
+// ISSSD_PLAYER_SKILL_RESTORE_RUNTIME_V2
 function studioSparsePlayerEntry(state,team,player){
  const ts=state?.teams?.[String(team)];
  if(!ts||!Array.isArray(ts.players))return null;
@@ -64,7 +63,7 @@ function studioRestoreSkills(mode){
 `;
 html=html.replace(hook,runtime+'\n'+hook+'\n$("restoreSkillsProjectBtn").onclick=()=>studioRestoreSkills("project");\n$("restoreSkillsOriginalBtn").onclick=()=>studioRestoreSkills("original");');
 
-if(!html.includes('id="restoreSkillsProjectBtn"')||!html.includes('id="restoreSkillsOriginalBtn"'))throw new Error('Botões de restauração de skills não foram instalados.');
+if(!html.includes('id="restoreSkillsProjectBtn"')||!html.includes('id="restoreSkillsOriginalBtn"'))throw new Error('Botões de restauração de skills não foram instalados no HTML final.');
 if(!html.includes('function studioRestoreSkills(mode)'))throw new Error('Runtime de restauração de skills não foi instalado.');
 fs.writeFileSync(htmlPath,html,'utf8');
-console.log('ISSSD Studio: botões “Restaurar skills do projeto” e “Restaurar skills originais” instalados; projeto usa custom.skills e original usa baseline da ROM-base.');
+console.log('ISSSD Studio: botões “Restaurar skills do projeto” e “Restaurar skills originais” instalados por #restorePlayerBtn; sem dependência de formatação do HTML legado.');
