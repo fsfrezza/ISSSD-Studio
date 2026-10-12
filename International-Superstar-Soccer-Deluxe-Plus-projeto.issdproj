@@ -1,4 +1,4 @@
-﻿{
+{
   "format": "ISSSD_PROJECT",
   "version": 2,
   "app": "ISSSD Studio",
@@ -155,10 +155,22 @@
             "clipH": 73,
             "maskMode": null,
             "maskPoints": [
-              [33, 139],
-              [33, 211],
-              [79, 198],
-              [79, 146]
+              [
+                33,
+                139
+              ],
+              [
+                33,
+                211
+              ],
+              [
+                79,
+                198
+              ],
+              [
+                79,
+                146
+              ]
             ],
             "conversion": "safe",
             "imageSource": "embedded",
@@ -213,11 +225,26 @@
             "clipH": 60,
             "maskMode": null,
             "maskPoints": [
-              [73, 123],
-              [73, 182],
-              [116, 180],
-              [119, 128],
-              [102, 125]
+              [
+                73,
+                123
+              ],
+              [
+                73,
+                182
+              ],
+              [
+                116,
+                180
+              ],
+              [
+                119,
+                128
+              ],
+              [
+                102,
+                125
+              ]
             ],
             "conversion": "safe",
             "imageSource": "embedded",
@@ -272,10 +299,22 @@
             "clipH": 73,
             "maskMode": null,
             "maskPoints": [
-              [113, 132],
-              [114, 206],
-              [159, 189],
-              [157, 144]
+              [
+                113,
+                132
+              ],
+              [
+                114,
+                206
+              ],
+              [
+                159,
+                189
+              ],
+              [
+                157,
+                144
+              ]
             ],
             "conversion": "safe",
             "imageSource": "embedded",
@@ -330,10 +369,22 @@
             "clipH": 66,
             "maskMode": null,
             "maskPoints": [
-              [152, 128],
-              [153, 175],
-              [197, 186],
-              [199, 118]
+              [
+                152,
+                128
+              ],
+              [
+                153,
+                175
+              ],
+              [
+                197,
+                186
+              ],
+              [
+                199,
+                118
+              ]
             ],
             "conversion": "safe",
             "imageSource": "embedded",
@@ -388,10 +439,22 @@
             "clipH": 73,
             "maskMode": null,
             "maskPoints": [
-              [185, 144],
-              [230, 142],
-              [231, 213],
-              [184, 192]
+              [
+                185,
+                144
+              ],
+              [
+                230,
+                142
+              ],
+              [
+                231,
+                213
+              ],
+              [
+                184,
+                192
+              ]
             ],
             "conversion": "safe",
             "imageSource": "embedded",
@@ -3929,68 +3992,109 @@
         "schema": "isssd-teams-v1",
         "version": 3,
         "mode": "sparse-overrides",
+        "identityModel": "player-id-v1",
         "teams": {
           "0": {
             "teamId": 0,
             "players": [
               {
+                "playerId": "0:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "0:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "0:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "0:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "0:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "0:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "0:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "0:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "0:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "0:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "0:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "0:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "0:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "0:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "0:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "0:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "0:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "0:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "0:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "0:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -3999,63 +4103,103 @@
             "teamId": 1,
             "players": [
               {
+                "playerId": "1:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "1:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "1:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "1:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "1:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "1:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "1:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "1:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "1:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "1:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "1:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "1:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "1:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "1:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "1:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "1:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "1:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "1:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "1:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "1:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -4064,63 +4208,103 @@
             "teamId": 2,
             "players": [
               {
+                "playerId": "2:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "2:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "2:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "2:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "2:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "2:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "2:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "2:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "2:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "2:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "2:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "2:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "2:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "2:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "2:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "2:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "2:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "2:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "2:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "2:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -4129,63 +4313,103 @@
             "teamId": 3,
             "players": [
               {
+                "playerId": "3:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "3:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "3:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "3:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "3:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "3:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "3:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "3:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "3:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "3:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "3:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "3:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "3:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "3:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "3:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "3:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "3:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "3:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "3:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "3:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -4194,63 +4418,103 @@
             "teamId": 4,
             "players": [
               {
+                "playerId": "4:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "4:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "4:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "4:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "4:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "4:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "4:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "4:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "4:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "4:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "4:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "4:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "4:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "4:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "4:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "4:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "4:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "4:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "4:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "4:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -4259,63 +4523,103 @@
             "teamId": 5,
             "players": [
               {
+                "playerId": "5:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "5:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "5:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "5:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "5:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "5:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "5:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "5:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "5:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "5:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "5:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "5:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "5:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "5:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "5:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "5:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "5:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "5:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "5:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "5:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -4324,63 +4628,103 @@
             "teamId": 6,
             "players": [
               {
+                "playerId": "6:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "6:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "6:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "6:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "6:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "6:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "6:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "6:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "6:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "6:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "6:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "6:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "6:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "6:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "6:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "6:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "6:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "6:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "6:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "6:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -4389,63 +4733,103 @@
             "teamId": 7,
             "players": [
               {
+                "playerId": "7:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "7:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "7:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "7:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "7:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "7:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "7:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "7:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "7:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "7:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "7:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "7:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "7:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "7:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "7:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "7:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "7:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "7:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "7:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "7:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -4454,63 +4838,103 @@
             "teamId": 8,
             "players": [
               {
+                "playerId": "8:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "8:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "8:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "8:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "8:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "8:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "8:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "8:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "8:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "8:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "8:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "8:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "8:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "8:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "8:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "8:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "8:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "8:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "8:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "8:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -4519,63 +4943,103 @@
             "teamId": 9,
             "players": [
               {
+                "playerId": "9:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "9:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "9:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "9:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "9:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "9:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "9:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "9:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "9:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "9:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "9:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "9:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "9:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "9:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "9:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "9:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "9:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "9:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "9:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "9:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -4584,63 +5048,103 @@
             "teamId": 10,
             "players": [
               {
+                "playerId": "10:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "10:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "10:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "10:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "10:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "10:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "10:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "10:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "10:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "10:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "10:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "10:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "10:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "10:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "10:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "10:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "10:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "10:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "10:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "10:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -4649,63 +5153,103 @@
             "teamId": 11,
             "players": [
               {
+                "playerId": "11:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "11:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "11:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "11:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "11:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "11:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "11:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "11:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "11:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "11:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "11:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "11:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "11:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "11:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "11:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "11:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "11:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "11:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "11:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "11:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -4714,63 +5258,103 @@
             "teamId": 12,
             "players": [
               {
+                "playerId": "12:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "12:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "12:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "12:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "12:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "12:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "12:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "12:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "12:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "12:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "12:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "12:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "12:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "12:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "12:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "12:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "12:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "12:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "12:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "12:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -4779,63 +5363,103 @@
             "teamId": 13,
             "players": [
               {
+                "playerId": "13:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "13:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "13:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "13:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "13:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "13:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "13:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "13:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "13:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "13:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "13:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "13:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "13:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "13:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "13:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "13:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "13:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "13:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "13:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "13:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -4844,63 +5468,103 @@
             "teamId": 14,
             "players": [
               {
+                "playerId": "14:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "14:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "14:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "14:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "14:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "14:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "14:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "14:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "14:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "14:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "14:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "14:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "14:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "14:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "14:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "14:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "14:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "14:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "14:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "14:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -4909,63 +5573,103 @@
             "teamId": 15,
             "players": [
               {
+                "playerId": "15:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "15:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "15:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "15:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "15:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "15:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "15:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "15:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "15:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "15:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "15:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "15:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "15:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "15:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "15:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "15:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "15:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "15:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "15:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "15:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -4974,63 +5678,103 @@
             "teamId": 16,
             "players": [
               {
+                "playerId": "16:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "16:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "16:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "16:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "16:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "16:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "16:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "16:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "16:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "16:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "16:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "16:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "16:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "16:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "16:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "16:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "16:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "16:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "16:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "16:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -5039,63 +5783,103 @@
             "teamId": 17,
             "players": [
               {
+                "playerId": "17:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "17:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "17:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "17:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "17:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "17:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "17:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "17:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "17:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "17:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "17:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "17:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "17:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "17:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "17:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "17:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "17:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "17:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "17:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "17:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -5104,63 +5888,103 @@
             "teamId": 18,
             "players": [
               {
+                "playerId": "18:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "18:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "18:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "18:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "18:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "18:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "18:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "18:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "18:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "18:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "18:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "18:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "18:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "18:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "18:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "18:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "18:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "18:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "18:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "18:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -5169,63 +5993,103 @@
             "teamId": 19,
             "players": [
               {
+                "playerId": "19:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "19:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "19:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "19:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "19:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "19:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "19:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "19:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "19:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "19:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "19:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "19:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "19:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "19:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "19:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "19:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "19:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "19:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "19:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "19:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -5234,63 +6098,103 @@
             "teamId": 20,
             "players": [
               {
+                "playerId": "20:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "20:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "20:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "20:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "20:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "20:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "20:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "20:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "20:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "20:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "20:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "20:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "20:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "20:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "20:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "20:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "20:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "20:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "20:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "20:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -5299,63 +6203,103 @@
             "teamId": 21,
             "players": [
               {
+                "playerId": "21:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "21:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "21:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "21:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "21:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "21:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "21:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "21:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "21:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "21:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "21:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "21:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "21:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "21:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "21:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "21:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "21:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "21:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "21:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "21:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -5364,63 +6308,103 @@
             "teamId": 22,
             "players": [
               {
+                "playerId": "22:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "22:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "22:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "22:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "22:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "22:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "22:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "22:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "22:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "22:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "22:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "22:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "22:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "22:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "22:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "22:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "22:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "22:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "22:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "22:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -5429,63 +6413,103 @@
             "teamId": 23,
             "players": [
               {
+                "playerId": "23:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "23:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "23:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "23:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "23:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "23:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "23:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "23:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "23:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "23:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "23:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "23:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "23:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "23:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "23:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "23:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "23:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "23:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "23:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "23:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -5494,63 +6518,103 @@
             "teamId": 24,
             "players": [
               {
+                "playerId": "24:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "24:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "24:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "24:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "24:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "24:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "24:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "24:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "24:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "24:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "24:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "24:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "24:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "24:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "24:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "24:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "24:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "24:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "24:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "24:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -5559,63 +6623,103 @@
             "teamId": 25,
             "players": [
               {
+                "playerId": "25:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "25:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "25:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "25:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "25:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "25:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "25:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "25:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "25:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "25:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "25:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "25:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "25:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "25:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "25:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "25:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "25:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "25:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "25:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "25:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -5624,63 +6728,103 @@
             "teamId": 26,
             "players": [
               {
+                "playerId": "26:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "26:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "26:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "26:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "26:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "26:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "26:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "26:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "26:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "26:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "26:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "26:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "26:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "26:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "26:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "26:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "26:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "26:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "26:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "26:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -5689,63 +6833,103 @@
             "teamId": 27,
             "players": [
               {
+                "playerId": "27:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "27:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "27:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "27:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "27:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "27:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "27:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "27:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "27:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "27:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "27:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "27:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "27:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "27:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "27:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "27:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "27:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "27:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "27:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "27:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -5754,63 +6938,103 @@
             "teamId": 28,
             "players": [
               {
+                "playerId": "28:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "28:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "28:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "28:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "28:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "28:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "28:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "28:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "28:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "28:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "28:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "28:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "28:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "28:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "28:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "28:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "28:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "28:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "28:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "28:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -5819,63 +7043,103 @@
             "teamId": 29,
             "players": [
               {
+                "playerId": "29:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "29:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "29:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "29:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "29:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "29:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "29:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "29:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "29:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "29:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "29:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "29:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "29:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "29:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "29:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "29:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "29:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "29:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "29:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "29:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -5884,33 +7148,117 @@
             "teamId": 30,
             "players": [
               {
-                "slot": 1
+                "playerId": "30:1",
+                "baseSlot": 1,
+                "slot": 1,
+                "custom": {
+                  "skills": {
+                    "acceleration": 5,
+                    "speed": 5,
+                    "shot": 3,
+                    "curve": 3,
+                    "balance": 7,
+                    "intelligence": 9,
+                    "dribbling": 4,
+                    "jump": 9,
+                    "energy": 8
+                  }
+                }
               },
               {
+                "playerId": "30:2",
+                "baseSlot": 2,
                 "slot": 2,
                 "custom": {
+                  "skills": {
+                    "acceleration": 9,
+                    "speed": 9,
+                    "shot": 6,
+                    "curve": 7,
+                    "balance": 8,
+                    "intelligence": 8,
+                    "dribbling": 8,
+                    "jump": 7,
+                    "energy": 10
+                  },
                   "tactical": {
                     "y": 32
                   }
                 }
               },
               {
-                "slot": 3
+                "playerId": "30:3",
+                "baseSlot": 3,
+                "slot": 3,
+                "custom": {
+                  "skills": {
+                    "acceleration": 8,
+                    "speed": 8,
+                    "shot": 8,
+                    "curve": 7,
+                    "balance": 9,
+                    "intelligence": 8,
+                    "dribbling": 7,
+                    "jump": 10,
+                    "energy": 8
+                  }
+                }
               },
               {
-                "slot": 4
+                "playerId": "30:4",
+                "baseSlot": 4,
+                "slot": 4,
+                "custom": {
+                  "skills": {
+                    "acceleration": 8,
+                    "speed": 9,
+                    "shot": 8,
+                    "curve": 6,
+                    "balance": 9,
+                    "intelligence": 9,
+                    "dribbling": 8,
+                    "jump": 10,
+                    "energy": 9
+                  }
+                }
               },
               {
+                "playerId": "30:5",
+                "baseSlot": 5,
                 "slot": 5,
                 "custom": {
+                  "skills": {
+                    "acceleration": 10,
+                    "speed": 10,
+                    "shot": 10,
+                    "curve": 9,
+                    "balance": 9,
+                    "intelligence": 8,
+                    "dribbling": 8,
+                    "jump": 7,
+                    "energy": 10
+                  },
                   "tactical": {
                     "y": -32
                   }
                 }
               },
               {
+                "playerId": "30:6",
+                "baseSlot": 6,
                 "slot": 6,
                 "custom": {
+                  "skills": {
+                    "acceleration": 9,
+                    "speed": 9,
+                    "shot": 6,
+                    "curve": 9,
+                    "balance": 9,
+                    "intelligence": 9,
+                    "dribbling": 9,
+                    "jump": 9,
+                    "energy": 8
+                  },
                   "tactical": {
                     "x": -16,
                     "y": -10
@@ -5918,8 +7266,21 @@
                 }
               },
               {
+                "playerId": "30:7",
+                "baseSlot": 7,
                 "slot": 7,
                 "custom": {
+                  "skills": {
+                    "acceleration": 6,
+                    "speed": 6,
+                    "shot": 8,
+                    "curve": 10,
+                    "balance": 7,
+                    "intelligence": 10,
+                    "dribbling": 8,
+                    "jump": 6,
+                    "energy": 8
+                  },
                   "tactical": {
                     "x": -15,
                     "y": 11
@@ -5927,9 +7288,22 @@
                 }
               },
               {
+                "playerId": "30:8",
+                "baseSlot": 8,
                 "slot": 8,
                 "custom": {
                   "number": 11,
+                  "skills": {
+                    "acceleration": 9,
+                    "speed": 8,
+                    "shot": 8,
+                    "curve": 10,
+                    "balance": 8,
+                    "intelligence": 9,
+                    "dribbling": 10,
+                    "jump": 7,
+                    "energy": 7
+                  },
                   "tactical": {
                     "x": 15,
                     "y": -30
@@ -5937,8 +7311,21 @@
                 }
               },
               {
+                "playerId": "30:9",
+                "baseSlot": 9,
                 "slot": 9,
                 "custom": {
+                  "skills": {
+                    "acceleration": 10,
+                    "speed": 10,
+                    "shot": 10,
+                    "curve": 9,
+                    "balance": 10,
+                    "intelligence": 10,
+                    "dribbling": 10,
+                    "jump": 10,
+                    "energy": 9
+                  },
                   "tactical": {
                     "x": 10,
                     "y": 0
@@ -5946,9 +7333,22 @@
                 }
               },
               {
+                "playerId": "30:10",
+                "baseSlot": 10,
                 "slot": 10,
                 "custom": {
                   "number": 9,
+                  "skills": {
+                    "acceleration": 10,
+                    "speed": 10,
+                    "shot": 10,
+                    "curve": 8,
+                    "balance": 10,
+                    "intelligence": 9,
+                    "dribbling": 10,
+                    "jump": 8,
+                    "energy": 8
+                  },
                   "tactical": {
                     "x": 36,
                     "y": 5
@@ -5956,8 +7356,21 @@
                 }
               },
               {
+                "playerId": "30:11",
+                "baseSlot": 11,
                 "slot": 11,
                 "custom": {
+                  "skills": {
+                    "acceleration": 10,
+                    "speed": 10,
+                    "shot": 8,
+                    "curve": 9,
+                    "balance": 8,
+                    "intelligence": 9,
+                    "dribbling": 10,
+                    "jump": 6,
+                    "energy": 8
+                  },
                   "tactical": {
                     "x": 30,
                     "y": 30
@@ -5965,31 +7378,166 @@
                 }
               },
               {
-                "slot": 12
+                "playerId": "30:12",
+                "baseSlot": 12,
+                "slot": 12,
+                "custom": {
+                  "skills": {
+                    "acceleration": 5,
+                    "speed": 5,
+                    "shot": 3,
+                    "curve": 3,
+                    "balance": 7,
+                    "intelligence": 9,
+                    "dribbling": 4,
+                    "jump": 9,
+                    "energy": 8
+                  }
+                }
               },
               {
-                "slot": 13
+                "playerId": "30:13",
+                "baseSlot": 13,
+                "slot": 13,
+                "custom": {
+                  "skills": {
+                    "acceleration": 8,
+                    "speed": 8,
+                    "shot": 9,
+                    "curve": 8,
+                    "balance": 9,
+                    "intelligence": 7,
+                    "dribbling": 7,
+                    "jump": 10,
+                    "energy": 8
+                  }
+                }
               },
               {
-                "slot": 14
+                "playerId": "30:14",
+                "baseSlot": 14,
+                "slot": 14,
+                "custom": {
+                  "skills": {
+                    "acceleration": 8,
+                    "speed": 8,
+                    "shot": 7,
+                    "curve": 7,
+                    "balance": 8,
+                    "intelligence": 10,
+                    "dribbling": 8,
+                    "jump": 8,
+                    "energy": 9
+                  }
+                }
               },
               {
-                "slot": 15
+                "playerId": "30:15",
+                "baseSlot": 15,
+                "slot": 15,
+                "custom": {
+                  "skills": {
+                    "acceleration": 6,
+                    "speed": 7,
+                    "shot": 5,
+                    "curve": 5,
+                    "balance": 9,
+                    "intelligence": 9,
+                    "dribbling": 6,
+                    "jump": 9,
+                    "energy": 8
+                  }
+                }
               },
               {
-                "slot": 16
+                "playerId": "30:16",
+                "baseSlot": 16,
+                "slot": 16,
+                "custom": {
+                  "skills": {
+                    "acceleration": 7,
+                    "speed": 7,
+                    "shot": 8,
+                    "curve": 8,
+                    "balance": 8,
+                    "intelligence": 10,
+                    "dribbling": 9,
+                    "jump": 7,
+                    "energy": 9
+                  }
+                }
               },
               {
-                "slot": 17
+                "playerId": "30:17",
+                "baseSlot": 17,
+                "slot": 17,
+                "custom": {
+                  "skills": {
+                    "acceleration": 8,
+                    "speed": 8,
+                    "shot": 10,
+                    "curve": 9,
+                    "balance": 9,
+                    "intelligence": 9,
+                    "dribbling": 9,
+                    "jump": 8,
+                    "energy": 9
+                  }
+                }
               },
               {
-                "slot": 18
+                "playerId": "30:18",
+                "baseSlot": 18,
+                "slot": 18,
+                "custom": {
+                  "skills": {
+                    "acceleration": 8,
+                    "speed": 8,
+                    "shot": 10,
+                    "curve": 10,
+                    "balance": 8,
+                    "intelligence": 10,
+                    "dribbling": 10,
+                    "jump": 7,
+                    "energy": 9
+                  }
+                }
               },
               {
-                "slot": 19
+                "playerId": "30:19",
+                "baseSlot": 19,
+                "slot": 19,
+                "custom": {
+                  "skills": {
+                    "acceleration": 10,
+                    "speed": 9,
+                    "shot": 9,
+                    "curve": 9,
+                    "balance": 7,
+                    "intelligence": 9,
+                    "dribbling": 10,
+                    "jump": 6,
+                    "energy": 8
+                  }
+                }
               },
               {
-                "slot": 20
+                "playerId": "30:20",
+                "baseSlot": 20,
+                "slot": 20,
+                "custom": {
+                  "skills": {
+                    "acceleration": 10,
+                    "speed": 9,
+                    "shot": 10,
+                    "curve": 8,
+                    "balance": 8,
+                    "intelligence": 10,
+                    "dribbling": 10,
+                    "jump": 7,
+                    "energy": 7
+                  }
+                }
               }
             ]
           },
@@ -5997,63 +7545,103 @@
             "teamId": 31,
             "players": [
               {
+                "playerId": "31:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "31:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "31:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "31:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "31:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "31:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "31:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "31:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "31:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "31:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "31:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "31:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "31:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "31:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "31:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "31:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "31:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "31:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "31:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "31:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -6062,63 +7650,103 @@
             "teamId": 32,
             "players": [
               {
+                "playerId": "32:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "32:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "32:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "32:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "32:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "32:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "32:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "32:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "32:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "32:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "32:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "32:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "32:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "32:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "32:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "32:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "32:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "32:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "32:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "32:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -6127,63 +7755,103 @@
             "teamId": 33,
             "players": [
               {
+                "playerId": "33:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "33:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "33:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "33:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "33:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "33:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "33:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "33:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "33:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "33:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "33:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "33:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "33:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "33:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "33:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "33:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "33:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "33:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "33:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "33:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -6192,63 +7860,103 @@
             "teamId": 34,
             "players": [
               {
+                "playerId": "34:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "34:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "34:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "34:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "34:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "34:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "34:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "34:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "34:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "34:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "34:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "34:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "34:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "34:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "34:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "34:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "34:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "34:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "34:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "34:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -6257,63 +7965,103 @@
             "teamId": 35,
             "players": [
               {
+                "playerId": "35:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "35:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "35:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "35:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "35:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "35:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "35:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "35:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "35:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "35:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "35:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "35:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "35:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "35:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "35:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "35:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "35:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "35:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "35:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "35:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -6322,63 +8070,103 @@
             "teamId": 36,
             "players": [
               {
+                "playerId": "36:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "36:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "36:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "36:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "36:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "36:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "36:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "36:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "36:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "36:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "36:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "36:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "36:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "36:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "36:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "36:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "36:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "36:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "36:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "36:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -6387,63 +8175,103 @@
             "teamId": 37,
             "players": [
               {
+                "playerId": "37:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "37:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "37:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "37:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "37:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "37:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "37:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "37:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "37:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "37:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "37:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "37:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "37:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "37:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "37:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "37:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "37:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "37:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "37:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "37:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -6452,63 +8280,103 @@
             "teamId": 38,
             "players": [
               {
+                "playerId": "38:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "38:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "38:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "38:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "38:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "38:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "38:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "38:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "38:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "38:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "38:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "38:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "38:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "38:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "38:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "38:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "38:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "38:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "38:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "38:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -6517,63 +8385,103 @@
             "teamId": 39,
             "players": [
               {
+                "playerId": "39:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "39:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "39:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "39:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "39:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "39:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "39:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "39:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "39:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "39:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "39:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "39:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "39:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "39:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "39:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "39:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "39:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "39:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "39:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "39:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -6582,63 +8490,103 @@
             "teamId": 40,
             "players": [
               {
+                "playerId": "40:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "40:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "40:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "40:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "40:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "40:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "40:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "40:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "40:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "40:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "40:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "40:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "40:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "40:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "40:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "40:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "40:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "40:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "40:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "40:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -6647,63 +8595,103 @@
             "teamId": 41,
             "players": [
               {
+                "playerId": "41:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "41:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "41:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "41:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "41:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "41:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "41:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "41:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "41:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "41:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "41:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "41:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "41:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "41:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "41:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "41:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "41:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "41:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "41:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "41:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -6712,63 +8700,103 @@
             "teamId": 42,
             "players": [
               {
+                "playerId": "42:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "42:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "42:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "42:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "42:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "42:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "42:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "42:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "42:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "42:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "42:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "42:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "42:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "42:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "42:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "42:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "42:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "42:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "42:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "42:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -6777,63 +8805,103 @@
             "teamId": 43,
             "players": [
               {
+                "playerId": "43:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "43:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "43:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "43:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "43:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "43:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "43:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "43:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "43:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "43:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "43:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "43:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "43:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "43:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "43:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "43:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "43:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "43:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "43:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "43:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -6842,63 +8910,103 @@
             "teamId": 44,
             "players": [
               {
+                "playerId": "44:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "44:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "44:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "44:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "44:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "44:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "44:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "44:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "44:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "44:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "44:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "44:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "44:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "44:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "44:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "44:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "44:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "44:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "44:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "44:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -6907,63 +9015,103 @@
             "teamId": 45,
             "players": [
               {
+                "playerId": "45:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "45:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "45:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "45:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "45:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "45:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "45:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "45:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "45:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "45:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "45:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "45:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "45:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "45:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "45:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "45:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "45:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "45:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "45:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "45:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -6972,63 +9120,103 @@
             "teamId": 46,
             "players": [
               {
+                "playerId": "46:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "46:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "46:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "46:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "46:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "46:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "46:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "46:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "46:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "46:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "46:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "46:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "46:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "46:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "46:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "46:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "46:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "46:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "46:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "46:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -7037,63 +9225,103 @@
             "teamId": 47,
             "players": [
               {
+                "playerId": "47:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "47:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "47:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "47:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "47:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "47:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "47:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "47:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "47:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "47:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "47:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "47:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "47:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "47:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "47:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "47:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "47:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "47:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "47:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "47:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -7102,63 +9330,103 @@
             "teamId": 48,
             "players": [
               {
+                "playerId": "48:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "48:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "48:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "48:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "48:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "48:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "48:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "48:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "48:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "48:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "48:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "48:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "48:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "48:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "48:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "48:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "48:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "48:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "48:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "48:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -7167,63 +9435,103 @@
             "teamId": 49,
             "players": [
               {
+                "playerId": "49:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "49:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "49:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "49:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "49:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "49:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "49:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "49:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "49:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "49:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "49:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "49:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "49:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "49:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "49:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "49:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "49:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "49:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "49:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "49:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -7232,63 +9540,103 @@
             "teamId": 50,
             "players": [
               {
+                "playerId": "50:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "50:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "50:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "50:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "50:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "50:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "50:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "50:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "50:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "50:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "50:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "50:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "50:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "50:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "50:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "50:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "50:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "50:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "50:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "50:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -7297,63 +9645,103 @@
             "teamId": 51,
             "players": [
               {
+                "playerId": "51:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "51:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "51:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "51:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "51:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "51:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "51:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "51:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "51:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "51:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "51:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "51:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "51:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "51:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "51:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "51:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "51:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "51:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "51:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "51:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -7362,63 +9750,103 @@
             "teamId": 52,
             "players": [
               {
+                "playerId": "52:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "52:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "52:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "52:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "52:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "52:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "52:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "52:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "52:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "52:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "52:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "52:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "52:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "52:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "52:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "52:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "52:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "52:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "52:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "52:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -7427,63 +9855,103 @@
             "teamId": 53,
             "players": [
               {
+                "playerId": "53:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "53:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "53:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "53:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "53:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "53:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "53:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "53:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "53:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "53:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "53:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "53:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "53:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "53:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "53:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "53:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "53:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "53:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "53:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "53:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -7492,63 +9960,103 @@
             "teamId": 54,
             "players": [
               {
+                "playerId": "54:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "54:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "54:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "54:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "54:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "54:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "54:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "54:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "54:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "54:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "54:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "54:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "54:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "54:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "54:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "54:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "54:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "54:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "54:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "54:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -7557,63 +10065,103 @@
             "teamId": 55,
             "players": [
               {
+                "playerId": "55:1",
+                "baseSlot": 1,
                 "slot": 1
               },
               {
+                "playerId": "55:2",
+                "baseSlot": 2,
                 "slot": 2
               },
               {
+                "playerId": "55:3",
+                "baseSlot": 3,
                 "slot": 3
               },
               {
+                "playerId": "55:4",
+                "baseSlot": 4,
                 "slot": 4
               },
               {
+                "playerId": "55:5",
+                "baseSlot": 5,
                 "slot": 5
               },
               {
+                "playerId": "55:6",
+                "baseSlot": 6,
                 "slot": 6
               },
               {
+                "playerId": "55:7",
+                "baseSlot": 7,
                 "slot": 7
               },
               {
+                "playerId": "55:8",
+                "baseSlot": 8,
                 "slot": 8
               },
               {
+                "playerId": "55:9",
+                "baseSlot": 9,
                 "slot": 9
               },
               {
+                "playerId": "55:10",
+                "baseSlot": 10,
                 "slot": 10
               },
               {
+                "playerId": "55:11",
+                "baseSlot": 11,
                 "slot": 11
               },
               {
+                "playerId": "55:12",
+                "baseSlot": 12,
                 "slot": 12
               },
               {
+                "playerId": "55:13",
+                "baseSlot": 13,
                 "slot": 13
               },
               {
+                "playerId": "55:14",
+                "baseSlot": 14,
                 "slot": 14
               },
               {
+                "playerId": "55:15",
+                "baseSlot": 15,
                 "slot": 15
               },
               {
+                "playerId": "55:16",
+                "baseSlot": 16,
                 "slot": 16
               },
               {
+                "playerId": "55:17",
+                "baseSlot": 17,
                 "slot": 17
               },
               {
+                "playerId": "55:18",
+                "baseSlot": 18,
                 "slot": 18
               },
               {
+                "playerId": "55:19",
+                "baseSlot": 19,
                 "slot": 19
               },
               {
+                "playerId": "55:20",
+                "baseSlot": 20,
                 "slot": 20
               }
             ]
@@ -7635,18 +10183,99 @@
         ],
         "orderConvention": "issd-plus-logical-v2",
         "groups": [
-          [30, 31, 32, 35, 40, 39],
-          [36, 37, 50, 38, 41, 49],
-          [34, 48, 33, 51, 52, 53],
-          [2, 8, 0, 19, 20, 21],
-          [9, 1, 3, 4, 5, 6],
-          [11, 22, 7, 18, 10, 23],
-          [12, 14, 13, 17, 15, 16],
-          [24, 25, 42, 26, 44, 43],
-          [27, 47, 28, 45, 46, 29]
+          [
+            30,
+            31,
+            32,
+            35,
+            40,
+            39
+          ],
+          [
+            36,
+            37,
+            50,
+            38,
+            41,
+            49
+          ],
+          [
+            34,
+            48,
+            33,
+            51,
+            52,
+            53
+          ],
+          [
+            2,
+            8,
+            0,
+            19,
+            20,
+            21
+          ],
+          [
+            9,
+            1,
+            3,
+            4,
+            5,
+            6
+          ],
+          [
+            11,
+            22,
+            7,
+            18,
+            10,
+            23
+          ],
+          [
+            12,
+            14,
+            13,
+            17,
+            15,
+            16
+          ],
+          [
+            24,
+            25,
+            42,
+            26,
+            44,
+            43
+          ],
+          [
+            27,
+            47,
+            28,
+            45,
+            46,
+            29
+          ]
         ],
-        "secret": [55, 54, -1, -1, -1, -1],
-        "titlePointers": [64316, 64332, 64348, 64220, 64236, 64252, 64268, 64284, 64300, 64364]
+        "secret": [
+          55,
+          54,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        "titlePointers": [
+          64316,
+          64332,
+          64348,
+          64220,
+          64236,
+          64252,
+          64268,
+          64284,
+          64300,
+          64364
+        ]
       },
       "plusGospelGol": {
         "enabled": false,
@@ -8074,8 +10703,59 @@
       "historicalNationalTeamsV1": {
         "schema": "isssd-historical-national-teams-v1",
         "version": 1,
-        "appliedTeamIds": [8, 30, 31],
+        "appliedTeamIds": [
+          8,
+          30,
+          31
+        ],
         "source": "project-data/historical-national-teams-v1.json"
+      },
+      "brazilSkillsRevisionV1": {
+        "schema": "isssd-brazil-skills-v1",
+        "version": 2,
+        "teamId": 30,
+        "identityModel": "player-id-v1",
+        "attributes": [
+          "acceleration",
+          "speed",
+          "shot",
+          "curve",
+          "balance",
+          "intelligence",
+          "dribbling",
+          "jump",
+          "energy"
+        ],
+        "playerIds": [
+          "30:1",
+          "30:2",
+          "30:3",
+          "30:4",
+          "30:5",
+          "30:6",
+          "30:7",
+          "30:8",
+          "30:9",
+          "30:10",
+          "30:11",
+          "30:12",
+          "30:13",
+          "30:14",
+          "30:15",
+          "30:16",
+          "30:17",
+          "30:18",
+          "30:19",
+          "30:20"
+        ]
+      },
+      "teamsOverrideModelV1": {
+        "schema": "isssd-teams-override-model-v1",
+        "version": 1,
+        "mode": "sparse-overrides",
+        "identityModel": "player-id-v1",
+        "originalSource": "immutable-base-rom",
+        "rule": "field-present-means-override; field-absent-means-preserve-rom"
       }
     }
   },
