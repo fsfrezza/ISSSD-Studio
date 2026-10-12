@@ -23,8 +23,10 @@ test('helper visual do campo desejado é neutralizado sem cortar scripts do HTML
  assert.match(src,/campo desejado aposentado/);
  assert.match(src,/html\.slice\(0,helperStart\)\+neutralized\+html\.slice\(helperEnd\+9\)/);
  assert.doesNotMatch(src,/html=html\.replace\(\/<script id=.*isssd-v328-internal-title-helper/);
- assert.match(src,/const opens=\(html\.match\(\/<script\\b\/gi\)\|\|\[\]\)\.length/);
- assert.match(src,/if\(opens!==closes\)throw new Error/);
+ assert.match(src,/checkStart=html\.indexOf/);
+ assert.match(src,/checkEnd=checkStart>=0\?html\.indexOf\('<\/script>'/);
+ assert.match(src,/Helper v328 perdeu seus delimitadores <script>/);
+ assert.doesNotMatch(src,/const opens=\(html\.match\(\/<script/);
 });
 
 test('UI legado é removido em runtime caso algum código antigo tente recriá-lo',()=>{
