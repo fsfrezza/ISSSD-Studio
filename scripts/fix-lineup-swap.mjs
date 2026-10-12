@@ -20,9 +20,7 @@ const replacement=`function plusTacSwapSelectedPlayers(team=currentTeam){
   const [a,b]=selected;
   if(a===b||a<0||b<0||a>9||b>9)return alert("Seleção inválida.");
 
-  // O botão altera SOMENTE a ordem visual/física dos jogadores na escalação.
-  // Para que cada jogador permaneça na MESMA posição do campo, seu bloco tático
-  // (X, Y, classe e ATACAR) precisa acompanhar sua identidade durante a troca.
+  // Slot é apenas a ordem atual. O jogador lógico leva consigo nome, atributos e tática.
   const state=plusTacticalEditAllowed(team);
   if(!state?.allowed)return alert("Primeiro torne o preset exclusivo desta equipe.");
   const rec=state.rec;
@@ -46,7 +44,6 @@ const replacement=`function plusTacSwapSelectedPlayers(team=currentTeam){
   const writes=[
     {off:nameA,bytes:bytesNameB},
     {off:nameB,bytes:bytesNameA},
-    // Faz a posição tática acompanhar o jogador, em vez de permanecer presa ao slot.
     {off:recOff+1+a*2,bytes:new Uint8Array([tacB[0]])},
     {off:recOff+2+a*2,bytes:new Uint8Array([tacB[1]])},
     {off:recOff+21+a,bytes:new Uint8Array([tacB[2]])},
@@ -62,6 +59,11 @@ const replacement=`function plusTacSwapSelectedPlayers(team=currentTeam){
   const ok=recordAction(\`Trocar ordem na escalação · ${'${'}labelA} ↔ ${'${'}labelB}\`,"Jogadores",writes);
 
   if(ok){
+    const identityRoot=window.__ISSSD_PLAYER_BASE_SLOT_BY_CURRENT_SLOT_V1__;
+    const identity=identityRoot?.[String(team)];
+    if(Array.isArray(identity)){
+      const tmp=identity[ra];identity[ra]=identity[rb];identity[rb]=tmp;
+    }
     const roster=window.__ISSSD_LOADED_NAME_ROSTER_V1__;
     const tp=roster?.teams?.[String(team)]?.players;
     if(Array.isArray(tp)){
@@ -79,6 +81,6 @@ const replacement=`function plusTacSwapSelectedPlayers(team=currentTeam){
 }`;
 
 html=html.slice(0,a)+replacement+html.slice(b+2);
-if(!html.includes('Para que cada jogador permaneça na MESMA posição do campo'))throw new Error('Patch de troca de escalação não foi aplicado.');
+if(!html.includes('Slot é apenas a ordem atual'))throw new Error('Patch de troca por identidade de jogador não foi aplicado.');
 fs.writeFileSync(htmlPath,html,'utf8');
-console.log('ISSSD Studio: troca de ordem corrigida; posição tática passa a acompanhar cada jogador.');
+console.log('ISSSD Studio: troca de ordem usa identidade lógica; camisa, atributos e tática acompanham o jogador.');
