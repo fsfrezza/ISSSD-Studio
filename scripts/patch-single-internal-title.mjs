@@ -7,12 +7,21 @@ const htmlPath=path.join(root,'editor','ISSSD-Studio.html');
 if(!fs.existsSync(htmlPath))throw new Error('Editor gerado não encontrado: '+htmlPath);
 let html=fs.readFileSync(htmlPath,'utf8');
 
-// Remove integralmente o helper legado que materializa o segundo campo visual.
-html=html.replace(/<script id=["']isssd-v328-internal-title-helper["'][^>]*>[\s\S]*?<\/script>\s*/g,'');
-// Remove qualquer versão anterior do patch que recriava controles para o campo descartado.
-html=html.replace(/<script id=["']isssd-desired-internal-title-button["'][^>]*>[\s\S]*?<\/script>\s*/g,'');
+// Não remova fisicamente scripts do HTML legado: isso pode romper a estrutura do
+// documento quando os builds históricos contêm blocos/injeções adjacentes.
+// Em vez disso, neutralizamos o helper v328 no próprio início da função install().
+const helperId='isssd-v328-internal-title-helper';
+const helperStart=html.indexOf(`<script id="${helperId}">`);
+if(helperStart>=0){
+ const helperEnd=html.indexOf('</script>',helperStart);
+ if(helperEnd<0)throw new Error('Helper v328 encontrado sem fechamento </script>.');
+ const block=html.slice(helperStart,helperEnd+9);
+ if(!block.includes("function install(){"))throw new Error('Helper v328 não possui função install() reconhecível.');
+ const neutralized=block.replace("function install(){","function install(){return;/* campo desejado aposentado */");
+ html=html.slice(0,helperStart)+neutralized+html.slice(helperEnd+9);
+}
 
-const marker='isssd-single-internal-title-v1';
+const marker='isssd-single-internal-title-v2';
 html=html.replace(new RegExp(`<script id=["']${marker}["'][^>]*>[\\s\\S]*?<\\/script>\\s*`,'g'),'');
 
 const runtime=String.raw`<script id="${marker}">
@@ -29,23 +38,29 @@ const runtime=String.raw`<script id="${marker}">
   return project;
  }
  function removeLegacyUi(){
-  document.getElementById('romMetaTitleDesired')?.closest('.rommeta-field')?.remove();
+  const desired=document.getElementById('romMetaTitleDesired');
+  if(desired){
+   const host=desired.closest('.rommeta-field');
+   if(host)host.remove(); else desired.remove();
+  }
   document.getElementById('romMetaTitleDesiredImplementRow')?.remove();
+  document.getElementById('romMetaTitleDesiredImplementBtn')?.remove();
+  document.getElementById('romMetaTitleDesiredImplementStatus')?.remove();
  }
  function installProjectWrapper(){
   const prev=window.studioProjectObject;
-  if(typeof prev!=='function'||prev.__isssdSingleInternalTitleV1)return;
+  if(typeof prev!=='function'||prev.__isssdSingleInternalTitleV2)return;
   const wrapped=async function(...args){
    const obj=await prev.apply(this,args);
    return migrateLegacyProject(obj);
   };
-  wrapped.__isssdSingleInternalTitleV1=true;
+  wrapped.__isssdSingleInternalTitleV2=true;
   wrapped.__isssdPrevious=prev;
   window.studioProjectObject=wrapped;
  }
  function installOpenWrapper(){
   const prev=window.__ISSSD_GIT_AFTER_PROJECT_OPEN__;
-  if(typeof prev!=='function'||prev.__isssdSingleInternalTitleV1)return;
+  if(typeof prev!=='function'||prev.__isssdSingleInternalTitleV2)return;
   const wrapped=async function(file){
    let migratedFile=file;
    try{
@@ -57,7 +72,7 @@ const runtime=String.raw`<script id="${marker}">
    removeLegacyUi();
    return r;
   };
-  wrapped.__isssdSingleInternalTitleV1=true;
+  wrapped.__isssdSingleInternalTitleV2=true;
   wrapped.__isssdPrevious=prev;
   window.__ISSSD_GIT_AFTER_PROJECT_OPEN__=wrapped;
  }
@@ -65,13 +80,21 @@ const runtime=String.raw`<script id="${marker}">
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{install();setTimeout(install,50);setTimeout(install,250)},{once:true});
  else{install();setTimeout(install,50);setTimeout(install,250)}
  window.addEventListener('load',install,{once:true});
- window.__ISSSD_SINGLE_INTERNAL_TITLE_V1__={migrateLegacyProject,removeLegacyUi,install};
+ const observer=new MutationObserver(()=>removeLegacyUi());
+ if(document.documentElement)observer.observe(document.documentElement,{childList:true,subtree:true});
+ window.__ISSSD_SINGLE_INTERNAL_TITLE_V2__={migrateLegacyProject,removeLegacyUi,install};
 })();
 </script>`;
 
 if(!html.includes('</body>'))throw new Error('Não encontrei </body> para instalar o modo de título interno único.');
 html=html.replace('</body>',runtime+'\n</body>');
-if(/id=["']romMetaTitleDesired["']/.test(html))throw new Error('O campo visual romMetaTitleDesired permaneceu no HTML final.');
+
+// Auditorias estruturais: nenhum corte de <script> deve ocorrer e o patch não pode
+// introduzir texto JavaScript visível fora de tags script.
+const opens=(html.match(/<script\b/gi)||[]).length;
+const closes=(html.match(/<\/script>/gi)||[]).length;
+if(opens!==closes)throw new Error(`Integridade HTML: ${opens} <script> e ${closes} </script>.`);
+if(!html.includes('campo desejado aposentado'))throw new Error('Helper legado do nome desejado não foi neutralizado.');
 if(!html.includes('delete sem.romInternalTitleDesired'))throw new Error('Migração/limpeza do campo legado romInternalTitleDesired não foi instalada.');
 fs.writeFileSync(htmlPath,html,'utf8');
-console.log('ISSSD Studio: Título interno é o único campo de nome interno; campo desejado removido e legado migrado somente para compatibilidade de abertura.');
+console.log('ISSSD Studio: Título interno único v2 instalado; helper desejado neutralizado sem remover scripts do HTML.');
