@@ -1,0 +1,63 @@
+name: One-time canonical project shirt fix
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/one-time-fix-brazil-shirt-numbers.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch-project:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Patch Brazil shirt numbers in canonical project
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const path='International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj';
+          const d=JSON.parse(fs.readFileSync(path,'utf8'));
+          const teams=d?.state?.semantic?.teamsV1?.teams;
+          const br=teams?.['30'];
+          if(!br||!Array.isArray(br.players)) throw new Error('Brasil teamId 30 ausente no projeto canônico');
+          function bySlot(slot){
+            const p=br.players.find(x=>Number(x?.slot)===slot);
+            if(!p) throw new Error('Slot '+slot+' ausente no Brasil');
+            p.custom=p.custom&&typeof p.custom==='object'?p.custom:{};
+            return p;
+          }
+          bySlot(2).custom.number=2; // Cafu
+          bySlot(5).custom.number=6; // R. Carlos
+          fs.writeFileSync(path,JSON.stringify(d,null,2)+'\n','utf8');
+          NODE
+      - name: Verify canonical project values
+        shell: bash
+        run: |
+          node <<'NODE'
+          const d=require('./International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj');
+          const ps=d.state.semantic.teamsV1.teams['30'].players;
+          const n=s=>ps.find(p=>Number(p.slot)===s)?.custom?.number;
+          if(n(2)!==2||n(5)!==6) throw new Error(`Falha de verificação: Cafu=${n(2)} R.Carlos=${n(5)}`);
+          console.log('Projeto canônico verificado: Cafu=2; R.Carlos=6');
+          NODE
+      - name: Commit canonical project update
+        shell: bash
+        run: |
+          if git diff --quiet -- International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj; then
+            echo 'Projeto já estava correto.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj
+          git commit -m 'Fix Brazil shirt numbers in canonical project'
+          git push origin HEAD:main
