@@ -1,0 +1,60 @@
+name: One-time Brazil shirt mapping fix
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/one-time-fix-brazil-shirt-mapping.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch-project:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Patch canonical Brazil shirt mapping
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const path='International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj';
+          const d=JSON.parse(fs.readFileSync(path,'utf8'));
+          const br=d?.state?.semantic?.teamsV1?.teams?.['30'];
+          if(!br||!Array.isArray(br.players)) throw new Error('Brasil teamId 30 ausente');
+          const bySlot=s=>br.players.find(p=>Number(p?.slot)===s);
+          const s2=bySlot(2), s5=bySlot(5);
+          if(!s2||!s5) throw new Error('Slots 2/5 ausentes');
+          s2.custom=s2.custom&&typeof s2.custom==='object'?s2.custom:{};
+          s5.custom=s5.custom&&typeof s5.custom==='object'?s5.custom:{};
+          // Após a troca física de escalação, estes slots correspondem a R. Carlos e Cafu, respectivamente.
+          s2.custom.number=6;
+          s5.custom.number=2;
+          fs.writeFileSync(path,JSON.stringify(d,null,2)+'\n','utf8');
+          NODE
+      - name: Verify values
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const d=JSON.parse(fs.readFileSync('International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj','utf8'));
+          const ps=d.state.semantic.teamsV1.teams['30'].players;
+          const n=s=>ps.find(p=>Number(p.slot)===s)?.custom?.number;
+          if(n(2)!==6||n(5)!==2) throw new Error(`Falha: slot2=${n(2)} slot5=${n(5)}`);
+          console.log('Projeto canônico verificado: slot2=6; slot5=2');
+          NODE
+      - name: Commit project update
+        shell: bash
+        run: |
+          if git diff --quiet -- International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj; then
+            echo 'Projeto já estava correto.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj
+          git commit -m 'Fix Brazil shirt mapping after lineup swap'
+          git push origin HEAD:main
