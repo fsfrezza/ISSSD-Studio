@@ -30,18 +30,35 @@ if(html.includes(orphan)&&!html.includes('isssd-main-menu-vertical-offset-bootst
   html=html.replace(orphan,wrapped);
 }
 
-// 3) O documento final precisa terminar em </body></html>, sem conteúdo não vazio depois.
+// 3) Remove escapes literais de quebra de linha que vazaram para nós de texto HTML.
+// Scripts e styles são preservados byte a byte para não alterar strings JavaScript/CSS.
+const protectedBlocks=[];
+html=html.replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi,block=>{
+  const token=`___ISSSD_PROTECTED_BLOCK_${protectedBlocks.length}___`;
+  protectedBlocks.push(block);
+  return token;
+});
+html=html
+  .replace(/(?:\\n[\t ]*)+/g,' ')
+  .replace(/[\t ]{2,}/g,' ')
+  .replace(/>\s+&#x20;\s*</gi,'><');
+html=html.replace(/___ISSSD_PROTECTED_BLOCK_(\d+)___/g,(_,i)=>protectedBlocks[Number(i)]||'');
+
+// 4) O documento final precisa terminar em </body></html>, sem conteúdo não vazio depois.
 const lastHtml=html.lastIndexOf('</html>');
 if(lastHtml<0)throw new Error('Normalização HTML: </html> final ausente.');
 if(html.slice(lastHtml+7).trim())throw new Error('Normalização HTML: ainda existe conteúdo após </html>.');
 
-// 4) Não aceite os marcadores conhecidos do vazamento como texto órfão.
+// 5) Não aceite os marcadores conhecidos do vazamento como texto órfão.
 const bodyEnd=html.lastIndexOf('</body>');
 if(bodyEnd<0||bodyEnd>lastHtml)throw new Error('Normalização HTML: ordem </body></html> inválida.');
 const tailWindow=html.slice(Math.max(0,bodyEnd-1500),bodyEnd);
 if(/(^|>)\s*window\.__ISSSD_MAIN_MENU_VERTICAL_OFFSET__=1;\s*(<|$)/m.test(tailWindow)){
   throw new Error('Normalização HTML: JavaScript órfão de offset ainda está fora de <script>.');
 }
+if(/Manual técnico\s*(?:\\n\s*)+/i.test(html)){
+  throw new Error('Normalização HTML: escapes literais \\n ainda visíveis após “Manual técnico”.');
+}
 
 fs.writeFileSync(htmlPath,html,'utf8');
-console.log('ISSSD Studio: HTML legado normalizado — conteúdo pós-</html> movido para <body> e JavaScript órfão encapsulado.');
+console.log('ISSSD Studio: HTML legado normalizado — conteúdo pós-</html> movido para <body>, JavaScript órfão encapsulado e escapes \\n visíveis removidos.');
