@@ -15,6 +15,7 @@ Este repositório é a fonte de verdade do desenvolvimento do ISSSD Studio: hist
 - Expansões/infraestrutura gerada devem existir apenas no build quando possível, não se acumular no projeto.
 - Toda regressão encontrada deve ganhar um teste automatizado.
 - Uma função só é considerada migrada quando existe contrato semântico/writer modular e teste específico; mera reprodução de patch histórico não basta.
+- O arquivo de ROM baixado pelo Editor local passa obrigatoriamente pelo finalizador canônico do servidor (`/__isssd/finalize-plus-rom`) antes do download. Esse estágio sincroniza as cópias de integridade conhecidas do Plus, recalcula o checksum e recusa a exportação se a validação falhar.
 
 ## Baseline conhecido
 
@@ -33,6 +34,7 @@ O núcleo novo já consegue:
 - aplicar writers semânticos de jogadores e táticas;
 - gerar infraestrutura de táticas apenas no build;
 - recalcular checksum;
+- validar integridade conhecida de jogadores do Brasil no estágio final de exportação;
 - validar uma ROM real no Mesen por 1200 frames, tanto na base quanto na saída gerada.
 
 A antiga regressão v6.92 → v6.93 está documentada e coberta pelo núcleo/testes. O foco atual deixa de ser apenas recuperar o build e passa a ser **migrar funcionalidade por funcionalidade do monólito para módulos semânticos testáveis**.
