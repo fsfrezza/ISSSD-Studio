@@ -16,6 +16,7 @@ Este repositório é a fonte de verdade do desenvolvimento do ISSSD Studio: hist
 - Toda regressão encontrada deve ganhar um teste automatizado.
 - Uma função só é considerada migrada quando existe contrato semântico/writer modular e teste específico; mera reprodução de patch histórico não basta.
 - O arquivo de ROM baixado pelo Editor local passa obrigatoriamente pelo finalizador canônico do servidor (`/__isssd/finalize-plus-rom`) antes do download. Esse estágio sincroniza as cópias de integridade conhecidas do Plus, recalcula o checksum e recusa a exportação se a validação falhar.
+- O build do Editor valida explicitamente a baseline local `.editor-vendor/legacy-ui/ISSSD-Studio.html`. Se ela estiver ausente, contaminada por patches gerados ou incompatível com o fluxo esperado de salvamento, o build deve parar em vez de escolher silenciosamente outra cópia histórica.
 
 ## Baseline conhecido
 
