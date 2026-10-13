@@ -20,6 +20,8 @@ export function makePlusTacticalFixture({shared30And31=true}={}){
     }
   }
   if(shared30And31)setPlusTacticalPointer(rom,31,0x9000+30*0x20);
+  // Verified free run from the real canonical Plus ROM.
+  rom.fill(0xFF,0x5FE9F,0x5FEF9);
   for(const e of PLUS_TACTICAL_EXPECTED_LOADERS){
     rom.set(new Uint8Array([0xBF,0xD0,0xFD,0x8B,0x85,e.pointerDp,0xA9,0x8B,0x00,0x85,e.bankDp]),e.pc);
   }
