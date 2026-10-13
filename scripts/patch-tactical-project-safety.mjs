@@ -7,30 +7,24 @@ const htmlPath=path.join(root,'editor','ISSSD-Studio.html');
 if(!fs.existsSync(htmlPath))throw new Error('Editor gerado não encontrado: '+htmlPath);
 let html=fs.readFileSync(htmlPath,'utf8');
 
-const late='if(activeRomProfile?.id==="iss-deluxe-plus")await studioAutoPreparePlusTactics();';
-const apply='studioCore().applyProject(cleanBase,rebuilt,baseName||d.base?.fileName||"ROM-base.smc",d.state?.ui||{},d.base?.profile||null);';
-if(!html.includes(apply))throw new Error('Não encontrei studioCore().applyProject para antecipar a preparação tática.');
-html=html.replaceAll(late,'');
-html=html.replace(apply,apply+'\n  // Git safety: preparar 4 MiB + banco seletor ANTES de restaurar teamsV1.\n  // Assim nenhuma tática específica de equipe é escrita no pool compartilhado de 2 MiB.\n  if(activeRomProfile?.id==="iss-deluxe-plus")await studioAutoPreparePlusTactics();');
+// A antiga "segurança" expandia toda ROM Plus para 4 MiB e reescrevia três
+// loaders táticos durante a abertura do projeto. Isso deixou de ser permitido.
+const autoPrep='if(activeRomProfile?.id==="iss-deluxe-plus")await studioAutoPreparePlusTactics();';
+html=html.replaceAll(autoPrep,'');
 
-const marker='isssd-git-tactical-project-safety-v1';
+// Também remova o runtime antigo caso a baseline local já tenha sido construída
+// por uma versão anterior do patch.
+html=html.replace(/<script\s+type=["']module["']\s+id=["']isssd-git-tactical-project-safety-v1["'][^>]*>[\s\S]*?<\/script>\s*/g,'');
+
+const marker='isssd-git-tactical-project-safety-v2-native';
 if(!html.includes(marker)){
- const runtime=`\n<script type="module" id="${marker}">\n(()=>{\n const prior=window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__;\n window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__=function(obj){\n  obj=prior?.(obj)||obj;\n  if(!obj?.state?.semantic||obj?.base?.profile!==\"iss-deluxe-plus\")return obj;\n  const core=window.__ISSD_CORE__;\n  const st=core?.tacticalPreparationStatus?.()||{};\n  const ex=core?.plusExpansionOnlyStatus?.()||{};\n  const body=Number(ex.bodyLength)||0;\n  const prepared=!!st.active;\n  obj.state.semantic.plusPreparationV1={\n   schema:\"isssd-plus-preparation-v1\",version:1,\n   expanded4MiB:body===0x400000||Number(st.expansion)>=4,\n   bodyLength:body||0x400000,\n   expansionMode:Number(st.expansion)||4,\n   tacticsIndividualized:prepared\n  };\n  obj.state.semantic.historicalNationalTeamsV1=obj.state.semantic.historicalNationalTeamsV1||{\n   schema:\"isssd-historical-national-teams-v1\",version:1,appliedTeamIds:[8,30,31],source:\"project-data/historical-national-teams-v1.json\"\n  };\n  // A expansão é semântica/estrutural e será refeita na abertura. Não salvar targetLength\n  // expandido, pois isso transforma a estrutura preparada em estado físico redundante e\n  // pode fazer o importador tratar a ROM gerada como base/patch de 4 MiB.\n  delete obj.state.targetLength;\n  return obj;\n };\n})();\n</script>\n`;
+ const runtime=`\n<script type="module" id="${marker}">\n(()=>{\n const prior=window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__;\n window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__=function(obj){\n  obj=prior?.(obj)||obj;\n  if(!obj?.state?.semantic||obj?.base?.profile!==\"iss-deluxe-plus\")return obj;\n  // A preparação 4 MiB era infraestrutura derivada e não é mais parte do projeto.\n  delete obj.state.semantic.plusPreparationV1;\n  delete obj.state.targetLength;\n  return obj;\n };\n})();\n</script>\n`;
+ if(!html.includes('</body>'))throw new Error('Segurança tática nativa: </body> ausente.');
  html=html.replace('</body>',runtime+'\n</body>');
 }
 
-// Sanity checks: confira a ORDEM DE EXECUÇÃO dentro de studioApplyProjectWithBase.
-// Não use indexOf('studioRestoreTeamsV1(...)') globalmente: existe também a definição
-// da função muito antes deste fluxo, o que produzia falso positivo e quebrava o build.
-const applyPos=html.indexOf(apply);
-const prepPos=html.indexOf('if(activeRomProfile?.id==="iss-deluxe-plus")await studioAutoPreparePlusTactics();',applyPos);
-const restoreNeedle='restoredNamesOnly=studioRestoreTeamsV1(sem.teamsV1);';
-const restorePos=html.indexOf(restoreNeedle,applyPos);
-if(applyPos<0||prepPos<0||restorePos<0||!(applyPos<prepPos&&prepPos<restorePos)){
- throw new Error('Ordem insegura no fluxo de abertura: esperado applyProject -> preparar 4 MiB/táticas -> restaurar teamsV1.');
-}
-if((html.match(/await studioAutoPreparePlusTactics\(\)/g)||[]).length!==1)throw new Error('Preparação tática automática deve ocorrer exatamente uma vez ao abrir projeto.');
-if(html.includes('obj.state.targetLength=Math.max'))throw new Error('Persistência insegura: targetLength expandido não deve ser salvo no projeto Plus.');
+if(html.includes(autoPrep))throw new Error('Segurança tática nativa: preparação automática 4 MiB ainda presente.');
+if(/plusPreparationV1\s*=\s*\{/.test(html))throw new Error('Segurança tática nativa: persistência antiga de plusPreparationV1 ainda presente.');
 
 fs.writeFileSync(htmlPath,html,'utf8');
-console.log('ISSSD Studio: segurança tática aplicada — 4 MiB/individualização antes de teamsV1; expansão salva apenas como estado semântico.');
+console.log('ISSSD Studio: expansão tática automática removida — projeto Plus permanece na ROM nativa de 2 MiB.');
