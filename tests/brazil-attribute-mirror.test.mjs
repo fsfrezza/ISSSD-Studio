@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 
 const MAIN=0x151068;
 const SPECIAL=0x78C0;
@@ -62,7 +63,17 @@ for(const size of [0x200000,0x400000]){
   assert.equal((complement^checksum)&0xFFFF,0xFFFF);
 }
 
+// Regression arquitetural: o patch deve atuar no `output` final de studioDoSave,
+// antes da auditoria/SHA/download. Não aceitamos mais interceptação global de Blob.
+const patchSource=fs.readFileSync(new URL('../scripts/patch-brazil-attribute-mirror.mjs',import.meta.url),'utf8');
+assert.match(patchSource,/output=globalThis\.__ISSSD_FINALIZE_BRAZIL_ROM_V5__\(output\)/);
+assert.match(patchSource,/const auditAnchor='const __v700BuildAudit=studioV700DiffAudit\(snap\.base,output\)'/);
+assert.match(patchSource,/studioDownloadFile\(output/);
+assert.doesNotMatch(patchSource,/globalThis\.Blob=FinalBlob/);
+assert.doesNotMatch(patchSource,/__ISSSD_FINAL_BLOB_V4__/);
+
 console.log('OK: mirror especial do Brasil validado em ROMs de 2 MiB e 4 MiB.');
 console.log('OK: jogador 1 usa bytes 1..6 em 0x78C0..0x78C5.');
 console.log('OK: jogadores 2..7 usam registros completos em 0x78C6..0x78EF.');
 console.log('OK: checksum final permanece complementar.');
+console.log('OK: integração V5 atua no buffer output antes de audit/SHA/download e não usa monkey-patch de Blob.');
