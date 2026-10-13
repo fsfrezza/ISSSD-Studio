@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import {playerOffset} from '../src/core/plus-player.mjs';
 import {finalizePlusRomForExport,validatePlusRuntimeMirrors} from '../src/core/plus-export-finalizer.mjs';
 
@@ -41,4 +42,15 @@ for(const size of [0x200000,0x400000]){
 
 test('finalizer rejects unsupported ROM sizes instead of exporting silently',()=>{
  assert.throws(()=>finalizePlusRomForExport(new Uint8Array(0x300000)),/unexpected Plus ROM size/i);
+});
+
+test('Studio ROM export is routed through the canonical local finalizer',()=>{
+ const patch=fs.readFileSync(new URL('../scripts/patch-canonical-rom-export.mjs',import.meta.url),'utf8');
+ const server=fs.readFileSync(new URL('../scripts/serve-editor.mjs',import.meta.url),'utf8');
+ assert.match(patch,/fetch\('\/__isssd\/finalize-plus-rom'/);
+ assert.match(patch,/await studioDownloadFile\(output/);
+ assert.doesNotMatch(patch,/globalThis\.Blob=FinalBlob|__ISSSD_FINAL_BLOB_V4__|__ISSSD_FINALIZE_BRAZIL_ROM_V5__/);
+ assert.match(server,/finalizePlusRomForExport/);
+ assert.match(server,/u==='\/__isssd\/finalize-plus-rom'/);
+ assert.match(server,/'X-ISSSD-Mirrors':'ok'/);
 });
