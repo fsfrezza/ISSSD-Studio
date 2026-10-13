@@ -48,12 +48,16 @@ test('Studio ROM export is routed through the canonical local finalizer',()=>{
  const patch=fs.readFileSync(new URL('../scripts/patch-canonical-rom-export.mjs',import.meta.url),'utf8');
  const server=fs.readFileSync(new URL('../scripts/serve-editor.mjs',import.meta.url),'utf8');
  const pkg=fs.readFileSync(new URL('../package.json',import.meta.url),'utf8');
+ const verify=fs.readFileSync(new URL('../scripts/verify-editor-source.mjs',import.meta.url),'utf8');
  assert.match(patch,/fetch\('\/__isssd\/finalize-plus-rom'/);
  assert.match(patch,/await studioDownloadFile\(output/);
  assert.match(server,/finalizePlusRomForExport/);
  assert.match(server,/u==='\/__isssd\/finalize-plus-rom'/);
  assert.match(server,/'X-ISSSD-Mirrors':'ok'/);
+ assert.match(pkg,/verify-editor-source\.mjs[^\n]*build-editor\.mjs/);
  assert.match(pkg,/patch-canonical-rom-export\.mjs/);
  assert.doesNotMatch(pkg,/patch-brazil-attribute-mirror\.mjs/);
+ assert.match(verify,/\.editor-vendor[^\n]*legacy-ui[^\n]*ISSSD-Studio\.html/);
+ assert.match(verify,/studioDoSave -> output -> studioDownloadFile/);
  assert.equal(fs.existsSync(new URL('../scripts/patch-brazil-attribute-mirror.mjs',import.meta.url)),false);
 });
