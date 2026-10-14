@@ -12,13 +12,13 @@ let html=fs.readFileSync(htmlPath,'utf8');
 // VOL/MC/MO/AT ficam apenas como aliases de compatibilidade para projetos antigos.
 const oldMap="const STUDIO_TEAMS_V3_POS_TO_ID={NONE:0,GO:1,DF:2,VOL:3,MC:4,MO:5,AT:6};";
 const newMap="const STUDIO_TEAMS_V3_POS_TO_ID={NONE:0,GO:1,GK:1,DF:2,'DF-MF':3,VOL:3,MF:4,MC:4,'MF-FW':5,MO:5,FW:6,AT:6};";
-if(!html.includes(oldMap))throw new Error('Position model: mapa POS_TO_ID não encontrado.');
-html=html.replace(oldMap,newMap);
+if(html.includes(oldMap))html=html.replace(oldMap,newMap);
+else if(!html.includes(newMap))throw new Error('Position model: mapa POS_TO_ID não encontrado em formato legado nem canônico.');
 
 const oldIds="const STUDIO_TEAMS_V3_ID_TO_POS=['NONE','GO','DF','VOL','MC','MO','AT'];";
 const newIds="const STUDIO_TEAMS_V3_ID_TO_POS=['NONE','GO','DF','DF-MF','MF','MF-FW','FW'];";
-if(!html.includes(oldIds))throw new Error('Position model: mapa ID_TO_POS não encontrado.');
-html=html.replace(oldIds,newIds);
+if(html.includes(oldIds))html=html.replace(oldIds,newIds);
+else if(!html.includes(newIds))throw new Error('Position model: mapa ID_TO_POS não encontrado em formato legado nem canônico.');
 
 // O patch sparse elimina referências TDZ usando mapas inline; atualiza esses mapas também.
 html=html.replaceAll("(['NONE','GO','DF','VOL','MC','MO','AT'][(b[4]>>4)&15]||'NONE')","(['NONE','GO','DF','DF-MF','MF','MF-FW','FW'][(b[4]>>4)&15]||'NONE')");
@@ -36,9 +36,14 @@ const visualLabels=[
 ];
 for(const [from,to] of visualLabels)html=html.replaceAll(from,to);
 
-// Normaliza valores simbólicos antigos carregados em projetos/overrides antes de codificar.
-const encodeNeedle="const s=p?.skills||{},ap=p?.appearance||{},pos=STUDIO_TEAMS_V3_POS_TO_ID[String(p?.position||'NONE').toUpperCase()]??0;";
-if(!html.includes(encodeNeedle))throw new Error('Position model: encoder de posição não encontrado.');
+// O encoder pode estar no formato com tabela const (antes do sparse patch) ou
+// com mapa inline (depois do sparse patch). Ambos são válidos, mas o resultado
+// final deve conter a nomenclatura canônica 1..6.
+const canonicalConstEncoder="const s=p?.skills||{},ap=p?.appearance||{},pos=STUDIO_TEAMS_V3_POS_TO_ID[String(p?.position||'NONE').toUpperCase()]??0;";
+const canonicalInlineEncoder="({NONE:0,GO:1,GK:1,DF:2,'DF-MF':3,VOL:3,MF:4,MC:4,'MF-FW':5,MO:5,FW:6,AT:6}[String(p?.position||'NONE').toUpperCase()]??0)";
+if(!html.includes(canonicalConstEncoder)&&!html.includes(canonicalInlineEncoder)){
+ throw new Error('Position model: encoder de posição canônico não encontrado.');
+}
 
 if(!html.includes("'DF-MF':3")||!html.includes("'MF-FW':5")||!html.includes("['NONE','GO','DF','DF-MF','MF','MF-FW','FW']"))throw new Error('Position model: nomenclatura canônica não foi instalada.');
 fs.writeFileSync(htmlPath,html,'utf8');

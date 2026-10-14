@@ -13,8 +13,8 @@ const pkg=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8'));
 test('título interno único integra o build e é JavaScript válido',()=>{
  execFileSync(process.execPath,['--check',patch],{stdio:'pipe'});
  const build=String(pkg.scripts['build:editor']||'');
- assert.match(build,/post-build-project-structure\.mjs/);
  assert.match(build,/patch-single-internal-title\.mjs/);
+ assert.doesNotMatch(build,/post-build-project-structure\.mjs/);
  assert.doesNotMatch(build,/patch-desired-internal-title-button\.mjs/);
 });
 

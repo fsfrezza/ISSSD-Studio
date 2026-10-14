@@ -7,15 +7,24 @@ import {fileURLToPath} from 'node:url';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const file=path.join(root,'scripts','patch-team-field-state.mjs');
+const nativeTactics=path.join(root,'scripts','patch-native-tactical-individualization.mjs');
 const src=fs.readFileSync(file,'utf8');
 const pkg=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8'));
 const snapshotStart=src.indexOf('const snapshot=String.raw`');
 const snapshotEnd=src.indexOf("replaceBlock('function studioTeamsV3Snapshot(){",snapshotStart);
 const snapshotBlock=snapshotStart>=0&&snapshotEnd>snapshotStart?src.slice(snapshotStart,snapshotEnd):'';
 
-test('patch de sparse overrides é JavaScript válido e integra o build',()=>{
+test('patch de sparse overrides é JavaScript válido e precede identidade e restauração tática final',()=>{
  execFileSync(process.execPath,['--check',file],{stdio:'pipe'});
- assert.match(pkg.scripts['build:editor'],/patch-canonical-teams-v3\.mjs && node scripts\/patch-team-field-state\.mjs && node scripts\/post-build-project-structure\.mjs/);
+ execFileSync(process.execPath,['--check',nativeTactics],{stdio:'pipe'});
+ const build=String(pkg.scripts['build:editor']||'');
+ const canonical=build.indexOf('patch-canonical-teams-v3.mjs');
+ const field=build.indexOf('patch-team-field-state.mjs');
+ const identity=build.indexOf('patch-player-identity-v1.mjs');
+ const mandatory=build.indexOf('patch-mandatory-plus-4mb.mjs');
+ const native=build.indexOf('patch-native-tactical-individualization.mjs');
+ assert.ok(canonical>=0&&field>canonical&&identity>field&&mandatory>identity&&native>mandatory);
+ assert.doesNotMatch(build,/post-build-project-structure\.mjs/);
 });
 
 test('snapshot salva somente overrides e não persiste fieldState',()=>{

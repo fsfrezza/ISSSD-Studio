@@ -4,41 +4,42 @@ import {reconcileKnownPlayerIntegrityMirrors} from './plus-player.mjs';
 import {plusPlayerWriter} from './plus-player-writer.mjs';
 import {plusRomMetaWriter} from './plus-rom-meta.mjs';
 import {plusStrategyTextWriter} from './plus-strategy-text.mjs';
-import {preparePlusTacticalInfrastructure} from './plus-tactics-infrastructure.mjs';
+import {ensureExclusivePlusTacticalRecords} from './plus-tactics-native-individualization.mjs';
 import {plusTacticsWriter} from './plus-tactics-writer.mjs';
 import {canonicalProjectSemantic} from './project-semantic.mjs';
 import {canonicalProjectState} from './project-state.mjs';
 import {diffRanges} from './rom-integrity.mjs';
 
-function hasTacticalEdits(semanticState){
+function tacticalEditTeams(semanticState){
   const teams=semanticState?.plusTactics?.teams;
-  return !!teams && typeof teams==='object' && !Array.isArray(teams) && Object.keys(teams).length>0;
+  if(!teams||typeof teams!=='object'||Array.isArray(teams))return [];
+  return Object.keys(teams).map(Number).filter(Number.isInteger).sort((a,b)=>a-b);
 }
 
 export function buildPlusProjectRom(baseRom,project,options={}){
   const canonical=canonicalProjectState(project,{baseSize:baseRom?.length});
   const ignorePersistedPatches=options.ignorePersistedPatches===true;
   const persistedBase=ignorePersistedPatches ? baseRom : applyCanonicalPatches(baseRom,canonical.patches);
-  // Deluxe Plus adds runtime integrity copies in bank-80 freespace. Historical
-  // projects may contain one-sided player-bank patches; repair only mismatches
-  // introduced relative to the immutable base, preserving base discrepancies.
   const patchedBase=reconcileKnownPlayerIntegrityMirrors(baseRom,persistedBase);
   const semanticState=canonicalProjectSemantic(project);
   const userWriters=options.writers??[];
   if(!Array.isArray(userWriters))throw new TypeError('writers must be functions');
   const userPrepare=options.prepareInfrastructure??null;
   if(userPrepare!==null&&typeof userPrepare!=='function')throw new TypeError('prepareInfrastructure must be a function');
-  const tacticalEdits=hasTacticalEdits(semanticState);
+  const tacticalTeams=tacticalEditTeams(semanticState);
   const {writers:_writers,prepareInfrastructure:_prepareInfrastructure,ignorePersistedPatches:_ignorePersistedPatches,...buildOptions}=options;
 
-  const prepareInfrastructure=(userPrepare||tacticalEdits)
+  const prepareInfrastructure=(userPrepare||tacticalTeams.length)
     ?(work,state)=>{
       let prepared=work;
       if(userPrepare){
         const result=userPrepare(prepared,state);
         if(result!==undefined)prepared=result;
       }
-      if(tacticalEdits)prepared=preparePlusTacticalInfrastructure(prepared);
+      if(tacticalTeams.length){
+        if(prepared.length!==0x200000)throw new Error('Plus tactical semantic build must remain on the canonical 2 MiB ROM before native individualization');
+        ensureExclusivePlusTacticalRecords(prepared,tacticalTeams);
+      }
       return prepared;
     }
     :null;
@@ -47,12 +48,9 @@ export function buildPlusProjectRom(baseRom,project,options={}){
     ...buildOptions,
     semanticState,
     prepareInfrastructure,
-    // Generated infrastructure is complete before semantic writers run.
-    // Player attributes use verified surgical writes; tactics write only to
-    // resolved exclusive records and refuse shared presets. Verified strategy
-    // phrases use native 2x10 records. Main-menu and group semantic state are
-    // intentionally NOT materialized by default until runtime navigation is
-    // proven. ROM metadata precedes the derived SNES checksum.
+    // Tactical edits are individualized inside unused space in the original
+    // bank $8B. No 4 MiB expansion, bank selector or loader JSL patch is part
+    // of the normal project build.
     writers:[plusPlayerWriter,plusTacticsWriter,plusStrategyTextWriter,plusRomMetaWriter,...userWriters],
   });
 

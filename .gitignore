@@ -7,6 +7,8 @@
 *.sav
 *.srm
 probe*.json
+mesen-*.log
+*.tmp
 
 # Local ROM directory
 roms/
@@ -18,6 +20,13 @@ editor/
 
 # Local emulator/tool bootstrap
 .tools/
+
+# Local project safety copies (preserve locally, never version)
+*BACKUP*.issdproj
+*.before-*.issdproj
+*ANTES-*.issdproj
+PROJETO-LOCAL-*.issdproj
+PROJETO-REMOTO-*.issdproj
 
 # OS/editor
 .DS_Store
