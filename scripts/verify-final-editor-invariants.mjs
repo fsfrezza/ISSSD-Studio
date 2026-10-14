@@ -30,8 +30,9 @@ if(reqStart<0||reqEnd<0)throw new Error('Verificação final: guard tático 4 Mi
 const reqBlock=html.slice(reqStart,reqEnd);
 if(!reqBlock.includes('body!==0x400000'))throw new Error('Verificação final: restore tático não exige 4 MiB.');
 
-if(!html.includes("roundTrip:'semantic-first-v3'"))throw new Error('Verificação final: proteção de round-trip ausente.');
-if(!html.includes('0x2AA8E,0x2B166,0x3193A'))throw new Error('Verificação final: saneamento dos loaders derivados não está presente no round-trip.');
+if(!html.includes('roundTripSaveSanitized'))throw new Error('Verificação final: proteção de salvamento do round-trip ausente.');
+if(html.includes("roundTrip:'semantic-first-v3'"))throw new Error('Verificação final: saneamento físico legado voltou à abertura do projeto.');
+if(!html.includes('0x2AA8E,0x2B166,0x3193A'))throw new Error('Verificação final: saneamento dos loaders derivados não está presente no salvamento.');
 
 if(!html.includes('id="isssd-project-open-semantic-only-v2"'))throw new Error('Verificação final: barreira v2 de abertura semântica não foi instalada.');
 for(const required of [
@@ -56,4 +57,4 @@ if(!html.includes('await studioProjectObject()'))throw new Error('Verificação 
 if(!html.includes("response.headers.get('X-ISSSD-Builder')!=='plus-build-pipeline-v1'"))throw new Error('Verificação final: browser não exige confirmação do Build Pipeline v1.');
 if(!html.includes('payload.length!==0x400000'))throw new Error('Verificação final: browser não rejeita ROM Plus final que não tenha 4 MiB.');
 
-console.log('ISSSD Studio: invariantes finais verificadas — abrir projeto não monta ROM parcial, a ROM-base continua autoritativa, a UI é hidratada semanticamente e a ROM final Plus nasce somente do Build Pipeline v1.');
+console.log('ISSSD Studio: invariantes finais verificadas — abrir projeto não monta ROM parcial, a ROM-base continua autoritativa, o round-trip saneia somente o salvamento e a ROM final Plus nasce somente do Build Pipeline v1.');
