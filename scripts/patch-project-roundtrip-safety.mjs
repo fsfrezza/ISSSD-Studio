@@ -10,11 +10,8 @@ let html=fs.readFileSync(htmlPath,'utf8');
 const dangerousOffsets='[0x2AA8E,0x2B166,0x3193A]';
 const scrubExpr=`(list)=>Array.isArray(list)?list.filter(p=>!${dangerousOffsets}.includes(Number(p?.off??p?.offset))):list`;
 
-// 1) SALVAMENTO: algumas rotas do seletor executam antes da inicialização lexical de
-// studioBuildRegionSet. Mesmo `typeof studioBuildRegionSet` pode lançar ReferenceError
-// quando o identificador está em TDZ. Portanto nunca referencie o identificador lexical
-// diretamente nesta camada; use globalThis quando houver export global e Set vazio caso
-// contrário. O bloqueio explícito dos loaders antigos independe dessa API.
+// SALVAMENTO apenas. A abertura agora é semantic-only e não aplica patches físicos,
+// portanto não precisa mais reescrever/sanear o projeto antes de carregá-lo na UI.
 const projectPatchRx=/const projectPatches=([^;]+);/;
 const m=html.match(projectPatchRx);
 if(!m)throw new Error('Round-trip safety: montagem projectPatches não encontrada.');
@@ -24,34 +21,8 @@ const guardedExpr=originalExpr.replace(/studioBuildRegionSet\(\)/g,safeRegions);
 const safeLine=`const projectPatches=(${scrubExpr})(${guardedExpr});`;
 html=html.replace(projectPatchRx,safeLine);
 
-// 2) ABERTURA: saneia o objeto ANTES de qualquer patch físico ser aplicado e antes da
-// captura do baseline sparse. Isso impede que patches históricos contaminem o baseline
-// e façam campos ausentes de teamsV1 herdarem bytes errados.
-const applyNeedle='async function studioApplyProjectWithBase(d,baseBytes,baseName){';
-if(!html.includes(applyNeedle))throw new Error('Round-trip safety: studioApplyProjectWithBase não encontrado.');
-const preApply=String.raw`
-  if(d?.base?.profile==='iss-deluxe-plus'&&d?.state){
-    const __isssdScrub=(list)=>{
-      if(!Array.isArray(list))return list;
-      let next=list;
-      try{
-        if(typeof studioSanitizeProjectPatches==='function'){
-          const regions=typeof globalThis.studioBuildRegionSet==='function'?globalThis.studioBuildRegionSet():new Set();
-          next=studioSanitizeProjectPatches(next,regions);
-        }
-      }catch(e){console.warn('ISSSD Studio: sanitização semântica pré-abertura',e)}
-      return next.filter(p=>![0x2AA8E,0x2B166,0x3193A].includes(Number(p?.off??p?.offset)));
-    };
-    for(const k of ['patchesCompact','patches','legacyPatches','deferredPlayerPatches'])if(Array.isArray(d.state[k]))d.state[k]=__isssdScrub(d.state[k]);
-    if(Array.isArray(d.patches))d.patches=__isssdScrub(d.patches);
-    if(d.state.semantic)delete d.state.semantic.plusPreparationV1;
-    delete d.state.targetLength;
-    window.ISSSDLog?.add?.('Projetos','info','Projeto Plus saneado antes da aplicação física',{roundTrip:'semantic-first-v3'});
-  }
-`;
-html=html.replace(applyNeedle,applyNeedle+preApply);
-
-// 3) Assegura que o finalizador de projeto também remova infraestrutura derivada.
+// O finalizador do .issdproj remove somente infraestrutura derivada que nunca deve
+// persistir. O Build Pipeline v1 volta a gerar isso deterministicamente na exportação.
 const finalizeMarker='window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__=function(obj){';
 if(html.includes(finalizeMarker)&&!html.includes('roundTripSaveSanitized')){
   html=html.replace(finalizeMarker,finalizeMarker+String.raw`
@@ -66,11 +37,11 @@ if(html.includes(finalizeMarker)&&!html.includes('roundTripSaveSanitized')){
 `);
 }
 
-if(!html.includes("roundTrip:'semantic-first-v3'"))throw new Error('Round-trip safety: saneamento pré-abertura não foi instalado.');
+if(!html.includes('roundTripSaveSanitized'))throw new Error('Round-trip safety: saneamento de salvamento não foi instalado.');
 if(!html.includes('0x2AA8E,0x2B166,0x3193A'))throw new Error('Round-trip safety: bloqueio dos loaders legados ausente.');
 if(!html.includes("typeof globalThis.studioBuildRegionSet==='function'"))throw new Error('Round-trip safety: guarda global de studioBuildRegionSet ausente.');
 if(/typeof\s+studioBuildRegionSet\s*===/.test(html))throw new Error('Round-trip safety: referência lexical insegura a studioBuildRegionSet permaneceu.');
-if((html.match(/async function studioApplyProjectWithBase\(d,baseBytes,baseName\)\{/g)||[]).length!==1)throw new Error('Round-trip safety: função de abertura ambígua.');
+if(html.includes("roundTrip:'semantic-first-v3'"))throw new Error('Round-trip safety: saneamento físico de abertura legado ainda está presente.');
 
 fs.writeFileSync(htmlPath,html,'utf8');
-console.log('ISSSD Studio: round-trip de projeto protegido — sem referência lexical a studioBuildRegionSet; patches saneados no salvar e antes da abertura; loaders C0 legados bloqueados.');
+console.log('ISSSD Studio: round-trip simplificado — abertura não toca patches físicos; salvamento remove apenas infraestrutura derivada e loaders C0 legados.');
