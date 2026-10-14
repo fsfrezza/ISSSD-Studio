@@ -26,7 +26,8 @@ test('browser Studio session composes IO, canonical Plus verification and 4 MiB 
   assert.equal(result.rom.length,0x400000);
   assert.equal(result.buildPipeline,'isssd-plus-build-pipeline-v1');
   assert.equal(result.report[0].id,'01-expand-4mb');
-  assert.equal(result.report.at(-1).id,'99-checksum');
+  assert.equal(result.report.at(-1).id,'90-integrity-mirrors');
+  assert.equal(result.report.some(stage=>stage.id==='99-checksum'),false);
   assert.deepEqual(base,before);
 });
 
