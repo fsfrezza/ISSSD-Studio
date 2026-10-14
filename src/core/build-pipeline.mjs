@@ -23,7 +23,7 @@ export class BuildStageError extends Error{
   }
 }
 
-export function runBuildPipeline(baseRom,{state={},stages=[],keepCheckpoints=false}={}){
+export function runBuildPipeline(baseRom,{state={},stages=[],keepCheckpoints=false,collectStageDiffs=keepCheckpoints}={}){
   requireBytes(baseRom,'base ROM');
   if(!Array.isArray(stages))throw new TypeError('stages must be an array');
   const immutableBase=baseRom.slice();
@@ -40,21 +40,26 @@ export function runBuildPipeline(baseRom,{state={},stages=[],keepCheckpoints=fal
     if(kind!=='semantic'&&kind!=='derived')throw new TypeError(`build stage ${stage.id} has invalid kind`);
     const enabled=typeof stage.when==='function'?!!stage.when(state,work):stage.when!==false;
     if(!enabled){
-      report.push({id:stage.id,kind,status:'skipped',inputLength:work.length,outputLength:work.length,diff:{changedBytes:0,ranges:[]}});
+      report.push({id:stage.id,kind,status:'skipped',inputLength:work.length,outputLength:work.length,diff:collectStageDiffs?{changedBytes:0,ranges:[]}:null});
       continue;
     }
 
-    const before=work.slice();
+    // A full 4 MiB snapshot+diff for every stage made an ordinary build scale
+    // with the number of stages instead of the amount of edited data. Keep that
+    // cost exclusive to diagnostic/checkpoint builds. Normal builds still get a
+    // final diff from project-build.mjs.
+    const before=collectStageDiffs?work.slice():null;
+    const inputLength=work.length;
     try{
       const returned=stage.run(work,state,{index,stageId:stage.id,kind});
       if(returned!==undefined)work=requireBytes(returned,`build stage ${stage.id} result`);
-      const diff=diffRanges(before,work);
-      const entry={id:stage.id,kind,status:'ok',inputLength:before.length,outputLength:work.length,diff};
+      const diff=collectStageDiffs?diffRanges(before,work):null;
+      const entry={id:stage.id,kind,status:'ok',inputLength,outputLength:work.length,diff};
       report.push(entry);
       lastSuccessfulStage=stage.id;
       if(keepCheckpoints)checkpoints.push({id:stage.id,kind,rom:work.slice(),diff});
     }catch(error){
-      report.push({id:stage.id,kind,status:'failed',inputLength:before.length,outputLength:work.length,error:error?.message||String(error)});
+      report.push({id:stage.id,kind,status:'failed',inputLength,outputLength:work.length,error:error?.message||String(error)});
       throw new BuildStageError(stage.id,error,{report,lastSuccessfulStage});
     }
   }
