@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "description": "Regression harness and source history for ISSSD Studio",
   "scripts": {
-    "test": "node --test --test-concurrency=4 tests/*.test.mjs",
+    "test": "node --test --test-concurrency=1 tests/*.test.mjs",
     "restore:project": "node scripts/restore-canonical-project.mjs --force",
     "ensure:project": "node scripts/restore-canonical-project.mjs",
     "ensure:plus-preparation": "node scripts/ensure-plus-preparation-project.mjs && node scripts/migrate-sparse-team-overrides.mjs && node scripts/sanitize-legacy-plus-project.mjs",
