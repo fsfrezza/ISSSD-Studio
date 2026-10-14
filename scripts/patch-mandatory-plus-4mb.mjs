@@ -10,11 +10,26 @@ let html=fs.readFileSync(htmlPath,'utf8');
 const applyNeedle='async function studioApplyProjectWithBase(d,baseBytes,baseName){';
 if(!html.includes(applyNeedle))throw new Error('4 MiB obrigatório: studioApplyProjectWithBase não encontrado.');
 
-const helper=String.raw`async function studioEnsureMandatoryPlus4MiB(){
+const helper=String.raw`function studioCaptureNativePlusTacticsBaseline(){
+ if(activeRomProfile?.id!=='iss-deluxe-plus'||!rom)return false;
+ if(window.__ISSSD_PLUS_NATIVE_TACTICS_BASELINE_V1__?.teams)return true;
+ const hs=(rom.length%0x8000===0x200)?0x200:0,body=rom.length-hs;if(body!==0x200000)return false;
+ const teams={};
+ for(let team=0;team<56;team++){
+  let rec=null;try{rec=plusTacticalRecordForTeam(team)}catch(_){}
+  if(!rec||!Array.isArray(rec.raw)||rec.raw.length!==31)continue;
+  teams[String(team)]={teamId:team,recordPc:Number(rec.recordPc),raw:Array.from(rec.raw,Number)};
+ }
+ if(Object.keys(teams).length!==56)throw new Error('Não foi possível capturar as 56 táticas nativas antes da expansão obrigatória.');
+ window.__ISSSD_PLUS_NATIVE_TACTICS_BASELINE_V1__={schema:'isssd-plus-native-tactics-baseline-v1',teams};
+ return true;
+}
+async function studioEnsureMandatoryPlus4MiB(){
  if(activeRomProfile?.id!=='iss-deluxe-plus')return false;
  const c=studioCore?.();if(!c)throw new Error('Núcleo Plus indisponível para expansão obrigatória.');
  let s=c.plusExpansionOnlyStatus?.()||{},body=Number(s.bodyLength)||0;
  if(body===0x200000){
+  studioCaptureNativePlusTacticsBaseline();
   const r=c.apply4MiBExpansionOnly?.();
   if(!r?.ok)throw new Error(r?.error||'Falha ao expandir a ROM Plus para 4 MiB.');
   s=c.plusExpansionOnlyStatus?.()||{};body=Number(s.bodyLength)||Number(r.bodyLength)||0;
@@ -30,7 +45,7 @@ const helper=String.raw`async function studioEnsureMandatoryPlus4MiB(){
 }
 `;
 
-if(!html.includes('function studioEnsureMandatoryPlus4MiB()'))html=html.replace(applyNeedle,helper+'\n'+applyNeedle);
+if(!html.includes('function studioCaptureNativePlusTacticsBaseline()'))html=html.replace(applyNeedle,helper+'\n'+applyNeedle);
 
 // Primeiro passo depois de carregar a ROM-base no runtime: expandir e individualizar,
 // antes de qualquer estado semântico do projeto ser restaurado.
@@ -48,7 +63,8 @@ const saveGuard='\n await studioEnsureMandatoryPlus4MiB();';
 if(!html.includes(saveNeedle+saveGuard))html=html.replace(saveNeedle,saveNeedle+saveGuard);
 
 if(!html.includes("body!==0x400000"))throw new Error('4 MiB obrigatório: validação de tamanho ausente.');
+if(!html.includes('studioCaptureNativePlusTacticsBaseline();'))throw new Error('4 MiB obrigatório: baseline tática nativa não é capturada antes da expansão.');
 if(!html.includes('await studioEnsureMandatoryPlus4MiB();'))throw new Error('4 MiB obrigatório: chamada obrigatória não instalada.');
 fs.writeFileSync(htmlPath,html,'utf8');
 console.log('ISSSD Studio: expansão Plus para 4 MiB é obrigatória e automática; ocorre antes da restauração do projeto e antes de toda exportação de ROM.');
-console.log('ISSSD Studio: banco tático é individualizado integralmente na preparação de 4 MiB; o usuário não escolhe essa etapa.');
+console.log('ISSSD Studio: táticas nativas são capturadas antes da expansão; banco tático é individualizado integralmente sem escolha do usuário.');
