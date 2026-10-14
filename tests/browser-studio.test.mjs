@@ -3,8 +3,9 @@ import assert from 'node:assert/strict';
 import {createBrowserStudioSession} from '../src/app/browser-studio.mjs';
 import {PLUS_BASELINE} from '../src/core/plus-baseline.mjs';
 
-test('browser Studio session composes IO, canonical Plus verification and session flow',async()=>{
+test('browser Studio session composes IO, canonical Plus verification and 4 MiB pipeline flow',async()=>{
   const base=new Uint8Array(PLUS_BASELINE.size);
+  const before=base.slice();
   const io={
     async openFile(options){
       if(options.kind==='rom')return {name:'base.sfc',bytes:base};
@@ -22,7 +23,11 @@ test('browser Studio session composes IO, canonical Plus verification and sessio
   await session.openProject();
   const result=session.build({writeChecksum:false});
   assert.equal(hashes,1);
-  assert.deepEqual(result.rom,base);
+  assert.equal(result.rom.length,0x400000);
+  assert.equal(result.buildPipeline,'isssd-plus-build-pipeline-v1');
+  assert.equal(result.report[0].id,'01-expand-4mb');
+  assert.equal(result.report.at(-1).id,'99-checksum');
+  assert.deepEqual(base,before);
 });
 
 test('browser Studio session refuses non-canonical Plus ROM before accepting it',async()=>{
