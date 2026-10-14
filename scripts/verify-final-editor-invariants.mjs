@@ -32,9 +32,20 @@ if(!reqBlock.includes('body!==0x400000'))throw new Error('Verificação final: r
 if(!html.includes("roundTrip:'semantic-first-v3'"))throw new Error('Verificação final: proteção de round-trip ausente.');
 if(!html.includes('0x2AA8E,0x2B166,0x3193A'))throw new Error('Verificação final: saneamento dos loaders derivados não está presente no round-trip.');
 
+if(!html.includes('id="isssd-project-open-semantic-only-v1"'))throw new Error('Verificação final: barreira de abertura semântica não foi instalada.');
+if(!html.includes('const pristine=new Uint8Array(baseBytes)'))throw new Error('Verificação final: abertura do projeto não preserva uma cópia imutável da ROM-base.');
+if(!html.includes('rom=pristine;'))throw new Error('Verificação final: abertura do projeto não restaura a ROM-base após o importador legado.');
+if(!html.includes('window.__ISSSD_PROJECT_OPEN_ROM_PRISTINE__=true'))throw new Error('Verificação final: abertura semântica não confirma ROM autoritativa preservada.');
+const applyFullStart=html.indexOf('function applyFull(p){');
+const applyFullEnd=html.indexOf('function markTouched(',applyFullStart);
+if(applyFullStart<0||applyFullEnd<0)throw new Error('Verificação final: applyFull do importador visual não encontrado.');
+const applyFullBlock=html.slice(applyFullStart,applyFullEnd);
+if(applyFullBlock.includes('__ISSSD_GIT_REAPPLY_PROJECT_STATE__'))throw new Error('Verificação final: hidratação pós-abertura ainda reaplica projeto diretamente na ROM.');
+if(!applyFullBlock.includes('hydrateDom(p)'))throw new Error('Verificação final: hidratação semântica da interface não está conectada após abrir projeto.');
+
 if(!html.includes("fetch('/__isssd/build-plus-project'"))throw new Error('Verificação final: Build Pipeline v1 não está conectado à exportação Plus.');
 if(!html.includes('await studioProjectObject()'))throw new Error('Verificação final: exportação Plus não envia o projeto atual ao pipeline.');
 if(!html.includes("response.headers.get('X-ISSSD-Builder')!=='plus-build-pipeline-v1'"))throw new Error('Verificação final: browser não exige confirmação do Build Pipeline v1.');
 if(!html.includes('payload.length!==0x400000'))throw new Error('Verificação final: browser não rejeita ROM Plus final que não tenha 4 MiB.');
 
-console.log('ISSSD Studio: invariantes finais verificadas — UI ainda se protege em 4 MiB para edição, round-trip permanece sem infraestrutura persistida e a ROM final Plus é reconstruída pelo Build Pipeline v1 a partir do projeto atual.');
+console.log('ISSSD Studio: invariantes finais verificadas — abrir projeto preserva a ROM-base autoritativa, a interface é hidratada semanticamente, infraestrutura derivada não persiste e a ROM final Plus é reconstruída pelo Build Pipeline v1.');
