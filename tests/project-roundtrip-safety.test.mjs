@@ -13,10 +13,10 @@ test('build instala proteção de round-trip antes do export final',()=>{
   assert.ok(safe>=0&&globalOff>safe&&final>globalOff);
 });
 
-test('abertura saneia patches antes de aplicar projeto',()=>{
-  assert.match(patch,/studioApplyProjectWithBase\(d,baseBytes,baseName\)/);
-  assert.match(patch,/studioSanitizeProjectPatches/);
-  assert.match(patch,/semantic-first-v3/);
+test('abertura não saneia nem reaplica patches físicos',()=>{
+  assert.doesNotMatch(patch,/studioApplyProjectWithBase\(d,baseBytes,baseName\)/);
+  assert.doesNotMatch(patch,/semantic-first-v3/);
+  assert.match(patch,/A abertura agora é semantic-only/);
 });
 
 test('studioBuildRegionSet é opcional sem tocar no binding lexical',()=>{
@@ -26,8 +26,9 @@ test('studioBuildRegionSet é opcional sem tocar no binding lexical',()=>{
   assert.match(patch,/referência lexical insegura a studioBuildRegionSet permaneceu/);
 });
 
-test('loaders C0 legados nunca persistem nem são reaplicados',()=>{
+test('loaders C0 legados nunca persistem no projeto salvo',()=>{
   for(const x of ['0x2AA8E','0x2B166','0x3193A'])assert.match(patch,new RegExp(x));
+  assert.match(patch,/roundTripSaveSanitized/);
   assert.match(patch,/patchesCompact/);
   assert.match(patch,/deferredPlayerPatches/);
 });
