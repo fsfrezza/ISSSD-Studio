@@ -68,6 +68,16 @@ function groupEntriesByPtr(source){
   return groups;
 }
 
+export function expandPlusTo4MiB(source){
+  if(!(source instanceof Uint8Array))throw new TypeError('Uint8Array ROM required');
+  if(source.length===EXPANDED_SIZE)return source.slice();
+  if(source.length!==0x200000)throw new RangeError('Plus expansion requires exactly 2 MiB or 4 MiB ROM');
+  const out=new Uint8Array(EXPANDED_SIZE);out.fill(0xFF);out.set(source);
+  out.set(ascii(EXPANSION_SIG),EXPANSION_SIG_PC);
+  out[0x7FD7]=0x0C;
+  return out;
+}
+
 export function planPlusTacticalInfrastructure(source){
   if(!(source instanceof Uint8Array))throw new TypeError('Uint8Array ROM required');
   if(source.length!==0x400000&&source.length!==0x800000)throw new RangeError('Plus tactical infrastructure requires 4 MiB or 8 MiB ROM');
@@ -115,18 +125,9 @@ export function planPlusTacticalInfrastructure(source){
   };
 }
 
-function expandTo4MiB(source){
-  if(source.length===0x400000)return source.slice();
-  if(source.length!==0x200000)throw new RangeError('Plus tactical preparation requires 2 MiB or 4 MiB ROM');
-  const out=new Uint8Array(EXPANDED_SIZE);out.fill(0xFF);out.set(source);
-  out.set(ascii(EXPANSION_SIG),EXPANSION_SIG_PC);
-  out[0x7FD7]=0x0C;
-  return out;
-}
-
 export function preparePlusTacticalInfrastructure(source){
   if(!(source instanceof Uint8Array))throw new TypeError('Uint8Array ROM required');
-  const out=expandTo4MiB(source);
+  const out=expandPlusTo4MiB(source);
   const plan=planPlusTacticalInfrastructure(out);
   for(const w of plan.writes)out.set(w.bytes,w.off);
   return out;
