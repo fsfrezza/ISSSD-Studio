@@ -7,6 +7,12 @@ const patch=fs.readFileSync(new URL('../scripts/patch-mandatory-plus-4mb.mjs',im
 const tactics=fs.readFileSync(new URL('../scripts/patch-native-tactical-individualization.mjs',import.meta.url),'utf8');
 const cmd=pkg.scripts['build:editor'];
 
+const replacementStart=tactics.indexOf('const replacement=String.raw`');
+const replacementEnd=tactics.indexOf('`;\n\nhtml=html.slice',replacementStart);
+const replacementBlock=replacementStart>=0&&replacementEnd>replacementStart
+  ? tactics.slice(replacementStart,replacementEnd)
+  : '';
+
 test('preparação 4 MiB é obrigatória antes do restore tático',()=>{
   const identity=cmd.indexOf('patch-player-identity-v1.mjs');
   const mandatory=cmd.indexOf('patch-mandatory-plus-4mb.mjs');
@@ -28,7 +34,8 @@ test('toda exportação Plus exige 4 MiB',()=>{
 });
 
 test('restore tático não instala mais a lógica de dois slots livres no banco 8B',()=>{
-  assert.doesNotMatch(tactics,/const slots=\[0x5FE9F,0x5FEBE\]/);
-  assert.match(tactics,/body!==0x400000/);
-  assert.match(tactics,/ainda compartilha registro tático/);
+  assert.ok(replacementBlock.length>0,'bloco de restauração tática 4 MiB não encontrado');
+  assert.doesNotMatch(replacementBlock,/const slots=\[0x5FE9F,0x5FEBE\]/);
+  assert.match(replacementBlock,/body!==0x400000/);
+  assert.match(replacementBlock,/ainda compartilha registro tático/);
 });
