@@ -16,7 +16,12 @@ test('build instala proteção de round-trip antes do export final',()=>{
 test('abertura saneia patches antes de aplicar projeto',()=>{
   assert.match(patch,/studioApplyProjectWithBase\(d,baseBytes,baseName\)/);
   assert.match(patch,/studioSanitizeProjectPatches/);
-  assert.match(patch,/semantic-first-v1/);
+  assert.match(patch,/semantic-first-v2/);
+});
+
+test('studioBuildRegionSet é opcional fora do escopo lexical',()=>{
+  assert.match(patch,/typeof studioBuildRegionSet==='function'/);
+  assert.match(patch,/new Set\(\)/);
 });
 
 test('loaders C0 legados nunca persistem nem são reaplicados',()=>{
