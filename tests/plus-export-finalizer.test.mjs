@@ -57,6 +57,8 @@ test('Studio Plus export is rebuilt from current project through Build Pipeline 
  assert.match(server,/u==='\/__isssd\/build-plus-project'/);
  assert.match(server,/'X-ISSSD-Builder':'plus-build-pipeline-v1'/);
  assert.match(server,/build-diagnostics/);
+ assert.doesNotMatch(server,/u==='\/__isssd\/finalize-plus-rom'/);
+ assert.doesNotMatch(server,/finalizePostedRom/);
  assert.match(pkg,/verify-editor-source\.mjs[^\n]*build-editor\.mjs/);
  assert.match(pkg,/patch-canonical-rom-export\.mjs/);
  assert.doesNotMatch(pkg,/patch-brazil-attribute-mirror\.mjs/);
