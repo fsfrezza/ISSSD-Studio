@@ -5,7 +5,7 @@ import {plusPlayerWriter} from './plus-player-writer.mjs';
 import {plusTacticsWriter} from './plus-tactics-writer.mjs';
 import {plusStrategyTextWriter} from './plus-strategy-text.mjs';
 import {plusRomMetaWriter} from './plus-rom-meta.mjs';
-import {writeSnesChecksum} from './rom-integrity.mjs';
+import {syncPlusRuntimeMirrors,validatePlusRuntimeMirrors,writeFinalSnesChecksum} from './plus-export-finalizer.mjs';
 
 function hasTacticalEdits(state){
   const teams=state?.plusTactics?.teams;
@@ -76,17 +76,21 @@ export function createPlusBuildStages({baseRom,patches=[],extraWriters=[],writeC
     run:(work,state)=>writer(work,state),
   }));
 
+  // Esta é a mesma regra de integridade que foi validada na ROM corrigida
+  // manualmente: ao final de TODAS as etapas semânticas, as cópias runtime
+  // conhecidas do Brasil são sincronizadas de forma incondicional e verificadas.
   stages.push({
     id:'90-integrity-mirrors',kind:'derived',
     run:work=>{
-      const lower=work.slice(0,PLUS.baseSize);
-      const reconciled=reconcileKnownPlayerIntegrityMirrors(baseRom,lower);
-      work.set(reconciled,0);
+      syncPlusRuntimeMirrors(work);
+      if(!validatePlusRuntimeMirrors(work))throw new Error('Plus runtime mirrors remain inconsistent after final synchronization');
       return work;
     },
   });
 
-  if(writeChecksum)stages.push({id:'99-checksum',kind:'derived',run:work=>{writeSnesChecksum(work);return work;}});
+  // O checksum final também usa o procedimento da ROM manual funcional:
+  // zera o quarteto, soma a ROM e acrescenta 0x01FE (checksum+complement).
+  if(writeChecksum)stages.push({id:'99-checksum',kind:'derived',run:work=>{writeFinalSnesChecksum(work);return work;}});
   return stages;
 }
 
@@ -94,5 +98,6 @@ export function buildPlusWithPipeline(baseRom,{semanticState={},patches=[],extra
   const stages=createPlusBuildStages({baseRom,patches,extraWriters,writeChecksum});
   const result=runBuildPipeline(baseRom,{state:semanticState,stages,keepCheckpoints});
   if(result.rom.length!==0x400000)throw new Error(`Plus pipeline must finish at 4 MiB; got ${result.rom.length} bytes`);
+  if(!validatePlusRuntimeMirrors(result.rom))throw new Error('Plus pipeline finished with invalid runtime mirrors');
   return result;
 }
