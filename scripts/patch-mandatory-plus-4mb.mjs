@@ -26,20 +26,16 @@ const helper=String.raw`function studioCaptureNativePlusTacticsBaseline(){
 }
 async function studioEnsureMandatoryPlus4MiB(){
  if(activeRomProfile?.id!=='iss-deluxe-plus')return false;
- const c=studioCore?.();if(!c)throw new Error('Núcleo Plus indisponível para expansão obrigatória.');
- let s=c.plusExpansionOnlyStatus?.()||{},body=Number(s.bodyLength)||0;
+ if(!(rom instanceof Uint8Array))throw new Error('ROM Plus indisponível para expansão obrigatória.');
+ let hs=(rom.length%0x8000===0x200)?0x200:0,body=rom.length-hs;
  if(body===0x200000){
   studioCaptureNativePlusTacticsBaseline();
-  const r=c.apply4MiBExpansionOnly?.();
-  if(!r?.ok)throw new Error(r?.error||'Falha ao expandir a ROM Plus para 4 MiB.');
-  s=c.plusExpansionOnlyStatus?.()||{};body=Number(s.bodyLength)||Number(r.bodyLength)||0;
+  if(typeof studioAutoPreparePlusTactics!=='function')throw new Error('Preparador tático Plus indisponível para expansão obrigatória de 4 MiB.');
+  await studioAutoPreparePlusTactics();
+  if(!(rom instanceof Uint8Array))throw new Error('Preparador Plus invalidou o buffer global da ROM.');
+  hs=(rom.length%0x8000===0x200)?0x200:0;body=rom.length-hs;
  }
- if(body!==0x400000)throw new Error('Toda ROM Plus do Studio deve ter exatamente 4 MiB; tamanho atual: '+body+' bytes.');
- if(!c.tacticsIndividualized?.()){
-  const r=await c.individualizeAllTactics?.();
-  if(!r?.ok)throw new Error(r?.error||r?.reason||'Falha ao individualizar as táticas na ROM Plus de 4 MiB.');
- }
- if(!c.tacticsIndividualized?.())throw new Error('A expansão de 4 MiB foi feita, mas as táticas não ficaram individualizadas.');
+ if(body!==0x400000)throw new Error('Toda ROM Plus do Studio deve ter exatamente 4 MiB no buffer global; tamanho atual: '+body+' bytes.');
  window.__ISSSD_PLUS_4MB_MANDATORY__=true;
  return true;
 }
@@ -47,15 +43,14 @@ async function studioEnsureMandatoryPlus4MiB(){
 
 if(!html.includes('function studioCaptureNativePlusTacticsBaseline()'))html=html.replace(applyNeedle,helper+'\n'+applyNeedle);
 
-// Primeiro passo depois de carregar a ROM-base no runtime: expandir e individualizar,
-// antes de qualquer estado semântico do projeto ser restaurado.
+// Primeiro passo depois de carregar a ROM-base no runtime: expandir o MESMO buffer
+// global usado pelos writers antes de qualquer estado semântico ser restaurado.
 const applyRx=/(studioCore\(\)\.applyProject\(cleanBase,rebuilt,[\s\S]*?\);)/;
 const m=html.match(applyRx);
 if(!m)throw new Error('4 MiB obrigatório: chamada studioCore().applyProject(...) não encontrada.');
 if(!html.includes(m[1]+'\n await studioEnsureMandatoryPlus4MiB();'))html=html.replace(m[1],m[1]+'\n await studioEnsureMandatoryPlus4MiB();');
 
-// Qualquer exportação de ROM Plus também passa pela garantia de 4 MiB. Isso cobre
-// sessões iniciadas por ROM, mesmo sem abrir um projeto antes.
+// Qualquer exportação de ROM Plus também passa pela garantia de 4 MiB.
 const saveCandidates=['async function studioDoSave(){','async function studioDoSave() {'];
 let saveNeedle=saveCandidates.find(x=>html.includes(x));
 if(!saveNeedle)throw new Error('4 MiB obrigatório: studioDoSave não encontrado.');
@@ -64,7 +59,8 @@ if(!html.includes(saveNeedle+saveGuard))html=html.replace(saveNeedle,saveNeedle+
 
 if(!html.includes("body!==0x400000"))throw new Error('4 MiB obrigatório: validação de tamanho ausente.');
 if(!html.includes('studioCaptureNativePlusTacticsBaseline();'))throw new Error('4 MiB obrigatório: baseline tática nativa não é capturada antes da expansão.');
+if(!html.includes('await studioAutoPreparePlusTactics();'))throw new Error('4 MiB obrigatório: expansão não está ligada ao buffer global rom.');
 if(!html.includes('await studioEnsureMandatoryPlus4MiB();'))throw new Error('4 MiB obrigatório: chamada obrigatória não instalada.');
 fs.writeFileSync(htmlPath,html,'utf8');
-console.log('ISSSD Studio: expansão Plus para 4 MiB é obrigatória e automática; ocorre antes da restauração do projeto e antes de toda exportação de ROM.');
-console.log('ISSSD Studio: táticas nativas são capturadas antes da expansão; banco tático é individualizado integralmente sem escolha do usuário.');
+console.log('ISSSD Studio: expansão Plus para 4 MiB é obrigatória e automática no buffer global da ROM; ocorre antes da restauração do projeto e antes de toda exportação.');
+console.log('ISSSD Studio: táticas nativas são capturadas antes da expansão; o mesmo buffer rom consumido pelos writers é expandido e preparado.');
