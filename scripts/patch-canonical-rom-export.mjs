@@ -7,12 +7,7 @@ const file=path.join(root,'editor','ISSSD-Studio.html');
 if(!fs.existsSync(file))throw new Error('Editor gerado não encontrado: '+file);
 let html=fs.readFileSync(file,'utf8');
 
-// Remove every experimental Brazil/export runtime from previous attempts.
-for(const id of [
- 'ISSSD_BRAZIL_FINAL_ROM_MIRROR_V3',
- 'ISSSD_BRAZIL_FINAL_ROM_MIRROR_V4',
- 'ISSSD_BRAZIL_FINAL_ROM_MIRROR_V5'
-]){
+for(const id of ['ISSSD_BRAZIL_FINAL_ROM_MIRROR_V3','ISSSD_BRAZIL_FINAL_ROM_MIRROR_V4','ISSSD_BRAZIL_FINAL_ROM_MIRROR_V5']){
  html=html.replace(new RegExp(`<script\\s+id=["']${id}["'][^>]*>[\\s\\S]*?<\\/script>\\s*`,'g'),'');
 }
 html=html.replaceAll('new globalThis.__ISSSD_FINAL_BLOB_V4__(', 'new Blob(');
@@ -22,31 +17,34 @@ const start=html.indexOf('function studioDownloadFile(bytes,name,type="applicati
 if(start<0)throw new Error('Export final: studioDownloadFile não encontrado.');
 const end=html.indexOf('\n}',start);
 if(end<0)throw new Error('Export final: fim de studioDownloadFile não encontrado.');
-const oldBlock=html.slice(start,end+2);
 const newBlock=`async function studioDownloadFile(bytes,name,type="application/octet-stream"){
   let payload=bytes;
   const isRom=/\\.(?:smc|sfc)$/i.test(String(name||''));
-  if(isRom){
-    if(!(bytes instanceof Uint8Array))throw new TypeError('ROM final precisa ser Uint8Array.');
-    const response=await fetch('/__isssd/finalize-plus-rom',{
+  const isPlus=(activeRomProfile?.id==='iss-deluxe-plus')||/PLUS/i.test(String(name||''));
+  if(isRom&&isPlus){
+    const project=await studioProjectObject();
+    window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__?.(project);
+    const response=await fetch('/__isssd/build-plus-project',{
       method:'POST',
-      headers:{'Content-Type':'application/octet-stream'},
-      body:bytes
+      headers:{'Content-Type':'application/json; charset=utf-8'},
+      body:JSON.stringify({project,diagnostic:window.__ISSSD_DIAGNOSTIC_CHECKPOINTS__===true})
     });
     if(!response.ok){
       let detail='';
       try{detail=(await response.json())?.error||''}catch(_){detail=await response.text().catch(()=> '')}
-      throw new Error('Finalização canônica da ROM falhou'+(detail?': '+detail:''));
+      throw new Error('Build canônico da ROM falhou'+(detail?': '+detail:''));
     }
-    if(response.headers.get('X-ISSSD-Finalizer')!=='plus-export-v1'||response.headers.get('X-ISSSD-Mirrors')!=='ok'){
-      throw new Error('Servidor não confirmou a integridade final da ROM.');
+    if(response.headers.get('X-ISSSD-Builder')!=='plus-build-pipeline-v1'||response.headers.get('X-ISSSD-Mirrors')!=='ok'){
+      throw new Error('Servidor não confirmou o pipeline canônico da ROM Plus.');
     }
     payload=new Uint8Array(await response.arrayBuffer());
-    window.ISSSDLog?.add?.('ROM / Build','info','ROM finalizada e validada pelo núcleo local',{
+    if(payload.length!==0x400000)throw new Error('Pipeline Plus não retornou ROM de 4 MiB.');
+    window.ISSSDLog?.add?.('ROM / Build','info','ROM construída pelo pipeline canônico por estágios',{
       size:payload.length,
-      finalizer:response.headers.get('X-ISSSD-Finalizer'),
-      mirrors:response.headers.get('X-ISSSD-Mirrors'),
-      checksum:response.headers.get('X-ISSSD-Checksum')
+      builder:response.headers.get('X-ISSSD-Builder'),
+      stages:response.headers.get('X-ISSSD-Stages'),
+      lastStage:decodeURIComponent(response.headers.get('X-ISSSD-Last-Stage')||''),
+      diagnostics:decodeURIComponent(response.headers.get('X-ISSSD-Diagnostics')||'off')
     });
   }
   const blob=new Blob([payload],{type});
@@ -65,19 +63,14 @@ const callNeedle='studioDownloadFile(output,`ISSSD-STUDIO-BUILD-${profile}.smc`)
 const callCount=html.split(callNeedle).length-1;
 if(callCount!==1)throw new Error(`Export final: esperado 1 download da ROM final; encontrados ${callCount}.`);
 html=html.replace(callNeedle,'await studioDownloadFile(output,`ISSSD-STUDIO-BUILD-${profile}.smc`);');
+html=html.replaceAll("'ROM final auditada antes do download'","'Estado do Editor auditado antes do build canônico por estágios'");
 
-// The file hash/audit happens before server finalization, so make that explicit in
-// naming and never claim it is the downloaded-file SHA. The server is the final
-// authority for mirrors/checksum; the browser audit remains a pre-finalization audit.
-html=html.replaceAll("'ROM final auditada antes do download'","'ROM montada e auditada antes da finalização canônica'");
-
-if(/__ISSSD_FINALIZE_BRAZIL_ROM_V[345]__|__ISSSD_FINAL_BLOB_V4__|globalThis\.Blob=FinalBlob/.test(html)){
- throw new Error('Export final: restou runtime experimental de mirror/Blob.');
-}
-if(!html.includes("fetch('/__isssd/finalize-plus-rom'"))throw new Error('Export final: endpoint canônico não foi instalado.');
-if(!html.includes('await studioDownloadFile(output,`ISSSD-STUDIO-BUILD-${profile}.smc`);'))throw new Error('Export final: download da ROM não aguarda o finalizador.');
+if(/__ISSSD_FINALIZE_BRAZIL_ROM_V[345]__|__ISSSD_FINAL_BLOB_V4__|globalThis\.Blob=FinalBlob/.test(html))throw new Error('Export final: restou runtime experimental de mirror/Blob.');
+if(!html.includes("fetch('/__isssd/build-plus-project'"))throw new Error('Export final: endpoint do pipeline não foi instalado.');
+if(!html.includes('await studioProjectObject()'))throw new Error('Export final: pipeline não recebe o projeto semântico atual.');
+if(!html.includes('await studioDownloadFile(output,`ISSSD-STUDIO-BUILD-${profile}.smc`);'))throw new Error('Export final: download da ROM não aguarda o pipeline.');
 
 fs.writeFileSync(file,html,'utf8');
-console.log('ISSSD Studio: exportação de ROM centralizada no finalizador canônico do servidor local.');
-console.log('  browser monta output -> POST /__isssd/finalize-plus-rom -> núcleo valida mirrors/checksum -> download');
-console.log('  runtimes experimentais V3/V4/V5 e interceptação global de Blob removidos.');
+console.log('ISSSD Studio: exportação Plus centralizada no Build Pipeline v1 do servidor local.');
+console.log('  browser envia .issdproj atual -> servidor parte da ROM-base imutável -> stages -> ROM 4 MiB -> download');
+console.log('  o buffer ROM monolítico do browser deixa de ser a fonte da ROM final Plus.');
