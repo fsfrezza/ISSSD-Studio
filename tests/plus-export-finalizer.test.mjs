@@ -44,16 +44,19 @@ test('finalizer rejects unsupported ROM sizes instead of exporting silently',()=
  assert.throws(()=>finalizePlusRomForExport(new Uint8Array(0x300000)),/unexpected Plus ROM size/i);
 });
 
-test('Studio ROM export is routed through the canonical local finalizer',()=>{
+test('Studio Plus export is rebuilt from current project through Build Pipeline v1',()=>{
  const patch=fs.readFileSync(new URL('../scripts/patch-canonical-rom-export.mjs',import.meta.url),'utf8');
  const server=fs.readFileSync(new URL('../scripts/serve-editor.mjs',import.meta.url),'utf8');
  const pkg=fs.readFileSync(new URL('../package.json',import.meta.url),'utf8');
  const verify=fs.readFileSync(new URL('../scripts/verify-editor-source.mjs',import.meta.url),'utf8');
- assert.match(patch,/fetch\('\/__isssd\/finalize-plus-rom'/);
+ assert.match(patch,/fetch\('\/__isssd\/build-plus-project'/);
+ assert.match(patch,/await studioProjectObject\(\)/);
+ assert.match(patch,/plus-build-pipeline-v1/);
  assert.match(patch,/await studioDownloadFile\(output/);
- assert.match(server,/finalizePlusRomForExport/);
- assert.match(server,/u==='\/__isssd\/finalize-plus-rom'/);
- assert.match(server,/'X-ISSSD-Mirrors':'ok'/);
+ assert.match(server,/buildPlusProjectRom/);
+ assert.match(server,/u==='\/__isssd\/build-plus-project'/);
+ assert.match(server,/'X-ISSSD-Builder':'plus-build-pipeline-v1'/);
+ assert.match(server,/build-diagnostics/);
  assert.match(pkg,/verify-editor-source\.mjs[^\n]*build-editor\.mjs/);
  assert.match(pkg,/patch-canonical-rom-export\.mjs/);
  assert.doesNotMatch(pkg,/patch-brazil-attribute-mirror\.mjs/);
