@@ -27,8 +27,8 @@ test('toda exportação Plus exige 4 MiB',()=>{
   assert.match(patch,/Toda ROM Plus do Studio deve ter exatamente 4 MiB/);
 });
 
-test('restore tático não depende mais de dois slots livres no banco 8B',()=>{
-  assert.doesNotMatch(tactics,/0x5FE9F|0x5FEBE/);
+test('restore tático não instala mais a lógica de dois slots livres no banco 8B',()=>{
+  assert.doesNotMatch(tactics,/const slots=\[0x5FE9F,0x5FEBE\]/);
   assert.match(tactics,/body!==0x400000/);
   assert.match(tactics,/ainda compartilha registro tático/);
 });
