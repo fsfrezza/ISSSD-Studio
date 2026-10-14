@@ -4,6 +4,7 @@ import fs from 'node:fs';
 
 const pkg=JSON.parse(fs.readFileSync(new URL('../package.json',import.meta.url),'utf8'));
 const patch=fs.readFileSync(new URL('../scripts/patch-mandatory-plus-4mb.mjs',import.meta.url),'utf8');
+const semanticOpen=fs.readFileSync(new URL('../scripts/patch-project-open-semantic-only.mjs',import.meta.url),'utf8');
 const tactics=fs.readFileSync(new URL('../scripts/patch-native-tactical-individualization.mjs',import.meta.url),'utf8');
 const core=fs.readFileSync(new URL('../src/core/plus-tactics-infrastructure.mjs',import.meta.url),'utf8');
 const address=fs.readFileSync(new URL('../src/core/plus-tactics-address.mjs',import.meta.url),'utf8');
@@ -23,11 +24,11 @@ test('patch 4 MiB roda depois do player-id e antes do restore tático final',()=
   assert.ok(identity>=0&&mandatory>identity&&tactical>mandatory);
 });
 
-test('studioRestoreTeamsV1 recebe barreira síncrona própria',()=>{
+test('studioRestoreTeamsV1 mantém barreira 4 MiB para operações mutantes fora da abertura',()=>{
   assert.match(patch,/const restoreNeedle='function studioRestoreTeamsV1\(state\)\{'/);
   assert.match(patch,/studioEnsureMandatoryPlus4MiBSync\(true\)/);
   assert.match(patch,/restoreNeedle\+restoreGuard/);
-  assert.match(patch,/não pode iniciar sobre uma ROM de 2 MiB/);
+  assert.match(semanticOpen,/if\(window\.__ISSSD_SEMANTIC_OPEN_ONLY__\)return false/);
 });
 
 test('preparação injetada não depende do preparador tático legado',()=>{
@@ -65,12 +66,14 @@ test('individualização browser segue infraestrutura canônica rastreada',()=>{
   assert.match(helperBlock,/alternate=\[0xC0,0xC1,0xC2,0xC3,0xC4,0xC5,0xC6,0xC7\]/);
 });
 
-test('abertura mantém preparação antecipada após applyProject',()=>{
+test('abertura semantic-only bloqueia applyProject e expansão 4 MiB do ciclo legado',()=>{
   assert.match(patch,/studioCore\(\)\.applyProject/);
   assert.match(patch,/studioEnsureMandatoryPlus4MiB\(d\?\.base\?\.profile==='iss-deluxe-plus'\)/);
+  assert.match(semanticOpen,/if\(!window\.__ISSSD_SEMANTIC_OPEN_ONLY__\)\{\$\{physical\}\}/);
+  assert.match(semanticOpen,/if\(!window\.__ISSSD_SEMANTIC_OPEN_ONLY__\)\$\{mandatory\}/);
 });
 
-test('exportação também exige 4 MiB',()=>{
+test('salvamento ROM legado ainda exige 4 MiB quando usado fora do Build Pipeline',()=>{
   assert.match(patch,/async function studioDoSave/);
   assert.match(patch,/studioEnsureMandatoryPlus4MiB\(false\)/);
 });
