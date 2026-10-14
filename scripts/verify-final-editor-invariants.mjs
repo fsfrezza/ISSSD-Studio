@@ -10,8 +10,9 @@ const html=fs.readFileSync(htmlPath,'utf8');
 const restoreNeedle='function studioRestoreTeamsV1(state){';
 const restoreStart=html.indexOf(restoreNeedle);
 if(restoreStart<0)throw new Error('Verificação final: studioRestoreTeamsV1 não encontrado.');
-const restoreHead=html.slice(restoreStart,restoreStart+220);
-if(!restoreHead.includes('studioEnsureMandatoryPlus4MiBSync(true);'))throw new Error('Verificação final: studioRestoreTeamsV1 pode iniciar sem a barreira síncrona obrigatória de 4 MiB.');
+const restoreHead=html.slice(restoreStart,restoreStart+300);
+if(!restoreHead.includes('if(window.__ISSSD_SEMANTIC_OPEN_ONLY__)return false;'))throw new Error('Verificação final: teamsV1 ainda pode escrever durante a abertura semântica.');
+if(!restoreHead.includes('studioEnsureMandatoryPlus4MiBSync(true);'))throw new Error('Verificação final: studioRestoreTeamsV1 pode iniciar sem a barreira síncrona obrigatória de 4 MiB fora da abertura.');
 
 const syncStart=html.indexOf('function studioEnsureMandatoryPlus4MiBSync(forcePlus=false){');
 if(syncStart<0)throw new Error('Verificação final: preparador síncrono 4 MiB ausente.');
@@ -32,10 +33,17 @@ if(!reqBlock.includes('body!==0x400000'))throw new Error('Verificação final: r
 if(!html.includes("roundTrip:'semantic-first-v3'"))throw new Error('Verificação final: proteção de round-trip ausente.');
 if(!html.includes('0x2AA8E,0x2B166,0x3193A'))throw new Error('Verificação final: saneamento dos loaders derivados não está presente no round-trip.');
 
-if(!html.includes('id="isssd-project-open-semantic-only-v1"'))throw new Error('Verificação final: barreira de abertura semântica não foi instalada.');
-if(!html.includes('const pristine=new Uint8Array(baseBytes)'))throw new Error('Verificação final: abertura do projeto não preserva uma cópia imutável da ROM-base.');
-if(!html.includes('rom=pristine;'))throw new Error('Verificação final: abertura do projeto não restaura a ROM-base após o importador legado.');
-if(!html.includes('window.__ISSSD_PROJECT_OPEN_ROM_PRISTINE__=true'))throw new Error('Verificação final: abertura semântica não confirma ROM autoritativa preservada.');
+if(!html.includes('id="isssd-project-open-semantic-only-v2"'))throw new Error('Verificação final: barreira v2 de abertura semântica não foi instalada.');
+for(const required of [
+ 'window.__ISSSD_SEMANTIC_OPEN_ONLY__=true',
+ 'if(!window.__ISSSD_SEMANTIC_OPEN_ONLY__){studioCore().applyProject',
+ "if(!window.__ISSSD_SEMANTIC_OPEN_ONLY__)await studioEnsureMandatoryPlus4MiB",
+ "if(!window.__ISSSD_SEMANTIC_OPEN_ONLY__)window.__ISSSD_GIT_REAPPLY_PROJECT_STATE__?.(d)",
+ 'rom=new Uint8Array(baseBytes)',
+ 'window.__ISSSD_PROJECT_OPEN_ROM_PRISTINE__=true'
+])if(!html.includes(required))throw new Error('Verificação final: abertura semântica incompleta; ausente '+required+'.');
+if(html.includes('legacyApply(d,new Uint8Array(baseBytes),baseName)'))throw new Error('Verificação final: abertura ainda cria uma ROM temporária para o importador legado.');
+
 const applyFullStart=html.indexOf('function applyFull(p){');
 const applyFullEnd=html.indexOf('function markTouched(',applyFullStart);
 if(applyFullStart<0||applyFullEnd<0)throw new Error('Verificação final: applyFull do importador visual não encontrado.');
@@ -48,4 +56,4 @@ if(!html.includes('await studioProjectObject()'))throw new Error('Verificação 
 if(!html.includes("response.headers.get('X-ISSSD-Builder')!=='plus-build-pipeline-v1'"))throw new Error('Verificação final: browser não exige confirmação do Build Pipeline v1.');
 if(!html.includes('payload.length!==0x400000'))throw new Error('Verificação final: browser não rejeita ROM Plus final que não tenha 4 MiB.');
 
-console.log('ISSSD Studio: invariantes finais verificadas — abrir projeto preserva a ROM-base autoritativa, a interface é hidratada semanticamente, infraestrutura derivada não persiste e a ROM final Plus é reconstruída pelo Build Pipeline v1.');
+console.log('ISSSD Studio: invariantes finais verificadas — abrir projeto não monta ROM parcial, a ROM-base continua autoritativa, a UI é hidratada semanticamente e a ROM final Plus nasce somente do Build Pipeline v1.');
