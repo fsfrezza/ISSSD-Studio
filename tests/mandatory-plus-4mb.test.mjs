@@ -20,26 +20,31 @@ test('preparação 4 MiB é obrigatória antes do restore tático',()=>{
   assert.ok(identity>=0&&mandatory>identity&&tactical>mandatory);
 });
 
-test('abertura captura baseline nativa e expande o buffer global rom antes do estado semântico',()=>{
+test('abertura força Plus pelo perfil do documento mesmo antes de activeRomProfile',()=>{
+  assert.match(patch,/studioEnsureMandatoryPlus4MiB\(forcePlus=false\)/);
+  assert.match(patch,/!forcePlus&&activeRomProfile\?\.id!=='iss-deluxe-plus'/);
+  assert.match(patch,/studioEnsureMandatoryPlus4MiB\(d\?\.base\?\.profile==='iss-deluxe-plus'\)/);
+  assert.match(patch,/studioCaptureNativePlusTacticsBaseline\(forcePlus\)/);
+});
+
+test('abertura captura baseline nativa e expande o buffer global rom',()=>{
   assert.match(patch,/studioCore\(\)\.applyProject/);
-  assert.match(patch,/await studioEnsureMandatoryPlus4MiB\(\)/);
-  assert.match(patch,/studioCaptureNativePlusTacticsBaseline\(\)/);
-  const capture=patch.indexOf('studioCaptureNativePlusTacticsBaseline();');
+  assert.match(patch,/studioCaptureNativePlusTacticsBaseline/);
+  const capture=patch.indexOf('studioCaptureNativePlusTacticsBaseline(forcePlus);');
   const expand=patch.indexOf('await studioAutoPreparePlusTactics();');
   assert.ok(capture>=0&&expand>capture,'baseline tática precisa ser capturada antes da expansão');
   assert.match(patch,/__ISSSD_PLUS_NATIVE_TACTICS_BASELINE_V1__/);
   assert.match(patch,/Object\.keys\(teams\)\.length!==56/);
   assert.match(patch,/rom instanceof Uint8Array/);
   assert.match(patch,/body=rom\.length-hs/);
-  assert.match(patch,/await studioAutoPreparePlusTactics\(\)/);
   assert.doesNotMatch(patch,/apply4MiBExpansionOnly\?\.\(\)/);
   assert.match(patch,/body!==0x400000/);
 });
 
 test('toda exportação Plus exige 4 MiB no mesmo buffer dos writers',()=>{
   assert.match(patch,/async function studioDoSave/);
+  assert.match(patch,/studioEnsureMandatoryPlus4MiB\(false\)/);
   assert.match(patch,/Toda ROM Plus do Studio deve ter exatamente 4 MiB no buffer global/);
-  assert.match(patch,/mesmo buffer rom consumido pelos writers/);
 });
 
 test('restore tático usa identidade lógica e baseline pré-expansão',()=>{
