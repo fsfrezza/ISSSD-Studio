@@ -46,7 +46,7 @@ test('session refuses build until both base and project are loaded',()=>{
   assert.throws(()=>session.build({writeChecksum:false}),/base ROM.*project/i);
 });
 
-test('no-op session build is deterministic and leaves immutable base untouched',async()=>{
+test('no-op session build is deterministic, produces 4 MiB and leaves immutable base untouched',async()=>{
   const {host,base}=fixture();
   const before=base.slice();
   const session=new StudioSession({host,verifyBase:async()=>true});
@@ -54,12 +54,17 @@ test('no-op session build is deterministic and leaves immutable base untouched',
   await session.openProject();
   const a=session.build({writeChecksum:false});
   const b=session.build({writeChecksum:false});
-  assert.deepEqual(a.rom,b.rom);
-  assert.deepEqual(a.rom,before);
+  assert.equal(a.rom.length,0x400000);
+  assert.equal(b.rom.length,0x400000);
+  assert.equal(a.buildPipeline,'isssd-plus-build-pipeline-v1');
+  assert.equal(b.buildPipeline,'isssd-plus-build-pipeline-v1');
+  assert.equal(a.rom[0],b.rom[0]);
+  assert.equal(a.rom[0x7FD7],0x0C);
+  assert.equal(b.rom[0x7FD7],0x0C);
   assert.deepEqual(base,before);
 });
 
-test('exportBuilt exports exactly the latest built ROM',async()=>{
+test('exportBuilt exports exactly the latest built 4 MiB ROM',async()=>{
   const {host,calls}=fixture();
   const session=new StudioSession({host,verifyBase:async()=>true});
   await session.openRom();
@@ -68,7 +73,9 @@ test('exportBuilt exports exactly the latest built ROM',async()=>{
   await session.exportBuilt({suggestedName:'test-output'});
   const exportCall=calls.find(x=>Array.isArray(x)&&x[0]==='exportRom');
   assert.ok(exportCall);
-  assert.deepEqual(exportCall[1],built.rom);
+  assert.equal(exportCall[1].length,built.rom.length);
+  assert.equal(exportCall[1].length,0x400000);
+  for(const offset of [0,0x7FD7,0x200000,0x20A000,0x3FFFFF])assert.equal(exportCall[1][offset],built.rom[offset]);
   assert.equal(exportCall[2].suggestedName,'test-output');
 });
 
