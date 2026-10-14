@@ -6,9 +6,11 @@ const patch=fs.readFileSync(new URL('../scripts/patch-project-open-semantic-only
 const pkg=fs.readFileSync(new URL('../package.json',import.meta.url),'utf8');
 
 test('abertura do projeto deixa de reaplicar estado semântico diretamente na ROM',()=>{
-  assert.match(patch,/const oldApplyFull=.*__ISSSD_GIT_REAPPLY_PROJECT_STATE__/s);
-  assert.match(patch,/const newApplyFull=.*hydrateDom\(p\)/s);
-  assert.doesNotMatch(patch,/const newApplyFull=.*__ISSSD_GIT_REAPPLY_PROJECT_STATE__/s);
+  assert.match(patch,/const oldApplyFull=.*__ISSSD_GIT_REAPPLY_PROJECT_STATE__/);
+  const line=patch.split('\n').find(x=>x.startsWith('const newApplyFull='));
+  assert.ok(line);
+  assert.match(line,/hydrateDom\(p\)/);
+  assert.doesNotMatch(line,/__ISSSD_GIT_REAPPLY_PROJECT_STATE__/);
 });
 
 test('importador legado roda sobre cópia e restaura bytes imutáveis da ROM-base',()=>{
