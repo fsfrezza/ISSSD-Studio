@@ -10,13 +10,17 @@ let html=fs.readFileSync(htmlPath,'utf8');
 const dangerousOffsets='[0x2AA8E,0x2B166,0x3193A]';
 const scrubExpr=`(list)=>Array.isArray(list)?list.filter(p=>!${dangerousOffsets}.includes(Number(p?.off??p?.offset))):list`;
 
-// 1) SALVAMENTO: patches físicos pertencentes ao teamsV1 já são semânticos e não podem
-// voltar ao .issdproj. Reaplica o sanitizador no ponto final de montagem dos patches e
-// exclui incondicionalmente os três loaders C0 da arquitetura 4 MiB antiga.
+// 1) SALVAMENTO: não reescreva a expressão de projectPatches com chamadas globais
+// adicionais. Algumas rotas do seletor de ROM executam fora do escopo lexical onde
+// studioBuildRegionSet existe. O saneamento final abaixo remove os loaders obsoletos
+// sem depender dessa função.
 const projectPatchRx=/const projectPatches=([^;]+);/;
 const m=html.match(projectPatchRx);
 if(!m)throw new Error('Round-trip safety: montagem projectPatches não encontrada.');
-const safeLine=`const projectPatches=(${scrubExpr})(studioSanitizeProjectPatches(studioSanitizeProjectPatches(${m[1]},studioBuildRegionSet()),studioBuildRegionSet()));`;
+const originalExpr=m[1];
+const safeRegions="(typeof studioBuildRegionSet==='function'?studioBuildRegionSet():new Set())";
+const guardedExpr=originalExpr.replace(/studioBuildRegionSet\(\)/g,safeRegions);
+const safeLine=`const projectPatches=(${scrubExpr})(${guardedExpr});`;
 html=html.replace(projectPatchRx,safeLine);
 
 // 2) ABERTURA: saneia o objeto ANTES de qualquer patch físico ser aplicado e antes da
@@ -29,14 +33,19 @@ const preApply=String.raw`
     const __isssdScrub=(list)=>{
       if(!Array.isArray(list))return list;
       let next=list;
-      try{if(typeof studioSanitizeProjectPatches==='function'&&typeof studioBuildRegionSet==='function')next=studioSanitizeProjectPatches(next,studioBuildRegionSet())}catch(e){console.warn('ISSSD Studio: sanitização semântica pré-abertura',e)}
+      try{
+        if(typeof studioSanitizeProjectPatches==='function'){
+          const regions=typeof studioBuildRegionSet==='function'?studioBuildRegionSet():new Set();
+          next=studioSanitizeProjectPatches(next,regions);
+        }
+      }catch(e){console.warn('ISSSD Studio: sanitização semântica pré-abertura',e)}
       return next.filter(p=>![0x2AA8E,0x2B166,0x3193A].includes(Number(p?.off??p?.offset)));
     };
     for(const k of ['patchesCompact','patches','legacyPatches','deferredPlayerPatches'])if(Array.isArray(d.state[k]))d.state[k]=__isssdScrub(d.state[k]);
     if(Array.isArray(d.patches))d.patches=__isssdScrub(d.patches);
     if(d.state.semantic)delete d.state.semantic.plusPreparationV1;
     delete d.state.targetLength;
-    window.ISSSDLog?.add?.('Projetos','info','Projeto Plus saneado antes da aplicação física',{roundTrip:'semantic-first-v1'});
+    window.ISSSDLog?.add?.('Projetos','info','Projeto Plus saneado antes da aplicação física',{roundTrip:'semantic-first-v2'});
   }
 `;
 html=html.replace(applyNeedle,applyNeedle+preApply);
@@ -56,9 +65,10 @@ if(html.includes(finalizeMarker)&&!html.includes('roundTripSaveSanitized')){
 `);
 }
 
-if(!html.includes("roundTrip:'semantic-first-v1'"))throw new Error('Round-trip safety: saneamento pré-abertura não foi instalado.');
+if(!html.includes("roundTrip:'semantic-first-v2'"))throw new Error('Round-trip safety: saneamento pré-abertura não foi instalado.');
 if(!html.includes('0x2AA8E,0x2B166,0x3193A'))throw new Error('Round-trip safety: bloqueio dos loaders legados ausente.');
+if(!html.includes("typeof studioBuildRegionSet==='function'"))throw new Error('Round-trip safety: guarda de studioBuildRegionSet ausente.');
 if((html.match(/async function studioApplyProjectWithBase\(d,baseBytes,baseName\)\{/g)||[]).length!==1)throw new Error('Round-trip safety: função de abertura ambígua.');
 
 fs.writeFileSync(htmlPath,html,'utf8');
-console.log('ISSSD Studio: round-trip de projeto protegido — patches semânticos são saneados no salvar e antes da abertura; loaders C0 legados são bloqueados.');
+console.log('ISSSD Studio: round-trip de projeto protegido — patches saneados no salvar e antes da abertura; studioBuildRegionSet é opcional fora do escopo lexical; loaders C0 legados são bloqueados.');
