@@ -5,7 +5,7 @@ import fs from 'node:fs';
 const patch=fs.readFileSync(new URL('../scripts/patch-project-open-semantic-only.mjs',import.meta.url),'utf8');
 const pkg=fs.readFileSync(new URL('../package.json',import.meta.url),'utf8');
 
-test('abertura do projeto deixa de reaplicar estado semântico diretamente na ROM',()=>{
+test('abertura do projeto hidrata UI sem reaplicar estado semântico diretamente na ROM',()=>{
   assert.match(patch,/const oldApplyFull=.*__ISSSD_GIT_REAPPLY_PROJECT_STATE__/);
   const line=patch.split('\n').find(x=>x.startsWith('const newApplyFull='));
   assert.ok(line);
@@ -13,11 +13,19 @@ test('abertura do projeto deixa de reaplicar estado semântico diretamente na RO
   assert.doesNotMatch(line,/__ISSSD_GIT_REAPPLY_PROJECT_STATE__/);
 });
 
-test('importador legado roda sobre cópia e restaura bytes imutáveis da ROM-base',()=>{
-  assert.match(patch,/const pristine=new Uint8Array\(baseBytes\)/);
-  assert.match(patch,/legacyApply\(d,new Uint8Array\(baseBytes\),baseName\)/);
-  assert.match(patch,/rom=pristine/);
+test('ciclo legado de abertura fica em modo semântico e não monta ROM parcial',()=>{
+  assert.match(patch,/window\.__ISSSD_SEMANTIC_OPEN_ONLY__=true/);
+  assert.match(patch,/if\(!window\.__ISSSD_SEMANTIC_OPEN_ONLY__\)\{\$\{physical\}\}/);
+  assert.match(patch,/if\(!window\.__ISSSD_SEMANTIC_OPEN_ONLY__\)\$\{mandatory\}/);
+  assert.match(patch,/if\(!window\.__ISSSD_SEMANTIC_OPEN_ONLY__\)window\.__ISSSD_GIT_REAPPLY_PROJECT_STATE__/);
+  assert.match(patch,/if\(window\.__ISSSD_SEMANTIC_OPEN_ONLY__\)return false/);
+  assert.doesNotMatch(patch,/legacyApply\(d,new Uint8Array\(baseBytes\),baseName\)/);
+});
+
+test('ROM autoritativa é sempre recolocada na base limpa durante abertura',()=>{
+  assert.match(patch,/rom=new Uint8Array\(baseBytes\)/);
   assert.match(patch,/__ISSSD_PROJECT_OPEN_ROM_PRISTINE__=true/);
+  assert.match(patch,/__ISSSD_PLUS_4MB_MANDATORY__=false/);
 });
 
 test('barreira semântica roda depois do export canônico e antes do verificador final',()=>{
