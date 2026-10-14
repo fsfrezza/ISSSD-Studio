@@ -17,6 +17,7 @@ fixtures/private/
 # Generated / imported Visual Bridge editor artifacts
 editor/
 .editor-vendor/
+build-diagnostics/
 
 # Local emulator/tool bootstrap
 .tools/
