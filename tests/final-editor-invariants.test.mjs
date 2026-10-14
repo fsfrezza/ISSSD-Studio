@@ -10,11 +10,18 @@ test('verificador final é a última etapa do build do Editor',()=>{
   assert.match(cmd,/patch-canonical-rom-export\.mjs && node scripts\/verify-final-editor-invariants\.mjs$/);
 });
 
-test('verificador final bloqueia restore de teamsV1 antes de 4 MiB',()=>{
-  assert.match(verifier,/studioRestoreTeamsV1\(/);
-  assert.match(verifier,/studioEnsureMandatoryPlus4MiB/);
-  assert.match(verifier,/restore-guard>260/);
-  assert.match(verifier,/teamsV1 pode ser restaurado antes da garantia obrigatória de 4 MiB/);
+test('verificador final exige barreira síncrona dentro de studioRestoreTeamsV1',()=>{
+  assert.match(verifier,/function studioRestoreTeamsV1\(state\)\{/);
+  assert.match(verifier,/studioEnsureMandatoryPlus4MiBSync\(true\)/);
+  assert.match(verifier,/pode iniciar sem a barreira síncrona obrigatória de 4 MiB/);
+});
+
+test('verificador final exige preparação direta do buffer e rejeita preparador legado',()=>{
+  assert.match(verifier,/new Uint8Array\(hs\+0x400000\)/);
+  assert.match(verifier,/rom=out;/);
+  assert.match(verifier,/ISSDTACTBANKV1/);
+  assert.match(verifier,/studioAutoPreparePlusTactics/);
+  assert.match(verifier,/ainda depende do preparador legado/);
 });
 
 test('verificador final cobre restore tático, round-trip e exportação canônica',()=>{
