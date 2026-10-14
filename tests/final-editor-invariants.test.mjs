@@ -24,9 +24,12 @@ test('verificador final exige preparação direta do buffer e rejeita preparador
   assert.match(verifier,/ainda depende do preparador legado/);
 });
 
-test('verificador final cobre restore tático, round-trip e exportação canônica',()=>{
+test('verificador final cobre restore tático, round-trip e Build Pipeline v1',()=>{
   assert.match(verifier,/studioTeamsV3RequireExclusive4MiBTactic/);
   assert.match(verifier,/body!==0x400000/);
   assert.match(verifier,/semantic-first-v3/);
-  assert.match(verifier,/finalize-plus-rom/);
+  assert.match(verifier,/build-plus-project/);
+  assert.match(verifier,/plus-build-pipeline-v1/);
+  assert.match(verifier,/studioProjectObject/);
+  assert.match(verifier,/payload\.length!==0x400000/);
 });
