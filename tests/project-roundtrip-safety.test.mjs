@@ -15,7 +15,8 @@ test('build instala proteção de round-trip antes do export final',()=>{
 
 test('abertura não saneia nem reaplica patches físicos',()=>{
   assert.doesNotMatch(patch,/studioApplyProjectWithBase\(d,baseBytes,baseName\)/);
-  assert.doesNotMatch(patch,/semantic-first-v3/);
+  assert.doesNotMatch(patch,/const preApply=String\.raw/);
+  assert.doesNotMatch(patch,/html=html\.replace\(applyNeedle,applyNeedle\+preApply\)/);
   assert.match(patch,/A abertura agora é semantic-only/);
 });
 
