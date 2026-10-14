@@ -10,11 +10,9 @@ let html=fs.readFileSync(htmlPath,'utf8');
 const applyNeedle='async function studioApplyProjectWithBase(d,baseBytes,baseName){';
 if(!html.includes(applyNeedle))throw new Error('4 MiB obrigatório: studioApplyProjectWithBase não encontrado.');
 
-// Esta preparação NÃO usa studioAutoPreparePlusTactics nem activeRomProfile para decidir
-// se deve agir. O erro recorrente mostrou que ambos pertencem ao runtime legado e podem
-// estar em estado ainda não inicializado durante a primeira restauração semântica.
-// O algoritmo abaixo é a contraparte browser, síncrona, do módulo canônico
-// src/core/plus-tactics-infrastructure.mjs.
+// A preparação injetada abaixo é autossuficiente: não chama o preparador tático legado
+// nem depende do momento em que activeRomProfile é inicializado para a barreira de restore.
+// O algoritmo replica as invariantes rastreadas em src/core/plus-tactics-infrastructure.mjs.
 const helper=String.raw`function studioPlus4MiBAscii(text){return new TextEncoder().encode(String(text))}
 function studioPlus4MiBBytesEqual(source,off,bytes){if(off<0||off+bytes.length>source.length)return false;for(let i=0;i<bytes.length;i++)if(source[off+i]!==bytes[i])return false;return true}
 function studioPlus4MiBLoRomPc(bank,addr){if(!Number.isInteger(bank)||!Number.isInteger(addr)||bank<0x80||addr<0x8000)return null;return ((bank&0x7F)*0x8000)+(addr&0x7FFF)}
@@ -62,8 +60,11 @@ function studioEnsureMandatoryPlus4MiBSync(forcePlus=false){
   if(entries.length<=1)continue;
   for(let rank=1;rank<entries.length;rank++){
    if(rank-1>=alternate.length)throw new Error('Muitas equipes compartilham o ponteiro tático 0x'+ptr.toString(16));
-   const entry=entries[rank],bank=alternate[rank-1],srcPc=pc(studioPlus4MiBLoRomPc(0x8B,ptr)),dstPc=pc(studioPlus4MiBLoRomPc(bank,ptr));
-   if(srcPc==null||dstPc==null||srcPc+31>out.length||dstPc+31>out.length)throw new Error('Clone tático fora da ROM durante expansão obrigatória.');
+   const entry=entries[rank],bank=alternate[rank-1];
+   const srcBase=studioPlus4MiBLoRomPc(0x8B,ptr),dstBase=studioPlus4MiBLoRomPc(bank,ptr);
+   if(srcBase==null||dstBase==null)throw new Error('Endereço LoROM tático inválido durante expansão obrigatória.');
+   const srcPc=pc(srcBase),dstPc=pc(dstBase);
+   if(srcPc+31>out.length||dstPc+31>out.length)throw new Error('Clone tático fora da ROM durante expansão obrigatória.');
    const raw=out.slice(srcPc,srcPc+31);let blank=true,same=true;
    for(let j=0;j<31;j++){if(out[dstPc+j]!==0xFF)blank=false;if(out[dstPc+j]!==raw[j])same=false}
    if(!blank&&!same)throw new Error('Destino de clone tático ocupado em 0x'+dstPc.toString(16));
@@ -97,15 +98,12 @@ async function studioEnsureMandatoryPlus4MiB(forcePlus=false){return studioEnsur
 if(!html.includes('function studioEnsureMandatoryPlus4MiBSync('))html=html.replace(applyNeedle,helper+'\n'+applyNeedle);
 
 // Barreira definitiva: nenhuma restauração de teamsV1 pode sequer iniciar sobre 2 MiB.
-// Como studioRestoreTeamsV1 é síncrona, esta guarda também é síncrona e não pode sofrer
-// race de Promise, ordem de hook ou estado tardio do activeRomProfile.
 const restoreNeedle='function studioRestoreTeamsV1(state){';
 if(!html.includes(restoreNeedle))throw new Error('4 MiB obrigatório: studioRestoreTeamsV1 não encontrado.');
 const restoreGuard='\n studioEnsureMandatoryPlus4MiBSync(true);';
 if(!html.includes(restoreNeedle+restoreGuard))html=html.replace(restoreNeedle,restoreNeedle+restoreGuard);
 
-// Mantém uma preparação antecipada após o rebuild físico. É redundante com a barreira
-// acima, mas garante que o estado normal da sessão Plus já seja 4 MiB antes da UI.
+// Preparação antecipada redundante após o rebuild físico.
 const applyRx=/(studioCore\(\)\.applyProject\(cleanBase,rebuilt,[\s\S]*?\);)/;
 const m=html.match(applyRx);
 if(!m)throw new Error('4 MiB obrigatório: chamada studioCore().applyProject(...) não encontrada.');
@@ -118,10 +116,10 @@ if(!saveNeedle)throw new Error('4 MiB obrigatório: studioDoSave não encontrado
 const saveGuard='\n await studioEnsureMandatoryPlus4MiB(false);';
 if(!html.includes(saveNeedle+saveGuard))html=html.replace(saveNeedle,saveNeedle+saveGuard);
 
-if(html.includes('await studioAutoPreparePlusTactics();'))throw new Error('4 MiB obrigatório: dependência do preparador legado ainda presente.');
+if(html.includes('await studioAutoPreparePlusTactics();'))throw new Error('4 MiB obrigatório: dependência executável do preparador legado ainda presente.');
 if(!html.includes("rom=out;"))throw new Error('4 MiB obrigatório: expansão não substitui o buffer global rom.');
 if(!html.includes(restoreNeedle+restoreGuard))throw new Error('4 MiB obrigatório: barreira síncrona não está no início de studioRestoreTeamsV1.');
 if(!html.includes("ISSDTACTBANKV1"))throw new Error('4 MiB obrigatório: seletor de bancos táticos ausente.');
 fs.writeFileSync(htmlPath,html,'utf8');
-console.log('ISSSD Studio: expansão Plus 4 MiB agora é síncrona, canônica e independente de activeRomProfile/studioAutoPreparePlusTactics.');
-console.log('ISSSD Studio: studioRestoreTeamsV1 possui barreira própria; não pode iniciar enquanto o buffer global rom ainda tiver 2 MiB.');
+console.log('ISSSD Studio: expansão Plus 4 MiB é síncrona, canônica e independente do preparador legado.');
+console.log('ISSSD Studio: studioRestoreTeamsV1 possui barreira própria e não pode iniciar sobre uma ROM de 2 MiB.');
