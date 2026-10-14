@@ -6,8 +6,8 @@ const pkg=JSON.parse(fs.readFileSync(new URL('../package.json',import.meta.url),
 const verifier=fs.readFileSync(new URL('../scripts/verify-final-editor-invariants.mjs',import.meta.url),'utf8');
 const cmd=pkg.scripts['build:editor'];
 
-test('verificador final é a última etapa do build do Editor',()=>{
-  assert.match(cmd,/patch-canonical-rom-export\.mjs && node scripts\/verify-final-editor-invariants\.mjs$/);
+test('verificador final continua sendo a última etapa do build do Editor',()=>{
+  assert.match(cmd,/patch-canonical-rom-export\.mjs && node scripts\/patch-project-open-semantic-only\.mjs && node scripts\/verify-final-editor-invariants\.mjs$/);
 });
 
 test('verificador final exige barreira síncrona dentro de studioRestoreTeamsV1',()=>{
