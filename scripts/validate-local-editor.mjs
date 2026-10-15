@@ -78,6 +78,14 @@ function run(cmd,args,label){
   if(r.status!==0)throw new Error(`${label} falhou com código ${r.status}.`);
 }
 
+function runNpm(args,label){
+  const npmCli=process.env.npm_execpath;
+  if(!npmCli||!fs.existsSync(npmCli)){
+    throw new Error('Validação local: npm_execpath não está disponível. Execute este validador por "npm run validate:editor:local".');
+  }
+  run(process.execPath,[npmCli,...args],label);
+}
+
 if(!fs.existsSync(vendorBaseline)){
   throw new Error('Validação local interrompida: .editor-vendor/legacy-ui/ISSSD-Studio.html não existe. Nada foi alterado.');
 }
@@ -85,10 +93,9 @@ if(!fs.existsSync(vendorBaseline)){
 const before=snapshot();
 let failure=null;
 try{
-  const npm=process.platform==='win32'?'npm.cmd':'npm';
   const node=process.execPath;
-  run(npm,['test'],'1/3 — suíte de regressão');
-  run(npm,['run','build:editor'],'2/3 — build completo do Editor com baseline local');
+  runNpm(['test'],'1/3 — suíte de regressão');
+  runNpm(['run','build:editor'],'2/3 — build completo do Editor com baseline local');
   run(node,['scripts/verify-final-editor-invariants.mjs'],'3/3 — auditoria do HTML final gerado');
 }catch(error){
   failure=error;
