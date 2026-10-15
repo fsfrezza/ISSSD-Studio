@@ -7,7 +7,16 @@ const verifier=fs.readFileSync(new URL('../scripts/verify-final-editor-invariant
 const cmd=pkg.scripts['build:editor'];
 
 test('verificador final continua sendo a última etapa do build do Editor',()=>{
-  assert.match(cmd,/patch-canonical-rom-export\.mjs && node scripts\/patch-project-open-semantic-only\.mjs && node scripts\/verify-final-editor-invariants\.mjs$/);
+  assert.match(cmd,/patch-canonical-rom-export\.mjs && node scripts\/patch-team-semantic-overlay\.mjs && node scripts\/patch-project-open-semantic-only\.mjs && node scripts\/verify-final-editor-invariants\.mjs$/);
+});
+
+test('verificador final exige overlay teamsV1 antes da barreira de abertura',()=>{
+  const overlay=cmd.indexOf('patch-team-semantic-overlay.mjs');
+  const open=cmd.indexOf('patch-project-open-semantic-only.mjs');
+  const verify=cmd.indexOf('verify-final-editor-invariants.mjs');
+  assert.ok(overlay>=0&&open>overlay&&verify>open);
+  assert.match(verifier,/isssd-team-semantic-overlay-v1/);
+  assert.match(verifier,/__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__/);
 });
 
 test('verificador final exige barreira síncrona dentro de studioRestoreTeamsV1',()=>{
