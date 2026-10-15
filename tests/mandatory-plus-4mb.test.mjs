@@ -40,6 +40,12 @@ test('preparação injetada não depende do preparador tático legado',()=>{
   assert.doesNotThrow(()=>new Function(helperBlock.replace(/^const helper=String\.raw`/,'')));
 });
 
+test('captura tática aceita Uint8Array e outras views com length 31',()=>{
+  assert.match(helperBlock,/if\(!rec\?\.raw\|\|Number\(rec\.raw\.length\)!==31\)continue/);
+  assert.match(helperBlock,/raw:Array\.from\(rec\.raw,Number\)/);
+  assert.doesNotMatch(helperBlock,/Array\.isArray\(rec\.raw\)/);
+});
+
 test('expansão troca explicitamente o buffer global para 4 MiB',()=>{
   assert.match(helperBlock,/new Uint8Array\(hs\+0x400000\)/);
   assert.match(helperBlock,/out\.fill\(0xFF\)/);
@@ -74,8 +80,8 @@ test('abertura semantic-only bloqueia applyProject e expansão 4 MiB do ciclo le
   assert.match(semanticOpen,/if\(!window\.__ISSSD_SEMANTIC_OPEN_ONLY__\)\$\{mandatory\}/);
 });
 
-test('salvamento ROM legado ainda exige 4 MiB quando usado fora do Build Pipeline',()=>{
-  assert.match(patch,/async function studioDoSave/);
+test('salvamento ROM legado aceita a assinatura real com options e ainda exige 4 MiB',()=>{
+  assert.match(patch,/html\.match\(\/async function studioDoSave\\\(\[\^\)\]\*\\\)\\s\*\\\{\//);
   assert.match(patch,/studioEnsureMandatoryPlus4MiB\(false\)/);
 });
 
