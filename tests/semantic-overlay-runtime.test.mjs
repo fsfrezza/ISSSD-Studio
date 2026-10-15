@@ -129,3 +129,29 @@ test('recovered historical project names and newer coordinates can resolve toget
  assert.equal(c.probe.renderPlayer()[1].tactical.y,30);
  assert.equal(c.probe.renderPlayer()[8].name,"Pele'");assert.equal(c.probe.renderPlayer()[8].tactical.y,-2);
 });
+
+test('R. Gaucho attack is saved by identity, survives JSON reopen and never becomes Dunga attack',()=>{
+ const c=session(),s=structuredClone(actual),before=Buffer.from(c.probe.rom);
+ s.teams[30].players[7].custom={name:'R.Gaucho',number:11};s.teams[30].players[5].custom={name:'Dunga',number:5};
+ c.__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__(s);
+ c.__ISSSD_TEAMS_SET_PLAYER_ATTACK_V1__(30,{playerId:'30:8',baseSlot:8},true);
+ const saved=plain(c.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__),reopened=session();
+ reopened.__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__(saved);
+ const players=reopened.probe.renderPlayer();
+ assert.equal(players[7].name,'R.Gaucho');assert.equal(players[7].tactical.attack,true);
+ assert.equal(players[5].name,'Dunga');assert.equal(players[5].tactical.attack,false);
+ assert.equal(reopened.probe.readTactic().raw[27]&4,4);assert.equal(reopened.probe.readTactic().raw[25]&4,0);
+ assert.deepEqual(Buffer.from(c.probe.rom),before);
+});
+test('moving R. Gaucho and Dunga between slots keeps attack attached to playerId/baseSlot',()=>{
+ const c=session(),s=structuredClone(actual),gaucho=s.teams[30].players[7],dunga=s.teams[30].players[5];
+ gaucho.custom={name:'R.Gaucho',number:11};dunga.custom={name:'Dunga',number:5};gaucho.slot=6;dunga.slot=8;
+ c.__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__(s);
+ c.__ISSSD_TEAMS_SET_PLAYER_ATTACK_V1__(30,{playerId:'30:8',baseSlot:8},true);
+ const again=session();again.__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__(plain(c.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__));
+ const p=again.probe.renderPlayer();assert.equal(p[5].name,'R.Gaucho');assert.equal(p[5].tactical.attack,true);
+ assert.equal(p[7].name,'Dunga');assert.equal(p[7].tactical.attack,false);
+ again.__ISSSD_TEAMS_SET_PLAYER_ATTACK_V1__(30,{playerId:'30:8',baseSlot:8},false);
+ assert.equal(again.probe.renderPlayer()[5].tactical.attack,false);
+ assert.equal(Object.hasOwn(again.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__.teams[30].players[7].custom,'tactical'),false);
+});

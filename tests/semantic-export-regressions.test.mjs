@@ -71,3 +71,20 @@ test('selected cumulative main-menu phase explicitly renders committed semantic 
  for(const r of shots)for(const region of expected)assert.deepEqual(r.slice(region.pc,region.pc+region.bytes.length),region.bytes,region.name);
  assert.notDeepEqual(shots[0].slice(0xF0000,0xF0000+1628),base.slice(0xF0000,0xF0000+1628));
 });
+
+test('attack export follows R. Gaucho identity through a slot exchange and preserves explicit Dunga false',()=>{
+ const base=baseFixture(),project=structuredClone(current),ps=project.state.semantic.teamsV1.teams[30].players;
+ const br=resolvePlusTacticalRecord(base,30);base[br.recordPc+25]|=4;
+ ps[5].custom.tactical||={};ps[5].custom.tactical.attack=false;
+ ps[7].custom.tactical||={};ps[7].custom.tactical.attack=true;
+ const before=base.slice();
+ for(const move of [false,true]){
+  if(move){ps[5].slot=8;ps[7].slot=6;}
+  let final;buildCumulativeProject(base,project,{selectedAreas:['jogadores','formacoes'],onRom:r=>{final=r}});
+  const players=decodePlusTacticalRecord(resolvePlusTacticalRecord(final,30).raw).players;
+  assert.equal(players[ps[7].slot-2].attack,true);assert.equal(players[ps[5].slot-2].attack,false);
+  assert.equal(readPlusPlayerName(final,30,ps[7].slot-1).name,'R.Gaucho');
+  assert.equal(readPlusPlayerName(final,30,ps[5].slot-1).name,'Dunga');
+  assert.deepEqual(base,before);
+ }
+});

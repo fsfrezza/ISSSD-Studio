@@ -126,6 +126,45 @@ window.__ISSSD_INSTALL_TEAMS_SEMANTIC_V1__=function(){
 
   return !!models;
  };
+ window.__ISSSD_TEAMS_SET_PLAYER_ATTACK_V1__=function(team,identity,enabled){
+  if(typeof enabled!=='boolean')throw new Error('ATACAR exige um valor booleano.');
+  const state=clone(window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__||studioTeamsV3Snapshot());
+  const ts=state?.teams?.[String(team)];
+  const player=ts?.players?.find(p=>p.playerId===identity?.playerId&&Number(p.baseSlot)===Number(identity?.baseSlot));
+  if(!player)throw new Error('Identidade do jogador não encontrada para ATACAR.');
+  player.custom||={};player.custom.tactical||={};
+  const originalPlayer=studioTeamsV3OriginalPlayer(Number(team),Number(player.baseSlot));
+  if(enabled===!!originalPlayer?.tactical?.attack)delete player.custom.tactical.attack;
+  else player.custom.tactical.attack=enabled;
+  if(!Object.keys(player.custom.tactical).length)delete player.custom.tactical;
+  if(!Object.keys(player.custom).length)delete player.custom;
+  return window.__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__(state);
+ };
+ if(typeof renderPlusTacticalLineup==='function'){
+  const renderLineupBase=renderPlusTacticalLineup;
+  renderPlusTacticalLineup=function(rec){
+   const result=renderLineupBase(rec),box=document.getElementById('plusTacticalLineup');
+   if(!box)return result;
+   const team=Number(currentTeam);
+   const roster=(window.__ISSSD_TEAMS_RESOLVED_OVERLAY_V1__||studioTeamsV3ReadFull())?.teams?.[String(team)];
+   for(const row of box.children){
+    if(row.children.length!==6)continue;
+    row.appendChild(row.children[3]);
+    row.style.gridTemplateColumns='28px minmax(64px,88px) 34px 42px 42px 46px';
+    const checkbox=row.querySelector('[data-plus-attack-index]');if(!checkbox)continue;
+    const index=Number(checkbox.dataset.plusAttackIndex);
+    const model=roster?.players?.find(p=>Number(p.slot)===index+2)||plusTacticalRosterPlayer(index)?.player;
+    const identity={playerId:model?.playerId,baseSlot:model?.baseSlot};
+    checkbox.dataset.playerId=identity.playerId||'';
+    checkbox.dataset.baseSlot=String(identity.baseSlot??'');
+    checkbox.onchange=()=>{
+     window.__ISSSD_TEAMS_SET_PLAYER_ATTACK_V1__(team,identity,checkbox.checked);
+     plusTacUpdateAttackArrow(index,checkbox.checked);
+    };
+   }
+   return result;
+  };
+ }
  const refreshBase=refreshPlusTeamFromRom;
  refreshPlusTeamFromRom=function(team){
   refreshBase(team);

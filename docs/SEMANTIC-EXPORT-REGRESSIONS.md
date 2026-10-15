@@ -24,3 +24,9 @@ As frases de estratégias usam a matriz nativa de duas linhas de dez caracteres.
 - Exclusão das fases de textos/controles sem vazamento para ROMs de jogadores/formações.
 
 O teste adicional no navegador usa a ROM-base de SHA-256 `ca2d73b226ab252649d4c9c35bb6b81937586d908c1d9dc9d447db7babfaad0a`: abertura pelo seletor de projeto, confirmação de todas as categorias, leitura de Cafu no modelo e no snapshot, comparação integral de base/current após os hooks e após a captura. O ZIP completo também foi aberto e validado: nove arquivos de 4 MiB, CRCs, checksums, espelhos, vinte nomes, fase correta de controles e permanência das fotos desde a fase 03. A ROM-base e imagens do usuário não são incluídas no Git.
+
+## ATACAR por identidade
+
+O checkbox tático atualizava somente a seta no campo. Ao salvar/reabrir, o snapshot voltava a obter o valor do overlay anterior ou da baseline; isso podia dar a impressão de que a escolha de R. Gaúcho havia ido para Dunga. Agora cada linha captura `playerId` e `baseSlot` e grava `custom.tactical.attack` por essa identidade. `false` é preservado explicitamente quando a baseline é `true`; valores iguais à baseline permanecem sparse. Trocar slots não troca a identidade destinatária da edição.
+
+A coluna ATACAR foi movida para depois de X/Y, mantendo os handlers de coordenadas existentes. O teste no navegador salva o projeto, recarrega a página e reabre os dados: R. Gaúcho marcado, Dunga desmarcado, coluna final e ROM interna idêntica à base. As regressões também verificam JSON, troca de slots e os bits nativos exportados.
