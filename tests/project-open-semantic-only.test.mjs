@@ -6,18 +6,17 @@ const patch=fs.readFileSync(new URL('../scripts/patch-project-open-semantic-only
 const pkg=fs.readFileSync(new URL('../package.json',import.meta.url),'utf8');
 
 test('abertura do projeto hidrata UI sem reaplicar estado semântico diretamente na ROM',()=>{
-  assert.match(patch,/const applyFullRx=\/function\\s\+applyFull/);
-  assert.match(patch,/hydrateDom\(p\)/);
-  assert.match(patch,/const reapplyP=.*__ISSSD_GIT_REAPPLY_PROJECT_STATE__/);
-  assert.match(patch,/applyFullBlock=applyFullBlock\.replace\(reapplyP,'void 0;'\)/);
-  assert.match(patch,/finalApplyFullBlock\.includes\('__ISSSD_GIT_REAPPLY_PROJECT_STATE__'\)/);
+  assert.match(patch,/const reapplyProjectP=.*__ISSSD_GIT_REAPPLY_PROJECT_STATE__/);
+  assert.match(patch,/html=html\.replace\(reapplyProjectP,'void 0;'\)/);
+  assert.match(patch,/hydrateDom\\s\*\\\(\\s\*p/);
+  assert.match(patch,/reaplicação pós-importação ainda presente/);
 });
 
-test('applyFull é delimitado estruturalmente e não depende de minificação específica',()=>{
-  assert.match(patch,/function functionEnd\(source,start\)/);
-  assert.match(patch,/applyFullRx\.exec\(html\)/);
-  assert.doesNotMatch(patch,/const oldApplyFull=/);
-  assert.doesNotMatch(patch,/const newApplyFull=/);
+test('neutralização pós-importação não depende da existência textual de applyFull',()=>{
+  assert.doesNotMatch(patch,/applyFullRx/);
+  assert.doesNotMatch(patch,/applyFullMatch/);
+  assert.doesNotMatch(patch,/applyFullBlock/);
+  assert.match(patch,/reformatam essa função/);
 });
 
 test('ciclo legado de abertura fica em modo semântico e não monta ROM parcial',()=>{
