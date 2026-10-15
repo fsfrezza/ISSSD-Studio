@@ -34,6 +34,12 @@ test('recusa de writer físico durante abertura semantic-only não aborta o proj
   assert.match(patch,/let result=true/);
 });
 
+test('open semântico inicializa a sessão com a ROM-base como base e current',()=>{
+  assert.match(patch,/studioCore\(\)\.applyProject\(cleanBase,cleanBase,baseName,d\?\.state\?\.ui\|\|\{\},d\?\.base\?\.profile\|\|null\)/);
+  assert.doesNotMatch(patch,/else\{rom=new Uint8Array\(baseBytes\);\}/);
+  assert.match(patch,/original\/rom\/fileName\/headerSize\/perfil e buildTeams/);
+});
+
 test('teamsV1 é hidratado depois de recarregar os modelos da ROM-base',()=>{
   const guard=patch.indexOf('const guard=');
   const sync=patch.indexOf('syncModelsFromRom?.()',guard);
@@ -46,7 +52,7 @@ test('teamsV1 é hidratado depois de recarregar os modelos da ROM-base',()=>{
 
 test('ciclo legado de abertura fica em modo semântico e não monta ROM parcial',()=>{
   assert.match(patch,/window\.__ISSSD_SEMANTIC_OPEN_ONLY__=true/);
-  assert.match(patch,/if\(!window\.__ISSSD_SEMANTIC_OPEN_ONLY__\)\{\$\{physical\}\}/);
+  assert.match(patch,/if\(!window\.__ISSSD_SEMANTIC_OPEN_ONLY__\)\{\$\{physical\}\}else\{\$\{semanticBaseInit\}\}/);
   assert.match(patch,/if\(!window\.__ISSSD_SEMANTIC_OPEN_ONLY__\)\$\{mandatory\}/);
   assert.match(patch,/if\(!window\.__ISSSD_SEMANTIC_OPEN_ONLY__\)window\.__ISSSD_GIT_REAPPLY_PROJECT_STATE__/);
   assert.match(patch,/if\(window\.__ISSSD_SEMANTIC_OPEN_ONLY__\)return false/);
