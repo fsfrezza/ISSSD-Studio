@@ -19,6 +19,12 @@ test('verificador final exige overlay teamsV1 antes da barreira de abertura',()=
   assert.match(verifier,/__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__/);
 });
 
+test('verificador final exige abertura semântica v4 com sessão inicializada pela ROM-base limpa',()=>{
+  assert.match(verifier,/isssd-project-open-semantic-only-v4/);
+  assert.match(verifier,/studioCore\(\)\.applyProject\(cleanBase,cleanBase,baseName,d\?\.state\?\.ui\|\|\{\},d\?\.base\?\.profile\|\|null\)/);
+  assert.match(verifier,/barreira v4 de abertura semântica não foi instalada/);
+});
+
 test('verificador final exige barreira síncrona dentro de studioRestoreTeamsV1',()=>{
   assert.match(verifier,/function studioRestoreTeamsV1\(state\)\{/);
   assert.match(verifier,/studioEnsureMandatoryPlus4MiBSync\(true\)/);
