@@ -35,3 +35,20 @@ test('troca de escalação também troca o mapa de identidade lógica',()=>{
   assert.match(swap,/__ISSSD_PLAYER_BASE_SLOT_BY_CURRENT_SLOT_V1__/);
   assert.match(swap,/identity\[ra\]=identity\[rb\];identity\[rb\]=tmp/);
 });
+
+test('original identity reader accepts the actual legacy fixed-name record contract',async()=>{
+ const vm=await import('node:vm');
+ const a=patch.indexOf('function studioTeamsV3OriginalPlayer(t,baseSlot){');
+ const b=patch.indexOf('function studioTeamsV3OriginalNameBytes',a);
+ const c=vm.createContext({
+  original:new Uint8Array(256),
+  studioTeamsV3OriginalNameRecord:()=>({no:0,fixed:' Cafu   '}),
+  studioTeamsV3AttrOffset:()=>0,
+  studioTeamsV3DecodeAttr:()=>({number:2,position:'DF-MF',skills:{speed:9}}),
+  studioTeamsV3PlayerId:(t,s)=>t+':'+s,
+  studioTeamsV3Hex:()=>'',studioTeamsV3OriginalTactical:()=>({x:-30,y:30})
+ });
+ vm.runInContext(patch.slice(a,b),c);
+ const p=c.studioTeamsV3OriginalPlayer(30,2);
+ assert.equal(p.name,'Cafu');assert.equal(p.number,2);assert.equal(p.baseSlot,2);
+});

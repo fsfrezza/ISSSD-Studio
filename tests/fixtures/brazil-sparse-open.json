@@ -1,0 +1,339 @@
+{
+  "schema": "isssd-teams-v1",
+  "version": 3,
+  "mode": "sparse-overrides",
+  "identityModel": "player-id-v1",
+  "teams": {
+    "30": {
+      "teamId": 30,
+      "players": [
+        {
+          "playerId": "30:1",
+          "baseSlot": 1,
+          "slot": 1,
+          "custom": {
+            "skills": {
+              "acceleration": 5,
+              "speed": 5,
+              "shot": 3,
+              "curve": 3,
+              "balance": 7,
+              "intelligence": 9,
+              "dribbling": 4,
+              "jump": 9
+            }
+          }
+        },
+        {
+          "playerId": "30:2",
+          "baseSlot": 2,
+          "slot": 2,
+          "custom": {
+            "number": 2,
+            "skills": {
+              "speed": 9,
+              "shot": 6,
+              "curve": 7,
+              "intelligence": 8,
+              "dribbling": 8,
+              "jump": 7,
+              "energy": 10
+            },
+            "tactical": {
+              "x": -30,
+              "y": 30
+            }
+          }
+        },
+        {
+          "playerId": "30:3",
+          "baseSlot": 3,
+          "slot": 3
+        },
+        {
+          "playerId": "30:4",
+          "baseSlot": 4,
+          "slot": 4
+        },
+        {
+          "playerId": "30:5",
+          "baseSlot": 5,
+          "slot": 5,
+          "custom": {
+            "number": 6,
+            "skills": {
+              "acceleration": 10,
+              "shot": 10,
+              "curve": 9,
+              "balance": 9,
+              "intelligence": 8,
+              "dribbling": 8,
+              "jump": 7,
+              "energy": 10
+            },
+            "tactical": {
+              "y": -29
+            }
+          }
+        },
+        {
+          "playerId": "30:6",
+          "baseSlot": 6,
+          "slot": 6,
+          "custom": {
+            "skills": {
+              "acceleration": 9,
+              "speed": 9,
+              "shot": 6,
+              "curve": 9,
+              "intelligence": 9
+            },
+            "tactical": {
+              "x": -14,
+              "y": -11
+            }
+          }
+        },
+        {
+          "playerId": "30:7",
+          "baseSlot": 7,
+          "slot": 7,
+          "custom": {
+            "skills": {
+              "acceleration": 6,
+              "speed": 6,
+              "shot": 8,
+              "curve": 10,
+              "balance": 7,
+              "intelligence": 10,
+              "dribbling": 8,
+              "jump": 6
+            },
+            "tactical": {
+              "x": -11,
+              "y": 10
+            }
+          }
+        },
+        {
+          "playerId": "30:8",
+          "baseSlot": 8,
+          "slot": 8,
+          "custom": {
+            "number": 11,
+            "skills": {
+              "acceleration": 9,
+              "speed": 8,
+              "shot": 8,
+              "curve": 10,
+              "balance": 8,
+              "dribbling": 10,
+              "energy": 7
+            },
+            "tactical": {
+              "x": 15,
+              "y": -32
+            }
+          }
+        },
+        {
+          "playerId": "30:9",
+          "baseSlot": 9,
+          "slot": 9,
+          "custom": {
+            "skills": {
+              "acceleration": 10,
+              "speed": 10,
+              "shot": 10,
+              "balance": 10,
+              "intelligence": 10,
+              "dribbling": 10,
+              "jump": 10,
+              "energy": 9
+            },
+            "tactical": {
+              "x": 11,
+              "y": -2
+            }
+          }
+        },
+        {
+          "playerId": "30:10",
+          "baseSlot": 10,
+          "slot": 10,
+          "custom": {
+            "number": 9,
+            "skills": {
+              "shot": 10,
+              "curve": 8,
+              "balance": 10,
+              "intelligence": 9,
+              "jump": 8,
+              "energy": 8
+            },
+            "tactical": {
+              "x": 41,
+              "y": 6
+            }
+          }
+        },
+        {
+          "playerId": "30:11",
+          "baseSlot": 11,
+          "slot": 11,
+          "custom": {
+            "skills": {
+              "curve": 9,
+              "balance": 8,
+              "intelligence": 9,
+              "jump": 6,
+              "energy": 8
+            },
+            "tactical": {
+              "x": 30,
+              "y": 33
+            }
+          }
+        },
+        {
+          "playerId": "30:12",
+          "baseSlot": 12,
+          "slot": 12,
+          "custom": {
+            "skills": {
+              "acceleration": 5,
+              "speed": 5,
+              "shot": 3,
+              "curve": 3,
+              "balance": 7,
+              "intelligence": 9,
+              "dribbling": 4,
+              "jump": 9
+            }
+          }
+        },
+        {
+          "playerId": "30:13",
+          "baseSlot": 13,
+          "slot": 13
+        },
+        {
+          "playerId": "30:14",
+          "baseSlot": 14,
+          "slot": 14,
+          "custom": {
+            "skills": {
+              "acceleration": 8,
+              "speed": 8,
+              "shot": 7,
+              "balance": 8,
+              "intelligence": 10,
+              "dribbling": 8,
+              "jump": 8,
+              "energy": 9
+            }
+          }
+        },
+        {
+          "playerId": "30:15",
+          "baseSlot": 15,
+          "slot": 15,
+          "custom": {
+            "skills": {
+              "acceleration": 6,
+              "speed": 7,
+              "shot": 5,
+              "curve": 5,
+              "balance": 9,
+              "intelligence": 9,
+              "dribbling": 6,
+              "jump": 9
+            }
+          }
+        },
+        {
+          "playerId": "30:16",
+          "baseSlot": 16,
+          "slot": 16,
+          "custom": {
+            "skills": {
+              "acceleration": 7,
+              "speed": 7,
+              "shot": 8,
+              "intelligence": 10,
+              "dribbling": 9
+            }
+          }
+        },
+        {
+          "playerId": "30:17",
+          "baseSlot": 17,
+          "slot": 17,
+          "custom": {
+            "skills": {
+              "acceleration": 8,
+              "speed": 8,
+              "shot": 10,
+              "curve": 9,
+              "balance": 9,
+              "intelligence": 9,
+              "dribbling": 9,
+              "jump": 8,
+              "energy": 9
+            }
+          }
+        },
+        {
+          "playerId": "30:18",
+          "baseSlot": 18,
+          "slot": 18,
+          "custom": {
+            "skills": {
+              "acceleration": 8,
+              "speed": 8,
+              "shot": 10,
+              "curve": 10,
+              "balance": 8,
+              "intelligence": 10,
+              "dribbling": 10,
+              "jump": 7
+            }
+          }
+        },
+        {
+          "playerId": "30:19",
+          "baseSlot": 19,
+          "slot": 19,
+          "custom": {
+            "skills": {
+              "acceleration": 10,
+              "shot": 9,
+              "curve": 9,
+              "balance": 7,
+              "intelligence": 9,
+              "dribbling": 10,
+              "jump": 6
+            }
+          }
+        },
+        {
+          "playerId": "30:20",
+          "baseSlot": 20,
+          "slot": 20,
+          "custom": {
+            "skills": {
+              "acceleration": 10,
+              "speed": 9,
+              "shot": 10,
+              "balance": 8,
+              "intelligence": 10,
+              "dribbling": 10,
+              "jump": 7,
+              "energy": 7
+            }
+          }
+        }
+      ]
+    }
+  }
+}

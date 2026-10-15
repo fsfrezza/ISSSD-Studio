@@ -53,7 +53,7 @@ function studioTeamsV3OriginalTactical(t,baseSlot){
 }
 function studioTeamsV3OriginalPlayer(t,baseSlot){
  const i=baseSlot-1,nr=studioTeamsV3OriginalNameRecord(t,i),off=studioTeamsV3AttrOffset(t,i),attrs=studioTeamsV3DecodeAttr(original.slice(off,off+7))||{};
- return {playerId:studioTeamsV3PlayerId(t,baseSlot),baseSlot,slot:baseSlot,name:String(nr?.name||('Jogador '+baseSlot)),nameHex:nr?.no!=null?studioTeamsV3Hex(original.slice(nr.no,nr.no+8)):null,number:attrs.number||baseSlot,position:attrs.position||'NONE',skills:attrs.skills||{},appearance:attrs.appearance||{},tactical:studioTeamsV3OriginalTactical(t,baseSlot)};
+ return {playerId:studioTeamsV3PlayerId(t,baseSlot),baseSlot,slot:baseSlot,name:String(nr?.name||nr?.fixed?.trim()||('Jogador '+baseSlot)),nameHex:nr?.no!=null?studioTeamsV3Hex(original.slice(nr.no,nr.no+8)):null,number:attrs.number||baseSlot,position:attrs.position||'NONE',skills:attrs.skills||{},appearance:attrs.appearance||{},tactical:studioTeamsV3OriginalTactical(t,baseSlot)};
 }
 function studioTeamsV3OriginalNameBytes(t,baseSlot){const nr=studioTeamsV3OriginalNameRecord(t,baseSlot-1);return nr?.no!=null?new Uint8Array(original.slice(nr.no,nr.no+8)):null}
 `;
@@ -74,7 +74,7 @@ replaceFunction('studioTeamsV3ReadFull','studioTeamsV3PlayerOverride',String.raw
   for(let i=0;i<20;i++){
    const slot=i+1,baseSlot=Number(map[i])||slot,nr=studioTeamsV3NameRecord(t,i),nameHex=nr?.no!=null?studioTeamsV3Hex(rom.slice(nr.no,nr.no+8)):null;
    const attrs=studioTeamsV3DecodeAttr(rom.slice(studioTeamsV3AttrOffset(t,i),studioTeamsV3AttrOffset(t,i)+7))||{};
-   const p={playerId:studioTeamsV3PlayerId(t,baseSlot),baseSlot,slot,name:String(nr?.name||('Jogador '+slot)),nameHex,number:attrs.number||slot,position:attrs.position||'NONE',skills:attrs.skills||{},appearance:attrs.appearance||{},tactical:null};
+   const p={playerId:studioTeamsV3PlayerId(t,baseSlot),baseSlot,slot,name:String(nr?.name||nr?.fixed?.trim()||('Jogador '+slot)),nameHex,number:attrs.number||slot,position:attrs.position||'NONE',skills:attrs.skills||{},appearance:attrs.appearance||{},tactical:null};
    if(i===0)p.tactical={x:-57,y:0,className:'GO',attack:false,fixed:true};else if(i<=10)p.tactical=tacBySlot.get(slot)||null;
    players.push(p);
   }

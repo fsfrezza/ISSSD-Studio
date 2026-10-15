@@ -65,7 +65,7 @@ if(!physical)throw new Error('Abertura semântica: aplicação física legada n�
 // O core.applyProject também inicializa original/rom/fileName/headerSize/perfil e buildTeams().
 // No modo semantic-only precisamos dessa inicialização, mas com cleanBase como BASE e CURRENT,
 // de modo que nenhum byte do projeto seja materializado na ROM durante a abertura.
-const semanticBaseInit="studioCore().applyProject(cleanBase,cleanBase,baseName,d?.state?.ui||{},d?.base?.profile||null);";
+const semanticBaseInit="window.__ISSSD_TEAMS_SEMANTIC_RESET_V1__();studioCore().applyProject(cleanBase,cleanBase,baseName,d?.state?.ui||{},d?.base?.profile||null);";
 applyBlock=applyBlock.replace(physical,`if(!window.__ISSSD_SEMANTIC_OPEN_ONLY__){${physical}}else{${semanticBaseInit}}`);
 
 const mandatory="await studioEnsureMandatoryPlus4MiB(d?.base?.profile==='iss-deluxe-plus');";

@@ -21,6 +21,12 @@ const runtime=String.raw`
  const baseTactical=typeof plusTacticalRecordForTeam==='function'?plusTacticalRecordForTeam:null;
  if(!baseRead)throw new Error('Overlay semântico: studioTeamsV3ReadFull indisponível.');
 
+ // Invalidate the resolved view whenever a clean ROM session is installed.
+ window.__ISSSD_TEAMS_SEMANTIC_RESET_V1__=function(){
+  window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__=null;
+  window.__ISSSD_TEAMS_RESOLVED_OVERLAY_V1__=null;
+  window.__ISSSD_TEAMS_BASELINE_V1__=null;
+ };
  function playerFromIdentity(team,p,index){
   const slot=Number(p?.slot)||index+1,baseSlot=typeof studioTeamsV3BaseSlot==='function'?studioTeamsV3BaseSlot(team,p,slot):(Number(p?.baseSlot)||slot);
   let out=null;
@@ -68,7 +74,7 @@ const runtime=String.raw`
  function applyPlayerModel(model,resolved){
   if(!model||!resolved)return;
   model.playerId=resolved.playerId;model.baseSlot=resolved.baseSlot;model.slot=resolved.slot;
-  if(has(resolved,'name'))model.name=resolved.name;
+  if(has(resolved,'name')){model.name=resolved.name;model.fixedName=resolved.name;model.manual=resolved.name;}
   if(has(resolved,'number'))model.number=resolved.number;
   if(has(resolved,'position')){
    const id=posId(resolved.position);model.position=typeof model.position==='number'?id:posLabel(resolved.position);
@@ -80,10 +86,10 @@ const runtime=String.raw`
   for(const [k,v] of Object.entries(appearance))if(k in model)model[k]=v;
   if(resolved.tactical){model.tactical={...(model.tactical||{}),...resolved.tactical};for(const k of ['x','y','className','attack'])if(k in model)model[k]=resolved.tactical[k]}
  }
- function applyModels(resolved){
+ function applyModels(resolved,onlyTeam=null){
   if(typeof teams==='undefined'||!Array.isArray(teams))return false;
   for(const [key,rt] of Object.entries(resolved?.teams||{})){
-   const t=Number(key),model=teams[t];if(!model)continue;
+   const t=Number(key);if(onlyTeam!==null&&t!==Number(onlyTeam))continue;const model=teams[t];if(!model)continue;
    if(has(rt,'teamName')){if('teamName' in model)model.teamName=rt.teamName;if('name' in model)model.name=rt.teamName}
    if(rt.formation){if(model.formation&&typeof model.formation==='object')model.formation={...model.formation,index:rt.formation.index};if('formationIndex' in model)model.formationIndex=rt.formation.index}
    if(Array.isArray(model.players))for(let i=0;i<Math.min(20,rt.players?.length||0);i++)applyPlayerModel(model.players[i],rt.players[i]);
@@ -99,22 +105,35 @@ const runtime=String.raw`
   window.__ISSSD_TEAMS_V1__=clone(state);
   const resolved=resolve(state);window.__ISSSD_TEAMS_RESOLVED_OVERLAY_V1__=resolved;
   const models=applyModels(resolved);
-  try{window.__ISSSD_TEAM_STATE_API__?.refresh?.()}catch(e){console.warn('Overlay semântico: TEAM_STATE_API.refresh',e)}
+
   return !!models;
  };
+ const refreshBase=refreshPlusTeamFromRom;
+ refreshPlusTeamFromRom=function(team){
+  refreshBase(team);
+  if(activeRomProfile?.id==='iss-deluxe-plus')applyModels(window.__ISSSD_TEAMS_RESOLVED_OVERLAY_V1__,team);
+ };
+ const buildBase=buildTeams;
+ buildTeams=function(){buildBase();if(activeRomProfile?.id==='iss-deluxe-plus')applyModels(window.__ISSSD_TEAMS_RESOLVED_OVERLAY_V1__)};
+ // Public readers must forward into the same lexical runtime as renderers.
+ window.plusTacticalRecordForTeam=(...args)=>plusTacticalRecordForTeam(...args);
  studioTeamsV3ReadFull=function(){
   const base=baseRead();const state=window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__;
   return state?.schema==='isssd-teams-v1'?resolve(state):base;
  };
  if(baseTactical){
-  plusTacticalRecordForTeam=function(team){
-   const rec=baseTactical(team),rt=window.__ISSSD_TEAMS_RESOLVED_OVERLAY_V1__?.teams?.[String(team)];
+  plusTacticalRecordForTeam=function(team,source=rom){
+   if(source!==rom)return baseTactical(team,source);
+   const rec=baseTactical(team,source),rt=window.__ISSSD_TEAMS_RESOLVED_OVERLAY_V1__?.teams?.[String(team)];
    if(!rec||!rt)return rec;
    const out={...rec,raw:rec.raw?new Uint8Array(rec.raw):rec.raw,players:Array.isArray(rec.players)?rec.players.map(p=>({...p})):rec.players};
    if(rt.formation&&Number.isInteger(Number(rt.formation.index))){out.formationIndex=Number(rt.formation.index);if(out.raw?.length===31)out.raw[0]=Number(rt.formation.index)&15}
    if(Array.isArray(out.players))for(let i=0;i<Math.min(10,out.players.length);i++){
     const q=rt.players?.[i+1]?.tactical;if(!q)continue;const cls=typeof studioTeamsV3Class==='function'?studioTeamsV3Class(q.className):String(q.className||'DF');
     out.players[i]={...out.players[i],className:cls,dx:typeof studioTeamsV3NativeDx==='function'?studioTeamsV3NativeDx(cls,q.x):Number(q.x)||0,dy:Number(q.y)||0,attack:!!q.attack};
+    const p=out.players[i],bits=cls==='DF'?1:cls==='MC'?2:3;
+    p.flag=((p.flag||0)&~7)|bits|(p.attack?4:0);
+    if(out.raw?.length===31){out.raw[1+i*2]=p.dx&255;out.raw[2+i*2]=p.dy&255;out.raw[21+i]=p.flag;}
    }
    return out;
   };
@@ -124,7 +143,11 @@ const runtime=String.raw`
 `;
 
 if(!html.includes('</body>'))throw new Error('Overlay semântico: HTML final sem </body>.');
-html=html.replace('</body>',runtime+'\n</body>');
+// Install inside the legacy IIFE: teams and tactical readers are lexical, not globals.
+const anchor='function ensureCurrentTeamFresh(){';
+if(html.split(anchor).length!==2)throw new Error('Overlay semântico: escopo do runtime principal ambíguo/ausente.');
+const scopedRuntime=runtime.replace(/<script[^>]*>/,'/* '+marker+' */').replace('</script>','');
+html=html.replace(anchor,scopedRuntime+'\n'+anchor);
 for(const required of ['__ISSSD_TEAMS_PROJECT_OVERLAY_V1__','__ISSSD_TEAMS_RESOLVED_OVERLAY_V1__','__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__','studioTeamsV3ReadFull=function()'])if(!html.includes(required))throw new Error('Overlay semântico incompleto; ausente '+required);
 fs.writeFileSync(htmlPath,html,'utf8');
 console.log('ISSSD Studio: overlay semântico de equipes instalado — teamsV1 hidrata modelos/UI sem gravar os overrides na ROM-base.');

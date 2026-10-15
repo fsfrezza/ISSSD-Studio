@@ -34,7 +34,13 @@ if(!html.includes('roundTripSaveSanitized'))throw new Error('Verificação final
 if(html.includes("roundTrip:'semantic-first-v3'"))throw new Error('Verificação final: saneamento físico legado voltou à abertura do projeto.');
 if(!html.includes('0x2AA8E,0x2B166,0x3193A'))throw new Error('Verificação final: saneamento dos loaders derivados não está presente no salvamento.');
 
-if(!html.includes('id="isssd-team-semantic-overlay-v1"'))throw new Error('Verificação final: overlay semântico de equipes não foi instalado.');
+if(!html.includes('/* isssd-team-semantic-overlay-v1 */'))throw new Error('Verificação final: overlay semântico de equipes não foi instalado.');
+const overlayAt=html.indexOf('/* isssd-team-semantic-overlay-v1 */');
+const scriptStart=html.lastIndexOf('<script',overlayAt),scriptEnd=html.indexOf('</script>',overlayAt);
+const scopedBlock=html.slice(scriptStart,scriptEnd);
+for(const needle of ['teams=[]','function refreshPlusTeamFromRom(team){','function ensureCurrentTeamFresh(){','window.plusTacticalRecordForTeam=(...args)=>plusTacticalRecordForTeam(...args)']){
+ if(!scopedBlock.includes(needle))throw new Error('Verificação final: overlay fora do escopo lexical do modelo: '+needle);
+}
 for(const required of ['__ISSSD_TEAMS_PROJECT_OVERLAY_V1__','__ISSSD_TEAMS_RESOLVED_OVERLAY_V1__','__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__','__ISSSD_PROJECT_TEAMS_HYDRATED_V1__']){
  if(!html.includes(required))throw new Error('Verificação final: overlay teamsV1 incompleto; ausente '+required+'.');
 }
