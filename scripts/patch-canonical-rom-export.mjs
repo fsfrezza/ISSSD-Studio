@@ -1,3 +1,4 @@
+import {CUMULATIVE_AREAS} from '../src/core/cumulative-areas.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -22,12 +23,15 @@ const newBlock=`async function studioDownloadFile(bytes,name,type="application/o
   const isRom=/\\.(?:smc|sfc)$/i.test(String(name||''));
   const isPlus=(activeRomProfile?.id==='iss-deluxe-plus')||/PLUS/i.test(String(name||''));
   if(isRom&&isPlus){
+    const selectedAreas=await window.__ISSSD_PICK_CUMULATIVE_AREAS__();
+    if(!selectedAreas)return;
     const project=await studioProjectObject();
     window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__?.(project);
+    const titleGraphics=selectedAreas.includes('tela-inicial')?await window.__ISSSD_PREPARE_TITLE_GRAPHICS__(project):null;
     const response=await fetch('/__isssd/build-plus-project',{
       method:'POST',
       headers:{'Content-Type':'application/json; charset=utf-8'},
-      body:JSON.stringify({project,cumulative:true,diagnostic:window.__ISSSD_DIAGNOSTIC_CHECKPOINTS__===true})
+      body:JSON.stringify({project,cumulative:true,selectedAreas,titleGraphics,diagnostic:window.__ISSSD_DIAGNOSTIC_CHECKPOINTS__===true})
     });
     if(!response.ok){
       let detail='';
@@ -88,7 +92,8 @@ const capture=String.raw`<script id="isssd-cumulative-save-capture-v1">
  },true);
 })();
 </script>`;
-html=html.replace('</body>',()=>capture+'\n</body>');
+const exportUi=fs.readFileSync(path.join(root,'editor-src','cumulative-export-ui.mjs'),'utf8').replace('__CUMULATIVE_PHASES__',()=>JSON.stringify(CUMULATIVE_AREAS));
+html=html.replace('</body>',()=>'<script id="isssd-cumulative-export-ui-v1">'+exportUi+'</script>'+capture+'\n</body>');
 fs.writeFileSync(file,html,'utf8');
 console.log('ISSSD Studio: exportação Plus centralizada no Build Pipeline v1 do servidor local.');
 console.log('  Salvar ROM -> projeto atual -> etapas cumulativas de 4 MiB -> ZIP com índice -> download');

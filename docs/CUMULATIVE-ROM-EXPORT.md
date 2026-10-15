@@ -1,47 +1,53 @@
-# Exportação provisória de ROMs cumulativas por área
+# ZIP cumulativo com seleção de nove fases
 
-No perfil Plus, **Salvar ROM** baixa `ISSSD-Plus-ROMs-cumulativas.zip`, sem executar
-writers físicos legados do navegador. A ROM-base permanece imutável.
+**Salvar ROM** abre a seleção abaixo. Os arquivos seguem uma numeração fixa:
 
-## Ordem
+1. Infraestrutura
+2. Metadados
+3. Tela Inicial
+4. Menu Principal
+5. Pré-Partida
+6. Textos da tela Estratégias
+7. Seleção de equipes
+8. Jogadores (incluindo paletas/uniformes já mapeados nesta área)
+9. Formações
 
-1. `01-infraestrutura.sfc`: expansão obrigatória para 4 MiB e individualização
-   tática, mesmo quando o projeto não contém overrides táticos.
-2. `02-tela-inicial.sfc`: conjunto completo das alterações binárias da tela inicial.
-3. `03-menu-principal.sfc`: conjunto completo das alterações binárias do menu principal.
-4. Seleção e grupos de equipes, se houver alterações efetivamente materializadas.
-5. Uniformes e paletas de goleiro, se houver mudanças.
-6. Jogadores, todos juntos: nomes, camisas, posições, skills e aparência.
-7. Tela de preparação da partida, se houver mudanças.
-8. Formações, táticas e estratégias, todas juntas.
-9. Outras alterações legadas sem área confirmada, reunidas numa única etapa.
-10. Metadados internos da ROM.
+Uma fase desmarcada não gera arquivo nem aplica seus bytes às ROMs seguintes.
+Assim, selecionar 01, 02 e 08 gera apenas esses três arquivos, com lacunas na
+numeração. As fases marcadas geram um arquivo mesmo sem mudança binária; o índice
+registra `sem-alteracao-binaria`. A preparação de 4 MiB e individualização é sempre
+obrigatória; desmarcar 01 omite somente sua ROM separada.
 
-As três primeiras posições são fixas. As demais áreas sem mudanças são omitidas.
-Não há uma ROM por jogador, patch ou campo. Cada arquivo contém as áreas anteriores
-mais o conjunto completo da área atual. Checksum e mirrors são recalculados em
-cada saída. `indice.json` lista áreas, intervalos aplicados e status; título/menu
-sem mudança binária têm status `sem-alteracao-binaria`.
+Textos da tela Estratégias e registros táticos/Formações agora são fases distintas.
+Offsets legados sem área confirmada são listados em `unassignedLegacyRanges` e
+não são aplicados silenciosamente em outra fase. Não existe uma décima fase genérica.
+`finalMatchesSelectedAreas` verifica a última ROM contra as áreas selecionadas,
+sem afirmar equivalência com um build que inclui áreas desmarcadas.
 
-O pipeline resolve o estado final uma vez, com preparação obrigatória. Seus writes
-efetivos são agrupados por áreas verificadas, inclusive separando intervalos que
-atravessam fronteiras. Snapshots recebem cada conjunto de forma atômica. A última
-ROM precisa ser byte-idêntica ao build canônico configurado com
-`forceTacticalInfrastructure: true`; divergência cancela o ZIP.
+## Fotos e gráficos da Tela Inicial
 
-Os limites nativos da tela inicial vêm de TITLE_GROUPS, TITLE_PALETTES e campos
-textuais do legado. Menu principal usa as regiões do renderer verificado. Nomes
-usam os ponteiros vivos do ROM final; táticas usam os registros resolvidos. Bytes
-sem associação confirmada ficam em `outros-legados`, em vez de receberem uma tela
-por suposição. Espelhos de integridade e checksum são derivados, não áreas novas.
+Se 03 estiver selecionada e houver imagens customizadas, o navegador executa o
+conversor nativo do compositor antes de enviar a exportação. Ele prepara cópias
+temporárias dos grupos e materializa os streams em uma cópia da ROM-base. Nenhum
+override é materializado durante a abertura do projeto.
 
-O agrupamento não implementa writers semânticos ausentes: tela inicial/menu só
-incluem mudanças efetivamente materializadas pelos writers/patches disponíveis.
-Snapshots sem mudança não afirmam ter renderizado composições apenas semânticas.
-O ZIP é comprimido por arquivo em disco temporário, com limite ZIP32 de 4 GiB.
+O servidor recebe grupos nativos (`fundo`, `letreiro`, `fotos`), verifica os
+ponteiros, capacidade original, dimensões, descompressão/round-trip e conteúdo
+diferente do original. Fotos preservam o bit 15 do cabeçalho Konami. Os pixels
+validados entram na fase 03 e permanecem nas fases seguintes.
 
-## Limpeza preservada
+A ausência da conversão de uma camada customizada cancela a exportação. Conflitos
+de tiles ou streams maiores que o espaço nativo seguro também impedem o download;
+não há fallback silencioso para as fotos originais. Isso não implementa um hook
+novo de realocação quando a imagem não cabe. A desmarcação de 03 dispensa a
+conversão e preserva os gráficos da ROM-base nas fases seguintes.
 
-A revisão anterior removeu a documentação do painel de diagnóstico já excluído
-e o fallback OLD/ANTIGO/Preview que podia descartar `.editor-vendor`. Backups,
-projetos, ROMs e pastas de recuperação continuam protegidos.
+O agrupamento usa os ponteiros reais dos streams nativos da Plus. Os offsets de
+TITLE_GROUPS pertencentes a outras variantes não bastam para localizar as fotos.
+Checksum e mirrors são recalculados em cada ROM. A ROM-base permanece imutável.
+
+## Escopo
+
+Writers semânticos ainda ausentes em outros domínios não passam a existir pela
+seleção das fases. O índice descreve alterações efetivamente materializadas.
+Backups, projetos, ROMs e pastas de recuperação continuam protegidos.

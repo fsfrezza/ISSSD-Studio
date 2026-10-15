@@ -19,7 +19,7 @@ export function buildPlusProjectRom(baseRom,project,options={}){
   let result;
 
   if(userPrepare){
-    const stages=createPlusBuildStages({baseRom,patches,extraWriters:userWriters,writeChecksum,forceTacticalInfrastructure:options.forceTacticalInfrastructure===true});
+    const stages=createPlusBuildStages({baseRom,patches,extraWriters:userWriters,writeChecksum,forceTacticalInfrastructure:options.forceTacticalInfrastructure===true,selectedAreas:options.selectedAreas??null});
     stages.splice(1,0,{
       id:'01b-legacy-caller-infrastructure',kind:'derived',
       run:(work,state)=>{
@@ -37,6 +37,7 @@ export function buildPlusProjectRom(baseRom,project,options={}){
       writeChecksum,
       keepCheckpoints,
       forceTacticalInfrastructure:options.forceTacticalInfrastructure===true,
+      selectedAreas:options.selectedAreas??null,
     });
   }
 

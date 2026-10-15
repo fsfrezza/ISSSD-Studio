@@ -22,7 +22,7 @@ function applyValidatedPatches(work,patches){
   return work;
 }
 
-export function createPlusBuildStages({baseRom,patches=[],extraWriters=[],writeChecksum=true,forceTacticalInfrastructure=false}={}){
+export function createPlusBuildStages({baseRom,patches=[],extraWriters=[],writeChecksum=true,forceTacticalInfrastructure=false,selectedAreas=null}={}){
   if(!(baseRom instanceof Uint8Array)||baseRom.length!==PLUS.baseSize)throw new RangeError('canonical Plus base ROM must be exactly 2 MiB');
   if(!Array.isArray(patches))throw new TypeError('patches must be an array');
   if(!Array.isArray(extraWriters)||extraWriters.some(writer=>typeof writer!=='function'))throw new TypeError('extraWriters must be functions');
@@ -48,11 +48,11 @@ export function createPlusBuildStages({baseRom,patches=[],extraWriters=[],writeC
       },
     },
     {
-      id:'04-player-edits',kind:'semantic',
+      id:'04-player-edits',kind:'semantic',when:!selectedAreas||selectedAreas.includes('jogadores'),
       run:(work,state)=>plusPlayerWriter(work,state),
     },
     {
-      id:'04b-teams-v3-players',kind:'semantic',
+      id:'04b-teams-v3-players',kind:'semantic',when:!selectedAreas||selectedAreas.includes('jogadores'),
       run:(work,state)=>applySteps(work,teamsV3PlayerSteps(baseRom,state)),
     },
     {
@@ -62,19 +62,19 @@ export function createPlusBuildStages({baseRom,patches=[],extraWriters=[],writeC
     },
     {
       id:'06-tactics',kind:'semantic',
-      when:state=>hasTacticalEdits(state),
+      when:state=>(!selectedAreas||selectedAreas.includes('formacoes'))&&hasTacticalEdits(state),
       run:(work,state)=>plusTacticsWriter(work,state),
     },
     {
-      id:'06b-teams-v3-tactics',kind:'semantic',
+      id:'06b-teams-v3-tactics',kind:'semantic',when:!selectedAreas||selectedAreas.includes('formacoes'),
       run:(work,state)=>applySteps(work,teamsV3TacticalSteps(baseRom,state)),
     },
     {
-      id:'07-strategy-text',kind:'semantic',
+      id:'07-strategy-text',kind:'semantic',when:!selectedAreas||selectedAreas.includes('textos-estrategias'),
       run:(work,state)=>plusStrategyTextWriter(work,state),
     },
     {
-      id:'08-rom-metadata',kind:'semantic',
+      id:'08-rom-metadata',kind:'semantic',when:!selectedAreas||selectedAreas.includes('metadados'),
       run:(work,state)=>plusRomMetaWriter(work,state),
     },
   ];
@@ -103,8 +103,8 @@ export function createPlusBuildStages({baseRom,patches=[],extraWriters=[],writeC
   return stages;
 }
 
-export function buildPlusWithPipeline(baseRom,{semanticState={},patches=[],extraWriters=[],writeChecksum=true,keepCheckpoints=false,forceTacticalInfrastructure=false}={}){
-  const stages=createPlusBuildStages({baseRom,patches,extraWriters,writeChecksum,forceTacticalInfrastructure});
+export function buildPlusWithPipeline(baseRom,{semanticState={},patches=[],extraWriters=[],writeChecksum=true,keepCheckpoints=false,forceTacticalInfrastructure=false,selectedAreas=null}={}){
+  const stages=createPlusBuildStages({baseRom,patches,extraWriters,writeChecksum,forceTacticalInfrastructure,selectedAreas});
   const result=runBuildPipeline(baseRom,{state:semanticState,stages,keepCheckpoints});
   if(result.rom.length!==0x400000)throw new Error(`Plus pipeline must finish at 4 MiB; got ${result.rom.length} bytes`);
   if(!validatePlusRuntimeMirrors(result.rom))throw new Error('Plus pipeline finished with invalid runtime mirrors');

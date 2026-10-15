@@ -72,6 +72,10 @@ if(!html.includes("fetch('/__isssd/build-plus-project'"))throw new Error('Verifi
 if(!html.includes('await studioProjectObject()'))throw new Error('Verificação final: exportação Plus não envia o projeto atual ao pipeline.');
 if(!html.includes("response.headers.get('X-ISSSD-Builder')!=='plus-build-pipeline-v1'"))throw new Error('Verificação final: browser não exige confirmação do Build Pipeline v1.');
 if(!html.includes("response.headers.get('X-ISSSD-Archive')!=='cumulative-v1'"))throw new Error('Verificação final: exportação não exige ZIP cumulativo.');
+for(const token of ['__ISSSD_PICK_CUMULATIVE_AREAS__','__ISSSD_PREPARE_TITLE_GRAPHICS__','selectedAreas,titleGraphics','isssd-cumulative-export-ui-v1']){
+ if(!html.includes(token))throw new Error('Verificação final: seleção/conversão gráfica desconectada: '+token);
+}
+
 
 
 // Presence checks cannot detect an invalid legacy script that silently never executes.
