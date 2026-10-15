@@ -34,7 +34,12 @@ if(!html.includes('roundTripSaveSanitized'))throw new Error('Verificação final
 if(html.includes("roundTrip:'semantic-first-v3'"))throw new Error('Verificação final: saneamento físico legado voltou à abertura do projeto.');
 if(!html.includes('0x2AA8E,0x2B166,0x3193A'))throw new Error('Verificação final: saneamento dos loaders derivados não está presente no salvamento.');
 
-if(!html.includes('id="isssd-project-open-semantic-only-v2"'))throw new Error('Verificação final: barreira v2 de abertura semântica não foi instalada.');
+if(!html.includes('id="isssd-team-semantic-overlay-v1"'))throw new Error('Verificação final: overlay semântico de equipes não foi instalado.');
+for(const required of ['__ISSSD_TEAMS_PROJECT_OVERLAY_V1__','__ISSSD_TEAMS_RESOLVED_OVERLAY_V1__','__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__','__ISSSD_PROJECT_TEAMS_HYDRATED_V1__']){
+ if(!html.includes(required))throw new Error('Verificação final: overlay teamsV1 incompleto; ausente '+required+'.');
+}
+
+if(!html.includes('id="isssd-project-open-semantic-only-v3"'))throw new Error('Verificação final: barreira v3 de abertura semântica não foi instalada.');
 for(const required of [
  'window.__ISSSD_SEMANTIC_OPEN_ONLY__=true',
  'if(!window.__ISSSD_SEMANTIC_OPEN_ONLY__){studioCore().applyProject',
@@ -54,4 +59,4 @@ if(!html.includes('await studioProjectObject()'))throw new Error('Verificação 
 if(!html.includes("response.headers.get('X-ISSSD-Builder')!=='plus-build-pipeline-v1'"))throw new Error('Verificação final: browser não exige confirmação do Build Pipeline v1.');
 if(!html.includes('payload.length!==0x400000'))throw new Error('Verificação final: browser não rejeita ROM Plus final que não tenha 4 MiB.');
 
-console.log('ISSSD Studio: invariantes finais verificadas — abrir projeto não monta ROM parcial, a ROM-base continua autoritativa, o round-trip saneia somente o salvamento e a ROM final Plus nasce somente do Build Pipeline v1.');
+console.log('ISSSD Studio: invariantes finais verificadas — abrir projeto hidrata teamsV1/textos sem alterar a ROM-base, o round-trip saneia somente o salvamento e a ROM final Plus nasce somente do Build Pipeline v1.');
