@@ -88,7 +88,7 @@ function buildPostedProject(req,res){
     try{
      const manifest=buildCumulativeProject(base,project,{onRom:(rom,entry)=>zip.add(entry.name,rom)});
      zip.add('indice.json',Buffer.from(JSON.stringify(manifest,null,2)+'\n'));
-     zip.add('LEIA-ME.txt',Buffer.from('ROMs cumulativas em ordem numérica. Cada etapa contém as anteriores.\nA primeira contém a expansão obrigatória para 4 MiB.\nCada jogador agrupa seus campos; cada registro tático constitui outra etapa.\nChecksum e mirrors são recalculados em cada ROM. Etapas sem mudança efetiva são omitidas.\nA última ROM coincide byte a byte com o build canônico. Consulte indice.json.\n'));
+     zip.add('LEIA-ME.txt',Buffer.from('ROMs cumulativas por área, em ordem numérica.\n01: expansão para 4 MiB e individualização obrigatória.\n02: conjunto da tela inicial. 03: conjunto do menu principal.\nDepois: seleção/equipes, jogadores, formações/estratégias e demais áreas identificadas.\nCada etapa contém as anteriores. Não há uma ROM por jogador ou por patch.\nTela inicial/menu sem mudança binária permanecem no ZIP e são identificados no índice.\nChecksum e mirrors são recalculados em cada ROM. A última coincide com o build canônico com preparação obrigatória. Consulte indice.json.\n'));
      zip.finish();
      res.writeHead(200,{'Content-Type':'application/zip','Content-Length':fs.statSync(zipPath).size,'Cache-Control':'no-store','X-ISSSD-Builder':'plus-build-pipeline-v1','X-ISSSD-Mirrors':'ok','X-ISSSD-Archive':'cumulative-v1','X-ISSSD-ROM-Count':String(manifest.entries.length)});
      const stream=fs.createReadStream(zipPath);res.on('close',()=>stream.destroy());stream.on('close',cleanup);stream.on('error',()=>res.destroy()).pipe(res);return;

@@ -24,26 +24,30 @@ function fixture(){
 test('cumulative ROMs retain previous edits, delay tactics until their step and finish at canonical output',()=>{
  const {base,project}=fixture(),before=base.slice(),projectBefore=structuredClone(project),snapshots=[];
  const manifest=buildCumulativeProject(base,project,{onRom:(rom,entry)=>snapshots.push({rom,entry})});
- const cafu=snapshots.findIndex(x=>x.entry.change.includes('player-2-Cafu'));
- const lucio=snapshots.findIndex(x=>x.entry.change.includes('player-3-Lucio'));
- const tactic=snapshots.findIndex(x=>x.entry.change==='team-30-tactical-player-2');
- assert.ok(cafu>0&&lucio>cafu&&tactic>lucio);
+ const cafu=snapshots.findIndex(x=>x.entry.stage==='jogadores');
+ const tactic=snapshots.findIndex(x=>x.entry.stage==='formacoes-estrategias');
+ assert.ok(cafu>=3&&tactic>cafu);
+ assert.deepEqual(snapshots.slice(0,3).map(x=>x.entry.stage),['infraestrutura','tela-inicial','menu-principal']);
  assert.equal(readPlusPlayerName(snapshots[cafu-1].rom,30,1).name,'BASE1');
- for(let i=cafu;i<snapshots.length;i++)assert.equal(readPlusPlayerName(snapshots[i].rom,30,1).name,'Cafu');
- assert.equal(readPlusPlayerName(snapshots[cafu].rom,30,2).name,'BASE2');
- assert.equal(readPlusPlayerName(snapshots[lucio].rom,30,2).name,'Lucio');
+ for(let i=cafu;i<snapshots.length;i++){
+  assert.equal(readPlusPlayerName(snapshots[i].rom,30,1).name,'Cafu');
+  assert.equal(readPlusPlayerName(snapshots[i].rom,30,2).name,'Lucio');
+ }
  const r=decodePlusTacticalRecord(resolvePlusTacticalRecord(snapshots[tactic].rom,30).raw).players[0];
  assert.equal(r.x,-30);assert.equal(r.y,30);assert.equal(r.attack,true);
+ const earlyA=resolvePlusTacticalRecord(snapshots[0].rom,30),earlyB=resolvePlusTacticalRecord(snapshots[0].rom,31);
+ assert.notEqual(earlyA.recordPc,earlyB.recordPc);
+ assert.ok(snapshots.length<=10);
  const attr=snapshots.at(-1).rom.slice(playerOffset(30,1),playerOffset(30,1)+7);
  assert.equal(attr[0]&15,8);assert.equal(attr[4]>>4,3);assert.equal(attr[5],1);
  for(const {rom} of snapshots){assert.equal(rom.length,0x400000);assert.ok(validatePlusRuntimeMirrors(rom));}
- assert.deepEqual(snapshots.at(-1).rom,buildPlusProjectRom(base,project).rom);
+ assert.deepEqual(snapshots.at(-1).rom,buildPlusProjectRom(base,project,{forceTacticalInfrastructure:true}).rom);
  assert.deepEqual(base,before);assert.deepEqual(project,projectBefore);assert.equal(manifest.finalMatchesCanonicalBuild,true);
 });
 
 test('identity move copies original attributes and names before applying destination overrides',()=>{
  const {base,project}=fixture();project.state.semantic.teamsV1.teams[30].players=[{slot:3,baseSlot:2,playerId:'30:2',custom:{name:'Cafu',skills:{speed:10}}},{slot:2,baseSlot:3,playerId:'30:3'}];
- const rom=buildPlusProjectRom(base,project).rom;
+ const rom=buildPlusProjectRom(base,project,{forceTacticalInfrastructure:true}).rom;
  assert.equal(readPlusPlayerName(rom,30,2).name,'Cafu');assert.equal(readPlusPlayerName(rom,30,1).name,'BASE2');
  assert.equal(rom[playerOffset(30,2)]&15,9);assert.equal(rom[playerOffset(30,1)]&15,4);
 });
@@ -85,7 +89,7 @@ test('HTTP export returns an extractable ZIP, correct manifest and canonical fin
   }
   const manifest=JSON.parse(files.get('indice.json'));assert.equal(manifest.entries.length,Number(res.headers.get('X-ISSSD-ROM-Count')));
   for(const e of manifest.entries)assert.equal(files.get(e.name).length,0x400000);
-  assert.deepEqual(files.get(manifest.finalRom),Buffer.from(buildPlusProjectRom(base,project).rom));
+  assert.deepEqual(files.get(manifest.finalRom),Buffer.from(buildPlusProjectRom(base,project,{forceTacticalInfrastructure:true}).rom));
   assert.deepEqual(fs.readFileSync(file),Buffer.from(base));
   const invalid=structuredClone(project);invalid.state.semantic.teamsV1.teams[30].players[0].custom.number=999;
   const failed=await fetch(url+'__isssd/build-plus-project',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({project:invalid,cumulative:true})});
@@ -103,4 +107,26 @@ test('Plus Save ROM capture directly exports current semantic project without in
  vm.runInNewContext(body,ctx);
  await handler({target:{closest:()=>button},preventDefault(){},stopImmediatePropagation(){stopped++}});
  assert.equal(downloaded,1);assert.equal(stopped,1);assert.equal(button.disabled,false);assert.equal(button.textContent,'Salvar ROM');
+});
+
+
+test('title and menu write sets are atomic game areas before player edits',()=>{
+ const {base,project}=fixture(),shots=[];
+ project.state.patchesCompact.push({off:0x4C292,data:'1234'},{off:0xF0000,data:'5678'});
+ const manifest=buildCumulativeProject(base,project,{onRom:(rom,e)=>shots.push({rom,e})});
+ assert.deepEqual(shots.slice(0,3).map(x=>x.e.name),['01-infraestrutura.sfc','02-tela-inicial.sfc','03-menu-principal.sfc']);
+ assert.equal(shots[0].rom[0x4C292],base[0x4C292]);assert.equal(shots[0].rom[0xF0000],base[0xF0000]);
+ assert.equal(shots[1].rom[0x4C292],0x12);assert.equal(shots[1].rom[0x4C293],0x34);assert.equal(shots[1].rom[0xF0000],base[0xF0000]);
+ assert.equal(shots[2].rom[0x4C292],0x12);assert.equal(shots[2].rom[0xF0000],0x56);assert.equal(shots[2].rom[0xF0001],0x78);
+ assert.equal(readPlusPlayerName(shots[2].rom,30,1).name,'BASE1');assert.equal(manifest.granularity,'game-area');
+ assert.equal(manifest.entries.filter(e=>e.stage==='jogadores').length,1);
+});
+
+test('mandatory individualization also runs with no player or tactical overrides',()=>{
+ const {base}=fixture(),shots=[];
+ const manifest=buildCumulativeProject(base,{state:{semantic:{}}},{onRom:(rom,e)=>shots.push({rom,e})});
+ assert.equal(manifest.entries.length,3);
+ const a=resolvePlusTacticalRecord(shots[0].rom,30),b=resolvePlusTacticalRecord(shots[0].rom,31);
+ assert.notEqual(a.recordPc,b.recordPc);assert.equal(shots[0].rom.length,0x400000);
+ assert.equal(manifest.entries[1].status,'sem-alteracao-binaria');
 });
