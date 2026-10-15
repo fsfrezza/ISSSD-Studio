@@ -1,4 +1,6 @@
 import fs from 'node:fs';
+import vm from 'node:vm';
+import {spawnSync} from 'node:child_process';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
@@ -65,5 +67,17 @@ if(!html.includes("fetch('/__isssd/build-plus-project'"))throw new Error('Verifi
 if(!html.includes('await studioProjectObject()'))throw new Error('Verificação final: exportação Plus não envia o projeto atual ao pipeline.');
 if(!html.includes("response.headers.get('X-ISSSD-Builder')!=='plus-build-pipeline-v1'"))throw new Error('Verificação final: browser não exige confirmação do Build Pipeline v1.');
 if(!html.includes('payload.length!==0x400000'))throw new Error('Verificação final: browser não rejeita ROM Plus final que não tenha 4 MiB.');
+
+
+// Presence checks cannot detect an invalid legacy script that silently never executes.
+for(const match of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)){
+ const attrs=match[1];if(/type=["'](?:application\/json|importmap)["']/i.test(attrs))continue;
+ if(/type=["']module["']/i.test(attrs)){
+  const checked=spawnSync(process.execPath,['--check','--input-type=module'],{input:match[2],encoding:'utf8'});
+  if(checked.status!==0)throw new Error('Verificação final: módulo inválido em '+attrs+': '+checked.stderr);
+  continue;
+ }
+ try{new vm.Script(match[2])}catch(e){throw new Error('Verificação final: JavaScript inválido em '+(attrs||'script sem id')+': '+e.message)}
+}
 
 console.log('ISSSD Studio: invariantes finais verificadas — abrir projeto carrega formalmente a ROM-base no core, hidrata teamsV1/textos sem materializar overrides, o round-trip saneia somente o salvamento e a ROM final Plus nasce somente do Build Pipeline v1.');

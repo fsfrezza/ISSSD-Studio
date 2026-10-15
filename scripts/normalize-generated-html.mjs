@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import {normalizeLegacyScripts} from '../src/ui/normalize-legacy-scripts.mjs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
@@ -60,5 +61,6 @@ if(/Manual técnico\s*(?:\\n\s*)+/i.test(html)){
   throw new Error('Normalização HTML: escapes literais de newline ainda visíveis após “Manual técnico”.');
 }
 
+html=normalizeLegacyScripts(html);
 fs.writeFileSync(htmlPath,html,'utf8');
 console.log('ISSSD Studio: HTML legado normalizado — conteúdo pós-</html> movido para <body>, JavaScript órfão encapsulado e escapes literais de newline visíveis removidos.');

@@ -26,6 +26,7 @@ const runtime=String.raw`
   window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__=null;
   window.__ISSSD_TEAMS_RESOLVED_OVERLAY_V1__=null;
   window.__ISSSD_TEAMS_BASELINE_V1__=null;
+  window.__ISSSD_PLAYER_BASE_SLOT_BY_CURRENT_SLOT_V1__=null;
  };
  function playerFromIdentity(team,p,index){
   const slot=Number(p?.slot)||index+1,baseSlot=typeof studioTeamsV3BaseSlot==='function'?studioTeamsV3BaseSlot(team,p,slot):(Number(p?.baseSlot)||slot);

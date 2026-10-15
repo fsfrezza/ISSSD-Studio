@@ -54,3 +54,15 @@ from the prior recovery ZIP, copied into this isolated checkout's previously abs
 vendor directory. It passes source verification and final invariants. The user's
 Windows worktrees and vendor baseline were never accessed or changed. Tests do
 not claim a complete interactive browser validation with the user's ROM.
+
+A full syntax pass also detected two pre-existing recovery-source defects: v6.64
+omitted a closing brace before workspace processing, and v6.73 serialized script
+newlines as literal escapes. The build normalizer repairs only those recognized
+patterns in generated output. The final verifier now compiles every classic script,
+so syntax-invalid historical modules cannot pass presence-only checks.
+
+Module syntax verification then exposed replacement-string interpolation in HTML
+insertion: the importer's literal `$&` was expanded by String.replace into the
+matched HTML, corrupting the module. Build and canonical module restoration now
+use callback replacements, preserving source bytes. Final verification checks
+module syntax as well as classic script syntax.

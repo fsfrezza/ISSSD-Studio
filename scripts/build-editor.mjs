@@ -77,7 +77,7 @@ const js=fs.existsSync(jsFile)?fs.readFileSync(jsFile,'utf8'):'';
 const v11=fs.existsSync(v11File)?fs.readFileSync(v11File,'utf8'):'';
 try{new Function(js);new Function(v11)}catch(e){throw new Error('Build interrompido: JavaScript Git inválido: '+e.message)}
 const patch=`\n<!-- ${marker} -->\n<style id="isssd-git-visual-bridge-overrides">\n${css}\n</style>\n<script type="module" id="isssd-git-visual-bridge-runtime">\n${js}\n</script>\n<script type="module" id="isssd-git-project-import-v11">\n${v11}\n</script>\n`;
-if(html.includes('</body>'))html=html.replace('</body>',patch+'\n</body>');else html+=patch;
+if(html.includes('</body>'))html=html.replace('</body>',()=>patch+'\n</body>');else html+=patch;
 const markerCount=(html.match(/ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE/g)||[]).length,runtimeCount=(html.match(/id=["']isssd-git-visual-bridge-runtime["']/g)||[]).length,styleCount=(html.match(/id=["']isssd-git-visual-bridge-overrides["']/g)||[]).length,v11Count=(html.match(/id=["']isssd-git-project-import-v11["']/g)||[]).length;
 if(markerCount!==1||runtimeCount!==1||styleCount!==1||v11Count!==1)throw new Error(`Build interrompido: injeção Git duplicada/incompleta (marker=${markerCount}, runtime=${runtimeCount}, style=${styleCount}, v11=${v11Count}).`);
 if(!html.includes('git-visual-bridge-v10-deterministic-project-import')||!html.includes('git-project-import-v11'))throw new Error('Build interrompido: runtimes de importação não foram injetados.');
