@@ -32,7 +32,7 @@
   "state": {
     "ui": {
       "teamNames": [
-        "It├ília",
+        "Itália",
         "Holanda",
         "Inglaterra",
         "Noruega",
@@ -41,50 +41,50 @@
         "Portugal",
         "Dinamarca",
         "Alemanha",
-        "Fran├ºa",
-        "B├®lgica",
-        "Su├®cia",
-        "Rom├¬nia",
-        "Bulg├íria",
-        "R├║ssia",
-        "Su├¡├ºa",
-        "Gr├®cia",
-        "Cro├ícia",
-        "├üustria",
-        "Pa├¡s de Gales",
-        "Esc├│cia",
+        "França",
+        "Bélgica",
+        "Suécia",
+        "Romênia",
+        "Bulgária",
+        "Rússia",
+        "Suíça",
+        "Grécia",
+        "Croácia",
+        "Áustria",
+        "País de Gales",
+        "Escócia",
         "Turquia",
-        "Rep├║blica Tcheca",
-        "Pol├┤nia",
-        "Jap├úo",
+        "República Tcheca",
+        "Polônia",
+        "Japão",
         "Coreia do Sul",
-        "Ar├íbia Saudita",
-        "Nig├®ria",
-        "Camar├Áes",
+        "Arábia Saudita",
+        "Nigéria",
+        "Camarões",
         "Marrocos",
         "Brasil",
         "Argentina",
-        "Col├┤mbia",
-        "M├®xico",
+        "Colômbia",
+        "México",
         "EUA",
         "Uruguai",
         "Venezuela",
         "Equador",
         "Chile",
-        "Bol├¡via",
+        "Bolívia",
         "Paraguai",
         "Peru",
         "China",
-        "Ir├ú",
-        "Uzbequist├úo",
-        "Z├ómbia",
+        "Irã",
+        "Uzbequistão",
+        "Zâmbia",
         "Gana",
-        "├üfrica do Sul",
-        "Canad├í",
+        "África do Sul",
+        "Canadá",
         "Honduras",
         "Costa Rica",
-        "Austr├ília",
-        "Iugosl├ívia",
+        "Austrália",
+        "Iugoslávia",
         "Irlanda do Norte",
         "Equipe dos autores",
         "All Stars"
@@ -480,7 +480,7 @@
           },
           {
             "id": "referenceMask",
-            "name": "Refer├¬ncia vazada",
+            "name": "Referência vazada",
             "kind": "image",
             "x": 0,
             "y": 0,
@@ -511,7 +511,7 @@
             "maskPoints": null,
             "conversion": "safe",
             "imageSource": "preset",
-            "assetDefinition": "refer├¬ncia",
+            "assetDefinition": "referencia",
             "titleTextEnabled": false,
             "titleTextLine1": "",
             "titleTextLine2": "",
@@ -584,7 +584,7 @@
           },
           {
             "id": "title",
-            "name": "T├¡tulo",
+            "name": "Título",
             "kind": "image",
             "x": 21,
             "y": 39,
@@ -811,24 +811,6 @@
         "len": 1,
         "encoding": "rle-base64",
         "data": "ANA="
-      },
-      {
-        "off": 174734,
-        "len": 5,
-        "encoding": "rle-base64",
-        "data": "BCIAgsDq"
-      },
-      {
-        "off": 176486,
-        "len": 5,
-        "encoding": "rle-base64",
-        "data": "BCIQgsDq"
-      },
-      {
-        "off": 203066,
-        "len": 5,
-        "encoding": "rle-base64",
-        "data": "BCIggsDq"
       },
       {
         "off": 248017,
@@ -7152,6 +7134,8 @@
                 "baseSlot": 1,
                 "slot": 1,
                 "custom": {
+                  "name": "Taffarel",
+                  "nameHex": "7B8287878293868D",
                   "skills": {
                     "acceleration": 5,
                     "speed": 5,
@@ -7160,10 +7144,9 @@
                     "balance": 7,
                     "intelligence": 9,
                     "dribbling": 4,
-                    "jump": 9
-                  },
-                  "name": "Taffarel",
-                  "nameHex": "7B8287878293868D"
+                    "jump": 9,
+                    "energy": 8
+                  }
                 }
               },
               {
@@ -7171,22 +7154,23 @@
                 "baseSlot": 2,
                 "slot": 2,
                 "custom": {
+                  "name": "Cafu",
+                  "nameHex": "00006A8287960000",
                   "number": 2,
                   "skills": {
+                    "acceleration": 9,
                     "speed": 9,
                     "shot": 6,
                     "curve": 7,
+                    "balance": 8,
                     "intelligence": 8,
                     "dribbling": 8,
                     "jump": 7,
                     "energy": 10
                   },
                   "tactical": {
-                    "x": -30,
-                    "y": 30
-                  },
-                  "name": "Cafu",
-                  "nameHex": "00006A8287960000"
+                    "y": 32
+                  }
                 }
               },
               {
@@ -7195,7 +7179,18 @@
                 "slot": 3,
                 "custom": {
                   "name": "D.daGuia",
-                  "nameHex": "6B5485826E968A82"
+                  "nameHex": "6B5485826E968A82",
+                  "skills": {
+                    "acceleration": 8,
+                    "speed": 8,
+                    "shot": 8,
+                    "curve": 7,
+                    "balance": 9,
+                    "intelligence": 8,
+                    "dribbling": 7,
+                    "jump": 10,
+                    "energy": 8
+                  }
                 }
               },
               {
@@ -7204,7 +7199,18 @@
                 "slot": 4,
                 "custom": {
                   "name": "Lucio",
-                  "nameHex": "007396848A900000"
+                  "nameHex": "007396848A900000",
+                  "skills": {
+                    "acceleration": 8,
+                    "speed": 9,
+                    "shot": 8,
+                    "curve": 6,
+                    "balance": 9,
+                    "intelligence": 9,
+                    "dribbling": 8,
+                    "jump": 10,
+                    "energy": 9
+                  }
                 }
               },
               {
@@ -7212,9 +7218,12 @@
                 "baseSlot": 5,
                 "slot": 5,
                 "custom": {
+                  "name": "R.Carlos",
+                  "nameHex": "79546A82938D9094",
                   "number": 6,
                   "skills": {
                     "acceleration": 10,
+                    "speed": 10,
                     "shot": 10,
                     "curve": 9,
                     "balance": 9,
@@ -7224,10 +7233,8 @@
                     "energy": 10
                   },
                   "tactical": {
-                    "y": -29
-                  },
-                  "name": "R.Carlos",
-                  "nameHex": "79546A82938D9094"
+                    "y": -32
+                  }
                 }
               },
               {
@@ -7235,19 +7242,23 @@
                 "baseSlot": 6,
                 "slot": 6,
                 "custom": {
+                  "name": "Dunga",
+                  "nameHex": "006B968F88820000",
                   "skills": {
                     "acceleration": 9,
                     "speed": 9,
                     "shot": 6,
                     "curve": 9,
-                    "intelligence": 9
+                    "balance": 9,
+                    "intelligence": 9,
+                    "dribbling": 9,
+                    "jump": 9,
+                    "energy": 8
                   },
                   "tactical": {
-                    "x": -14,
-                    "y": -11
-                  },
-                  "name": "Dunga",
-                  "nameHex": "006B968F88820000"
+                    "x": -16,
+                    "y": -10
+                  }
                 }
               },
               {
@@ -7255,6 +7266,8 @@
                 "baseSlot": 7,
                 "slot": 7,
                 "custom": {
+                  "name": "Gerson",
+                  "nameHex": "006E869394908F00",
                   "skills": {
                     "acceleration": 6,
                     "speed": 6,
@@ -7263,14 +7276,13 @@
                     "balance": 7,
                     "intelligence": 10,
                     "dribbling": 8,
-                    "jump": 6
+                    "jump": 6,
+                    "energy": 8
                   },
                   "tactical": {
-                    "x": -11,
-                    "y": 10
-                  },
-                  "name": "Gerson",
-                  "nameHex": "006E869394908F00"
+                    "x": -15,
+                    "y": 11
+                  }
                 }
               },
               {
@@ -7278,6 +7290,8 @@
                 "baseSlot": 8,
                 "slot": 8,
                 "custom": {
+                  "name": "R.Gaucho",
+                  "nameHex": "79546E8296848990",
                   "number": 11,
                   "skills": {
                     "acceleration": 9,
@@ -7285,15 +7299,15 @@
                     "shot": 8,
                     "curve": 10,
                     "balance": 8,
+                    "intelligence": 9,
                     "dribbling": 10,
+                    "jump": 7,
                     "energy": 7
                   },
                   "tactical": {
                     "x": 15,
-                    "y": -32
-                  },
-                  "name": "R.Gaucho",
-                  "nameHex": "79546E8296848990"
+                    "y": -30
+                  }
                 }
               },
               {
@@ -7301,10 +7315,13 @@
                 "baseSlot": 9,
                 "slot": 9,
                 "custom": {
+                  "name": "Pele'",
+                  "nameHex": "0077868D865A0000",
                   "skills": {
                     "acceleration": 10,
                     "speed": 10,
                     "shot": 10,
+                    "curve": 9,
                     "balance": 10,
                     "intelligence": 10,
                     "dribbling": 10,
@@ -7312,11 +7329,9 @@
                     "energy": 9
                   },
                   "tactical": {
-                    "x": 11,
-                    "y": -2
-                  },
-                  "name": "Pele'",
-                  "nameHex": "0077868D865A0000"
+                    "x": 10,
+                    "y": 0
+                  }
                 }
               },
               {
@@ -7324,21 +7339,24 @@
                 "baseSlot": 10,
                 "slot": 10,
                 "custom": {
+                  "name": "Ronaldo",
+                  "nameHex": "79908F828D859000",
                   "number": 9,
                   "skills": {
+                    "acceleration": 10,
+                    "speed": 10,
                     "shot": 10,
                     "curve": 8,
                     "balance": 10,
                     "intelligence": 9,
+                    "dribbling": 10,
                     "jump": 8,
                     "energy": 8
                   },
                   "tactical": {
-                    "x": 41,
-                    "y": 6
-                  },
-                  "name": "Ronaldo",
-                  "nameHex": "79908F828D859000"
+                    "x": 36,
+                    "y": 5
+                  }
                 }
               },
               {
@@ -7346,19 +7364,23 @@
                 "baseSlot": 11,
                 "slot": 11,
                 "custom": {
+                  "name": "Garrinch",
+                  "nameHex": "6E8293938A8F8489",
                   "skills": {
+                    "acceleration": 10,
+                    "speed": 10,
+                    "shot": 8,
                     "curve": 9,
                     "balance": 8,
                     "intelligence": 9,
+                    "dribbling": 10,
                     "jump": 6,
                     "energy": 8
                   },
                   "tactical": {
                     "x": 30,
-                    "y": 33
-                  },
-                  "name": "Garrinch",
-                  "nameHex": "6E8293938A8F8489"
+                    "y": 30
+                  }
                 }
               },
               {
@@ -7366,6 +7388,8 @@
                 "baseSlot": 12,
                 "slot": 12,
                 "custom": {
+                  "name": "Gilmar",
+                  "nameHex": "006E8A8D8E829300",
                   "skills": {
                     "acceleration": 5,
                     "speed": 5,
@@ -7374,10 +7398,9 @@
                     "balance": 7,
                     "intelligence": 9,
                     "dribbling": 4,
-                    "jump": 9
-                  },
-                  "name": "Gilmar",
-                  "nameHex": "006E8A8D8E829300"
+                    "jump": 9,
+                    "energy": 8
+                  }
                 }
               },
               {
@@ -7386,7 +7409,18 @@
                 "slot": 13,
                 "custom": {
                   "name": "D.Santos",
-                  "nameHex": "6B547A828F959094"
+                  "nameHex": "6B547A828F959094",
+                  "skills": {
+                    "acceleration": 8,
+                    "speed": 8,
+                    "shot": 9,
+                    "curve": 8,
+                    "balance": 9,
+                    "intelligence": 7,
+                    "dribbling": 7,
+                    "jump": 10,
+                    "energy": 8
+                  }
                 }
               },
               {
@@ -7394,18 +7428,19 @@
                 "baseSlot": 14,
                 "slot": 14,
                 "custom": {
+                  "name": "N.Santos",
+                  "nameHex": "75547A828F959094",
                   "skills": {
                     "acceleration": 8,
                     "speed": 8,
                     "shot": 7,
+                    "curve": 7,
                     "balance": 8,
                     "intelligence": 10,
                     "dribbling": 8,
                     "jump": 8,
                     "energy": 9
-                  },
-                  "name": "N.Santos",
-                  "nameHex": "75547A828F959094"
+                  }
                 }
               },
               {
@@ -7413,6 +7448,8 @@
                 "baseSlot": 15,
                 "slot": 15,
                 "custom": {
+                  "name": "Aldair",
+                  "nameHex": "00688D85828A9300",
                   "skills": {
                     "acceleration": 6,
                     "speed": 7,
@@ -7421,10 +7458,9 @@
                     "balance": 9,
                     "intelligence": 9,
                     "dribbling": 6,
-                    "jump": 9
-                  },
-                  "name": "Aldair",
-                  "nameHex": "00688D85828A9300"
+                    "jump": 9,
+                    "energy": 8
+                  }
                 }
               },
               {
@@ -7432,15 +7468,19 @@
                 "baseSlot": 16,
                 "slot": 16,
                 "custom": {
+                  "name": "Falcao",
+                  "nameHex": "006D828D84829000",
                   "skills": {
                     "acceleration": 7,
                     "speed": 7,
                     "shot": 8,
+                    "curve": 8,
+                    "balance": 8,
                     "intelligence": 10,
-                    "dribbling": 9
-                  },
-                  "name": "Falcao",
-                  "nameHex": "006D828D84829000"
+                    "dribbling": 9,
+                    "jump": 7,
+                    "energy": 9
+                  }
                 }
               },
               {
@@ -7448,6 +7488,8 @@
                 "baseSlot": 17,
                 "slot": 17,
                 "custom": {
+                  "name": "Rivaldo",
+                  "nameHex": "798A97828D859000",
                   "skills": {
                     "acceleration": 8,
                     "speed": 8,
@@ -7458,9 +7500,7 @@
                     "dribbling": 9,
                     "jump": 8,
                     "energy": 9
-                  },
-                  "name": "Rivaldo",
-                  "nameHex": "798A97828D859000"
+                  }
                 }
               },
               {
@@ -7468,6 +7508,8 @@
                 "baseSlot": 18,
                 "slot": 18,
                 "custom": {
+                  "name": "Zico",
+                  "nameHex": "0000818A84900000",
                   "skills": {
                     "acceleration": 8,
                     "speed": 8,
@@ -7476,10 +7518,9 @@
                     "balance": 8,
                     "intelligence": 10,
                     "dribbling": 10,
-                    "jump": 7
-                  },
-                  "name": "Zico",
-                  "nameHex": "0000818A84900000"
+                    "jump": 7,
+                    "energy": 9
+                  }
                 }
               },
               {
@@ -7487,17 +7528,19 @@
                 "baseSlot": 19,
                 "slot": 19,
                 "custom": {
+                  "name": "Neymar",
+                  "nameHex": "0075869A8E829300",
                   "skills": {
                     "acceleration": 10,
+                    "speed": 9,
                     "shot": 9,
                     "curve": 9,
                     "balance": 7,
                     "intelligence": 9,
                     "dribbling": 10,
-                    "jump": 6
-                  },
-                  "name": "Neymar",
-                  "nameHex": "0075869A8E829300"
+                    "jump": 6,
+                    "energy": 8
+                  }
                 }
               },
               {
@@ -7505,18 +7548,19 @@
                 "baseSlot": 20,
                 "slot": 20,
                 "custom": {
+                  "name": "Romario",
+                  "nameHex": "79908E82938A9000",
                   "skills": {
                     "acceleration": 10,
                     "speed": 9,
                     "shot": 10,
+                    "curve": 8,
                     "balance": 8,
                     "intelligence": 10,
                     "dribbling": 10,
                     "jump": 7,
                     "energy": 7
-                  },
-                  "name": "Romario",
-                  "nameHex": "79908E82938A9000"
+                  }
                 }
               }
             ]
@@ -10278,7 +10322,7 @@
           },
           {
             "id": 58,
-            "name": "Encef├ílicos",
+            "name": "Encefálicos",
             "bigName": "ENC",
             "sourceTeam": 30,
             "roster": null
@@ -10292,7 +10336,7 @@
           },
           {
             "id": 60,
-            "name": "Tel├║ricos",
+            "name": "Telúricos",
             "bigName": "TEL",
             "sourceTeam": 30,
             "roster": null
@@ -10334,7 +10378,7 @@
           {
             "id": "scenario",
             "mode": "text",
-            "text": "CEN├üRIOS",
+            "text": "CENÁRIOS",
             "image": "",
             "x": 575,
             "y": 143,
@@ -10406,7 +10450,7 @@
           {
             "id": "options",
             "mode": "text",
-            "text": "OP├ç├òES",
+            "text": "OPÇÕES",
             "image": "",
             "x": 575,
             "y": 576,
@@ -10481,10 +10525,10 @@
               "championship": "CAMPEONATO",
               "cup": "MEGACOPA",
               "password": "SENHA",
-              "scenario": "CEN├üRIOS",
+              "scenario": "CENÁRIOS",
               "penalty": "P├èNALTIS",
               "training": "TREINOS",
-              "options": "OP├ç├òES",
+              "options": "OPÇÕES",
               "megaCup": "MEGACOPA"
             }
           },
@@ -10672,14 +10716,6 @@
         "storedIn": "state.titleComposerV2",
         "embeddedAssets": true
       },
-      "plusPreparationV1": {
-        "schema": "isssd-plus-preparation-v1",
-        "version": 1,
-        "expanded4MiB": true,
-        "bodyLength": 4194304,
-        "expansionMode": 4,
-        "tacticsIndividualized": true
-      },
       "historicalNationalTeamsV1": {
         "schema": "isssd-historical-national-teams-v1",
         "version": 1,
@@ -10740,16 +10776,16 @@
     }
   },
   "notes": [
-    "GOSPEL-GOL n├úo ativo neste projeto.",
-    "Schema de projeto limpo: metadados experimentais Custom6/Special6 n├úo s├úo exportados.",
-    "A ROM-base n├úo est├í embutida neste arquivo.",
-    "As altera├º├Áes s├úo sempre reaplicadas sobre a base identificada pelo SHA-256.",
-    "Projeto v2: patches bin├írios usam RLE+Base64; state.semantic.roster ├® a ├║nica representa├º├úo can├┤nica de jogadores/equipes e usa registros hexadecimais compactos; formatos legados s├úo apenas import├íveis.",
-    "Plus: equipes/jogadores alterados s├úo persistidos no projeto e reaplicados sobre a ROM-base; equipes ausentes no snapshot mant├¬m os dados originais da ROM.",
-    "Tela Inicial: textos, paletas, recolora├º├úo da faixa e espa├ºamento s├úo persistidos explicitamente em state.semantic.titleScreen e reaplicados deterministicamente ao Salvar ROM.",
-    "Tela Inicial: compositor persistido em state.titleComposerV2; imagens customizadas s├úo embutidas no .issdproj em base64; buffers nativos tempor├írios N├âO s├úo exportados.",
-    "Textos: rascunhos n├úo s├úo persistidos sem Implementar no projeto; faixas de texto direto n├úo s├úo gravadas como patches bin├írios no .issdproj. A aplica├º├úo na ROM ├® independente.",
-    "Patches derivados do runtime GOSPEL-GOL n├úo s├úo persistidos; s├úo regenerados deterministicamente ao Salvar ROM.",
-    "ATEN├ç├âO: os r├│tulos gr├íficos do menu principal est├úo preservados semanticamente no projeto, mas o asset gr├ífico do menu ainda n├úo possui escrita segura na ROM."
+    "GOSPEL-GOL não ativo neste projeto.",
+    "Schema de projeto limpo: metadados experimentais Custom6/Special6 não são exportados.",
+    "A ROM-base não está embutida neste arquivo.",
+    "As alterações são sempre reaplicadas sobre a base identificada pelo SHA-256.",
+    "Projeto v2: patches binários usam RLE+Base64; state.semantic.roster é a única representação canônica de jogadores/equipes e usa registros hexadecimais compactos; formatos legados são apenas importáveis.",
+    "Plus: equipes/jogadores alterados são persistidos no projeto e reaplicados sobre a ROM-base; equipes ausentes no snapshot mantêm os dados originais da ROM.",
+    "Tela Inicial: textos, paletas, recoloração da faixa e espaçamento são persistidos explicitamente em state.semantic.titleScreen e reaplicados deterministicamente ao Salvar ROM.",
+    "Tela Inicial: compositor persistido em state.titleComposerV2; imagens customizadas são embutidas no .issdproj em base64; buffers nativos temporários NÃO são exportados.",
+    "Textos: rascunhos não são persistidos sem Implementar no projeto; faixas de texto direto não são gravadas como patches binários no .issdproj. A aplicação na ROM é independente.",
+    "Patches derivados do runtime GOSPEL-GOL não são persistidos; são regenerados deterministicamente ao Salvar ROM.",
+    "ATENÇÃO: os rótulos gráficos do menu principal estão preservados semanticamente no projeto, mas o asset gráfico do menu ainda não possui escrita segura na ROM."
   ]
 }
