@@ -35,11 +35,12 @@ test('recusa de writer físico durante abertura semantic-only não aborta o proj
 });
 
 test('teamsV1 é hidratado depois de recarregar os modelos da ROM-base',()=>{
-  const sync=patch.indexOf('syncModelsFromRom?.()');
-  const state=patch.indexOf("const teamsState=d?.state?.semantic?.teamsV1");
-  const hydrate=patch.indexOf('__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__');
-  const render=patch.indexOf('renderEverything?.()');
-  assert.ok(sync>=0&&state>sync&&hydrate>state&&render>hydrate);
+  const guard=patch.indexOf('const guard=');
+  const sync=patch.indexOf('syncModelsFromRom?.()',guard);
+  const state=patch.indexOf("const teamsState=d?.state?.semantic?.teamsV1",sync);
+  const hydrate=patch.indexOf('const hydrate=window.__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__',state);
+  const render=patch.indexOf('renderEverything?.()',hydrate);
+  assert.ok(guard>=0&&sync>guard&&state>sync&&hydrate>state&&render>hydrate);
   assert.match(patch,/__ISSSD_PROJECT_TEAMS_HYDRATED_V1__/);
 });
 
