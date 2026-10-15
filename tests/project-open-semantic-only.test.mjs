@@ -12,6 +12,14 @@ test('abertura do projeto hidrata UI sem reaplicar estado semântico diretamente
   assert.match(patch,/reaplicação pós-importação ainda presente/);
 });
 
+test('hidratador visual pode ser reposto da fonte canônica versionada',()=>{
+  assert.match(patch,/project-import-v11\.mjs/);
+  assert.match(patch,/projectImportSource=fs\.readFileSync/);
+  assert.match(patch,/isssd-git-project-import-v11/);
+  assert.match(patch,/canonicalModule/);
+  assert.match(patch,/hidratação visual do projeto não pôde ser restaurada/);
+});
+
 test('neutralização pós-importação não depende da existência textual de applyFull',()=>{
   assert.doesNotMatch(patch,/applyFullRx/);
   assert.doesNotMatch(patch,/applyFullMatch/);
