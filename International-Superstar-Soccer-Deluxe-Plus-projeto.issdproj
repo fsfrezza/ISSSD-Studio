@@ -7160,9 +7160,10 @@
                     "balance": 7,
                     "intelligence": 9,
                     "dribbling": 4,
-                    "jump": 9,
-                    "energy": 8
-                  }
+                    "jump": 9
+                  },
+                  "name": "Taffarel",
+                  "nameHex": "7B8287878293868D"
                 }
               },
               {
@@ -7170,20 +7171,22 @@
                 "baseSlot": 2,
                 "slot": 2,
                 "custom": {
+                  "number": 2,
                   "skills": {
-                    "acceleration": 9,
                     "speed": 9,
                     "shot": 6,
                     "curve": 7,
-                    "balance": 8,
                     "intelligence": 8,
                     "dribbling": 8,
                     "jump": 7,
                     "energy": 10
                   },
                   "tactical": {
-                    "y": 32
-                  }
+                    "x": -30,
+                    "y": 30
+                  },
+                  "name": "Cafu",
+                  "nameHex": "00006A8287960000"
                 }
               },
               {
@@ -7191,17 +7194,8 @@
                 "baseSlot": 3,
                 "slot": 3,
                 "custom": {
-                  "skills": {
-                    "acceleration": 8,
-                    "speed": 8,
-                    "shot": 8,
-                    "curve": 7,
-                    "balance": 9,
-                    "intelligence": 8,
-                    "dribbling": 7,
-                    "jump": 10,
-                    "energy": 8
-                  }
+                  "name": "D.daGuia",
+                  "nameHex": "6B5485826E968A82"
                 }
               },
               {
@@ -7209,17 +7203,8 @@
                 "baseSlot": 4,
                 "slot": 4,
                 "custom": {
-                  "skills": {
-                    "acceleration": 8,
-                    "speed": 9,
-                    "shot": 8,
-                    "curve": 6,
-                    "balance": 9,
-                    "intelligence": 9,
-                    "dribbling": 8,
-                    "jump": 10,
-                    "energy": 9
-                  }
+                  "name": "Lucio",
+                  "nameHex": "007396848A900000"
                 }
               },
               {
@@ -7227,9 +7212,9 @@
                 "baseSlot": 5,
                 "slot": 5,
                 "custom": {
+                  "number": 6,
                   "skills": {
                     "acceleration": 10,
-                    "speed": 10,
                     "shot": 10,
                     "curve": 9,
                     "balance": 9,
@@ -7239,8 +7224,10 @@
                     "energy": 10
                   },
                   "tactical": {
-                    "y": -32
-                  }
+                    "y": -29
+                  },
+                  "name": "R.Carlos",
+                  "nameHex": "79546A82938D9094"
                 }
               },
               {
@@ -7253,16 +7240,14 @@
                     "speed": 9,
                     "shot": 6,
                     "curve": 9,
-                    "balance": 9,
-                    "intelligence": 9,
-                    "dribbling": 9,
-                    "jump": 9,
-                    "energy": 8
+                    "intelligence": 9
                   },
                   "tactical": {
-                    "x": -16,
-                    "y": -10
-                  }
+                    "x": -14,
+                    "y": -11
+                  },
+                  "name": "Dunga",
+                  "nameHex": "006B968F88820000"
                 }
               },
               {
@@ -7278,13 +7263,14 @@
                     "balance": 7,
                     "intelligence": 10,
                     "dribbling": 8,
-                    "jump": 6,
-                    "energy": 8
+                    "jump": 6
                   },
                   "tactical": {
-                    "x": -15,
-                    "y": 11
-                  }
+                    "x": -11,
+                    "y": 10
+                  },
+                  "name": "Gerson",
+                  "nameHex": "006E869394908F00"
                 }
               },
               {
@@ -7299,15 +7285,15 @@
                     "shot": 8,
                     "curve": 10,
                     "balance": 8,
-                    "intelligence": 9,
                     "dribbling": 10,
-                    "jump": 7,
                     "energy": 7
                   },
                   "tactical": {
                     "x": 15,
-                    "y": -30
-                  }
+                    "y": -32
+                  },
+                  "name": "R.Gaucho",
+                  "nameHex": "79546E8296848990"
                 }
               },
               {
@@ -7319,7 +7305,6 @@
                     "acceleration": 10,
                     "speed": 10,
                     "shot": 10,
-                    "curve": 9,
                     "balance": 10,
                     "intelligence": 10,
                     "dribbling": 10,
@@ -7327,9 +7312,11 @@
                     "energy": 9
                   },
                   "tactical": {
-                    "x": 10,
-                    "y": 0
-                  }
+                    "x": 11,
+                    "y": -2
+                  },
+                  "name": "Pele'",
+                  "nameHex": "0077868D865A0000"
                 }
               },
               {
@@ -7339,20 +7326,19 @@
                 "custom": {
                   "number": 9,
                   "skills": {
-                    "acceleration": 10,
-                    "speed": 10,
                     "shot": 10,
                     "curve": 8,
                     "balance": 10,
                     "intelligence": 9,
-                    "dribbling": 10,
                     "jump": 8,
                     "energy": 8
                   },
                   "tactical": {
-                    "x": 36,
-                    "y": 5
-                  }
+                    "x": 41,
+                    "y": 6
+                  },
+                  "name": "Ronaldo",
+                  "nameHex": "79908F828D859000"
                 }
               },
               {
@@ -7361,20 +7347,18 @@
                 "slot": 11,
                 "custom": {
                   "skills": {
-                    "acceleration": 10,
-                    "speed": 10,
-                    "shot": 8,
                     "curve": 9,
                     "balance": 8,
                     "intelligence": 9,
-                    "dribbling": 10,
                     "jump": 6,
                     "energy": 8
                   },
                   "tactical": {
                     "x": 30,
-                    "y": 30
-                  }
+                    "y": 33
+                  },
+                  "name": "Garrinch",
+                  "nameHex": "6E8293938A8F8489"
                 }
               },
               {
@@ -7390,9 +7374,10 @@
                     "balance": 7,
                     "intelligence": 9,
                     "dribbling": 4,
-                    "jump": 9,
-                    "energy": 8
-                  }
+                    "jump": 9
+                  },
+                  "name": "Gilmar",
+                  "nameHex": "006E8A8D8E829300"
                 }
               },
               {
@@ -7400,17 +7385,8 @@
                 "baseSlot": 13,
                 "slot": 13,
                 "custom": {
-                  "skills": {
-                    "acceleration": 8,
-                    "speed": 8,
-                    "shot": 9,
-                    "curve": 8,
-                    "balance": 9,
-                    "intelligence": 7,
-                    "dribbling": 7,
-                    "jump": 10,
-                    "energy": 8
-                  }
+                  "name": "D.Santos",
+                  "nameHex": "6B547A828F959094"
                 }
               },
               {
@@ -7422,13 +7398,14 @@
                     "acceleration": 8,
                     "speed": 8,
                     "shot": 7,
-                    "curve": 7,
                     "balance": 8,
                     "intelligence": 10,
                     "dribbling": 8,
                     "jump": 8,
                     "energy": 9
-                  }
+                  },
+                  "name": "N.Santos",
+                  "nameHex": "75547A828F959094"
                 }
               },
               {
@@ -7444,9 +7421,10 @@
                     "balance": 9,
                     "intelligence": 9,
                     "dribbling": 6,
-                    "jump": 9,
-                    "energy": 8
-                  }
+                    "jump": 9
+                  },
+                  "name": "Aldair",
+                  "nameHex": "00688D85828A9300"
                 }
               },
               {
@@ -7458,13 +7436,11 @@
                     "acceleration": 7,
                     "speed": 7,
                     "shot": 8,
-                    "curve": 8,
-                    "balance": 8,
                     "intelligence": 10,
-                    "dribbling": 9,
-                    "jump": 7,
-                    "energy": 9
-                  }
+                    "dribbling": 9
+                  },
+                  "name": "Falcao",
+                  "nameHex": "006D828D84829000"
                 }
               },
               {
@@ -7482,7 +7458,9 @@
                     "dribbling": 9,
                     "jump": 8,
                     "energy": 9
-                  }
+                  },
+                  "name": "Rivaldo",
+                  "nameHex": "798A97828D859000"
                 }
               },
               {
@@ -7498,9 +7476,10 @@
                     "balance": 8,
                     "intelligence": 10,
                     "dribbling": 10,
-                    "jump": 7,
-                    "energy": 9
-                  }
+                    "jump": 7
+                  },
+                  "name": "Zico",
+                  "nameHex": "0000818A84900000"
                 }
               },
               {
@@ -7510,15 +7489,15 @@
                 "custom": {
                   "skills": {
                     "acceleration": 10,
-                    "speed": 9,
                     "shot": 9,
                     "curve": 9,
                     "balance": 7,
                     "intelligence": 9,
                     "dribbling": 10,
-                    "jump": 6,
-                    "energy": 8
-                  }
+                    "jump": 6
+                  },
+                  "name": "Neymar",
+                  "nameHex": "0075869A8E829300"
                 }
               },
               {
@@ -7530,13 +7509,14 @@
                     "acceleration": 10,
                     "speed": 9,
                     "shot": 10,
-                    "curve": 8,
                     "balance": 8,
                     "intelligence": 10,
                     "dribbling": 10,
                     "jump": 7,
                     "energy": 7
-                  }
+                  },
+                  "name": "Romario",
+                  "nameHex": "79908E82938A9000"
                 }
               }
             ]

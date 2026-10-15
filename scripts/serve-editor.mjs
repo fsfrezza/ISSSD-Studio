@@ -1,3 +1,6 @@
+import os from 'node:os';
+import {buildCumulativeProject} from '../src/core/cumulative-build.mjs';
+import {ZipFile} from '../src/platform/zip-file.mjs';
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -10,7 +13,7 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const editorRoot=path.join(root,'editor');
 const diagnosticsRoot=path.join(root,'build-diagnostics');
 const port=Number(process.env.ISSSD_PORT||4173);
-const defaultPlusRomPath='C:\\Users\\fsfre\\Downloads\\ISSSD-Studio\\roms\\International Superstar Soccer Deluxe Plus.sfc';
+const defaultPlusRomPath=process.env.ISSSD_PLUS_ROM_PATH||'C:\\Users\\fsfre\\Downloads\\ISSSD-Studio\\roms\\International Superstar Soccer Deluxe Plus.sfc';
 const defaultPlusRomName=path.basename(defaultPlusRomPath);
 const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.svg':'image/svg+xml','.json':'application/json; charset=utf-8'};
 const MAX_PROJECT_BODY=64*1024*1024;
@@ -77,6 +80,20 @@ function buildPostedProject(req,res){
    if(!project||typeof project!=='object'||Array.isArray(project))throw new TypeError('Projeto .issdproj inválido ou ausente');
    const diagnostic=payload?.diagnostic===true;
    const base=Uint8Array.from(fs.readFileSync(defaultPlusRomPath));
+   if(payload.cumulative===true){
+    const dir=fs.mkdtempSync(path.join(os.tmpdir(),'isssd-export-'));
+    const zipPath=path.join(dir,'ISSSD-ROMs-cumulativas.zip');
+    const zip=new ZipFile(zipPath);
+    const cleanup=()=>{zip.close();fs.rmSync(dir,{recursive:true,force:true});};
+    try{
+     const manifest=buildCumulativeProject(base,project,{onRom:(rom,entry)=>zip.add(entry.name,rom)});
+     zip.add('indice.json',Buffer.from(JSON.stringify(manifest,null,2)+'\n'));
+     zip.add('LEIA-ME.txt',Buffer.from('ROMs cumulativas em ordem numérica. Cada etapa contém as anteriores.\nA primeira contém a expansão obrigatória para 4 MiB.\nCada jogador agrupa seus campos; cada registro tático constitui outra etapa.\nChecksum e mirrors são recalculados em cada ROM. Etapas sem mudança efetiva são omitidas.\nA última ROM coincide byte a byte com o build canônico. Consulte indice.json.\n'));
+     zip.finish();
+     res.writeHead(200,{'Content-Type':'application/zip','Content-Length':fs.statSync(zipPath).size,'Cache-Control':'no-store','X-ISSSD-Builder':'plus-build-pipeline-v1','X-ISSSD-Mirrors':'ok','X-ISSSD-Archive':'cumulative-v1','X-ISSSD-ROM-Count':String(manifest.entries.length)});
+     const stream=fs.createReadStream(zipPath);res.on('close',()=>stream.destroy());stream.on('close',cleanup);stream.on('error',()=>res.destroy()).pipe(res);return;
+    }catch(e){cleanup();throw e;}
+   }
    const result=buildPlusProjectRom(base,project,{keepCheckpoints:diagnostic,writeChecksum:true});
    if(result.rom.length!==0x400000)throw new Error(`Pipeline Plus produziu tamanho inválido: ${result.rom.length} bytes`);
    if(!validatePlusRuntimeMirrors(result.rom))throw new Error('Pipeline terminou com mirrors de runtime inconsistentes');
@@ -117,7 +134,7 @@ const server=http.createServer((req,res)=>{
 });
 
 server.listen(port,'127.0.0.1',()=>{
- const url=`http://127.0.0.1:${port}/`;
+ const url=`http://127.0.0.1:${server.address().port}/`;
  console.log('ISSSD Studio Editor: '+url);
  console.log('ROM-base Plus fixa: '+defaultPlusRomPath);
  console.log('Build canônico: POST /__isssd/build-plus-project');

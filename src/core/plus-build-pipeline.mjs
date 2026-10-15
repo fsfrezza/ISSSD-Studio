@@ -1,3 +1,4 @@
+import {teamsV3PlayerSteps,teamsV3TacticalSteps,hasTeamsV3Tactics,applySteps} from './teams-v3-writer.mjs';
 import {runBuildPipeline} from './build-pipeline.mjs';
 import {PLUS,reconcileKnownPlayerIntegrityMirrors} from './plus-player.mjs';
 import {expandPlusTo4MiB,preparePlusTacticalInfrastructure} from './plus-tactics-infrastructure.mjs';
@@ -9,7 +10,7 @@ import {syncPlusRuntimeMirrors,validatePlusRuntimeMirrors,writeFinalSnesChecksum
 
 function hasTacticalEdits(state){
   const teams=state?.plusTactics?.teams;
-  return !!teams&&typeof teams==='object'&&!Array.isArray(teams)&&Object.keys(teams).length>0;
+  return (!!teams&&typeof teams==='object'&&!Array.isArray(teams)&&Object.keys(teams).length>0)||hasTeamsV3Tactics(state);
 }
 
 function applyValidatedPatches(work,patches){
@@ -51,6 +52,10 @@ export function createPlusBuildStages({baseRom,patches=[],extraWriters=[],writeC
       run:(work,state)=>plusPlayerWriter(work,state),
     },
     {
+      id:'04b-teams-v3-players',kind:'semantic',
+      run:(work,state)=>applySteps(work,teamsV3PlayerSteps(baseRom,state)),
+    },
+    {
       id:'05-tactical-infrastructure',kind:'derived',
       when:state=>hasTacticalEdits(state),
       run:work=>preparePlusTacticalInfrastructure(work),
@@ -59,6 +64,10 @@ export function createPlusBuildStages({baseRom,patches=[],extraWriters=[],writeC
       id:'06-tactics',kind:'semantic',
       when:state=>hasTacticalEdits(state),
       run:(work,state)=>plusTacticsWriter(work,state),
+    },
+    {
+      id:'06b-teams-v3-tactics',kind:'semantic',
+      run:(work,state)=>applySteps(work,teamsV3TacticalSteps(baseRom,state)),
     },
     {
       id:'07-strategy-text',kind:'semantic',

@@ -71,7 +71,7 @@ if(!/hydrateDom\s*\(\s*p\s*\)/.test(html))throw new Error('Verificação final: 
 if(!html.includes("fetch('/__isssd/build-plus-project'"))throw new Error('Verificação final: Build Pipeline v1 não está conectado à exportação Plus.');
 if(!html.includes('await studioProjectObject()'))throw new Error('Verificação final: exportação Plus não envia o projeto atual ao pipeline.');
 if(!html.includes("response.headers.get('X-ISSSD-Builder')!=='plus-build-pipeline-v1'"))throw new Error('Verificação final: browser não exige confirmação do Build Pipeline v1.');
-if(!html.includes('payload.length!==0x400000'))throw new Error('Verificação final: browser não rejeita ROM Plus final que não tenha 4 MiB.');
+if(!html.includes("response.headers.get('X-ISSSD-Archive')!=='cumulative-v1'"))throw new Error('Verificação final: exportação não exige ZIP cumulativo.');
 
 
 // Presence checks cannot detect an invalid legacy script that silently never executes.

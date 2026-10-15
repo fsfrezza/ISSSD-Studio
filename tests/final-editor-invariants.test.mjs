@@ -46,5 +46,6 @@ test('verificador final cobre restore tático, round-trip e Build Pipeline v1',(
   assert.match(verifier,/build-plus-project/);
   assert.match(verifier,/plus-build-pipeline-v1/);
   assert.match(verifier,/studioProjectObject/);
-  assert.match(verifier,/payload\.length!==0x400000/);
+  assert.match(verifier,/X-ISSSD-Archive/);
+  assert.match(verifier,/cumulative-v1/);
 });

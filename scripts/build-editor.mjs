@@ -3,7 +3,6 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
-const parent=path.dirname(root);
 const outDir=path.join(root,'editor');
 const outHtml=path.join(outDir,'ISSSD-Studio.html');
 const vendorDir=path.join(root,'.editor-vendor','legacy-ui');
@@ -12,16 +11,11 @@ const cssFile=path.join(root,'editor-src','visual-bridge-overrides.css');
 const jsFile=path.join(root,'editor-src','visual-bridge-overrides.mjs');
 const v11File=path.join(root,'editor-src','project-import-v11.mjs');
 
-const legacyContainer=path.join(parent,'ISSSD-Studio-OLD');
-const legacyRoots=[path.join(parent,'ISSSD-Studio-Visual-Bridge'),path.join(legacyContainer,'ISSSD-Studio-Visual-Bridge'),path.join(legacyContainer,'ISSSD-Studio-Preview'),path.join(legacyContainer,'ISSSD-Studio-ANTIGO'),path.join(legacyContainer,'ISSSD-Studio-OLD'),path.join(parent,'ISSSD-Studio-ANTIGO'),path.join(root,'legacy-ui'),root];
-const rawCandidates=[];for(const legacyRoot of legacyRoots)rawCandidates.push(path.join(legacyRoot,'legacy-ui','ISSSD-Studio.html'),path.join(legacyRoot,'ISSSD-Studio.html'));
+// The imported ISSSD-Studio-Visual-Bridge baseline is explicit and protected.
+const source=cachedHtml;
+if(!fs.existsSync(source))throw new Error('Baseline local ausente: '+source+'. Nenhuma pasta foi removida.');
 const generatedMarkers=['ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE','isssd-git-controller-v17','git-controller-ui-v17-native-font','git-controller-ui-v18-stable-no-observer'];
-const cacheIsContaminated=fs.existsSync(cachedHtml)&&generatedMarkers.some(m=>fs.readFileSync(cachedHtml,'utf8').includes(m));
-if(cacheIsContaminated){console.warn('ISSSD Studio: cache visual contém injeções geradas antigas; descartando .editor-vendor antes do build.');fs.rmSync(path.join(root,'.editor-vendor'),{recursive:true,force:true})}
-const candidates=[cachedHtml,...rawCandidates];
-let source=candidates.find(p=>fs.existsSync(p));
-if(!source){console.error('ISSSD Studio: não encontrei a interface legada/Visual Bridge.');console.error('Locais verificados:\n- '+candidates.join('\n- '));process.exit(2)}
-if(source!==cachedHtml){const sourceDir=path.dirname(source);fs.rmSync(path.join(root,'.editor-vendor'),{recursive:true,force:true});fs.mkdirSync(vendorDir,{recursive:true});fs.copyFileSync(source,cachedHtml);for(const name of ['assets','docs','schemas']){const from=path.join(sourceDir,name),to=path.join(vendorDir,name);if(fs.existsSync(from))fs.cpSync(from,to,{recursive:true})}source=cachedHtml;console.log('Interface legada importada para cache local: '+cachedHtml)}
+if(generatedMarkers.some(m=>fs.readFileSync(source,'utf8').includes(m)))throw new Error('Baseline contém build gerado; .editor-vendor foi preservado.');
 
 let html=fs.readFileSync(source,'utf8');
 const marker='ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE';

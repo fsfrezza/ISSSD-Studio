@@ -18,7 +18,7 @@ if(start<0)throw new Error('Export final: studioDownloadFile não encontrado.');
 const end=html.indexOf('\n}',start);
 if(end<0)throw new Error('Export final: fim de studioDownloadFile não encontrado.');
 const newBlock=`async function studioDownloadFile(bytes,name,type="application/octet-stream"){
-  let payload=bytes;
+  let payload=bytes,downloadName=name,downloadType=type;
   const isRom=/\\.(?:smc|sfc)$/i.test(String(name||''));
   const isPlus=(activeRomProfile?.id==='iss-deluxe-plus')||/PLUS/i.test(String(name||''));
   if(isRom&&isPlus){
@@ -27,7 +27,7 @@ const newBlock=`async function studioDownloadFile(bytes,name,type="application/o
     const response=await fetch('/__isssd/build-plus-project',{
       method:'POST',
       headers:{'Content-Type':'application/json; charset=utf-8'},
-      body:JSON.stringify({project,diagnostic:window.__ISSSD_DIAGNOSTIC_CHECKPOINTS__===true})
+      body:JSON.stringify({project,cumulative:true,diagnostic:window.__ISSSD_DIAGNOSTIC_CHECKPOINTS__===true})
     });
     if(!response.ok){
       let detail='';
@@ -38,7 +38,9 @@ const newBlock=`async function studioDownloadFile(bytes,name,type="application/o
       throw new Error('Servidor não confirmou o pipeline canônico da ROM Plus.');
     }
     payload=new Uint8Array(await response.arrayBuffer());
-    if(payload.length!==0x400000)throw new Error('Pipeline Plus não retornou ROM de 4 MiB.');
+    if(response.headers.get('X-ISSSD-Archive')!=='cumulative-v1')throw new Error('Servidor não retornou o ZIP cumulativo.');
+    if(payload[0]!==0x50||payload[1]!==0x4B)throw new Error('ZIP cumulativo inválido.');
+    downloadName='ISSSD-Plus-ROMs-cumulativas.zip';downloadType='application/zip';
     window.ISSSDLog?.add?.('ROM / Build','info','ROM construída pelo pipeline canônico por estágios',{
       size:payload.length,
       builder:response.headers.get('X-ISSSD-Builder'),
@@ -47,11 +49,11 @@ const newBlock=`async function studioDownloadFile(bytes,name,type="application/o
       diagnostics:decodeURIComponent(response.headers.get('X-ISSSD-Diagnostics')||'off')
     });
   }
-  const blob=new Blob([payload],{type});
+  const blob=new Blob([payload],{type:downloadType});
   const a=document.createElement("a");
   const url=URL.createObjectURL(blob);
   a.href=url;
-  a.download=name;
+  a.download=downloadName;
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -70,7 +72,24 @@ if(!html.includes("fetch('/__isssd/build-plus-project'"))throw new Error('Export
 if(!html.includes('await studioProjectObject()'))throw new Error('Export final: pipeline não recebe o projeto semântico atual.');
 if(!html.includes('await studioDownloadFile(output,`ISSSD-STUDIO-BUILD-${profile}.smc`);'))throw new Error('Export final: download da ROM não aguarda o pipeline.');
 
+// Provisional direct export: intercept Plus Save ROM before legacy physical writers.
+const capture=String.raw`<script id="isssd-cumulative-save-capture-v1">
+(()=>{
+ let busy=false;
+ document.addEventListener('click',async event=>{
+  const button=event.target?.closest?.('#saveBtn');
+  if(!button||window.activeRomProfile?.id!=='iss-deluxe-plus')return;
+  event.preventDefault();event.stopImmediatePropagation();
+  if(busy)return;busy=true;button.disabled=true;const label=button.textContent;
+  button.textContent='Gerando ZIP cumulativo…';
+  try{await studioDownloadFile(new Uint8Array(),'ISSSD-Plus.sfc')}
+  catch(e){console.error('Exportação cumulativa',e);alert('Falha ao gerar ZIP cumulativo: '+(e.message||e))}
+  finally{busy=false;button.disabled=false;button.textContent=label}
+ },true);
+})();
+</script>`;
+html=html.replace('</body>',()=>capture+'\n</body>');
 fs.writeFileSync(file,html,'utf8');
 console.log('ISSSD Studio: exportação Plus centralizada no Build Pipeline v1 do servidor local.');
-console.log('  browser envia .issdproj atual -> servidor parte da ROM-base imutável -> stages -> ROM 4 MiB -> download');
+console.log('  Salvar ROM -> projeto atual -> etapas cumulativas de 4 MiB -> ZIP com índice -> download');
 console.log('  o buffer ROM monolítico do browser deixa de ser a fonte da ROM final Plus.');
