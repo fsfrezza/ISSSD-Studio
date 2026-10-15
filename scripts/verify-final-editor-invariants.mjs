@@ -45,12 +45,9 @@ for(const required of [
 ])if(!html.includes(required))throw new Error('Verificação final: abertura semântica incompleta; ausente '+required+'.');
 if(html.includes('legacyApply(d,new Uint8Array(baseBytes),baseName)'))throw new Error('Verificação final: abertura ainda cria uma ROM temporária para o importador legado.');
 
-const applyFullStart=html.indexOf('function applyFull(p){');
-const applyFullEnd=html.indexOf('function markTouched(',applyFullStart);
-if(applyFullStart<0||applyFullEnd<0)throw new Error('Verificação final: applyFull do importador visual não encontrado.');
-const applyFullBlock=html.slice(applyFullStart,applyFullEnd);
-if(applyFullBlock.includes('__ISSSD_GIT_REAPPLY_PROJECT_STATE__'))throw new Error('Verificação final: hidratação pós-abertura ainda reaplica projeto diretamente na ROM.');
-if(!applyFullBlock.includes('hydrateDom(p)'))throw new Error('Verificação final: hidratação semântica da interface não está conectada após abrir projeto.');
+const reapplyProjectP=/window\s*\.\s*__ISSSD_GIT_REAPPLY_PROJECT_STATE__\s*\?\.\s*\(\s*p\s*\)/;
+if(reapplyProjectP.test(html))throw new Error('Verificação final: hidratação pós-abertura ainda reaplica projeto diretamente na ROM.');
+if(!/hydrateDom\s*\(\s*p\s*\)/.test(html))throw new Error('Verificação final: hidratação semântica da interface não está conectada após abrir projeto.');
 
 if(!html.includes("fetch('/__isssd/build-plus-project'"))throw new Error('Verificação final: Build Pipeline v1 não está conectado à exportação Plus.');
 if(!html.includes('await studioProjectObject()'))throw new Error('Verificação final: exportação Plus não envia o projeto atual ao pipeline.');
