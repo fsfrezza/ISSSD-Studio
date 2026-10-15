@@ -27,7 +27,7 @@ function studioCaptureNativePlusTacticsBaseline(forcePlus=false){
  const teams={};
  for(let team=0;team<56;team++){
   let rec=null;try{rec=plusTacticalRecordForTeam(team)}catch(_){}
-  if(!rec||!Array.isArray(rec.raw)||rec.raw.length!==31)continue;
+  if(!rec?.raw||Number(rec.raw.length)!==31)continue;
   teams[String(team)]={teamId:team,recordPc:Number(rec.recordPc),raw:Array.from(rec.raw,Number)};
  }
  if(Object.keys(teams).length!==56)throw new Error('Não foi possível capturar as 56 táticas nativas antes da expansão obrigatória.');
@@ -110,9 +110,10 @@ if(!m)throw new Error('4 MiB obrigatório: chamada studioCore().applyProject(...
 const structuralGuard="\n await studioEnsureMandatoryPlus4MiB(d?.base?.profile==='iss-deluxe-plus');";
 if(!html.includes(m[1]+structuralGuard))html=html.replace(m[1],m[1]+structuralGuard);
 
-const saveCandidates=['async function studioDoSave(){','async function studioDoSave() {'];
-let saveNeedle=saveCandidates.find(x=>html.includes(x));
-if(!saveNeedle)throw new Error('4 MiB obrigatório: studioDoSave não encontrado.');
+// O baseline canônico usa studioDoSave(options={}); aceitar parâmetros evita acoplamento à assinatura histórica vazia.
+const saveMatch=html.match(/async function studioDoSave\([^)]*\)\s*\{/);
+if(!saveMatch)throw new Error('4 MiB obrigatório: studioDoSave não encontrado.');
+const saveNeedle=saveMatch[0];
 const saveGuard='\n await studioEnsureMandatoryPlus4MiB(false);';
 if(!html.includes(saveNeedle+saveGuard))html=html.replace(saveNeedle,saveNeedle+saveGuard);
 
