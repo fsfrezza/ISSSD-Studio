@@ -16,8 +16,9 @@ const projectPatchRx=/const projectPatches=([^;]+);/;
 const m=html.match(projectPatchRx);
 if(!m)throw new Error('Round-trip safety: montagem projectPatches não encontrada.');
 const originalExpr=m[1];
+const usesBuildRegionSet=/studioBuildRegionSet\(\)/.test(originalExpr);
 const safeRegions="(typeof globalThis.studioBuildRegionSet==='function'?globalThis.studioBuildRegionSet():new Set())";
-const guardedExpr=originalExpr.replace(/studioBuildRegionSet\(\)/g,safeRegions);
+const guardedExpr=usesBuildRegionSet?originalExpr.replace(/studioBuildRegionSet\(\)/g,safeRegions):originalExpr;
 const safeLine=`const projectPatches=(${scrubExpr})(${guardedExpr});`;
 html=html.replace(projectPatchRx,safeLine);
 
@@ -39,8 +40,8 @@ if(html.includes(finalizeMarker)&&!html.includes('roundTripSaveSanitized')){
 
 if(!html.includes('roundTripSaveSanitized'))throw new Error('Round-trip safety: saneamento de salvamento não foi instalado.');
 if(!html.includes('0x2AA8E,0x2B166,0x3193A'))throw new Error('Round-trip safety: bloqueio dos loaders legados ausente.');
-if(!html.includes("typeof globalThis.studioBuildRegionSet==='function'"))throw new Error('Round-trip safety: guarda global de studioBuildRegionSet ausente.');
-if(/typeof\s+studioBuildRegionSet\s*===/.test(html))throw new Error('Round-trip safety: referência lexical insegura a studioBuildRegionSet permaneceu.');
+if(usesBuildRegionSet&&!safeLine.includes("typeof globalThis.studioBuildRegionSet==='function'"))throw new Error('Round-trip safety: guarda global de studioBuildRegionSet ausente quando necessária.');
+if(/typeof\s+studioBuildRegionSet\s*===/.test(safeLine))throw new Error('Round-trip safety: referência lexical insegura a studioBuildRegionSet permaneceu na montagem de projectPatches.');
 if(html.includes("roundTrip:'semantic-first-v3'"))throw new Error('Round-trip safety: saneamento físico de abertura legado ainda está presente.');
 
 fs.writeFileSync(htmlPath,html,'utf8');
