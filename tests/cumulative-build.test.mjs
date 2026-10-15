@@ -65,11 +65,13 @@ test('ZIP stores valid CRCs and extractable deterministic compressed contents',(
  }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
 
-test('canonical project contains recovered Brazil names and latest coordinates',()=>{
+test('canonical project preserves names and sparse coordinates from the user-tested upload',()=>{
  const p=JSON.parse(fs.readFileSync(new URL('../International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj',import.meta.url)));
  const ps=p.state.semantic.teamsV1.teams[30].players;
- assert.equal(ps[1].custom.name,'Cafu');assert.equal(ps[1].custom.tactical.x,-30);assert.equal(ps[1].custom.tactical.y,30);
- assert.equal(ps[9].custom.name,'Ronaldo');assert.equal(ps[9].custom.tactical.x,41);assert.equal(ps[10].custom.tactical.y,33);
+ // The current user-tested project preserves X from the immutable baseline.
+ // Explicit -30/30 regression coverage remains in the synthetic fixture above.
+ assert.equal(ps[1].custom.name,'Cafu');assert.equal(Object.hasOwn(ps[1].custom.tactical,'x'),false);assert.equal(ps[1].custom.tactical.y,32);
+ assert.equal(ps[9].custom.name,'Ronaldo');assert.equal(ps[9].custom.tactical.x,36);assert.equal(ps[10].custom.tactical.y,30);
 });
 
 test('HTTP export returns an extractable ZIP, correct manifest and canonical final ROM',async()=>{
