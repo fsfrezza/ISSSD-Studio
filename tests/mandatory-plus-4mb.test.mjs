@@ -2,12 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
+const normalizeLf=text=>String(text).replace(/\r\n?/g,'\n');
 const pkg=JSON.parse(fs.readFileSync(new URL('../package.json',import.meta.url),'utf8'));
-const patch=fs.readFileSync(new URL('../scripts/patch-mandatory-plus-4mb.mjs',import.meta.url),'utf8');
-const semanticOpen=fs.readFileSync(new URL('../scripts/patch-project-open-semantic-only.mjs',import.meta.url),'utf8');
-const tactics=fs.readFileSync(new URL('../scripts/patch-native-tactical-individualization.mjs',import.meta.url),'utf8');
-const core=fs.readFileSync(new URL('../src/core/plus-tactics-infrastructure.mjs',import.meta.url),'utf8');
-const address=fs.readFileSync(new URL('../src/core/plus-tactics-address.mjs',import.meta.url),'utf8');
+const patch=normalizeLf(fs.readFileSync(new URL('../scripts/patch-mandatory-plus-4mb.mjs',import.meta.url),'utf8'));
+const semanticOpen=normalizeLf(fs.readFileSync(new URL('../scripts/patch-project-open-semantic-only.mjs',import.meta.url),'utf8'));
+const tactics=normalizeLf(fs.readFileSync(new URL('../scripts/patch-native-tactical-individualization.mjs',import.meta.url),'utf8'));
+const core=normalizeLf(fs.readFileSync(new URL('../src/core/plus-tactics-infrastructure.mjs',import.meta.url),'utf8'));
+const address=normalizeLf(fs.readFileSync(new URL('../src/core/plus-tactics-address.mjs',import.meta.url),'utf8'));
 const cmd=pkg.scripts['build:editor'];
 
 const replacementStart=tactics.indexOf('const replacement=String.raw`');
