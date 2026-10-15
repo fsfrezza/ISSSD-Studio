@@ -3,6 +3,7 @@ import {runBuildPipeline} from './build-pipeline.mjs';
 import {canonicalProjectSemantic} from './project-semantic.mjs';
 import {canonicalProjectState} from './project-state.mjs';
 import {diffRanges} from './rom-integrity.mjs';
+import {withoutLegacyTeamSnapshots} from './semantic-team-patches.mjs';
 
 export function buildPlusProjectRom(baseRom,project,options={}){
   const canonical=canonicalProjectState(project,{baseSize:baseRom?.length});
@@ -15,7 +16,7 @@ export function buildPlusProjectRom(baseRom,project,options={}){
   const userPrepare=options.prepareInfrastructure??null;
   if(userPrepare!==null&&typeof userPrepare!=='function')throw new TypeError('prepareInfrastructure must be a function');
 
-  const patches=ignorePersistedPatches?[]:canonical.patches;
+  const patches=ignorePersistedPatches?[]:withoutLegacyTeamSnapshots(baseRom,semanticState,canonical.patches);
   let result;
 
   if(userPrepare){

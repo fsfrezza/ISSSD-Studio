@@ -3,10 +3,11 @@ import {PLUS_MAIN_MENU_REGIONS} from './plus-main-menu-renderer.mjs';
 import {resolvePlusPlayerNameOffset} from './plus-player-name.mjs';
 import {resolvePlusTacticalRecord} from './plus-tactics-address.mjs';
 import {knownMirrorSlices} from './plus-player.mjs';
+import {NATIVE_SCREEN_TEXT_FIELDS,nativeTextArea} from './plus-native-screen-text.mjs';
 
 // PC ranges taken from legacy TITLE_GROUPS/TITLE_PALETTES/PROFILE_TEXT_MAPS,
 // the verified main-menu renderer, and live player/tactical pointers.
-// Unknown bytes are explicitly retained in one final legacy area.
+// Unknown bytes are reported and omitted; there is no implicit catch-all phase.
 export const CUMULATIVE_AREAS=Object.freeze([
  {id:'infraestrutura',label:'Infraestrutura',number:1},
  {id:'metadados',label:'Metadados',number:2},
@@ -48,9 +49,10 @@ export function areaClassifier(rom,base=null){
   if(contains(off,menu))return 'menu-principal';
   if((off>=0xE7F2&&off<0xE830)||(off>=0x2DDA5&&off<0x2DDA5+56*10))return 'selecao-equipes';
   if((off>=0x483C2&&off<0x483C2+56*2*34)||(off>=0x48D50&&off<0x48D50+56*24))return 'jogadores';
-  if(off>=0xF631C&&off<0xF631C+2153)return 'pre-partida';
+  if((off>=0xF631C&&off<0xF631C+2153)||(off>=0x108162&&off<0x108162+390))return 'pre-partida';
   if(contains(off,players))return 'jogadores';
   if(off>=248014&&off<248174)return 'textos-estrategias';
+  const native=NATIVE_SCREEN_TEXT_FIELDS.find(f=>off>=f.pc&&off<f.pc+f.capacity);if(native)return nativeTextArea(native);
   if(contains(off,tactics))return 'formacoes';
   if(off>=0x7FC0&&off<0x7FD7)return 'metadados';
   return undefined;

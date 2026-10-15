@@ -10,6 +10,20 @@ let html=fs.readFileSync(htmlPath,'utf8');
 const marker='isssd-team-semantic-overlay-v1';
 if(html.includes(marker))throw new Error('Overlay semântico de equipes já foi instalado.');
 
+// Late legacy modules use these core helpers. Live accessors keep wrappers in
+// the same lexical runtime rather than creating unrelated global copies.
+const bridgeAnchor='// v32.4 bridge: the Studio core lives inside this IIFE.';
+if(!html.includes(bridgeAnchor))throw new Error('Ponte lexical principal ausente');
+const bridgeNames=['buildRomForDownload','titleImportPhotosConflictSafe','drawRealIssdPlayer','plusTacPlayRectPct','titleRenderPhotoConflictMode','plusTacVisualXToPct','plusTacVisualYToPct','titleRenderTexts','populateTeamControls','setFlagColor','setFlagColorBgr','restoreFlagPalette','copyFlagPalette','flagPresetObject','exportFlagPreset','applyFlagPreset','renderFlagComparison','renderFlagPage','saveMainMenuDraftToProject','loadMainMenuFb96Preset','loadMainMenuOriginalPreset'];
+const bridge='Object.defineProperties(window,{'+bridgeNames.map(n=>n+':{configurable:true,get:()=>'+n+',set:v=>{'+n+'=v}}').join(',')+',hx:{configurable:true,get:()=>hx},NATIVE_TN:{configurable:true,get:()=>NATIVE_TN},TEAM_NAMES:{configurable:true,get:()=>TEAM_NAMES,set:v=>{TEAM_NAMES=v}},TEAM_COUNT:{configurable:true,get:()=>TEAM_COUNT,set:v=>{TEAM_COUNT=v}},BASE_TEAM_NAMES:{configurable:true,get:()=>BASE_TEAM_NAMES}});\n';
+html=html.replace(bridgeAnchor,()=>bridge+bridgeAnchor);
+html=html.replaceAll('valid.forEach(n=>b.appendChild(n));','valid.forEach(n=>{if(n!==b&&!n.contains(b))b.appendChild(n)});');
+html=html.replaceAll('valid.forEach(n=>body.appendChild(n));','valid.forEach(n=>{if(n!==body&&!n.contains(body))body.appendChild(n)});');
+html=html.replace('specialNameAt?specialNameAt(currentTeam)',"typeof specialNameAt==='function'?specialNameAt(currentTeam)");
+// Once the helper is bridged, the obsolete late wrapper must not force
+// "preserve" over the native composer's bounded two-tile reconciliation.
+html=html.replace(/titleImportPhotosConflictSafe=function\(img\)\{[\s\S]*?return r\s*\};/,()=> 'titleImportPhotosConflictSafe=function(img){return _photosImport(img)};');
+
 const runtime=String.raw`
 <script id="${marker}">
 window.__ISSSD_INSTALL_TEAMS_SEMANTIC_V1__=function(){
@@ -20,6 +34,9 @@ window.__ISSSD_INSTALL_TEAMS_SEMANTIC_V1__=function(){
  const baseRead=typeof studioTeamsV3ReadFull==='function'?studioTeamsV3ReadFull:null;
  const baseTactical=typeof plusTacticalRecordForTeam==='function'?plusTacticalRecordForTeam:null;
  if(!baseRead)throw new Error('Overlay semântico: studioTeamsV3ReadFull indisponível.');
+ // The public rom property is read-only. Reset the actual lexical buffer,
+ // never an assignment to that global accessor which silently does nothing.
+ window.__ISSSD_RESTORE_CLEAN_CURRENT_V1__=function(bytes){rom=new Uint8Array(bytes);window.__ISSD_DIAG_ROM__=rom;};
 
  // Invalidate the resolved view whenever a clean ROM session is installed.
  window.__ISSSD_TEAMS_SEMANTIC_RESET_V1__=function(){
@@ -117,7 +134,9 @@ window.__ISSSD_INSTALL_TEAMS_SEMANTIC_V1__=function(){
  const buildBase=buildTeams;
  buildTeams=function(){buildBase();if(activeRomProfile?.id==='iss-deluxe-plus')applyModels(window.__ISSSD_TEAMS_RESOLVED_OVERLAY_V1__)};
  // Public readers must forward into the same lexical runtime as renderers.
- window.plusTacticalRecordForTeam=(...args)=>plusTacticalRecordForTeam(...args);
+ // The legacy bridge exposes this as configurable but non-writable. Strict
+ // assignment aborts installation before the snapshot reader is wrapped.
+ Object.defineProperty(window,'plusTacticalRecordForTeam',{configurable:true,value:(...args)=>plusTacticalRecordForTeam(...args)});
  studioTeamsV3ReadFull=function(){
   const base=baseRead();const state=window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__;
   return state?.schema==='isssd-teams-v1'?resolve(state):base;

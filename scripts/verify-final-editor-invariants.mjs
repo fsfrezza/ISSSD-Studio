@@ -45,7 +45,7 @@ if(!html.includes('window.__ISSSD_INSTALL_TEAMS_SEMANTIC_V1__=function(){'))thro
 
 const scriptStart=html.lastIndexOf('<script',overlayAt),scriptEnd=html.indexOf('</script>',overlayAt);
 const scopedBlock=html.slice(scriptStart,scriptEnd);
-for(const needle of ['teams=[]','function refreshPlusTeamFromRom(team){','function ensureCurrentTeamFresh(){','window.plusTacticalRecordForTeam=(...args)=>plusTacticalRecordForTeam(...args)']){
+for(const needle of ['teams=[]','function refreshPlusTeamFromRom(team){','function ensureCurrentTeamFresh(){',"Object.defineProperty(window,'plusTacticalRecordForTeam'"]){
  if(!scopedBlock.includes(needle))throw new Error('Verificação final: overlay fora do escopo lexical do modelo: '+needle);
 }
 for(const required of ['__ISSSD_TEAMS_PROJECT_OVERLAY_V1__','__ISSSD_TEAMS_RESOLVED_OVERLAY_V1__','__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__','__ISSSD_PROJECT_TEAMS_HYDRATED_V1__']){
@@ -59,7 +59,7 @@ for(const required of [
  'studioCore().applyProject(cleanBase,cleanBase,baseName,d?.state?.ui||{},d?.base?.profile||null)',
  "if(!window.__ISSSD_SEMANTIC_OPEN_ONLY__)await studioEnsureMandatoryPlus4MiB",
  "if(!window.__ISSSD_SEMANTIC_OPEN_ONLY__)window.__ISSSD_GIT_REAPPLY_PROJECT_STATE__?.(d)",
- 'rom=new Uint8Array(baseBytes)',
+ 'window.__ISSSD_RESTORE_CLEAN_CURRENT_V1__(baseBytes)',
  'window.__ISSSD_PROJECT_OPEN_ROM_PRISTINE__=true'
 ])if(!html.includes(required))throw new Error('Verificação final: abertura semântica incompleta; ausente '+required+'.');
 if(html.includes('legacyApply(d,new Uint8Array(baseBytes),baseName)'))throw new Error('Verificação final: abertura ainda cria uma ROM temporária para o importador legado.');
@@ -88,5 +88,7 @@ for(const match of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)){
  }
  try{new vm.Script(match[2])}catch(e){throw new Error('Verificação final: JavaScript inválido em '+(attrs||'script sem id')+': '+e.message)}
 }
+
+if(html.includes('await window.ISSSDMaterializeProjectTextsV674()'))throw new Error('Materializador tardio de textos ainda é chamado automaticamente ao abrir projeto');
 
 console.log('ISSSD Studio: invariantes finais verificadas — abrir projeto carrega formalmente a ROM-base no core, hidrata teamsV1/textos sem materializar overrides, o round-trip saneia somente o salvamento e a ROM final Plus nasce somente do Build Pipeline v1.');

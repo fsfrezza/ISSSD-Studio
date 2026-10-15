@@ -60,7 +60,7 @@ test('ciclo legado de abertura fica em modo semântico e não monta ROM parcial'
 });
 
 test('ROM autoritativa é sempre recolocada na base limpa durante abertura',()=>{
-  assert.match(patch,/rom=new Uint8Array\(baseBytes\)/);
+  assert.match(patch,/__ISSSD_RESTORE_CLEAN_CURRENT_V1__\(baseBytes\)/);
   assert.match(patch,/__ISSSD_PROJECT_OPEN_ROM_PRISTINE__=true/);
   assert.match(patch,/__ISSSD_PLUS_4MB_MANDATORY__=false/);
 });

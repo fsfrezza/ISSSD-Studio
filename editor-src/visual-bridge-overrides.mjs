@@ -57,9 +57,8 @@ function auditProjectHydration(project){
 
 function restoreFullProject(project){
  if(!project?.state?.semantic)return;loadedProject=project;
- try{window.__ISSSD_GIT_REAPPLY_PROJECT_STATE__?.(project)}catch(e){console.warn('Git Bridge: classic reapply',e)}
  restoreCanonicalTextState(project);restoreTitleScreenState(project);
- const s=sem(project),raw=s.romInternalTitle||s.romInternalTitleDesired||'',title=cleanTitle(raw);if(title){window.__ISSSD_INTERNAL_TITLE_IMPLEMENTED__=title;window.__ISSSD_INTERNAL_TITLE_DESIRED__=String(s.romInternalTitleDesired||raw);try{window.__ISSSD_ROM_META_WRITE_TITLE__?.(title,'Título interno do projeto')}catch(_){}}
+ const s=sem(project),raw=s.romInternalTitle||s.romInternalTitleDesired||'',title=cleanTitle(raw);if(title){window.__ISSSD_INTERNAL_TITLE_IMPLEMENTED__=title;window.__ISSSD_INTERNAL_TITLE_DESIRED__=String(s.romInternalTitleDesired||raw);}
  hydrateVisibleTextFields(project);auditProjectHydration(project);
 }
 

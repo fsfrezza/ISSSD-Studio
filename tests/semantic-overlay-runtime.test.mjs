@@ -16,7 +16,7 @@ function session(){
  fs.mkdirSync(path.join(dir,'scripts'));fs.mkdirSync(path.join(dir,'editor'));
  fs.writeFileSync(path.join(dir,'scripts/patch.mjs'),patch);
  const html=`<body><script>
- const original=new Uint8Array(4*1024*1024),rom=new Uint8Array(original);
+ const original=new Uint8Array(4*1024*1024);let rom=new Uint8Array(original);
  const activeRomProfile={id:'iss-deluxe-plus'};
  (()=>{'use strict';
  let teams=[],currentTeam=30;
@@ -26,7 +26,11 @@ function session(){
  window.__ISSD_CORE__={applyProject(){buildTeams()}};
  function ensureCurrentTeamFresh(){if(activeRomProfile.id==='iss-deluxe-plus')refreshPlusTeamFromRom(currentTeam)}
  function renderPlayer(){ensureCurrentTeamFresh();return teams[30].players}
- window.probe={renderPlayer,buildTeams,rom,original,readTactic:(source)=>plusTacticalRecordForTeam(30,source)};
+ function titleImportPhotosConflictSafe(img){return img.mode}
+ // v32.4 bridge: the Studio core lives inside this IIFE.
+ window.probe={renderPlayer,buildTeams,get rom(){return rom},original,readTactic:(source)=>plusTacticalRecordForTeam(30,source)};
+ Object.defineProperty(window,'rom',{configurable:true,get:()=>rom});
+ Object.defineProperty(window,'plusTacticalRecordForTeam',{configurable:true,value:(...args)=>plusTacticalRecordForTeam(...args)});
  buildTeams();
  })();
  </script><script>
@@ -35,6 +39,13 @@ function session(){
  function studioTeamsV3NativeDx(c,x){return x-(c==='DF'?-39:c==='MC'?0:39)}
  function studioTeamsV3Class(c){return c==='DF'?'DF':c==='MF'||c==='MC'?'MC':'AT'}
  function studioTeamsV3ReadFull(){return {teams:{30:{teamId:30,players:Array.from({length:20},(_,i)=>studioTeamsV3OriginalPlayer(30,i+1))}}}}
+ </script><script>
+ const _photosImport=titleImportPhotosConflictSafe;
+ titleImportPhotosConflictSafe=function(img){
+  img.mode='preserve';
+  const r=_photosImport(img);
+  return r
+ };
  </script></body>`;
  fs.writeFileSync(path.join(dir,'editor/ISSSD-Studio.html'),html);
  try{
@@ -89,6 +100,18 @@ test('installing a clean session clears previous project resolution',()=>{
  const c=session(),s=structuredClone(actual);s.teams[30].players[1].custom.name='Cafu';
  c.__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__(s);c.__ISSSD_TEAMS_SEMANTIC_RESET_V1__();c.__ISSD_CORE__.applyProject();
  assert.equal(c.probe.renderPlayer()[1].name,'Original 2');assert.equal(c.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__,null);
+});
+
+test('clean-current reset reaches the lexical ROM behind the read-only public accessor',()=>{
+ const c=session(),base=c.probe.original.slice();c.probe.rom[0]=0x99;
+ assert.equal(Object.getOwnPropertyDescriptor(c,'rom').set,undefined);
+ c.__ISSSD_RESTORE_CLEAN_CURRENT_V1__(base);
+ assert.equal(c.probe.rom[0],0);assert.deepEqual(Buffer.from(c.probe.rom),Buffer.from(base));
+ assert.deepEqual(Buffer.from(c.probe.original),Buffer.from(base));
+});
+
+test('legacy photo wrapper respects the native composer reconciliation policy',()=>{
+ const c=session();assert.equal(c.titleImportPhotosConflictSafe({mode:'reconcile'}),'reconcile');
 });
 
 test('recovered historical project names and newer coordinates can resolve together by identity',()=>{

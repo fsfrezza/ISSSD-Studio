@@ -5,6 +5,9 @@ import {expandPlusTo4MiB,preparePlusTacticalInfrastructure} from './plus-tactics
 import {plusPlayerWriter} from './plus-player-writer.mjs';
 import {plusTacticsWriter} from './plus-tactics-writer.mjs';
 import {plusStrategyTextWriter} from './plus-strategy-text.mjs';
+import {plusControllerTextWriter} from './plus-controller-text.mjs';
+import {plusNativeScreenTextWriter} from './plus-native-screen-text.mjs';
+import {plusMainMenuWriter} from './plus-main-menu-renderer.mjs';
 import {plusRomMetaWriter} from './plus-rom-meta.mjs';
 import {syncPlusRuntimeMirrors,validatePlusRuntimeMirrors,writeFinalSnesChecksum} from './plus-export-finalizer.mjs';
 
@@ -72,6 +75,20 @@ export function createPlusBuildStages({baseRom,patches=[],extraWriters=[],writeC
     {
       id:'07-strategy-text',kind:'semantic',when:!selectedAreas||selectedAreas.includes('textos-estrategias'),
       run:(work,state)=>plusStrategyTextWriter(work,state),
+    },
+    {
+      id:'07b-native-screen-text',kind:'semantic',when:!selectedAreas||selectedAreas.some(a=>a==='pre-partida'||a==='textos-estrategias'),
+      run:(work,state)=>plusNativeScreenTextWriter(work,state,selectedAreas),
+    },
+    {
+      id:'07c-controller-text',kind:'semantic',when:!selectedAreas||selectedAreas.includes('pre-partida'),
+      run:(work,state)=>plusControllerTextWriter(work,state,baseRom),
+    },
+    {
+      // Selecting the cumulative menu phase is explicit renderer opt-in. The
+      // historical default build policy remains unchanged.
+      id:'07d-main-menu-text',kind:'semantic',when:state=>!!selectedAreas?.includes('menu-principal')&&state.plusMainMenu?.nativeCommitted===true,
+      run:(work,state)=>plusMainMenuWriter(work,state),
     },
     {
       id:'08-rom-metadata',kind:'semantic',when:!selectedAreas||selectedAreas.includes('metadados'),
