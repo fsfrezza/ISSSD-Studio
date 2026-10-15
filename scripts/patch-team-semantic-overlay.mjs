@@ -29,7 +29,7 @@ const runtime=String.raw`
    const base=window.__ISSSD_TEAMS_BASELINE_V1__?.teams?.[String(team)]?.players?.[baseSlot-1]||{};
    out=clone(base)||{};
   }
-  out.playerId=String(p?.playerId||out.playerId||(`${team}:${baseSlot}`));out.baseSlot=baseSlot;out.slot=slot;
+  out.playerId=String(p?.playerId||out.playerId||(String(team)+':'+String(baseSlot)));out.baseSlot=baseSlot;out.slot=slot;
   return out;
  }
  function mergePlayer(base,custom){
