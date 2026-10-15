@@ -8,7 +8,9 @@ const pkg=JSON.parse(fs.readFileSync(new URL('../package.json',import.meta.url),
 
 test('há um único comando de validação local antes do teste manual',()=>{
   assert.equal(pkg.scripts['validate:editor:local'],'node scripts/validate-local-editor.mjs');
-  assert.match(validator,/npm\.cmd/);
+  assert.match(validator,/npm_execpath/);
+  assert.match(validator,/process\.execPath/);
+  assert.doesNotMatch(validator,/npm\.cmd/);
   assert.match(validator,/\['test'\]/);
   assert.match(validator,/\['run','build:editor'\]/);
   assert.match(validator,/verify-final-editor-invariants\.mjs/);
