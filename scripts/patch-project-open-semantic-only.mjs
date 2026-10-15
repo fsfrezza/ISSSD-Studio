@@ -29,26 +29,14 @@ function functionEnd(source,start){
  return -1;
 }
 
-// O baseline local variou historicamente entre versões minificadas/formatadas do bridge.
-// Delimitamos a função de verdade em vez de depender de uma string inteira idêntica.
-const applyFullRx=/function\s+applyFull\s*\(\s*p\s*\)\s*\{/;
-const applyFullMatch=applyFullRx.exec(html);
-if(!applyFullMatch)throw new Error('Não encontrei applyFull do importador visual.');
-const applyFullStart=applyFullMatch.index;
-const applyFullEnd=functionEnd(html,applyFullStart);
-if(applyFullEnd<0)throw new Error('Não consegui delimitar applyFull do importador visual.');
-let applyFullBlock=html.slice(applyFullStart,applyFullEnd);
-if(!applyFullBlock.includes('hydrateDom(p)'))throw new Error('applyFull incompatível: hydrateDom(p) ausente.');
-const reapplyP=/window\.__ISSSD_GIT_REAPPLY_PROJECT_STATE__\?\.\(\s*p\s*\)\s*;?/g;
-if(!reapplyP.test(applyFullBlock))throw new Error('Não encontrei em applyFull a reaplicação legada do projeto sobre a ROM.');
-applyFullBlock=applyFullBlock.replace(reapplyP,'void 0;');
-if(applyFullBlock.includes('__ISSSD_GIT_REAPPLY_PROJECT_STATE__'))throw new Error('Falha ao neutralizar reapply legado em applyFull.');
-html=html.slice(0,applyFullStart)+applyFullBlock+html.slice(applyFullEnd);
+// Neutraliza a reaplicação pós-importação sem depender da forma/minificação de applyFull.
+// Algumas revisões do HTML final encapsulam ou reformatam essa função; o que importa é
+// que hydrateDom continue disponível e que nenhuma chamada com o projeto visual `p` reste.
+const reapplyProjectP=/window\s*\.\s*__ISSSD_GIT_REAPPLY_PROJECT_STATE__\s*\?\.\s*\(\s*p\s*\)\s*;?/g;
+html=html.replace(reapplyProjectP,'void 0;');
+if(reapplyProjectP.test(html))throw new Error('Abertura semântica: reaplicação pós-importação ainda presente.');
+if(!/hydrateDom\s*\(\s*p\s*\)/.test(html))throw new Error('Abertura semântica: hidratação visual do projeto não encontrada.');
 
-// A abertura Plus ainda passa pelo ciclo legado para aproveitar reconhecimento de perfil,
-// cache da ROM-base e atualização da UI, mas todas as rotas que escrevem na ROM ficam
-// bloqueadas por uma flag explícita. Portanto não existe mais uma ROM parcial/temporária
-// montada durante a abertura: o único buffer autorizado é uma cópia limpa da ROM-base.
 const applyNeedle='async function studioApplyProjectWithBase(d,baseBytes,baseName){';
 const applyStart=html.indexOf(applyNeedle);
 if(applyStart<0)throw new Error('Não encontrei studioApplyProjectWithBase para instalar abertura semântica.');
@@ -70,8 +58,6 @@ if(!applyBlock.includes(reapply))throw new Error('Abertura semântica: reapply l
 applyBlock=applyBlock.replace(reapply,"if(!window.__ISSSD_SEMANTIC_OPEN_ONLY__)window.__ISSSD_GIT_REAPPLY_PROJECT_STATE__?.(d);");
 html=html.slice(0,applyStart)+applyBlock+html.slice(applyEnd);
 
-// Mesmo que algum caminho futuro tente chamar teamsV1 durante a abertura, ele não pode
-// escrever atributos, nomes, formação ou tática sobre a ROM-base.
 const restoreHead='function studioRestoreTeamsV1(state){\n studioEnsureMandatoryPlus4MiBSync(true);';
 const restoreSafe='function studioRestoreTeamsV1(state){\n if(window.__ISSSD_SEMANTIC_OPEN_ONLY__)return false;\n studioEnsureMandatoryPlus4MiBSync(true);';
 if(!html.includes(restoreHead))throw new Error('Abertura semântica: cabeça de studioRestoreTeamsV1 inesperada.');
@@ -83,11 +69,7 @@ const guard=`\n<script id="${marker}">\n(()=>{\n if(typeof studioApplyProjectWit
 if(!html.includes('</body>'))throw new Error('HTML gerado sem </body>.');
 html=html.replace('</body>',guard+'\n</body>');
 
-const finalApplyFullMatch=applyFullRx.exec(html);
-if(!finalApplyFullMatch)throw new Error('Abertura semântica: applyFull desapareceu após o patch.');
-const finalApplyFullEnd=functionEnd(html,finalApplyFullMatch.index);
-const finalApplyFullBlock=html.slice(finalApplyFullMatch.index,finalApplyFullEnd);
-if(finalApplyFullBlock.includes('__ISSSD_GIT_REAPPLY_PROJECT_STATE__'))throw new Error('Abertura ainda reaplica estado de projeto diretamente na ROM via applyFull.');
+if(reapplyProjectP.test(html))throw new Error('Abertura ainda reaplica estado de projeto diretamente na ROM via projeto visual p.');
 for(const required of [
  'window.__ISSSD_SEMANTIC_OPEN_ONLY__=true',
  'if(!window.__ISSSD_SEMANTIC_OPEN_ONLY__){studioCore().applyProject',
