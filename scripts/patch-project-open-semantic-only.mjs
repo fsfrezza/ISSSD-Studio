@@ -4,8 +4,11 @@ import {fileURLToPath} from 'node:url';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const htmlPath=path.join(root,'editor','ISSSD-Studio.html');
+const projectImportPath=path.join(root,'editor-src','project-import-v11.mjs');
 if(!fs.existsSync(htmlPath))throw new Error('Editor gerado não encontrado: '+htmlPath);
+if(!fs.existsSync(projectImportPath))throw new Error('Abertura semântica: fonte canônica do importador visual ausente: '+projectImportPath);
 let html=fs.readFileSync(htmlPath,'utf8');
+const projectImportSource=fs.readFileSync(projectImportPath,'utf8');
 
 function functionEnd(source,start){
  const brace=source.indexOf('{',start);if(brace<0)return -1;
@@ -29,13 +32,31 @@ function functionEnd(source,start){
  return -1;
 }
 
+// O importador visual é uma fonte versionada do próprio repositório. Se algum patch
+// anterior tiver removido/reformatado seu hidratador, repomos apenas esse módulo a partir
+// da fonte canônica antes de instalar a barreira semantic-only. Isso evita depender do
+// formato histórico do baseline local sem abrir mão da hidratação da interface.
+const hydrateRx=/hydrateDom\s*\(\s*p\s*\)/;
+if(!hydrateRx.test(projectImportSource))throw new Error('Abertura semântica: fonte canônica do importador não contém hydrateDom(p).');
+if(!hydrateRx.test(html)){
+ const moduleRx=/<script\b[^>]*id=["']isssd-git-project-import-v11["'][^>]*>[\s\S]*?<\/script>/i;
+ const canonicalModule=`<script type="module" id="isssd-git-project-import-v11">\n${projectImportSource}\n</script>`;
+ if(moduleRx.test(html))html=html.replace(moduleRx,canonicalModule);
+ else{
+  if(!html.includes('</body>'))throw new Error('Abertura semântica: HTML sem </body> para repor importador visual.');
+  html=html.replace('</body>',canonicalModule+'\n</body>');
+ }
+}
+if(!hydrateRx.test(html))throw new Error('Abertura semântica: hidratação visual do projeto não pôde ser restaurada.');
+if(!html.includes('id="isssd-git-project-import-v11"'))throw new Error('Abertura semântica: módulo do importador visual não está presente no HTML final.');
+
 // Neutraliza a reaplicação pós-importação sem depender da forma/minificação de applyFull.
 // Algumas revisões do HTML final encapsulam ou reformatam essa função; o que importa é
 // que hydrateDom continue disponível e que nenhuma chamada com o projeto visual `p` reste.
 const reapplyProjectP=/window\s*\.\s*__ISSSD_GIT_REAPPLY_PROJECT_STATE__\s*\?\.\s*\(\s*p\s*\)\s*;?/g;
 html=html.replace(reapplyProjectP,'void 0;');
+reapplyProjectP.lastIndex=0;
 if(reapplyProjectP.test(html))throw new Error('Abertura semântica: reaplicação pós-importação ainda presente.');
-if(!/hydrateDom\s*\(\s*p\s*\)/.test(html))throw new Error('Abertura semântica: hidratação visual do projeto não encontrada.');
 
 const applyNeedle='async function studioApplyProjectWithBase(d,baseBytes,baseName){';
 const applyStart=html.indexOf(applyNeedle);
@@ -69,7 +90,9 @@ const guard=`\n<script id="${marker}">\n(()=>{\n if(typeof studioApplyProjectWit
 if(!html.includes('</body>'))throw new Error('HTML gerado sem </body>.');
 html=html.replace('</body>',guard+'\n</body>');
 
+reapplyProjectP.lastIndex=0;
 if(reapplyProjectP.test(html))throw new Error('Abertura ainda reaplica estado de projeto diretamente na ROM via projeto visual p.');
+if(!hydrateRx.test(html))throw new Error('Abertura semântica: hydrateDom(p) desapareceu após a instalação da barreira.');
 for(const required of [
  'window.__ISSSD_SEMANTIC_OPEN_ONLY__=true',
  'if(!window.__ISSSD_SEMANTIC_OPEN_ONLY__){studioCore().applyProject',
@@ -80,4 +103,4 @@ for(const required of [
 ])if(!html.includes(required))throw new Error('Abertura semântica incompleta; ausente '+required);
 
 fs.writeFileSync(htmlPath,html,'utf8');
-console.log('ISSSD Studio: abertura de projeto agora é semântica — nenhum patch físico, expansão 4 MiB ou restore teamsV1 é executado durante o carregamento; a ROM autoritativa permanece a base imutável.');
+console.log('ISSSD Studio: abertura de projeto agora é semântica — hidratador visual canônico preservado, nenhum patch físico, expansão 4 MiB ou restore teamsV1 é executado durante o carregamento; a ROM autoritativa permanece a base imutável.');
