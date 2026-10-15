@@ -24,7 +24,14 @@ test('neutralização pós-importação não depende da existência textual de a
   assert.doesNotMatch(patch,/applyFullRx/);
   assert.doesNotMatch(patch,/applyFullMatch/);
   assert.doesNotMatch(patch,/applyFullBlock/);
-  assert.match(patch,/reformatam essa função/);
+});
+
+test('recusa de writer físico durante abertura semantic-only não aborta o projeto',()=>{
+  assert.match(patch,/semanticWriterRefusal/);
+  assert.match(patch,/Os textos do projeto foram restaurados, mas não puderam ser aplicados automaticamente à ROM/);
+  assert.match(patch,/if\(!semanticWriterRefusal\.test\(message\)\)throw e/);
+  assert.match(patch,/__ISSSD_SEMANTIC_OPEN_WRITER_BYPASSED__/);
+  assert.match(patch,/let result=true/);
 });
 
 test('ciclo legado de abertura fica em modo semântico e não monta ROM parcial',()=>{
