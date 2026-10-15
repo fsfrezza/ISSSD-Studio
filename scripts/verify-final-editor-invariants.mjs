@@ -39,10 +39,11 @@ for(const required of ['__ISSSD_TEAMS_PROJECT_OVERLAY_V1__','__ISSSD_TEAMS_RESOL
  if(!html.includes(required))throw new Error('Verificação final: overlay teamsV1 incompleto; ausente '+required+'.');
 }
 
-if(!html.includes('id="isssd-project-open-semantic-only-v3"'))throw new Error('Verificação final: barreira v3 de abertura semântica não foi instalada.');
+if(!html.includes('id="isssd-project-open-semantic-only-v4"'))throw new Error('Verificação final: barreira v4 de abertura semântica não foi instalada.');
 for(const required of [
  'window.__ISSSD_SEMANTIC_OPEN_ONLY__=true',
  'if(!window.__ISSSD_SEMANTIC_OPEN_ONLY__){studioCore().applyProject',
+ 'studioCore().applyProject(cleanBase,cleanBase,baseName,d?.state?.ui||{},d?.base?.profile||null)',
  "if(!window.__ISSSD_SEMANTIC_OPEN_ONLY__)await studioEnsureMandatoryPlus4MiB",
  "if(!window.__ISSSD_SEMANTIC_OPEN_ONLY__)window.__ISSSD_GIT_REAPPLY_PROJECT_STATE__?.(d)",
  'rom=new Uint8Array(baseBytes)',
@@ -59,4 +60,4 @@ if(!html.includes('await studioProjectObject()'))throw new Error('Verificação 
 if(!html.includes("response.headers.get('X-ISSSD-Builder')!=='plus-build-pipeline-v1'"))throw new Error('Verificação final: browser não exige confirmação do Build Pipeline v1.');
 if(!html.includes('payload.length!==0x400000'))throw new Error('Verificação final: browser não rejeita ROM Plus final que não tenha 4 MiB.');
 
-console.log('ISSSD Studio: invariantes finais verificadas — abrir projeto hidrata teamsV1/textos sem alterar a ROM-base, o round-trip saneia somente o salvamento e a ROM final Plus nasce somente do Build Pipeline v1.');
+console.log('ISSSD Studio: invariantes finais verificadas — abrir projeto carrega formalmente a ROM-base no core, hidrata teamsV1/textos sem materializar overrides, o round-trip saneia somente o salvamento e a ROM final Plus nasce somente do Build Pipeline v1.');
