@@ -34,6 +34,15 @@ test('recusa de writer físico durante abertura semantic-only não aborta o proj
   assert.match(patch,/let result=true/);
 });
 
+test('teamsV1 é hidratado depois de recarregar os modelos da ROM-base',()=>{
+  const sync=patch.indexOf('syncModelsFromRom?.()');
+  const state=patch.indexOf("const teamsState=d?.state?.semantic?.teamsV1");
+  const hydrate=patch.indexOf('__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__');
+  const render=patch.indexOf('renderEverything?.()');
+  assert.ok(sync>=0&&state>sync&&hydrate>state&&render>hydrate);
+  assert.match(patch,/__ISSSD_PROJECT_TEAMS_HYDRATED_V1__/);
+});
+
 test('ciclo legado de abertura fica em modo semântico e não monta ROM parcial',()=>{
   assert.match(patch,/window\.__ISSSD_SEMANTIC_OPEN_ONLY__=true/);
   assert.match(patch,/if\(!window\.__ISSSD_SEMANTIC_OPEN_ONLY__\)\{\$\{physical\}\}/);
@@ -49,10 +58,11 @@ test('ROM autoritativa é sempre recolocada na base limpa durante abertura',()=>
   assert.match(patch,/__ISSSD_PLUS_4MB_MANDATORY__=false/);
 });
 
-test('barreira semântica roda depois do export canônico e antes do verificador final',()=>{
+test('barreira semântica roda após overlay e antes do verificador final',()=>{
   const build=JSON.parse(pkg).scripts['build:editor'];
   const exportPos=build.indexOf('patch-canonical-rom-export.mjs');
+  const overlayPos=build.indexOf('patch-team-semantic-overlay.mjs');
   const openPos=build.indexOf('patch-project-open-semantic-only.mjs');
   const verifyPos=build.indexOf('verify-final-editor-invariants.mjs');
-  assert.ok(exportPos>=0&&openPos>exportPos&&verifyPos>openPos);
+  assert.ok(exportPos>=0&&overlayPos>exportPos&&openPos>overlayPos&&verifyPos>openPos);
 });
