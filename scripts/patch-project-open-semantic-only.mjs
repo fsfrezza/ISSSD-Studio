@@ -45,6 +45,7 @@ if(!hydrateRx.test(html)){
 }
 if(!hydrateRx.test(html))throw new Error('Abertura semântica: hidratação visual do projeto não pôde ser restaurada.');
 if(!html.includes('id="isssd-git-project-import-v11"'))throw new Error('Abertura semântica: módulo do importador visual não está presente no HTML final.');
+if(!html.includes('__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__'))throw new Error('Abertura semântica: overlay teamsV1 não foi instalado antes da barreira de abertura.');
 
 const reapplyProjectP=/window\s*\.\s*__ISSSD_GIT_REAPPLY_PROJECT_STATE__\s*\?\.\s*\(\s*p\s*\)\s*;?/g;
 html=html.replace(reapplyProjectP,'void 0;');
@@ -77,9 +78,9 @@ const restoreSafe='function studioRestoreTeamsV1(state){\n if(window.__ISSSD_SEM
 if(!html.includes(restoreHead))throw new Error('Abertura semântica: cabeça de studioRestoreTeamsV1 inesperada.');
 html=html.replace(restoreHead,restoreSafe);
 
-const marker='isssd-project-open-semantic-only-v2';
+const marker='isssd-project-open-semantic-only-v3';
 if(html.includes(marker))throw new Error('Barreira de abertura semântica duplicada.');
-const guard=`\n<script id="${marker}">\n(()=>{\n if(typeof studioApplyProjectWithBase!=='function')throw new Error('studioApplyProjectWithBase indisponível para a abertura semântica');\n const legacyApply=studioApplyProjectWithBase;\n const semanticWriterRefusal=/^Os textos do projeto foram restaurados, mas não puderam ser aplicados automaticamente à ROM:/;\n studioApplyProjectWithBase=async function(d,baseBytes,baseName){\n  if(!(baseBytes instanceof Uint8Array))return legacyApply(d,baseBytes,baseName);\n  const previous=window.__ISSSD_SEMANTIC_OPEN_ONLY__;\n  window.__ISSSD_SEMANTIC_OPEN_ONLY__=true;\n  let result=true;\n  try{\n   rom=new Uint8Array(baseBytes);\n   try{result=await legacyApply(d,baseBytes,baseName)}catch(e){\n    const message=String(e?.message||e||'');\n    if(!semanticWriterRefusal.test(message))throw e;\n    window.__ISSSD_SEMANTIC_OPEN_WRITER_BYPASSED__=message;\n    console.info('Abertura semântica: writer físico legado recusou aplicação e foi ignorado; os dados permanecem somente no estado do projeto.',message);\n   }\n   rom=new Uint8Array(baseBytes);\n   try{window.__ISSSD_PLUS_4MB_MANDATORY__=false}catch(_){}\n   try{syncModelsFromRom?.()}catch(e){console.warn('Abertura semântica: syncModelsFromRom',e)}\n   try{renderEverything?.()}catch(e){console.warn('Abertura semântica: renderEverything',e)}\n   window.__ISSSD_PROJECT_OPEN_ROM_PRISTINE__=true;\n   return result;\n  }finally{window.__ISSSD_SEMANTIC_OPEN_ONLY__=previous}\n };\n})();\n</script>\n`;
+const guard=`\n<script id="${marker}">\n(()=>{\n if(typeof studioApplyProjectWithBase!=='function')throw new Error('studioApplyProjectWithBase indisponível para a abertura semântica');\n const legacyApply=studioApplyProjectWithBase;\n const semanticWriterRefusal=/^Os textos do projeto foram restaurados, mas não puderam ser aplicados automaticamente à ROM:/;\n studioApplyProjectWithBase=async function(d,baseBytes,baseName){\n  if(!(baseBytes instanceof Uint8Array))return legacyApply(d,baseBytes,baseName);\n  const previous=window.__ISSSD_SEMANTIC_OPEN_ONLY__;\n  window.__ISSSD_SEMANTIC_OPEN_ONLY__=true;\n  let result=true;\n  try{\n   rom=new Uint8Array(baseBytes);\n   try{result=await legacyApply(d,baseBytes,baseName)}catch(e){\n    const message=String(e?.message||e||'');\n    if(!semanticWriterRefusal.test(message))throw e;\n    window.__ISSSD_SEMANTIC_OPEN_WRITER_BYPASSED__=message;\n    console.info('Abertura semântica: writer físico legado recusou aplicação e foi ignorado; os dados permanecem somente no estado do projeto.',message);\n   }\n   rom=new Uint8Array(baseBytes);\n   try{window.__ISSSD_PLUS_4MB_MANDATORY__=false}catch(_){}\n   try{syncModelsFromRom?.()}catch(e){console.warn('Abertura semântica: syncModelsFromRom',e)}\n   const teamsState=d?.state?.semantic?.teamsV1;\n   if(teamsState?.schema==='isssd-teams-v1'){\n    const hydrate=window.__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__;\n    if(typeof hydrate!=='function')throw new Error('Overlay semântico teamsV1 indisponível após abrir projeto.');\n    const hydrated=hydrate(teamsState);\n    window.__ISSSD_PROJECT_TEAMS_HYDRATED_V1__=!!hydrated;\n   }\n   try{renderEverything?.()}catch(e){console.warn('Abertura semântica: renderEverything',e)}\n   window.__ISSSD_PROJECT_OPEN_ROM_PRISTINE__=true;\n   return result;\n  }finally{window.__ISSSD_SEMANTIC_OPEN_ONLY__=previous}\n };\n})();\n</script>\n`;
 if(!html.includes('</body>'))throw new Error('HTML gerado sem </body>.');
 html=html.replace('</body>',guard+'\n</body>');
 
@@ -94,8 +95,10 @@ for(const required of [
  'if(window.__ISSSD_SEMANTIC_OPEN_ONLY__)return false',
  'semanticWriterRefusal',
  '__ISSSD_SEMANTIC_OPEN_WRITER_BYPASSED__',
+ '__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__',
+ '__ISSSD_PROJECT_TEAMS_HYDRATED_V1__',
  'window.__ISSSD_PROJECT_OPEN_ROM_PRISTINE__=true'
 ])if(!html.includes(required))throw new Error('Abertura semântica incompleta; ausente '+required);
 
 fs.writeFileSync(htmlPath,html,'utf8');
-console.log('ISSSD Studio: abertura de projeto agora é semântica — hidratador visual canônico preservado; recusas de writers físicos são ignoradas durante a abertura; a ROM autoritativa permanece a base imutável.');
+console.log('ISSSD Studio: abertura de projeto semantic-only v3 — textos e teamsV1 hidratam a UI; nenhum override do projeto é gravado na ROM-base durante o carregamento.');
