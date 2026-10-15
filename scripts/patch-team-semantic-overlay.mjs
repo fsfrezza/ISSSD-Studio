@@ -12,7 +12,7 @@ if(html.includes(marker))throw new Error('Overlay semântico de equipes já foi 
 
 const runtime=String.raw`
 <script id="${marker}">
-(()=>{
+window.__ISSSD_INSTALL_TEAMS_SEMANTIC_V1__=function(){
  const clone=v=>{try{return v==null?v:JSON.parse(JSON.stringify(v))}catch(_){return null}};
  const has=(o,k)=>!!o&&Object.prototype.hasOwnProperty.call(o,k);
  const posId=v=>({NONE:0,GO:1,GK:1,DF:2,'DF-MF':3,VOL:3,MF:4,MC:4,'MF-FW':5,MO:5,FW:6,AT:6}[String(v||'NONE').toUpperCase()]??0);
@@ -139,7 +139,7 @@ const runtime=String.raw`
    return out;
   };
  }
-})();
+};
 </script>
 `;
 
@@ -148,7 +148,9 @@ if(!html.includes('</body>'))throw new Error('Overlay semântico: HTML final sem
 const anchor='function ensureCurrentTeamFresh(){';
 if(html.split(anchor).length!==2)throw new Error('Overlay semântico: escopo do runtime principal ambíguo/ausente.');
 const scopedRuntime=runtime.replace(/<script[^>]*>/,'/* '+marker+' */').replace('</script>','');
-html=html.replace(anchor,scopedRuntime+'\n'+anchor);
+html=html.replace(anchor,()=>scopedRuntime+'\n'+anchor);
+// Call only after the later canonical teams script has initialized its readers.
+html=html.replace('</body>',()=>'<script id="isssd-team-semantic-bootstrap-v1">window.__ISSSD_INSTALL_TEAMS_SEMANTIC_V1__();</script>\n</body>');
 for(const required of ['__ISSSD_TEAMS_PROJECT_OVERLAY_V1__','__ISSSD_TEAMS_RESOLVED_OVERLAY_V1__','__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__','studioTeamsV3ReadFull=function()'])if(!html.includes(required))throw new Error('Overlay semântico incompleto; ausente '+required);
 fs.writeFileSync(htmlPath,html,'utf8');
 console.log('ISSSD Studio: overlay semântico de equipes instalado — teamsV1 hidrata modelos/UI sem gravar os overrides na ROM-base.');

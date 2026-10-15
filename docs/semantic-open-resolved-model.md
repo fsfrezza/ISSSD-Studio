@@ -66,3 +66,15 @@ insertion: the importer's literal `$&` was expanded by String.replace into the
 matched HTML, corrupting the module. Build and canonical module restoration now
 use callback replacements, preserving source bytes. Final verification checks
 module syntax as well as classic script syntax.
+
+## Startup-order regression correction
+
+Moving installation into the main IIFE fixed lexical access but initially executed
+it too early: the canonical `studioTeamsV3ReadFull` is declared in a later script,
+not the same script. Browser script declarations are not hoisted across separate
+script elements. This threw during main initialization before core setup completed.
+The scoped closure is now registered in the main IIFE and invoked by a final
+bootstrap after the canonical script has executed. Runtime tests place the main
+IIFE and canonical helpers in separate script elements and execute them in order.
+The delivered recovered project also passes the actual generated legacy project
+validator; the startup defect is in the Editor, not invalid JSON in that project.

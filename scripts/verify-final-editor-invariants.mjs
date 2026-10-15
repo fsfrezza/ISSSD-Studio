@@ -38,6 +38,11 @@ if(!html.includes('0x2AA8E,0x2B166,0x3193A'))throw new Error('Verificação fina
 
 if(!html.includes('/* isssd-team-semantic-overlay-v1 */'))throw new Error('Verificação final: overlay semântico de equipes não foi instalado.');
 const overlayAt=html.indexOf('/* isssd-team-semantic-overlay-v1 */');
+const bootAt=html.indexOf('<script id="isssd-team-semantic-bootstrap-v1">');
+const canonicalAt=html.indexOf('function studioTeamsV3ReadFull(){');
+if(bootAt<canonicalAt||canonicalAt<0||bootAt<html.indexOf('</script>',overlayAt))throw new Error('Verificação final: bootstrap semântico executa antes do runtime canônico.');
+if(!html.includes('window.__ISSSD_INSTALL_TEAMS_SEMANTIC_V1__=function(){'))throw new Error('Verificação final: instalador semântico diferido ausente.');
+
 const scriptStart=html.lastIndexOf('<script',overlayAt),scriptEnd=html.indexOf('</script>',overlayAt);
 const scopedBlock=html.slice(scriptStart,scriptEnd);
 for(const needle of ['teams=[]','function refreshPlusTeamFromRom(team){','function ensureCurrentTeamFresh(){','window.plusTacticalRecordForTeam=(...args)=>plusTacticalRecordForTeam(...args)']){

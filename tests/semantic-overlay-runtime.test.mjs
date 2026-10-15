@@ -8,6 +8,7 @@ import {execFileSync} from 'node:child_process';
 
 const patch=fs.readFileSync(new URL('../scripts/patch-team-semantic-overlay.mjs',import.meta.url),'utf8');
 const actual=JSON.parse(fs.readFileSync(new URL('./fixtures/brazil-sparse-open.json',import.meta.url)));
+// Canonical helpers intentionally live in a LATER script, as in the final HTML.
 // Deliberately keep teams and the tactical reader PRIVATE, as in the legacy IIFE.
 // Execute the production patch against HTML, rather than a reimplementation of its resolver.
 function session(){
@@ -17,11 +18,6 @@ function session(){
  const html=`<body><script>
  const original=new Uint8Array(4*1024*1024),rom=new Uint8Array(original);
  const activeRomProfile={id:'iss-deluxe-plus'};
- function studioTeamsV3OriginalPlayer(t,s){return {playerId:t+':'+s,baseSlot:s,slot:s,name:'Original '+s,number:s,position:'DF',skills:{speed:s,shot:3},appearance:{hair:s%10},tactical:{x:-31,y:-32,className:'DF',attack:false}}}
- function studioTeamsV3BaseSlot(t,p,s){return p.baseSlot||s}
- function studioTeamsV3NativeDx(c,x){return x-(c==='DF'?-39:c==='MC'?0:39)}
- function studioTeamsV3Class(c){return c==='DF'?'DF':c==='MF'||c==='MC'?'MC':'AT'}
- function studioTeamsV3ReadFull(){return {teams:{30:{teamId:30,players:Array.from({length:20},(_,i)=>studioTeamsV3OriginalPlayer(30,i+1))}}}}
  (()=>{'use strict';
  let teams=[],currentTeam=30;
  function plusTacticalRecordForTeam(t,source=rom){return {raw:new Uint8Array(31),players:Array.from({length:10},()=>({dx:8,dy:-32,className:'DF',attack:false,flag:1}))}}
@@ -33,6 +29,12 @@ function session(){
  window.probe={renderPlayer,buildTeams,rom,original,readTactic:(source)=>plusTacticalRecordForTeam(30,source)};
  buildTeams();
  })();
+ </script><script>
+ function studioTeamsV3OriginalPlayer(t,s){return {playerId:t+':'+s,baseSlot:s,slot:s,name:'Original '+s,number:s,position:'DF',skills:{speed:s,shot:3},appearance:{hair:s%10},tactical:{x:-31,y:-32,className:'DF',attack:false}}}
+ function studioTeamsV3BaseSlot(t,p,s){return p.baseSlot||s}
+ function studioTeamsV3NativeDx(c,x){return x-(c==='DF'?-39:c==='MC'?0:39)}
+ function studioTeamsV3Class(c){return c==='DF'?'DF':c==='MF'||c==='MC'?'MC':'AT'}
+ function studioTeamsV3ReadFull(){return {teams:{30:{teamId:30,players:Array.from({length:20},(_,i)=>studioTeamsV3OriginalPlayer(30,i+1))}}}}
  </script></body>`;
  fs.writeFileSync(path.join(dir,'editor/ISSSD-Studio.html'),html);
  try{
