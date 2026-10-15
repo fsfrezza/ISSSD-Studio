@@ -7,18 +7,6 @@ const htmlPath=path.join(root,'editor','ISSSD-Studio.html');
 if(!fs.existsSync(htmlPath))throw new Error('Editor gerado não encontrado: '+htmlPath);
 let html=fs.readFileSync(htmlPath,'utf8');
 
-const oldApplyFull="function applyFull(p){if(!p)return;try{window.__ISSSD_GIT_REAPPLY_PROJECT_STATE__?.(p)}catch(e){console.error('V15 reapply',e)}hydrateDom(p);try{window.__ISSSD_TEAM_STATE_API__?.refresh?.()}catch(_){}}";
-const newApplyFull="function applyFull(p){if(!p)return;hydrateDom(p);try{window.__ISSSD_TEAM_STATE_API__?.refresh?.()}catch(_){}}";
-if(!html.includes(oldApplyFull))throw new Error('Não encontrei applyFull legado que reaplica o projeto sobre a ROM.');
-html=html.replace(oldApplyFull,newApplyFull);
-
-// A abertura Plus ainda passa pelo ciclo legado para aproveitar reconhecimento de perfil,
-// cache da ROM-base e atualização da UI, mas todas as rotas que escrevem na ROM ficam
-// bloqueadas por uma flag explícita. Portanto não existe mais uma ROM parcial/temporária
-// montada durante a abertura: o único buffer autorizado é uma cópia limpa da ROM-base.
-const applyNeedle='async function studioApplyProjectWithBase(d,baseBytes,baseName){';
-const applyStart=html.indexOf(applyNeedle);
-if(applyStart<0)throw new Error('Não encontrei studioApplyProjectWithBase para instalar abertura semântica.');
 function functionEnd(source,start){
  const brace=source.indexOf('{',start);if(brace<0)return -1;
  let depth=0,quote=null,escape=false,templateExpr=0;
@@ -40,6 +28,30 @@ function functionEnd(source,start){
  }
  return -1;
 }
+
+// O baseline local variou historicamente entre versões minificadas/formatadas do bridge.
+// Delimitamos a função de verdade em vez de depender de uma string inteira idêntica.
+const applyFullRx=/function\s+applyFull\s*\(\s*p\s*\)\s*\{/;
+const applyFullMatch=applyFullRx.exec(html);
+if(!applyFullMatch)throw new Error('Não encontrei applyFull do importador visual.');
+const applyFullStart=applyFullMatch.index;
+const applyFullEnd=functionEnd(html,applyFullStart);
+if(applyFullEnd<0)throw new Error('Não consegui delimitar applyFull do importador visual.');
+let applyFullBlock=html.slice(applyFullStart,applyFullEnd);
+if(!applyFullBlock.includes('hydrateDom(p)'))throw new Error('applyFull incompatível: hydrateDom(p) ausente.');
+const reapplyP=/window\.__ISSSD_GIT_REAPPLY_PROJECT_STATE__\?\.\(\s*p\s*\)\s*;?/g;
+if(!reapplyP.test(applyFullBlock))throw new Error('Não encontrei em applyFull a reaplicação legada do projeto sobre a ROM.');
+applyFullBlock=applyFullBlock.replace(reapplyP,'void 0;');
+if(applyFullBlock.includes('__ISSSD_GIT_REAPPLY_PROJECT_STATE__'))throw new Error('Falha ao neutralizar reapply legado em applyFull.');
+html=html.slice(0,applyFullStart)+applyFullBlock+html.slice(applyFullEnd);
+
+// A abertura Plus ainda passa pelo ciclo legado para aproveitar reconhecimento de perfil,
+// cache da ROM-base e atualização da UI, mas todas as rotas que escrevem na ROM ficam
+// bloqueadas por uma flag explícita. Portanto não existe mais uma ROM parcial/temporária
+// montada durante a abertura: o único buffer autorizado é uma cópia limpa da ROM-base.
+const applyNeedle='async function studioApplyProjectWithBase(d,baseBytes,baseName){';
+const applyStart=html.indexOf(applyNeedle);
+if(applyStart<0)throw new Error('Não encontrei studioApplyProjectWithBase para instalar abertura semântica.');
 const applyEnd=functionEnd(html,applyStart);
 if(applyEnd<0)throw new Error('Não consegui delimitar studioApplyProjectWithBase.');
 let applyBlock=html.slice(applyStart,applyEnd);
@@ -71,7 +83,11 @@ const guard=`\n<script id="${marker}">\n(()=>{\n if(typeof studioApplyProjectWit
 if(!html.includes('</body>'))throw new Error('HTML gerado sem </body>.');
 html=html.replace('</body>',guard+'\n</body>');
 
-if(html.includes("try{window.__ISSSD_GIT_REAPPLY_PROJECT_STATE__?.(p)}"))throw new Error('Abertura ainda reaplica estado de projeto diretamente na ROM.');
+const finalApplyFullMatch=applyFullRx.exec(html);
+if(!finalApplyFullMatch)throw new Error('Abertura semântica: applyFull desapareceu após o patch.');
+const finalApplyFullEnd=functionEnd(html,finalApplyFullMatch.index);
+const finalApplyFullBlock=html.slice(finalApplyFullMatch.index,finalApplyFullEnd);
+if(finalApplyFullBlock.includes('__ISSSD_GIT_REAPPLY_PROJECT_STATE__'))throw new Error('Abertura ainda reaplica estado de projeto diretamente na ROM via applyFull.');
 for(const required of [
  'window.__ISSSD_SEMANTIC_OPEN_ONLY__=true',
  'if(!window.__ISSSD_SEMANTIC_OPEN_ONLY__){studioCore().applyProject',
