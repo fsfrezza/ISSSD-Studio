@@ -1,3 +1,4 @@
+import {NATIVE_MENU_TEXT_SECTIONS} from '../src/core/native-menu-text-fields.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
@@ -29,6 +30,7 @@ const legacyAssets=vm.runInNewContext(legacy.slice(start,end)+';ALL_TEXT_GFX_ASS
 const presets=JSON.parse(fs.readFileSync(path.join(root,'project-data','text-language-presets-v1.json')));
 const knownEnglish=[...Object.values(presets.sections).flatMap(s=>Object.values(s.english)),...ADDITIONAL_TEXT_SECTIONS.flatMap(s=>s.fields.map(f=>f[1]))].map(norm);
 const ranges=[
+ ...NATIVE_MENU_TEXT_SECTIONS.flatMap(s=>s.fields.flatMap(f=>f[3].pool.segments.map(seg=>({pc:seg.pc,len:seg.original.length,owner:s.id+'/'+f[0]})))),
  ...CURSOR_HELP_FIELDS.map(([id,,,o])=>({pc:o.native.pc,len:o.native.width*o.native.rowCount,owner:'Cursor/'+id})),
  ...NATIVE_SCREEN_TEXT_FIELDS.map(f=>({pc:f.pc,len:f.capacity,owner:'native-screen/'+f.name})),
  ...PLUS_STRATEGY_TEXTS.map(f=>({pc:f.pc,len:20,owner:'strategies/'+f.id})),

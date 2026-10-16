@@ -1,8 +1,8 @@
 # Textos ainda sem mapeamento completo no editor
 
-Auditoria do disassembly local `Routine_Macros_ISSD.asm`, das tabelas SmallMenuText/TallMenuText, de `AsarScripts/AssetPointersAndFiles.asm` e dos catálogos/gravadores atuais do Studio. Organização por tela, para orientar abas independentes. Os nomes das abas novas abaixo são propostos; não significam que seus campos já foram instalados na interface.
+Auditoria do disassembly local `Routine_Macros_ISSD.asm`, das tabelas SmallMenuText/TallMenuText, de `AsarScripts/AssetPointersAndFiles.asm` e dos catálogos/gravadores atuais do Studio. Organização por tela, para orientar abas independentes. Os 138 blocos nativos candidatos deste levantamento foram incorporados ao catálogo do editor. Controles, Estratégias e Opções da Partida usam suas abas existentes; as demais telas têm abas próprias. Rascunhos e valores confirmados persistem no .issdproj. A gravação nativa respeita os segmentos, fontes e fases de cada campo; traduções ainda não definidas permanecem com o original. Os assets gráficos adicionais abaixo continuam exigindo revisão por inscrição.
 
-Foram extraídos **193 blocos nativos de interface** do banco $87, excluindo nomes de jogadores: **26** inteiramente cobertos pelos vínculos de escrita examinados, **138** com ocorrências sem vínculo completo e **29** técnicos, numéricos ou vazios. Os **138 blocos candidatos coincidem byte a byte com a ROM Plus original**. Um bloco técnico de duração de partida ($87DE2F) diverge entre a ROM Plus e o disassembly e não deve ser copiado diretamente.
+Foram extraídos **193 blocos nativos de interface** do banco $87, excluindo nomes de jogadores: **26** inteiramente cobertos pelos vínculos de escrita examinados, **138** com ocorrências sem vínculo completo no momento da auditoria e **29** técnicos, numéricos ou vazios. Os **138 blocos candidatos coincidem byte a byte com a ROM Plus original**. Um bloco técnico de duração de partida ($87DE2F) diverge entre a ROM Plus e o disassembly e não deve ser copiado diretamente.
 
 Um bloco pode conter vários campos ou um parágrafo inteiro. Texto semelhante já existente em outra tela não comprova que esta ocorrência esteja ligada ao editor. O escopo não inclui todos os nomes de equipes/jogadores, fontes nem mensagens inteiramente desenhadas em tiles sem nome identificável. Portanto os números são do levantamento delimitado, não um total absoluto de todo texto do jogo.
 
@@ -242,3 +242,11 @@ node scripts/audit-unmapped-texts.mjs /caminho/disassembly /caminho/Plus-origina
 ```
 
 O script exige SHA-256 `ca2d73b226ab252649d4c9c35bb6b81937586d908c1d9dc9d447db7babfaad0a` e registra textos completos, fonte, referências de uso, confirmação na ROM e vínculos encontrados em `project-data/unmapped-text-audit.json`. A comparação de cobertura usa os ranges explícitos dos gravadores auditados; não deduz escrita apenas pela existência do texto em um catálogo.
+
+## Campos incorporados
+
+Os campos estão em `src/core/native-menu-text-fields.mjs` e a gravação em `src/core/plus-native-menu-text.mjs`. Cada trecho mantém seu endereço e capacidade; códigos entre os trechos e campos de gravadores anteriores não são sobrescritos. As ajudas regulares aceitam ajuste de palavras às linhas disponíveis; blocos de segmentos irregulares preservam as quebras explícitas. Valores excessivos, glifos ausentes e ROM-base divergente são recusados antes de qualquer escrita.
+
+A fase é Pré-Partida, exceto Textos Seleção de Equipes (Seleção de equipes) e Textos Estratégias (Textos da tela Estratégias). Desmarcar uma fase impede a aplicação dos campos correspondentes. O botão Usar em português mantém os campos sem tradução definida e informa quantos foram preservados.
+
+Após a incorporação, o auditor também reconhece os novos gravadores por segmento. Os números e a tabela de candidatos acima preservam o levantamento anterior; o JSON de auditoria registra a cobertura atual.

@@ -8,8 +8,8 @@
   "scope": "Quoted SmallMenuText/TallMenuText UI blocks in bank 87 C000..FAC8; graphical assets named Text/Letters/Copyright. Player names excluded. Inventory is not proof of an editable native writer.",
   "summary": {
     "nativeBlocks": 193,
-    "covered": 26,
-    "needsOccurrenceMapping": 138,
+    "covered": 164,
+    "needsOccurrenceMapping": 0,
     "technicalOrEmpty": 29,
     "verifiedBlocks": 192,
     "graphicalAssets": 39
@@ -26,7 +26,9 @@
           "pc": 247245,
           "sourceLine": 104487,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "team-selection-native/data_87c5cd"
+          ],
           "relatedField": false
         }
       ],
@@ -38,8 +40,8 @@
       ],
       "tab": "Textos Seleção de Equipes",
       "pc": 247245,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -87,7 +89,9 @@
           "pc": 247308,
           "sourceLine": 104511,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "squad-native/data_87c60c"
+          ],
           "relatedField": false
         },
         {
@@ -96,7 +100,9 @@
           "pc": 247315,
           "sourceLine": 104513,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "squad-native/data_87c60c"
+          ],
           "relatedField": false
         }
       ],
@@ -108,8 +114,8 @@
       ],
       "tab": "Textos Escalação",
       "pc": 247308,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 2,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -123,7 +129,9 @@
           "pc": 247825,
           "sourceLine": 104681,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "handicap-native/data_87c811"
+          ],
           "relatedField": false
         }
       ],
@@ -135,8 +143,8 @@
       ],
       "tab": "Textos Vantagem",
       "pc": 247825,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -150,7 +158,9 @@
           "pc": 247925,
           "sourceLine": 104710,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "handicap-native/data_87c875"
+          ],
           "relatedField": false
         },
         {
@@ -159,7 +169,9 @@
           "pc": 247928,
           "sourceLine": 104711,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "handicap-native/data_87c875"
+          ],
           "relatedField": false
         },
         {
@@ -168,7 +180,9 @@
           "pc": 247931,
           "sourceLine": 104712,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "handicap-native/data_87c875"
+          ],
           "relatedField": false
         },
         {
@@ -177,7 +191,9 @@
           "pc": 247934,
           "sourceLine": 104713,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "handicap-native/data_87c875"
+          ],
           "relatedField": false
         },
         {
@@ -186,7 +202,9 @@
           "pc": 247937,
           "sourceLine": 104714,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "handicap-native/data_87c875"
+          ],
           "relatedField": false
         }
       ],
@@ -202,8 +220,8 @@
       ],
       "tab": "Textos Vantagem",
       "pc": 247925,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 5,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -217,7 +235,10 @@
           "pc": 247940,
           "sourceLine": 104717,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "handicap-native/data_87c884",
+            "Press"
+          ],
           "relatedField": false
         }
       ],
@@ -229,8 +250,8 @@
       ],
       "tab": "Textos Vantagem",
       "pc": 247940,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -244,7 +265,9 @@
           "pc": 247994,
           "sourceLine": 104723,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "strategies-native/data_87c8ba"
+          ],
           "relatedField": false
         },
         {
@@ -267,8 +290,8 @@
       ],
       "tab": "Textos Estratégias",
       "pc": 247994,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -696,7 +719,9 @@
           "pc": 248349,
           "sourceLine": 104788,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "strategies-native/data_87ca1d"
+          ],
           "relatedField": false
         }
       ],
@@ -708,8 +733,8 @@
       ],
       "tab": "Textos Estratégias",
       "pc": 248349,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -723,7 +748,9 @@
           "pc": 248357,
           "sourceLine": 104791,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "player-count-native/data_87ca25"
+          ],
           "relatedField": false
         }
       ],
@@ -739,8 +766,8 @@
       ],
       "tab": "Textos Número de Jogadores",
       "pc": 248357,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -754,7 +781,9 @@
           "pc": 248374,
           "sourceLine": 104794,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "stadium-native/data_87ca36"
+          ],
           "relatedField": false
         }
       ],
@@ -766,8 +795,8 @@
       ],
       "tab": "Textos Estádio",
       "pc": 248374,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -832,7 +861,9 @@
           "pc": 248407,
           "sourceLine": 104813,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "stadium-native/data_87ca57"
+          ],
           "relatedField": false
         }
       ],
@@ -844,8 +875,8 @@
       ],
       "tab": "Textos Estádio",
       "pc": 248407,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -859,7 +890,9 @@
           "pc": 248423,
           "sourceLine": 104816,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "stadium-native/data_87ca67"
+          ],
           "relatedField": false
         }
       ],
@@ -871,8 +904,8 @@
       ],
       "tab": "Textos Estádio",
       "pc": 248423,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -886,7 +919,9 @@
           "pc": 248439,
           "sourceLine": 104819,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "stadium-native/data_87ca77"
+          ],
           "relatedField": false
         }
       ],
@@ -898,8 +933,8 @@
       ],
       "tab": "Textos Estádio",
       "pc": 248439,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -913,7 +948,9 @@
           "pc": 248448,
           "sourceLine": 104822,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "stadium-native/data_87ca80"
+          ],
           "relatedField": false
         },
         {
@@ -922,7 +959,9 @@
           "pc": 248452,
           "sourceLine": 104823,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "stadium-native/data_87ca80"
+          ],
           "relatedField": false
         },
         {
@@ -931,7 +970,9 @@
           "pc": 248456,
           "sourceLine": 104824,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "stadium-native/data_87ca80"
+          ],
           "relatedField": false
         }
       ],
@@ -943,8 +984,8 @@
       ],
       "tab": "Textos Estádio",
       "pc": 248448,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 3,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -1003,7 +1044,9 @@
           "pc": 248475,
           "sourceLine": 104832,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "stadium-native/data_87ca9b"
+          ],
           "relatedField": false
         },
         {
@@ -1012,7 +1055,9 @@
           "pc": 248482,
           "sourceLine": 104833,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "stadium-native/data_87ca9b"
+          ],
           "relatedField": false
         },
         {
@@ -1021,7 +1066,9 @@
           "pc": 248489,
           "sourceLine": 104834,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "stadium-native/data_87ca9b"
+          ],
           "relatedField": false
         },
         {
@@ -1030,7 +1077,9 @@
           "pc": 248496,
           "sourceLine": 104835,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "stadium-native/data_87ca9b"
+          ],
           "relatedField": false
         },
         {
@@ -1039,7 +1088,9 @@
           "pc": 248503,
           "sourceLine": 104836,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "stadium-native/data_87ca9b"
+          ],
           "relatedField": false
         },
         {
@@ -1048,7 +1099,9 @@
           "pc": 248510,
           "sourceLine": 104837,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "stadium-native/data_87ca9b"
+          ],
           "relatedField": false
         },
         {
@@ -1057,7 +1110,9 @@
           "pc": 248517,
           "sourceLine": 104838,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "stadium-native/data_87ca9b"
+          ],
           "relatedField": false
         },
         {
@@ -1066,7 +1121,9 @@
           "pc": 248524,
           "sourceLine": 104839,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "stadium-native/data_87ca9b"
+          ],
           "relatedField": false
         }
       ],
@@ -1078,8 +1135,8 @@
       ],
       "tab": "Textos Estádio",
       "pc": 248475,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 8,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -1093,7 +1150,9 @@
           "pc": 248531,
           "sourceLine": 104842,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "stadium-native/data_87cad3"
+          ],
           "relatedField": false
         }
       ],
@@ -1105,8 +1164,8 @@
       ],
       "tab": "Textos Estádio",
       "pc": 248531,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -1120,8 +1179,10 @@
           "pc": 248538,
           "sourceLine": 104845,
           "verifiedInPlus": true,
-          "bindings": [],
-          "relatedField": true
+          "bindings": [
+            "match-options-native/data_87cada"
+          ],
+          "relatedField": false
         }
       ],
       "references": [
@@ -1132,8 +1193,8 @@
       ],
       "tab": "Opções da Partida",
       "pc": 248538,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -2257,7 +2318,9 @@
           "pc": 250604,
           "sourceLine": 104990,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d2ec"
+          ],
           "relatedField": false
         },
         {
@@ -2266,7 +2329,9 @@
           "pc": 250632,
           "sourceLine": 104991,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d2ec"
+          ],
           "relatedField": false
         },
         {
@@ -2275,7 +2340,9 @@
           "pc": 250660,
           "sourceLine": 104992,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d2ec"
+          ],
           "relatedField": false
         },
         {
@@ -2284,7 +2351,9 @@
           "pc": 250688,
           "sourceLine": 104993,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d2ec"
+          ],
           "relatedField": false
         }
       ],
@@ -2296,8 +2365,8 @@
       ],
       "tab": "Textos Controles",
       "pc": 250604,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 4,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -2417,7 +2486,9 @@
           "pc": 250828,
           "sourceLine": 105001,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d3cc"
+          ],
           "relatedField": false
         },
         {
@@ -2426,7 +2497,9 @@
           "pc": 250856,
           "sourceLine": 105002,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d3cc"
+          ],
           "relatedField": false
         },
         {
@@ -2435,7 +2508,9 @@
           "pc": 250884,
           "sourceLine": 105003,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d3cc"
+          ],
           "relatedField": false
         },
         {
@@ -2444,7 +2519,9 @@
           "pc": 250912,
           "sourceLine": 105004,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d3cc"
+          ],
           "relatedField": false
         },
         {
@@ -2453,7 +2530,9 @@
           "pc": 250940,
           "sourceLine": 105005,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d3cc"
+          ],
           "relatedField": false
         },
         {
@@ -2462,7 +2541,9 @@
           "pc": 250968,
           "sourceLine": 105006,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d3cc"
+          ],
           "relatedField": false
         },
         {
@@ -2471,7 +2552,9 @@
           "pc": 250996,
           "sourceLine": 105007,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d3cc"
+          ],
           "relatedField": false
         },
         {
@@ -2480,7 +2563,9 @@
           "pc": 251024,
           "sourceLine": 105008,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d3cc"
+          ],
           "relatedField": false
         }
       ],
@@ -2492,8 +2577,8 @@
       ],
       "tab": "Textos Controles",
       "pc": 250828,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 8,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -2507,7 +2592,9 @@
           "pc": 251052,
           "sourceLine": 105011,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d4ac"
+          ],
           "relatedField": false
         },
         {
@@ -2516,7 +2603,9 @@
           "pc": 251080,
           "sourceLine": 105012,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d4ac"
+          ],
           "relatedField": false
         },
         {
@@ -2525,7 +2614,9 @@
           "pc": 251108,
           "sourceLine": 105013,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d4ac"
+          ],
           "relatedField": false
         },
         {
@@ -2534,7 +2625,9 @@
           "pc": 251136,
           "sourceLine": 105014,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d4ac"
+          ],
           "relatedField": false
         },
         {
@@ -2543,7 +2636,9 @@
           "pc": 251164,
           "sourceLine": 105015,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d4ac"
+          ],
           "relatedField": false
         }
       ],
@@ -2555,8 +2650,8 @@
       ],
       "tab": "Textos Controles",
       "pc": 251052,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 5,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -2570,7 +2665,9 @@
           "pc": 251193,
           "sourceLine": 105019,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d539"
+          ],
           "relatedField": false
         },
         {
@@ -2579,7 +2676,9 @@
           "pc": 251221,
           "sourceLine": 105020,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d539"
+          ],
           "relatedField": false
         },
         {
@@ -2588,7 +2687,9 @@
           "pc": 251249,
           "sourceLine": 105021,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d539"
+          ],
           "relatedField": false
         },
         {
@@ -2597,7 +2698,9 @@
           "pc": 251277,
           "sourceLine": 105022,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d539"
+          ],
           "relatedField": false
         },
         {
@@ -2606,7 +2709,9 @@
           "pc": 251305,
           "sourceLine": 105023,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d539"
+          ],
           "relatedField": false
         },
         {
@@ -2615,7 +2720,9 @@
           "pc": 251333,
           "sourceLine": 105024,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d539"
+          ],
           "relatedField": false
         }
       ],
@@ -2627,8 +2734,8 @@
       ],
       "tab": "Textos Controles",
       "pc": 251193,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 6,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -2642,7 +2749,9 @@
           "pc": 251362,
           "sourceLine": 105028,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d5e2"
+          ],
           "relatedField": false
         },
         {
@@ -2651,7 +2760,9 @@
           "pc": 251390,
           "sourceLine": 105029,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d5e2"
+          ],
           "relatedField": false
         },
         {
@@ -2660,7 +2771,9 @@
           "pc": 251418,
           "sourceLine": 105030,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d5e2"
+          ],
           "relatedField": false
         },
         {
@@ -2669,7 +2782,9 @@
           "pc": 251446,
           "sourceLine": 105031,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d5e2"
+          ],
           "relatedField": false
         },
         {
@@ -2678,7 +2793,9 @@
           "pc": 251474,
           "sourceLine": 105032,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d5e2"
+          ],
           "relatedField": false
         },
         {
@@ -2687,7 +2804,9 @@
           "pc": 251502,
           "sourceLine": 105033,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d5e2"
+          ],
           "relatedField": false
         },
         {
@@ -2696,7 +2815,9 @@
           "pc": 251530,
           "sourceLine": 105034,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d5e2"
+          ],
           "relatedField": false
         },
         {
@@ -2705,7 +2826,9 @@
           "pc": 251558,
           "sourceLine": 105035,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d5e2"
+          ],
           "relatedField": false
         }
       ],
@@ -2717,8 +2840,8 @@
       ],
       "tab": "Textos Controles",
       "pc": 251362,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 8,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -2732,7 +2855,9 @@
           "pc": 251587,
           "sourceLine": 105039,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d6c3"
+          ],
           "relatedField": false
         },
         {
@@ -2741,7 +2866,9 @@
           "pc": 251615,
           "sourceLine": 105040,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d6c3"
+          ],
           "relatedField": false
         },
         {
@@ -2750,7 +2877,9 @@
           "pc": 251643,
           "sourceLine": 105041,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "controls-help-native/data_87d6c3"
+          ],
           "relatedField": false
         }
       ],
@@ -2762,8 +2891,8 @@
       ],
       "tab": "Textos Controles",
       "pc": 251587,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 3,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -2777,7 +2906,9 @@
           "pc": 251708,
           "sourceLine": 105054,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "results-native/data_87d73a"
+          ],
           "relatedField": false
         }
       ],
@@ -2797,8 +2928,8 @@
       ],
       "tab": "Textos Resultados",
       "pc": 251706,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -2812,7 +2943,9 @@
           "pc": 251740,
           "sourceLine": 105058,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "results-native/data_87d75a"
+          ],
           "relatedField": false
         }
       ],
@@ -2828,8 +2961,8 @@
       ],
       "tab": "Textos Resultados",
       "pc": 251738,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -2843,7 +2976,9 @@
           "pc": 251755,
           "sourceLine": 105062,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "results-native/data_87d769"
+          ],
           "relatedField": false
         }
       ],
@@ -2859,8 +2994,8 @@
       ],
       "tab": "Textos Resultados",
       "pc": 251753,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -3118,8 +3253,10 @@
           "pc": 251815,
           "sourceLine": 105098,
           "verifiedInPlus": true,
-          "bindings": [],
-          "relatedField": true
+          "bindings": [
+            "competitions-native/data_87d7a7"
+          ],
+          "relatedField": false
         }
       ],
       "references": [
@@ -3134,8 +3271,8 @@
       ],
       "tab": "Textos Competições",
       "pc": 251815,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -3149,7 +3286,9 @@
           "pc": 251818,
           "sourceLine": 105101,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "competitions-native/data_87d7aa"
+          ],
           "relatedField": false
         }
       ],
@@ -3165,8 +3304,8 @@
       ],
       "tab": "Textos Competições",
       "pc": 251818,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -3180,7 +3319,9 @@
           "pc": 251821,
           "sourceLine": 105104,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "competitions-native/data_87d7ad"
+          ],
           "relatedField": false
         }
       ],
@@ -3196,8 +3337,8 @@
       ],
       "tab": "Textos Competições",
       "pc": 251821,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -3211,8 +3352,10 @@
           "pc": 251826,
           "sourceLine": 105107,
           "verifiedInPlus": true,
-          "bindings": [],
-          "relatedField": true
+          "bindings": [
+            "competitions-native/data_87d7b2"
+          ],
+          "relatedField": false
         }
       ],
       "references": [
@@ -3227,8 +3370,8 @@
       ],
       "tab": "Textos Competições",
       "pc": 251826,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -3242,7 +3385,9 @@
           "pc": 251830,
           "sourceLine": 105110,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "competitions-native/data_87d7b6"
+          ],
           "relatedField": false
         }
       ],
@@ -3258,8 +3403,8 @@
       ],
       "tab": "Textos Competições",
       "pc": 251830,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -3273,7 +3418,9 @@
           "pc": 251834,
           "sourceLine": 105113,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "competitions-native/data_87d7ba"
+          ],
           "relatedField": false
         }
       ],
@@ -3289,8 +3436,8 @@
       ],
       "tab": "Textos Competições",
       "pc": 251834,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -3304,7 +3451,9 @@
           "pc": 251837,
           "sourceLine": 105116,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "competitions-native/data_87d7bd"
+          ],
           "relatedField": false
         }
       ],
@@ -3316,8 +3465,8 @@
       ],
       "tab": "Textos Competições",
       "pc": 251837,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -3331,7 +3480,9 @@
           "pc": 251842,
           "sourceLine": 105119,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "competitions-native/data_87d7c2"
+          ],
           "relatedField": false
         }
       ],
@@ -3343,8 +3494,8 @@
       ],
       "tab": "Textos Competições",
       "pc": 251842,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -3358,7 +3509,9 @@
           "pc": 251847,
           "sourceLine": 105122,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "competitions-native/data_87d7c7"
+          ],
           "relatedField": false
         }
       ],
@@ -3378,8 +3531,8 @@
       ],
       "tab": "Textos Competições",
       "pc": 251847,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -3393,7 +3546,9 @@
           "pc": 252050,
           "sourceLine": 105171,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "competitions-native/data_87d892"
+          ],
           "relatedField": false
         }
       ],
@@ -3409,8 +3564,8 @@
       ],
       "tab": "Textos Competições",
       "pc": 252050,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -3424,7 +3579,9 @@
           "pc": 252066,
           "sourceLine": 105174,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "competitions-native/data_87d8a2"
+          ],
           "relatedField": false
         }
       ],
@@ -3436,8 +3593,8 @@
       ],
       "tab": "Textos Competições",
       "pc": 252066,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -3451,7 +3608,9 @@
           "pc": 252100,
           "sourceLine": 105178,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "competitions-native/data_87d8c4"
+          ],
           "relatedField": false
         }
       ],
@@ -3463,8 +3622,8 @@
       ],
       "tab": "Textos Competições",
       "pc": 252100,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -3478,7 +3637,9 @@
           "pc": 252188,
           "sourceLine": 105194,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "competitions-native/data_87d91c"
+          ],
           "relatedField": false
         }
       ],
@@ -3490,8 +3651,8 @@
       ],
       "tab": "Textos Competições",
       "pc": 252188,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -3505,7 +3666,9 @@
           "pc": 252202,
           "sourceLine": 105197,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "competitions-native/data_87d92a"
+          ],
           "relatedField": false
         }
       ],
@@ -3517,8 +3680,8 @@
       ],
       "tab": "Textos Competições",
       "pc": 252202,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -3674,7 +3837,9 @@
           "pc": 252578,
           "sourceLine": 105282,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "penalties-native/data_87daa2"
+          ],
           "relatedField": false
         }
       ],
@@ -3686,8 +3851,8 @@
       ],
       "tab": "Textos Pênaltis",
       "pc": 252578,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -3701,7 +3866,9 @@
           "pc": 252626,
           "sourceLine": 105285,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "penalties-native/data_87dad2"
+          ],
           "relatedField": false
         }
       ],
@@ -3713,8 +3880,8 @@
       ],
       "tab": "Textos Pênaltis",
       "pc": 252626,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -3728,7 +3895,9 @@
           "pc": 252674,
           "sourceLine": 105291,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "penalties-native/data_87db02"
+          ],
           "relatedField": false
         },
         {
@@ -3737,7 +3906,9 @@
           "pc": 252689,
           "sourceLine": 105291,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "penalties-native/data_87db02"
+          ],
           "relatedField": false
         },
         {
@@ -3746,7 +3917,9 @@
           "pc": 252695,
           "sourceLine": 105291,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "penalties-native/data_87db02"
+          ],
           "relatedField": false
         }
       ],
@@ -3758,8 +3931,8 @@
       ],
       "tab": "Textos Pênaltis",
       "pc": 252674,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 3,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -3800,7 +3973,9 @@
           "pc": 252738,
           "sourceLine": 105312,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "endings-native/data_87db40"
+          ],
           "relatedField": false
         }
       ],
@@ -3816,8 +3991,8 @@
       ],
       "tab": "Textos Finais",
       "pc": 252736,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -3831,7 +4006,9 @@
           "pc": 252758,
           "sourceLine": 105316,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "endings-native/data_87db54"
+          ],
           "relatedField": false
         }
       ],
@@ -3843,8 +4020,8 @@
       ],
       "tab": "Textos Finais",
       "pc": 252756,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -3858,7 +4035,9 @@
           "pc": 252778,
           "sourceLine": 105320,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "endings-native/data_87db68"
+          ],
           "relatedField": false
         },
         {
@@ -3867,7 +4046,9 @@
           "pc": 252798,
           "sourceLine": 105321,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "endings-native/data_87db68"
+          ],
           "relatedField": false
         }
       ],
@@ -3883,8 +4064,8 @@
       ],
       "tab": "Textos Finais",
       "pc": 252776,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 2,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -3898,7 +4079,9 @@
           "pc": 252820,
           "sourceLine": 105325,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "endings-native/data_87db92"
+          ],
           "relatedField": false
         },
         {
@@ -3907,7 +4090,9 @@
           "pc": 252838,
           "sourceLine": 105326,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "endings-native/data_87db92"
+          ],
           "relatedField": false
         }
       ],
@@ -3923,8 +4108,8 @@
       ],
       "tab": "Textos Finais",
       "pc": 252818,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 2,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -3938,7 +4123,9 @@
           "pc": 252858,
           "sourceLine": 105330,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "endings-native/data_87dbb8"
+          ],
           "relatedField": false
         },
         {
@@ -3947,7 +4134,9 @@
           "pc": 252874,
           "sourceLine": 105331,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "endings-native/data_87dbb8"
+          ],
           "relatedField": false
         }
       ],
@@ -3959,8 +4148,8 @@
       ],
       "tab": "Textos Finais",
       "pc": 252856,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 2,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -3974,7 +4163,9 @@
           "pc": 252892,
           "sourceLine": 105335,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "endings-native/data_87dbda"
+          ],
           "relatedField": false
         },
         {
@@ -3983,7 +4174,9 @@
           "pc": 252909,
           "sourceLine": 105336,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "endings-native/data_87dbda"
+          ],
           "relatedField": false
         }
       ],
@@ -3995,8 +4188,8 @@
       ],
       "tab": "Textos Finais",
       "pc": 252890,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 2,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -4010,7 +4203,9 @@
           "pc": 252928,
           "sourceLine": 105340,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "endings-native/data_87dbfe"
+          ],
           "relatedField": false
         },
         {
@@ -4019,7 +4214,9 @@
           "pc": 252946,
           "sourceLine": 105341,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "endings-native/data_87dbfe"
+          ],
           "relatedField": false
         }
       ],
@@ -4031,8 +4228,8 @@
       ],
       "tab": "Textos Finais",
       "pc": 252926,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 2,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -4046,7 +4243,9 @@
           "pc": 252966,
           "sourceLine": 105345,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "endings-native/data_87dc24"
+          ],
           "relatedField": false
         },
         {
@@ -4055,7 +4254,9 @@
           "pc": 252984,
           "sourceLine": 105346,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "endings-native/data_87dc24"
+          ],
           "relatedField": false
         }
       ],
@@ -4067,8 +4268,8 @@
       ],
       "tab": "Textos Finais",
       "pc": 252964,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 2,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -4082,7 +4283,9 @@
           "pc": 253004,
           "sourceLine": 105350,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "endings-native/data_87dc4a"
+          ],
           "relatedField": false
         }
       ],
@@ -4094,8 +4297,8 @@
       ],
       "tab": "Textos Finais",
       "pc": 253002,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -4109,7 +4312,9 @@
           "pc": 253060,
           "sourceLine": 105354,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "endings-native/data_87dc82"
+          ],
           "relatedField": false
         },
         {
@@ -4118,7 +4323,9 @@
           "pc": 253078,
           "sourceLine": 105355,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "endings-native/data_87dc82"
+          ],
           "relatedField": false
         },
         {
@@ -4127,7 +4334,9 @@
           "pc": 253096,
           "sourceLine": 105356,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "endings-native/data_87dc82"
+          ],
           "relatedField": false
         }
       ],
@@ -4139,8 +4348,8 @@
       ],
       "tab": "Textos Finais",
       "pc": 253058,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 3,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -4154,7 +4363,9 @@
           "pc": 253116,
           "sourceLine": 105360,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "endings-native/data_87dcba"
+          ],
           "relatedField": false
         },
         {
@@ -4163,7 +4374,9 @@
           "pc": 253134,
           "sourceLine": 105361,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "endings-native/data_87dcba"
+          ],
           "relatedField": false
         }
       ],
@@ -4175,8 +4388,8 @@
       ],
       "tab": "Textos Finais",
       "pc": 253114,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 2,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -4244,7 +4457,9 @@
           "pc": 253321,
           "sourceLine": 105401,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "rules-native/data_87dd89"
+          ],
           "relatedField": false
         }
       ],
@@ -4256,8 +4471,8 @@
       ],
       "tab": "Textos Regras",
       "pc": 253321,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -4271,7 +4486,9 @@
           "pc": 253325,
           "sourceLine": 105404,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "rules-native/data_87dd8d"
+          ],
           "relatedField": false
         }
       ],
@@ -4283,8 +4500,8 @@
       ],
       "tab": "Textos Regras",
       "pc": 253325,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -4298,7 +4515,9 @@
           "pc": 253336,
           "sourceLine": 105407,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "rules-native/data_87dd98"
+          ],
           "relatedField": false
         }
       ],
@@ -4310,8 +4529,8 @@
       ],
       "tab": "Textos Regras",
       "pc": 253336,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -4325,7 +4544,9 @@
           "pc": 253344,
           "sourceLine": 105410,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "rules-native/data_87dda0"
+          ],
           "relatedField": false
         }
       ],
@@ -4337,8 +4558,8 @@
       ],
       "tab": "Textos Regras",
       "pc": 253344,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -4352,7 +4573,9 @@
           "pc": 253350,
           "sourceLine": 105413,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "rules-native/data_87dda6"
+          ],
           "relatedField": false
         }
       ],
@@ -4368,8 +4591,8 @@
       ],
       "tab": "Textos Regras",
       "pc": 253350,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -4383,7 +4606,9 @@
           "pc": 253359,
           "sourceLine": 105416,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "rules-native/data_87ddaf"
+          ],
           "relatedField": false
         }
       ],
@@ -4403,8 +4628,8 @@
       ],
       "tab": "Textos Regras",
       "pc": 253359,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -4418,7 +4643,9 @@
           "pc": 253416,
           "sourceLine": 105425,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "options-native/data_87dde8"
+          ],
           "relatedField": false
         }
       ],
@@ -4430,8 +4657,8 @@
       ],
       "tab": "Textos Opções Gerais",
       "pc": 253416,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -4445,7 +4672,9 @@
           "pc": 253426,
           "sourceLine": 105428,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "options-native/data_87ddf2"
+          ],
           "relatedField": false
         }
       ],
@@ -4457,8 +4686,8 @@
       ],
       "tab": "Textos Opções Gerais",
       "pc": 253426,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -4472,7 +4701,9 @@
           "pc": 253443,
           "sourceLine": 105432,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "options-native/data_87de03"
+          ],
           "relatedField": false
         }
       ],
@@ -4484,8 +4715,8 @@
       ],
       "tab": "Textos Opções Gerais",
       "pc": 253443,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -4499,7 +4730,9 @@
           "pc": 253448,
           "sourceLine": 105435,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "options-native/data_87de08"
+          ],
           "relatedField": false
         }
       ],
@@ -4511,8 +4744,8 @@
       ],
       "tab": "Textos Opções Gerais",
       "pc": 253448,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -4526,7 +4759,9 @@
           "pc": 253454,
           "sourceLine": 105438,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "options-native/data_87de0e"
+          ],
           "relatedField": false
         }
       ],
@@ -4538,8 +4773,8 @@
       ],
       "tab": "Textos Opções Gerais",
       "pc": 253454,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -4553,7 +4788,9 @@
           "pc": 253458,
           "sourceLine": 105441,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "options-native/data_87de12"
+          ],
           "relatedField": false
         }
       ],
@@ -4565,8 +4802,8 @@
       ],
       "tab": "Textos Opções Gerais",
       "pc": 253458,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -4634,8 +4871,10 @@
           "pc": 253559,
           "sourceLine": 105458,
           "verifiedInPlus": true,
-          "bindings": [],
-          "relatedField": true
+          "bindings": [
+            "training-native/data_87de77"
+          ],
+          "relatedField": false
         }
       ],
       "references": [
@@ -4662,8 +4901,8 @@
       ],
       "tab": "Textos Treinamento",
       "pc": 253559,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -4677,7 +4916,9 @@
           "pc": 253568,
           "sourceLine": 105461,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "training-native/data_87de80"
+          ],
           "relatedField": false
         }
       ],
@@ -4689,8 +4930,8 @@
       ],
       "tab": "Textos Treinamento",
       "pc": 253568,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -4704,7 +4945,9 @@
           "pc": 253577,
           "sourceLine": 105467,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "training-native/data_87de89"
+          ],
           "relatedField": false
         },
         {
@@ -4713,7 +4956,9 @@
           "pc": 253599,
           "sourceLine": 105468,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "training-native/data_87de89"
+          ],
           "relatedField": false
         },
         {
@@ -4722,7 +4967,9 @@
           "pc": 253621,
           "sourceLine": 105469,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "training-native/data_87de89"
+          ],
           "relatedField": false
         },
         {
@@ -4731,7 +4978,9 @@
           "pc": 253643,
           "sourceLine": 105470,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "training-native/data_87de89"
+          ],
           "relatedField": false
         }
       ],
@@ -4743,8 +4992,8 @@
       ],
       "tab": "Textos Treinamento",
       "pc": 253577,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 4,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -4758,7 +5007,9 @@
           "pc": 253665,
           "sourceLine": 105473,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "training-native/data_87dee1"
+          ],
           "relatedField": false
         },
         {
@@ -4767,7 +5018,9 @@
           "pc": 253687,
           "sourceLine": 105474,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "training-native/data_87dee1"
+          ],
           "relatedField": false
         },
         {
@@ -4776,7 +5029,9 @@
           "pc": 253709,
           "sourceLine": 105475,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "training-native/data_87dee1"
+          ],
           "relatedField": false
         },
         {
@@ -4785,7 +5040,9 @@
           "pc": 253731,
           "sourceLine": 105476,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "training-native/data_87dee1"
+          ],
           "relatedField": false
         }
       ],
@@ -4797,8 +5054,8 @@
       ],
       "tab": "Textos Treinamento",
       "pc": 253665,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 4,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -4812,7 +5069,9 @@
           "pc": 253753,
           "sourceLine": 105482,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "training-native/data_87df39"
+          ],
           "relatedField": false
         }
       ],
@@ -4824,8 +5083,8 @@
       ],
       "tab": "Textos Treinamento",
       "pc": 253753,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -4839,7 +5098,9 @@
           "pc": 253757,
           "sourceLine": 105485,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "training-native/data_87df3d"
+          ],
           "relatedField": false
         }
       ],
@@ -4859,8 +5120,8 @@
       ],
       "tab": "Textos Treinamento",
       "pc": 253757,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -4874,7 +5135,9 @@
           "pc": 253778,
           "sourceLine": 105491,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "training-native/data_87df52"
+          ],
           "relatedField": false
         }
       ],
@@ -4886,8 +5149,8 @@
       ],
       "tab": "Textos Treinamento",
       "pc": 253778,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -4901,8 +5164,10 @@
           "pc": 253787,
           "sourceLine": 105494,
           "verifiedInPlus": true,
-          "bindings": [],
-          "relatedField": true
+          "bindings": [
+            "training-native/data_87df5b"
+          ],
+          "relatedField": false
         }
       ],
       "references": [
@@ -4913,8 +5178,8 @@
       ],
       "tab": "Textos Treinamento",
       "pc": 253787,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -4928,7 +5193,9 @@
           "pc": 253793,
           "sourceLine": 105497,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "training-native/data_87df61"
+          ],
           "relatedField": false
         }
       ],
@@ -4944,8 +5211,8 @@
       ],
       "tab": "Textos Treinamento",
       "pc": 253793,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -4959,8 +5226,10 @@
           "pc": 253797,
           "sourceLine": 105500,
           "verifiedInPlus": true,
-          "bindings": [],
-          "relatedField": true
+          "bindings": [
+            "training-native/data_87df65"
+          ],
+          "relatedField": false
         }
       ],
       "references": [
@@ -4975,8 +5244,8 @@
       ],
       "tab": "Textos Treinamento",
       "pc": 253797,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -4990,7 +5259,9 @@
           "pc": 253804,
           "sourceLine": 105503,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "training-native/data_87df6c"
+          ],
           "relatedField": false
         }
       ],
@@ -5006,8 +5277,8 @@
       ],
       "tab": "Textos Treinamento",
       "pc": 253804,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -5021,7 +5292,9 @@
           "pc": 253811,
           "sourceLine": 105506,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "training-native/data_87df73"
+          ],
           "relatedField": false
         }
       ],
@@ -5037,8 +5310,8 @@
       ],
       "tab": "Textos Treinamento",
       "pc": 253811,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -5052,8 +5325,10 @@
           "pc": 253879,
           "sourceLine": 105530,
           "verifiedInPlus": true,
-          "bindings": [],
-          "relatedField": true
+          "bindings": [
+            "training-native/data_87dfb7"
+          ],
+          "relatedField": false
         }
       ],
       "references": [
@@ -5064,8 +5339,8 @@
       ],
       "tab": "Textos Treinamento",
       "pc": 253879,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -5079,7 +5354,9 @@
           "pc": 253886,
           "sourceLine": 105533,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87dfbe"
+          ],
           "relatedField": false
         }
       ],
@@ -5091,8 +5368,8 @@
       ],
       "tab": "Textos Desafio",
       "pc": 253886,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -5106,7 +5383,9 @@
           "pc": 253928,
           "sourceLine": 105546,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87dfe8"
+          ],
           "relatedField": false
         },
         {
@@ -5115,7 +5394,9 @@
           "pc": 253956,
           "sourceLine": 105547,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87dfe8"
+          ],
           "relatedField": false
         },
         {
@@ -5124,7 +5405,9 @@
           "pc": 253984,
           "sourceLine": 105548,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87dfe8"
+          ],
           "relatedField": false
         },
         {
@@ -5133,7 +5416,9 @@
           "pc": 254012,
           "sourceLine": 105549,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87dfe8"
+          ],
           "relatedField": false
         },
         {
@@ -5142,7 +5427,9 @@
           "pc": 254040,
           "sourceLine": 105550,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87dfe8"
+          ],
           "relatedField": false
         },
         {
@@ -5151,7 +5438,9 @@
           "pc": 254068,
           "sourceLine": 105551,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87dfe8"
+          ],
           "relatedField": false
         },
         {
@@ -5160,7 +5449,9 @@
           "pc": 254096,
           "sourceLine": 105552,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87dfe8"
+          ],
           "relatedField": false
         },
         {
@@ -5181,8 +5472,8 @@
       ],
       "tab": "Textos Desafio",
       "pc": 253928,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 7,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -5196,7 +5487,9 @@
           "pc": 254152,
           "sourceLine": 105556,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87e0c8"
+          ],
           "relatedField": false
         },
         {
@@ -5205,7 +5498,9 @@
           "pc": 254180,
           "sourceLine": 105557,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87e0c8"
+          ],
           "relatedField": false
         },
         {
@@ -5214,7 +5509,9 @@
           "pc": 254208,
           "sourceLine": 105558,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87e0c8"
+          ],
           "relatedField": false
         },
         {
@@ -5223,7 +5520,9 @@
           "pc": 254236,
           "sourceLine": 105559,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87e0c8"
+          ],
           "relatedField": false
         },
         {
@@ -5232,7 +5531,9 @@
           "pc": 254264,
           "sourceLine": 105560,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87e0c8"
+          ],
           "relatedField": false
         },
         {
@@ -5271,8 +5572,8 @@
       ],
       "tab": "Textos Desafio",
       "pc": 254152,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 5,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -5286,7 +5587,9 @@
           "pc": 254376,
           "sourceLine": 105566,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87e1a8"
+          ],
           "relatedField": false
         },
         {
@@ -5295,7 +5598,9 @@
           "pc": 254404,
           "sourceLine": 105567,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87e1a8"
+          ],
           "relatedField": false
         },
         {
@@ -5304,7 +5609,9 @@
           "pc": 254432,
           "sourceLine": 105568,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87e1a8"
+          ],
           "relatedField": false
         },
         {
@@ -5313,7 +5620,9 @@
           "pc": 254460,
           "sourceLine": 105569,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87e1a8"
+          ],
           "relatedField": false
         },
         {
@@ -5322,7 +5631,9 @@
           "pc": 254488,
           "sourceLine": 105570,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87e1a8"
+          ],
           "relatedField": false
         },
         {
@@ -5361,8 +5672,8 @@
       ],
       "tab": "Textos Desafio",
       "pc": 254376,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 5,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -5376,7 +5687,9 @@
           "pc": 254600,
           "sourceLine": 105576,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87e288"
+          ],
           "relatedField": false
         },
         {
@@ -5385,7 +5698,9 @@
           "pc": 254628,
           "sourceLine": 105577,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87e288"
+          ],
           "relatedField": false
         },
         {
@@ -5394,7 +5709,9 @@
           "pc": 254656,
           "sourceLine": 105578,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87e288"
+          ],
           "relatedField": false
         },
         {
@@ -5403,7 +5720,9 @@
           "pc": 254684,
           "sourceLine": 105579,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87e288"
+          ],
           "relatedField": false
         },
         {
@@ -5412,7 +5731,9 @@
           "pc": 254712,
           "sourceLine": 105580,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87e288"
+          ],
           "relatedField": false
         },
         {
@@ -5421,7 +5742,9 @@
           "pc": 254740,
           "sourceLine": 105581,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87e288"
+          ],
           "relatedField": false
         },
         {
@@ -5451,8 +5774,8 @@
       ],
       "tab": "Textos Desafio",
       "pc": 254600,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 6,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -5466,7 +5789,9 @@
           "pc": 254824,
           "sourceLine": 105586,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87e368"
+          ],
           "relatedField": false
         },
         {
@@ -5475,7 +5800,9 @@
           "pc": 254852,
           "sourceLine": 105587,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87e368"
+          ],
           "relatedField": false
         },
         {
@@ -5484,7 +5811,9 @@
           "pc": 254880,
           "sourceLine": 105588,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87e368"
+          ],
           "relatedField": false
         },
         {
@@ -5493,7 +5822,9 @@
           "pc": 254908,
           "sourceLine": 105589,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87e368"
+          ],
           "relatedField": false
         },
         {
@@ -5502,7 +5833,9 @@
           "pc": 254936,
           "sourceLine": 105590,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87e368"
+          ],
           "relatedField": false
         },
         {
@@ -5511,7 +5844,9 @@
           "pc": 254964,
           "sourceLine": 105591,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87e368"
+          ],
           "relatedField": false
         },
         {
@@ -5520,7 +5855,9 @@
           "pc": 254992,
           "sourceLine": 105592,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87e368"
+          ],
           "relatedField": false
         },
         {
@@ -5541,8 +5878,8 @@
       ],
       "tab": "Textos Desafio",
       "pc": 254824,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 7,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -5556,7 +5893,9 @@
           "pc": 255048,
           "sourceLine": 105596,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87e448"
+          ],
           "relatedField": false
         },
         {
@@ -5565,7 +5904,9 @@
           "pc": 255076,
           "sourceLine": 105597,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87e448"
+          ],
           "relatedField": false
         },
         {
@@ -5574,7 +5915,9 @@
           "pc": 255104,
           "sourceLine": 105598,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87e448"
+          ],
           "relatedField": false
         },
         {
@@ -5583,7 +5926,9 @@
           "pc": 255132,
           "sourceLine": 105599,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87e448"
+          ],
           "relatedField": false
         },
         {
@@ -5592,7 +5937,9 @@
           "pc": 255160,
           "sourceLine": 105600,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "challenge-native/data_87e448"
+          ],
           "relatedField": false
         },
         {
@@ -5631,8 +5978,8 @@
       ],
       "tab": "Textos Desafio",
       "pc": 255048,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 5,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -5826,7 +6173,9 @@
           "pc": 256008,
           "sourceLine": 105651,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "training-native/data_87e808"
+          ],
           "relatedField": false
         },
         {
@@ -5835,7 +6184,9 @@
           "pc": 256032,
           "sourceLine": 105652,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "training-native/data_87e808"
+          ],
           "relatedField": false
         },
         {
@@ -5844,7 +6195,9 @@
           "pc": 256056,
           "sourceLine": 105653,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "training-native/data_87e808"
+          ],
           "relatedField": false
         },
         {
@@ -5874,8 +6227,8 @@
       ],
       "tab": "Textos Treinamento",
       "pc": 256008,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 3,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -5889,7 +6242,9 @@
           "pc": 256128,
           "sourceLine": 105658,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "training-native/data_87e880"
+          ],
           "relatedField": false
         },
         {
@@ -5898,7 +6253,9 @@
           "pc": 256152,
           "sourceLine": 105659,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "training-native/data_87e880"
+          ],
           "relatedField": false
         },
         {
@@ -5907,7 +6264,9 @@
           "pc": 256176,
           "sourceLine": 105660,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "training-native/data_87e880"
+          ],
           "relatedField": false
         },
         {
@@ -5916,7 +6275,9 @@
           "pc": 256200,
           "sourceLine": 105661,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "training-native/data_87e880"
+          ],
           "relatedField": false
         },
         {
@@ -5937,8 +6298,8 @@
       ],
       "tab": "Textos Treinamento",
       "pc": 256128,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 4,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -5952,7 +6313,9 @@
           "pc": 256248,
           "sourceLine": 105665,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "training-native/data_87e8f8"
+          ],
           "relatedField": false
         },
         {
@@ -6000,8 +6363,8 @@
       ],
       "tab": "Textos Treinamento",
       "pc": 256248,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -6015,7 +6378,9 @@
           "pc": 256368,
           "sourceLine": 105672,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "training-native/data_87e970"
+          ],
           "relatedField": false
         },
         {
@@ -6024,7 +6389,9 @@
           "pc": 256392,
           "sourceLine": 105673,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "training-native/data_87e970"
+          ],
           "relatedField": false
         },
         {
@@ -6033,7 +6400,9 @@
           "pc": 256416,
           "sourceLine": 105674,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "training-native/data_87e970"
+          ],
           "relatedField": false
         },
         {
@@ -6042,7 +6411,9 @@
           "pc": 256440,
           "sourceLine": 105675,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "training-native/data_87e970"
+          ],
           "relatedField": false
         },
         {
@@ -6063,8 +6434,8 @@
       ],
       "tab": "Textos Treinamento",
       "pc": 256368,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 4,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -6078,7 +6449,9 @@
           "pc": 256488,
           "sourceLine": 105682,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "records-native/data_87e9e8"
+          ],
           "relatedField": false
         }
       ],
@@ -6090,8 +6463,8 @@
       ],
       "tab": "Textos Recordes",
       "pc": 256488,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -6105,7 +6478,9 @@
           "pc": 256501,
           "sourceLine": 105685,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "records-native/data_87e9f5"
+          ],
           "relatedField": false
         },
         {
@@ -6114,7 +6489,9 @@
           "pc": 256515,
           "sourceLine": 105685,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "records-native/data_87e9f5"
+          ],
           "relatedField": false
         }
       ],
@@ -6126,8 +6503,8 @@
       ],
       "tab": "Textos Recordes",
       "pc": 256501,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 2,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -6141,7 +6518,9 @@
           "pc": 256521,
           "sourceLine": 105688,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "records-native/data_87ea09"
+          ],
           "relatedField": false
         },
         {
@@ -6162,8 +6541,8 @@
       ],
       "tab": "Textos Recordes",
       "pc": 256521,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -6177,7 +6556,9 @@
           "pc": 256540,
           "sourceLine": 105691,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "records-native/data_87ea1c"
+          ],
           "relatedField": false
         },
         {
@@ -6186,7 +6567,9 @@
           "pc": 256554,
           "sourceLine": 105691,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "records-native/data_87ea1c"
+          ],
           "relatedField": false
         }
       ],
@@ -6198,8 +6581,8 @@
       ],
       "tab": "Textos Recordes",
       "pc": 256540,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 2,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -6213,7 +6596,9 @@
           "pc": 256560,
           "sourceLine": 105694,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "records-native/data_87ea30"
+          ],
           "relatedField": false
         },
         {
@@ -6234,8 +6619,8 @@
       ],
       "tab": "Textos Recordes",
       "pc": 256560,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -6249,7 +6634,9 @@
           "pc": 256650,
           "sourceLine": 105709,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "records-native/data_87ea8a"
+          ],
           "relatedField": false
         },
         {
@@ -6258,7 +6645,9 @@
           "pc": 256670,
           "sourceLine": 105710,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "records-native/data_87ea8a"
+          ],
           "relatedField": false
         },
         {
@@ -6267,7 +6656,9 @@
           "pc": 256690,
           "sourceLine": 105711,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "records-native/data_87ea8a"
+          ],
           "relatedField": false
         },
         {
@@ -6276,7 +6667,9 @@
           "pc": 256710,
           "sourceLine": 105712,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "records-native/data_87ea8a"
+          ],
           "relatedField": false
         }
       ],
@@ -6288,8 +6681,8 @@
       ],
       "tab": "Textos Recordes",
       "pc": 256650,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 4,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -6303,7 +6696,9 @@
           "pc": 256730,
           "sourceLine": 105715,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "records-native/data_87eada"
+          ],
           "relatedField": false
         },
         {
@@ -6312,7 +6707,9 @@
           "pc": 256736,
           "sourceLine": 105715,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "records-native/data_87eada"
+          ],
           "relatedField": false
         },
         {
@@ -6321,7 +6718,9 @@
           "pc": 256750,
           "sourceLine": 105716,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "records-native/data_87eada"
+          ],
           "relatedField": false
         },
         {
@@ -6330,7 +6729,9 @@
           "pc": 256770,
           "sourceLine": 105717,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "records-native/data_87eada"
+          ],
           "relatedField": false
         },
         {
@@ -6351,8 +6752,8 @@
       ],
       "tab": "Textos Recordes",
       "pc": 256730,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 4,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -6366,7 +6767,9 @@
           "pc": 256810,
           "sourceLine": 105721,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "records-native/data_87eb2a"
+          ],
           "relatedField": false
         },
         {
@@ -6375,7 +6778,9 @@
           "pc": 256830,
           "sourceLine": 105722,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "records-native/data_87eb2a"
+          ],
           "relatedField": false
         },
         {
@@ -6384,7 +6789,9 @@
           "pc": 256850,
           "sourceLine": 105723,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "records-native/data_87eb2a"
+          ],
           "relatedField": false
         },
         {
@@ -6405,8 +6812,8 @@
       ],
       "tab": "Textos Recordes",
       "pc": 256810,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 3,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -6420,7 +6827,9 @@
           "pc": 256890,
           "sourceLine": 105727,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "records-native/data_87eb7a"
+          ],
           "relatedField": false
         },
         {
@@ -6429,7 +6838,9 @@
           "pc": 256910,
           "sourceLine": 105728,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "records-native/data_87eb7a"
+          ],
           "relatedField": false
         },
         {
@@ -6459,8 +6870,8 @@
       ],
       "tab": "Textos Recordes",
       "pc": 256890,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 2,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -6474,7 +6885,9 @@
           "pc": 256970,
           "sourceLine": 105733,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "records-native/data_87ebca"
+          ],
           "relatedField": false
         },
         {
@@ -6483,7 +6896,9 @@
           "pc": 256990,
           "sourceLine": 105734,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "records-native/data_87ebca"
+          ],
           "relatedField": false
         },
         {
@@ -6492,7 +6907,9 @@
           "pc": 257010,
           "sourceLine": 105735,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "records-native/data_87ebca"
+          ],
           "relatedField": false
         },
         {
@@ -6513,8 +6930,8 @@
       ],
       "tab": "Textos Recordes",
       "pc": 256970,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 3,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -6528,7 +6945,9 @@
           "pc": 257050,
           "sourceLine": 105739,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "records-native/data_87ec1a"
+          ],
           "relatedField": false
         },
         {
@@ -6537,7 +6956,9 @@
           "pc": 257070,
           "sourceLine": 105740,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "records-native/data_87ec1a"
+          ],
           "relatedField": false
         },
         {
@@ -6567,8 +6988,8 @@
       ],
       "tab": "Textos Recordes",
       "pc": 257050,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 2,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -6658,7 +7079,9 @@
           "pc": 257199,
           "sourceLine": 105768,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "records-native/data_87ecaf"
+          ],
           "relatedField": false
         }
       ],
@@ -6670,8 +7093,8 @@
       ],
       "tab": "Textos Recordes",
       "pc": 257199,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -6685,7 +7108,9 @@
           "pc": 257469,
           "sourceLine": 105841,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "password-native/data_87edbd"
+          ],
           "relatedField": false
         }
       ],
@@ -6697,8 +7122,8 @@
       ],
       "tab": "Textos Senha",
       "pc": 257469,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -6712,7 +7137,9 @@
           "pc": 257494,
           "sourceLine": 105847,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "password-native/data_87edd6"
+          ],
           "relatedField": false
         }
       ],
@@ -6724,8 +7151,8 @@
       ],
       "tab": "Textos Senha",
       "pc": 257494,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -6766,7 +7193,9 @@
           "pc": 257557,
           "sourceLine": 105863,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87ee15"
+          ],
           "relatedField": false
         }
       ],
@@ -6822,8 +7251,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 257557,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -7080,7 +7509,9 @@
           "pc": 257595,
           "sourceLine": 105897,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87ee3b"
+          ],
           "relatedField": false
         },
         {
@@ -7089,7 +7520,9 @@
           "pc": 257623,
           "sourceLine": 105898,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87ee3b"
+          ],
           "relatedField": false
         }
       ],
@@ -7101,8 +7534,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 257595,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 2,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -7116,7 +7549,9 @@
           "pc": 257651,
           "sourceLine": 105901,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87ee73"
+          ],
           "relatedField": false
         },
         {
@@ -7125,7 +7560,9 @@
           "pc": 257679,
           "sourceLine": 105902,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87ee73"
+          ],
           "relatedField": false
         }
       ],
@@ -7137,8 +7574,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 257651,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 2,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -7152,7 +7589,9 @@
           "pc": 257707,
           "sourceLine": 105905,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87eeab"
+          ],
           "relatedField": false
         },
         {
@@ -7161,7 +7600,9 @@
           "pc": 257735,
           "sourceLine": 105906,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87eeab"
+          ],
           "relatedField": false
         }
       ],
@@ -7173,8 +7614,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 257707,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 2,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -7188,7 +7629,9 @@
           "pc": 257763,
           "sourceLine": 105909,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87eee3"
+          ],
           "relatedField": false
         },
         {
@@ -7197,7 +7640,9 @@
           "pc": 257791,
           "sourceLine": 105910,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87eee3"
+          ],
           "relatedField": false
         }
       ],
@@ -7209,8 +7654,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 257763,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 2,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -7224,7 +7669,9 @@
           "pc": 257819,
           "sourceLine": 105913,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87ef1b"
+          ],
           "relatedField": false
         },
         {
@@ -7233,7 +7680,9 @@
           "pc": 257847,
           "sourceLine": 105914,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87ef1b"
+          ],
           "relatedField": false
         }
       ],
@@ -7245,8 +7694,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 257819,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 2,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -7260,7 +7709,9 @@
           "pc": 257875,
           "sourceLine": 105917,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87ef53"
+          ],
           "relatedField": false
         },
         {
@@ -7269,7 +7720,9 @@
           "pc": 257903,
           "sourceLine": 105918,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87ef53"
+          ],
           "relatedField": false
         }
       ],
@@ -7281,8 +7734,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 257875,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 2,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -7296,7 +7749,9 @@
           "pc": 257931,
           "sourceLine": 105921,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87ef8b"
+          ],
           "relatedField": false
         },
         {
@@ -7305,7 +7760,9 @@
           "pc": 257959,
           "sourceLine": 105922,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87ef8b"
+          ],
           "relatedField": false
         }
       ],
@@ -7317,8 +7774,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 257931,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 2,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -7332,7 +7789,9 @@
           "pc": 257987,
           "sourceLine": 105925,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87efc3"
+          ],
           "relatedField": false
         },
         {
@@ -7341,7 +7800,9 @@
           "pc": 258015,
           "sourceLine": 105926,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87efc3"
+          ],
           "relatedField": false
         }
       ],
@@ -7353,8 +7814,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 257987,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 2,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -7368,7 +7829,9 @@
           "pc": 258043,
           "sourceLine": 105929,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87effb"
+          ],
           "relatedField": false
         },
         {
@@ -7377,7 +7840,9 @@
           "pc": 258071,
           "sourceLine": 105930,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87effb"
+          ],
           "relatedField": false
         }
       ],
@@ -7389,8 +7854,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 258043,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 2,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -7404,7 +7869,9 @@
           "pc": 258099,
           "sourceLine": 105933,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f033"
+          ],
           "relatedField": false
         },
         {
@@ -7413,7 +7880,9 @@
           "pc": 258127,
           "sourceLine": 105934,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f033"
+          ],
           "relatedField": false
         }
       ],
@@ -7425,8 +7894,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 258099,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 2,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -7440,7 +7909,9 @@
           "pc": 258155,
           "sourceLine": 105937,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f06b"
+          ],
           "relatedField": false
         },
         {
@@ -7449,7 +7920,9 @@
           "pc": 258183,
           "sourceLine": 105938,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f06b"
+          ],
           "relatedField": false
         }
       ],
@@ -7461,8 +7934,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 258155,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 2,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -7476,7 +7949,9 @@
           "pc": 258211,
           "sourceLine": 105941,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f0a3"
+          ],
           "relatedField": false
         },
         {
@@ -7485,7 +7960,9 @@
           "pc": 258239,
           "sourceLine": 105942,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f0a3"
+          ],
           "relatedField": false
         }
       ],
@@ -7497,8 +7974,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 258211,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 2,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -7548,7 +8025,9 @@
           "pc": 258349,
           "sourceLine": 105956,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f12d"
+          ],
           "relatedField": false
         },
         {
@@ -7557,7 +8036,9 @@
           "pc": 258375,
           "sourceLine": 105957,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f12d"
+          ],
           "relatedField": false
         },
         {
@@ -7566,7 +8047,9 @@
           "pc": 258401,
           "sourceLine": 105958,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f12d"
+          ],
           "relatedField": false
         },
         {
@@ -7575,7 +8058,9 @@
           "pc": 258427,
           "sourceLine": 105959,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f12d"
+          ],
           "relatedField": false
         },
         {
@@ -7584,7 +8069,9 @@
           "pc": 258453,
           "sourceLine": 105960,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f12d"
+          ],
           "relatedField": false
         },
         {
@@ -7593,7 +8080,9 @@
           "pc": 258479,
           "sourceLine": 105961,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f12d"
+          ],
           "relatedField": false
         }
       ],
@@ -7605,8 +8094,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 258349,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 6,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -7620,7 +8109,9 @@
           "pc": 258505,
           "sourceLine": 105964,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f1c9"
+          ],
           "relatedField": false
         },
         {
@@ -7629,7 +8120,9 @@
           "pc": 258531,
           "sourceLine": 105965,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f1c9"
+          ],
           "relatedField": false
         },
         {
@@ -7638,7 +8131,9 @@
           "pc": 258557,
           "sourceLine": 105966,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f1c9"
+          ],
           "relatedField": false
         },
         {
@@ -7647,7 +8142,9 @@
           "pc": 258583,
           "sourceLine": 105967,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f1c9"
+          ],
           "relatedField": false
         },
         {
@@ -7656,7 +8153,9 @@
           "pc": 258609,
           "sourceLine": 105968,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f1c9"
+          ],
           "relatedField": false
         },
         {
@@ -7665,7 +8164,9 @@
           "pc": 258635,
           "sourceLine": 105969,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f1c9"
+          ],
           "relatedField": false
         }
       ],
@@ -7677,8 +8178,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 258505,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 6,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -7692,7 +8193,9 @@
           "pc": 258661,
           "sourceLine": 105972,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f265"
+          ],
           "relatedField": false
         },
         {
@@ -7701,7 +8204,9 @@
           "pc": 258676,
           "sourceLine": 105972,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f265"
+          ],
           "relatedField": false
         },
         {
@@ -7710,7 +8215,9 @@
           "pc": 258687,
           "sourceLine": 105973,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f265"
+          ],
           "relatedField": false
         },
         {
@@ -7719,7 +8226,9 @@
           "pc": 258696,
           "sourceLine": 105973,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f265"
+          ],
           "relatedField": false
         },
         {
@@ -7728,7 +8237,9 @@
           "pc": 258704,
           "sourceLine": 105973,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f265"
+          ],
           "relatedField": false
         },
         {
@@ -7737,7 +8248,9 @@
           "pc": 258713,
           "sourceLine": 105974,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f265"
+          ],
           "relatedField": false
         },
         {
@@ -7746,7 +8259,9 @@
           "pc": 258719,
           "sourceLine": 105974,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f265"
+          ],
           "relatedField": false
         },
         {
@@ -7755,7 +8270,9 @@
           "pc": 258739,
           "sourceLine": 105975,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f265"
+          ],
           "relatedField": false
         },
         {
@@ -7764,7 +8281,9 @@
           "pc": 258765,
           "sourceLine": 105976,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f265"
+          ],
           "relatedField": false
         },
         {
@@ -7773,7 +8292,9 @@
           "pc": 258791,
           "sourceLine": 105977,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f265"
+          ],
           "relatedField": false
         }
       ],
@@ -7785,8 +8306,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 258661,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 10,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -7800,7 +8321,9 @@
           "pc": 258817,
           "sourceLine": 105980,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f301"
+          ],
           "relatedField": false
         },
         {
@@ -7809,7 +8332,9 @@
           "pc": 258843,
           "sourceLine": 105981,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f301"
+          ],
           "relatedField": false
         },
         {
@@ -7818,7 +8343,9 @@
           "pc": 258869,
           "sourceLine": 105982,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f301"
+          ],
           "relatedField": false
         },
         {
@@ -7827,7 +8354,9 @@
           "pc": 258895,
           "sourceLine": 105983,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f301"
+          ],
           "relatedField": false
         },
         {
@@ -7836,7 +8365,9 @@
           "pc": 258921,
           "sourceLine": 105984,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f301"
+          ],
           "relatedField": false
         },
         {
@@ -7845,7 +8376,9 @@
           "pc": 258947,
           "sourceLine": 105985,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f301"
+          ],
           "relatedField": false
         }
       ],
@@ -7857,8 +8390,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 258817,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 6,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -7872,7 +8405,9 @@
           "pc": 258973,
           "sourceLine": 105988,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f39d"
+          ],
           "relatedField": false
         },
         {
@@ -7881,7 +8416,9 @@
           "pc": 258999,
           "sourceLine": 105989,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f39d"
+          ],
           "relatedField": false
         },
         {
@@ -7890,7 +8427,9 @@
           "pc": 259025,
           "sourceLine": 105990,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f39d"
+          ],
           "relatedField": false
         },
         {
@@ -7899,7 +8438,9 @@
           "pc": 259051,
           "sourceLine": 105991,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f39d"
+          ],
           "relatedField": false
         },
         {
@@ -7908,7 +8449,9 @@
           "pc": 259077,
           "sourceLine": 105992,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f39d"
+          ],
           "relatedField": false
         },
         {
@@ -7929,8 +8472,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 258973,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 5,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -7944,7 +8487,9 @@
           "pc": 259129,
           "sourceLine": 105996,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f439"
+          ],
           "relatedField": false
         },
         {
@@ -7953,7 +8498,9 @@
           "pc": 259155,
           "sourceLine": 105997,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f439"
+          ],
           "relatedField": false
         },
         {
@@ -7962,7 +8509,9 @@
           "pc": 259181,
           "sourceLine": 105998,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f439"
+          ],
           "relatedField": false
         },
         {
@@ -7971,7 +8520,9 @@
           "pc": 259207,
           "sourceLine": 105999,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f439"
+          ],
           "relatedField": false
         },
         {
@@ -7980,7 +8531,9 @@
           "pc": 259233,
           "sourceLine": 106000,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f439"
+          ],
           "relatedField": false
         },
         {
@@ -7989,7 +8542,9 @@
           "pc": 259259,
           "sourceLine": 106001,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f439"
+          ],
           "relatedField": false
         }
       ],
@@ -8001,8 +8556,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 259129,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 6,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -8016,7 +8571,9 @@
           "pc": 259285,
           "sourceLine": 106004,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f4d5"
+          ],
           "relatedField": false
         },
         {
@@ -8025,7 +8582,9 @@
           "pc": 259311,
           "sourceLine": 106005,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f4d5"
+          ],
           "relatedField": false
         },
         {
@@ -8034,7 +8593,9 @@
           "pc": 259337,
           "sourceLine": 106006,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f4d5"
+          ],
           "relatedField": false
         },
         {
@@ -8043,7 +8604,9 @@
           "pc": 259363,
           "sourceLine": 106007,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f4d5"
+          ],
           "relatedField": false
         },
         {
@@ -8052,7 +8615,9 @@
           "pc": 259389,
           "sourceLine": 106008,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f4d5"
+          ],
           "relatedField": false
         },
         {
@@ -8073,8 +8638,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 259285,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 5,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -8088,7 +8653,9 @@
           "pc": 259441,
           "sourceLine": 106012,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f571"
+          ],
           "relatedField": false
         },
         {
@@ -8097,7 +8664,9 @@
           "pc": 259467,
           "sourceLine": 106013,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f571"
+          ],
           "relatedField": false
         },
         {
@@ -8106,7 +8675,9 @@
           "pc": 259493,
           "sourceLine": 106014,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f571"
+          ],
           "relatedField": false
         },
         {
@@ -8115,7 +8686,9 @@
           "pc": 259519,
           "sourceLine": 106015,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f571"
+          ],
           "relatedField": false
         },
         {
@@ -8124,7 +8697,9 @@
           "pc": 259545,
           "sourceLine": 106016,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f571"
+          ],
           "relatedField": false
         },
         {
@@ -8145,8 +8720,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 259441,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 5,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -8160,7 +8735,9 @@
           "pc": 259597,
           "sourceLine": 106020,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f60d"
+          ],
           "relatedField": false
         },
         {
@@ -8169,7 +8746,9 @@
           "pc": 259623,
           "sourceLine": 106021,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f60d"
+          ],
           "relatedField": false
         },
         {
@@ -8178,7 +8757,9 @@
           "pc": 259649,
           "sourceLine": 106022,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f60d"
+          ],
           "relatedField": false
         },
         {
@@ -8187,7 +8768,9 @@
           "pc": 259675,
           "sourceLine": 106023,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f60d"
+          ],
           "relatedField": false
         },
         {
@@ -8196,7 +8779,9 @@
           "pc": 259701,
           "sourceLine": 106024,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f60d"
+          ],
           "relatedField": false
         },
         {
@@ -8217,8 +8802,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 259597,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 5,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -8232,7 +8817,9 @@
           "pc": 259753,
           "sourceLine": 106028,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f6a9"
+          ],
           "relatedField": false
         },
         {
@@ -8241,7 +8828,9 @@
           "pc": 259779,
           "sourceLine": 106029,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f6a9"
+          ],
           "relatedField": false
         },
         {
@@ -8250,7 +8839,9 @@
           "pc": 259805,
           "sourceLine": 106030,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f6a9"
+          ],
           "relatedField": false
         },
         {
@@ -8259,7 +8850,9 @@
           "pc": 259831,
           "sourceLine": 106031,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f6a9"
+          ],
           "relatedField": false
         },
         {
@@ -8268,7 +8861,9 @@
           "pc": 259857,
           "sourceLine": 106032,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f6a9"
+          ],
           "relatedField": false
         },
         {
@@ -8277,7 +8872,9 @@
           "pc": 259883,
           "sourceLine": 106033,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f6a9"
+          ],
           "relatedField": false
         }
       ],
@@ -8289,8 +8886,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 259753,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 6,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -8304,7 +8901,9 @@
           "pc": 259909,
           "sourceLine": 106036,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f745"
+          ],
           "relatedField": false
         },
         {
@@ -8313,7 +8912,9 @@
           "pc": 259935,
           "sourceLine": 106037,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f745"
+          ],
           "relatedField": false
         },
         {
@@ -8322,7 +8923,9 @@
           "pc": 259961,
           "sourceLine": 106038,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f745"
+          ],
           "relatedField": false
         },
         {
@@ -8331,7 +8934,9 @@
           "pc": 259987,
           "sourceLine": 106039,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f745"
+          ],
           "relatedField": false
         },
         {
@@ -8340,7 +8945,9 @@
           "pc": 260013,
           "sourceLine": 106040,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f745"
+          ],
           "relatedField": false
         },
         {
@@ -8349,7 +8956,9 @@
           "pc": 260039,
           "sourceLine": 106041,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f745"
+          ],
           "relatedField": false
         }
       ],
@@ -8361,8 +8970,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 259909,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 6,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -8376,7 +8985,9 @@
           "pc": 260065,
           "sourceLine": 106044,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f7e1"
+          ],
           "relatedField": false
         },
         {
@@ -8385,7 +8996,9 @@
           "pc": 260091,
           "sourceLine": 106045,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f7e1"
+          ],
           "relatedField": false
         },
         {
@@ -8394,7 +9007,9 @@
           "pc": 260117,
           "sourceLine": 106046,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f7e1"
+          ],
           "relatedField": false
         },
         {
@@ -8403,7 +9018,9 @@
           "pc": 260143,
           "sourceLine": 106047,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f7e1"
+          ],
           "relatedField": false
         },
         {
@@ -8412,7 +9029,9 @@
           "pc": 260169,
           "sourceLine": 106048,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f7e1"
+          ],
           "relatedField": false
         },
         {
@@ -8433,8 +9052,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 260065,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 5,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -8448,7 +9067,9 @@
           "pc": 260316,
           "sourceLine": 106086,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f8dc"
+          ],
           "relatedField": false
         },
         {
@@ -8457,7 +9078,9 @@
           "pc": 260334,
           "sourceLine": 106087,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f8dc"
+          ],
           "relatedField": false
         }
       ],
@@ -8469,8 +9092,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 260316,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 2,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -8484,7 +9107,9 @@
           "pc": 260354,
           "sourceLine": 106091,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f900"
+          ],
           "relatedField": false
         },
         {
@@ -8493,7 +9118,9 @@
           "pc": 260374,
           "sourceLine": 106093,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f900"
+          ],
           "relatedField": false
         }
       ],
@@ -8505,8 +9132,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 260352,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 2,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -8520,8 +9147,10 @@
           "pc": 260392,
           "sourceLine": 106096,
           "verifiedInPlus": true,
-          "bindings": [],
-          "relatedField": true
+          "bindings": [
+            "scenario-native/data_87f928"
+          ],
+          "relatedField": false
         }
       ],
       "references": [
@@ -8540,8 +9169,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 260392,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -8555,7 +9184,9 @@
           "pc": 260408,
           "sourceLine": 106099,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f938"
+          ],
           "relatedField": false
         }
       ],
@@ -8571,8 +9202,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 260408,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -8586,7 +9217,9 @@
           "pc": 260410,
           "sourceLine": 106102,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f93a"
+          ],
           "relatedField": false
         }
       ],
@@ -8602,8 +9235,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 260410,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -8617,7 +9250,9 @@
           "pc": 260414,
           "sourceLine": 106105,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f93e"
+          ],
           "relatedField": false
         }
       ],
@@ -8633,8 +9268,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 260414,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -8648,7 +9283,9 @@
           "pc": 260421,
           "sourceLine": 106108,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f945"
+          ],
           "relatedField": false
         }
       ],
@@ -8660,8 +9297,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 260421,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -8675,7 +9312,9 @@
           "pc": 260442,
           "sourceLine": 106111,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f95a"
+          ],
           "relatedField": false
         }
       ],
@@ -8687,8 +9326,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 260442,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -8702,7 +9341,9 @@
           "pc": 260454,
           "sourceLine": 106114,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "scenario-native/data_87f966"
+          ],
           "relatedField": false
         }
       ],
@@ -8714,8 +9355,8 @@
       ],
       "tab": "Textos Cenários",
       "pc": 260454,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     },
     {
@@ -8729,7 +9370,9 @@
           "pc": 260496,
           "sourceLine": 106117,
           "verifiedInPlus": true,
-          "bindings": [],
+          "bindings": [
+            "credits-native/data_87f990"
+          ],
           "relatedField": false
         }
       ],
@@ -8741,8 +9384,8 @@
       ],
       "tab": "Textos Créditos",
       "pc": 260496,
-      "status": "needs-occurrence-mapping",
-      "uncoveredRows": 1,
+      "status": "covered",
+      "uncoveredRows": 0,
       "verifiedInPlus": true
     }
   ],

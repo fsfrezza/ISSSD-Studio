@@ -1,3 +1,4 @@
+import {NATIVE_MENU_TEXT_SECTIONS} from './native-menu-text-fields.mjs';
 import {CURSOR_LABEL_IDS} from './cursor-label-layout.mjs';
 import {CURSOR_HELP_FIELDS,CURSOR_PORTUGUESE} from './cursor-text-fields.mjs';
 // User-approved inscriptions. Keeping this catalog shared by UI and export
@@ -34,6 +35,7 @@ export const ADDITIONAL_TEXT_SECTIONS=Object.freeze([
  {id:'navigation-labels',page:'match-options',title:'Botões de navegação compartilhados',area:'pre-partida',fields:[
   ['exit','EXIT','SAIR'],['reset','RESET','RESTAURAR'],['cancel','CANCEL','CANCELAR'],['ok','OK','OK'],
  ]},
+ ...NATIVE_MENU_TEXT_SECTIONS,
 ]);
 export const normalizeAdditionalText=value=>String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/\s+/g,' ').trim();
 export function additionalTextValues(semantic={}){
@@ -51,7 +53,7 @@ export function pendingAdditionalTextExports(semantic={},selectedAreas=null){
  for(const section of ADDITIONAL_TEXT_SECTIONS){
   if(selectedAreas&&!selectedAreas.includes(section.area))continue;
   for(const [id,english,,options] of section.fields){
-   if(options?.native||(section.id==='cursor-labels'&&CURSOR_LABEL_IDS.includes(id)))continue;
+   if(options?.pool||options?.native||(section.id==='cursor-labels'&&CURSOR_LABEL_IDS.includes(id)))continue;
    const fields=values[section.id]||{};
    if(Object.hasOwn(fields,id)&&String(fields[id])!==english)pending.push({
     section:section.id,sectionTitle:section.title,field:id,label:english,

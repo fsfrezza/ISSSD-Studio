@@ -15,7 +15,7 @@
   for(const [field,en,pt] of section.fields){if(language!=='english'&&pt==null){preserved++;continue;}const text=language==='english'?en:pt;edit(section,field,text);const n=document.getElementById(id(owner,field));if(n)n.value=text;}
   setStatus(owner,'Textos preenchidos como rascunho. Você pode editar antes de implementar no projeto.'+(preserved?' '+preserved+' campos sem português definido foram mantidos.':''));
  }
- function exportNote(section){return section.id==='cursor-labels'?'Todos os rótulos e ajudas do Cursor são gravados ao exportar a fase Pré-Partida. CURSOR ALTERA é a tradução que cabe no título da tela.':'Estes novos campos ficam no projeto; aqueles ainda sem gravador são listados em TEXTOS-PENDENTES.txt no ZIP.';}
+ function exportNote(section){if(section.nativePool)return 'Textos nativos aplicados ao exportar a fase '+(section.area==='selecao-equipes'?'Seleção de equipes':section.area==='textos-estrategias'?'Textos Estratégias':'Pré-Partida')+'.';return section.id==='cursor-labels'?'Todos os rótulos e ajudas do Cursor são gravados ao exportar a fase Pré-Partida. CURSOR ALTERA é a tradução que cabe no título da tela.':'Estes novos campos ficam no projeto; aqueles ainda sem gravador são listados em TEXTOS-PENDENTES.txt no ZIP.';}
  function commit(owner){const section=sections.find(s=>s.id===owner);if(!section)throw Error('Seção desconhecida');
   const values={};for(const [field] of section.fields){const n=document.getElementById(id(owner,field));values[field]=String(n?.value??value(section,field));}
   saved.values[owner]=values;saved.drafts[owner]={...values};dirty.delete(owner);
@@ -29,6 +29,13 @@
  }
  function install(){
   installCursorPage();
+  let anchor=document.getElementById('nav-texts-cursor')||document.getElementById('nav-controls');
+  for(const section of sections)if(section.createPage){
+   if(typeof ensureScreenPage==='function')ensureScreenPage(section.page,section.title,'Textos desta tela. Edite, confirme no projeto e exporte a ROM.');
+   let nav=document.getElementById('nav-'+section.page);
+   if(!nav&&typeof makeNavButton==='function'){nav=makeNavButton('nav-'+section.page,section.page,section.title,'▤');anchor?.after?.(nav);}
+   if(nav)anchor=nav;
+  }
   for(const section of sections){
    const page=document.getElementById('page-'+section.page);if(!page)continue;
    let card=document.getElementById('additionalCard_'+section.id);
@@ -41,6 +48,7 @@
      const label=document.createElement('label');label.style.cssText='display:grid;gap:6px';
      const text=document.createElement('strong');text.textContent=options.label||en;label.appendChild(text);
      const input=document.createElement(options.multiline?'textarea':'input');if(options.multiline){input.rows=Math.min(8,options.rows||4);input.wrap='soft';}input.id=id(section.id,field);input.dataset.additionalTextOwner=section.id;input.dataset.additionalTextField=field;input.style.cssText='width:100%;box-sizing:border-box';input.autocomplete='off';input.value=value(section,field);input.addEventListener('input',()=>edit(section,field,input.value));label.appendChild(input);grid.appendChild(label);
+     if(options.pool){const limit=document.createElement('span');limit.className='subtle';limit.textContent='Limite por linha: '+options.pool.segments.map(s=>s.original.length).join(', ')+' células. Os textos sem tradução definida mantêm o original.';label.appendChild(limit);}
      if(options.native){const limit=document.createElement('span');limit.className='subtle';limit.textContent='Até '+options.native.rowCount+' linhas de '+options.native.width+' caracteres; aplicação na ROM pela fase Pré-Partida.';label.appendChild(limit);}
     }
     const actions=document.createElement('div');actions.style.cssText='display:flex;gap:8px;flex-wrap:wrap;margin-top:14px';

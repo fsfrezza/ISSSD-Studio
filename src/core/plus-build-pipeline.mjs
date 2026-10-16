@@ -1,3 +1,4 @@
+import {plusNativeMenuTextWriter} from './plus-native-menu-text.mjs';
 import {plusCursorTextWriter} from './plus-cursor-text.mjs';
 import {teamsV3PlayerSteps,teamsV3TacticalSteps,hasTeamsV3Tactics,applySteps} from './teams-v3-writer.mjs';
 import {runBuildPipeline} from './build-pipeline.mjs';
@@ -85,6 +86,7 @@ export function createPlusBuildStages({baseRom,patches=[],extraWriters=[],writeC
       id:'07b-cursor-help-text',kind:'semantic',when:!selectedAreas||selectedAreas.includes('pre-partida'),
       run:(work,state)=>plusCursorTextWriter(work,state,baseRom,selectedAreas),
     },
+    {id:'07b-native-menu-pool',kind:'semantic',run:(work,state)=>plusNativeMenuTextWriter(work,state,baseRom,selectedAreas)},
     {
       id:'07c-controller-text',kind:'semantic',when:!selectedAreas||selectedAreas.includes('pre-partida'),
       run:(work,state)=>plusControllerTextWriter(work,state,baseRom),

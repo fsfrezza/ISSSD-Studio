@@ -67,7 +67,7 @@ test('rendered cards use their own tabs, language buttons stay adjacent, and hyd
   addEventListener(name,fn){this.listeners[name]=fn;}
   querySelector(selector){return selector==='.rom-content'?this.content:null;}
  }
- for(const section of sections){if(section.page==='texts-cursor'||nodes.has('page-'+section.page))continue;const page=new Element('section');page.id='page-'+section.page;page.content=page.appendChild(new Element('div'));}
+ for(const section of sections){if(section.page==='texts-cursor'||section.createPage||nodes.has('page-'+section.page))continue;const page=new Element('section');page.id='page-'+section.page;page.content=page.appendChild(new Element('div'));}
  const document={readyState:'complete',getElementById:id=>nodes.get(id),createElement:tag=>new Element(tag),documentElement:null,activeElement:null};
  const controlsNav=new Element('button');controlsNav.id='nav-controls';const navigation=[];controlsNav.after=node=>navigation.push(node);
  const window={};vm.runInContext(source,vm.createContext({ADDITIONAL_TEXT_SECTIONS:sections,document,window,
@@ -76,6 +76,7 @@ test('rendered cards use their own tabs, language buttons stay adjacent, and hyd
   MutationObserver:class{},clearTimeout(){},setTimeout(){}}));
  assert.equal(navigation[0].id,'nav-texts-cursor');assert.equal(navigation[0].textContent,'Textos Cursor');
  assert.equal(nodes.get('page-texts-cursor').title,'Textos Cursor');assert.equal(nodes.has('additionalCard_control-labels'),false);
+ for(const section of sections.filter(s=>s.createPage)){assert.equal(nodes.get('page-'+section.page).title,section.title);assert.equal(nodes.get('nav-'+section.page).dataset.page,section.page);}
  const api=window.__ISSSD_ADDITIONAL_SCREEN_TEXTS__;
  assert.equal([...nodes.keys()].filter(k=>k.startsWith('additionalText_')).length,sections.reduce((n,s)=>n+s.fields.length,0));
  for(const section of sections){
@@ -123,4 +124,16 @@ test('Cursor Portuguese button fills all 26 fields as drafts and saves the full 
  const reopened=harness();reopened.api.hydrate(JSON.parse(JSON.stringify(project)));
  assert.equal(JSON.stringify(reopened.api.snapshot().values['cursor-labels']),JSON.stringify(expected));
  api.fill('cursor-labels','english');assert.equal(JSON.stringify(api.snapshot().values['cursor-labels']),JSON.stringify(expected),'restoring English is also only a draft until confirmed');
+});
+
+
+test('new native screen fields round-trip confirmed values and preserve undefined Portuguese as drafts',()=>{
+ const {api,nodes}=harness();const group=sections.find(s=>s.id==='controls-help-native'),field=group.fields[0];
+ nodes.get('additionalText_'+group.id+'_'+field[0]).value='Minha ajuda\nLinha dois';api.commit(group.id);
+ const project={state:{semantic:{}}};api.finalize(project);const reopened=harness();reopened.api.hydrate(project);
+ assert.equal(reopened.api.snapshot().values[group.id][field[0]],'Minha ajuda\nLinha dois');
+ reopened.api.fill(group.id,'portuguese');assert.equal(reopened.api.snapshot().values[group.id][field[0]],'Minha ajuda\nLinha dois');
+ const screen=sections.find(s=>s.id==='scenario-native');api.fill(screen.id,'english');api.finalize(project);
+ assert.deepEqual(Object.keys(project.state.semantic.additionalScreenTextsV1.drafts[screen.id]),screen.fields.map(f=>f[0]));
+ assert.equal(project.state.semantic.additionalScreenTextsV1.values[screen.id],undefined);
 });
