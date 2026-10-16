@@ -30,3 +30,11 @@ O teste adicional no navegador usa a ROM-base de SHA-256 `ca2d73b226ab252649d4c9
 O checkbox tático atualizava somente a seta no campo. Ao salvar/reabrir, o snapshot voltava a obter o valor do overlay anterior ou da baseline; isso podia dar a impressão de que a escolha de R. Gaúcho havia ido para Dunga. Agora cada linha captura `playerId` e `baseSlot` e grava `custom.tactical.attack` por essa identidade. `false` é preservado explicitamente quando a baseline é `true`; valores iguais à baseline permanecem sparse. Trocar slots não troca a identidade destinatária da edição.
 
 A coluna ATACAR foi movida para depois de X/Y, mantendo os handlers de coordenadas existentes. O teste no navegador salva o projeto, recarrega a página e reabre os dados: R. Gaúcho marcado, Dunga desmarcado, coluna final e ROM interna idêntica à base. As regressões também verificam JSON, troca de slots e os bits nativos exportados.
+
+## Fonte dos textos de controles
+
+O bloco nativo 2bpp usa índice 1 para a tinta clara, 2 para suavização e 3 para o contorno preto. O conversor anterior contava qualquer pixel não transparente como tinta: escolhia o contorno (mais frequente) e não conseguia separar os glifos. Isso resultava em letras pretas de uma fonte alternativa.
+
+O atlas agora extrai os glifos claros por limites explícitos do gráfico original, preserva a suavização e recompõe o contorno antes de desenhar as letras. C deriva dos traços do G nativo. O posicionamento pode ser ajustado dentro de cada campo para respeitar os 390 bytes reservados, sem expandir o bloco sobre dados vizinhos. Campos não alterados continuam intactos.
+
+A regressão usa um gráfico 2bpp com tinta, suavização e contorno distintos; verifica a reprodução dos pixels claros, o contorno e a imutabilidade da base. A conversão do projeto atual com a ROM Plus real também foi conferida: 346 bytes comprimidos, de 390 disponíveis, com os textos não alterados e os bytes externos preservados.

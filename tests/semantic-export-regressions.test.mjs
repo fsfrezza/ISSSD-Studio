@@ -88,3 +88,24 @@ test('attack export follows R. Gaucho identity through a slot exchange and prese
   assert.deepEqual(base,before);
  }
 });
+
+test('controller translations preserve native white glyphs, shading and black outline',()=>{
+ const raw=new Uint8Array(496);
+ const put=(x,y,v)=>{const t=x>>3,k=7-x%8;raw[t*16+y*2]=(raw[t*16+y*2]&~(1<<k))|((v&1)<<k);raw[t*16+y*2+1]=(raw[t*16+y*2+1]&~(1<<k))|(((v>>1)&1)<<k)};
+ const h=['101','101','111','101','101','101'];
+ for(let y=0;y<8;y++)for(let x=0;x<15;x++)put(x,y,3);
+ for(let y=1;y<=6;y++)for(let x=0;x<3;x++)if(h[y-1][x]==='1')put(x+1,y,y===1&&x===0?2:1);
+ const base=new Uint8Array(0x200000);base.set(konamiLzCompress(raw),0x108162);
+ const before=base.slice(),rom=base.slice();
+ plusControllerTextWriter(rom,{textWorkspaceV2:{sections:{graphicIntents:{values:{'controller.high':'HH'}}}}},base);
+ const out=konamiLzDecompress(rom,0x108162).data;
+ const pixel=(x,y)=>{const t=x>>3,k=7-x%8;return((out[t*16+y*2]>>k)&1)|(((out[t*16+y*2+1]>>k)&1)<<1)};
+ for(let y=1;y<=6;y++)for(let x=0;x<3;x++)if(h[y-1][x]==='1'){
+  assert.equal(pixel(x+1,y),y===1&&x===0?2:1);
+  assert.equal(pixel(x+5,y),y===1&&x===0?2:1);
+ }
+ assert.equal(pixel(1,0),3);assert.equal(pixel(1,7),3);
+ assert.deepEqual(out.slice(3*16),raw.slice(3*16));
+ assert.deepEqual(base,before);
+ assert.deepEqual(rom.slice(0x108162+390),base.slice(0x108162+390));
+});
