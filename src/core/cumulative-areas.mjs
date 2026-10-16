@@ -51,6 +51,7 @@ export function areaClassifier(rom,base=null){
   if(contains(off,menu))return 'menu-principal';
   if((off>=0xE7F2&&off<0xE830)||(off>=0x2DDA5&&off<0x2DDA5+56*10))return 'selecao-equipes';
   if((off>=0x483C2&&off<0x483C2+56*2*34)||(off>=0x48D50&&off<0x48D50+56*24))return 'jogadores';
+  if((off>=0x3fc00&&off<0x40000)||(off>=0x113a7&&off<0x113aa)||(off>=0x3cafa&&off<0x3caff)||(off>=0x167ade&&off<0x167c34))return 'pre-partida';
   if(CURSOR_HELP_FIELDS.some(([, , , {native:n}])=>off>=n.pc&&off<n.pc+n.width*n.rowCount))return 'pre-partida';
   if(CONTROLLER_ACTIONS.some(a=>off>=a.pc&&off<a.pc+a.cells))return 'pre-partida';
   if((off>=0xF631C&&off<0xF631C+2153)||(off>=0x108162&&off<0x108162+390))return 'pre-partida';

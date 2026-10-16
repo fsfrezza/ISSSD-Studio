@@ -80,3 +80,6 @@ export function plusControllerTextWriter(rom,state={},base=rom){
  for(const a of layout)for(let i=0;i<a.cells;i++)rom[a.pc+i]=i<a.tiles?0x72+a.tile+i:0;
  return rom;
 }
+
+// Shared compact bitmap alphabet for constrained native menu inscriptions.
+export const COMPACT_MENU_FONT=FONT;

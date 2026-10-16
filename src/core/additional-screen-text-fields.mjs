@@ -1,3 +1,4 @@
+import {CURSOR_LABEL_IDS} from './cursor-label-layout.mjs';
 import {CURSOR_HELP_FIELDS,CURSOR_PORTUGUESE} from './cursor-text-fields.mjs';
 // User-approved inscriptions. Keeping this catalog shared by UI and export
 // prevents a visible editable field from silently disappearing during a build.
@@ -50,7 +51,7 @@ export function pendingAdditionalTextExports(semantic={},selectedAreas=null){
  for(const section of ADDITIONAL_TEXT_SECTIONS){
   if(selectedAreas&&!selectedAreas.includes(section.area))continue;
   for(const [id,english,,options] of section.fields){
-   if(options?.native)continue;
+   if(options?.native||(section.id==='cursor-labels'&&CURSOR_LABEL_IDS.includes(id)))continue;
    const fields=values[section.id]||{};
    if(Object.hasOwn(fields,id)&&String(fields[id])!==english)pending.push({
     section:section.id,sectionTitle:section.title,field:id,label:english,

@@ -1,7 +1,4 @@
-import {writeFinalSnesChecksum} from '../src/core/plus-export-finalizer.mjs';
 import {seedCursorTextFixture} from './cursor-text-fixture.mjs';
-import {CURSOR_HELP_FIELDS} from '../src/core/cursor-text-fields.mjs';
-import {encodeCursorText} from '../src/core/plus-cursor-text.mjs';
 import {ADDITIONAL_TEXT_SECTIONS} from '../src/core/additional-screen-text-fields.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -98,10 +95,9 @@ test('HTTP export returns an extractable ZIP, correct manifest and canonical fin
   for(const e of manifest.entries)assert.equal(files.get(e.name).length,0x400000);
   assert.deepEqual(files.get(manifest.finalRom),Buffer.from(buildPlusProjectRom(base,project,{forceTacticalInfrastructure:true}).rom));
   assert.deepEqual(fs.readFileSync(file),Buffer.from(base));
-  // Reproduce the user's exact failure: all six new control inscriptions
-  // are confirmed while the previously supported player edits stay selected.
-  const pendingProject=structuredClone(project),controlSection=ADDITIONAL_TEXT_SECTIONS.find(s=>s.id==='cursor-labels');
-  pendingProject.state.semantic.additionalScreenTextsV1={schema:'isssd-additional-screen-texts-v1',values:{'control-labels':Object.fromEntries(controlSection.fields.filter(([id])=>['type','typeA','area','areaA','cursorChange','pageHelp'].includes(id)).map(([id,,pt])=>[id,pt]))}};
+  // Unsupported uniform captions still export a partial ZIP; Cursor captions now write natively.
+  const pendingProject=structuredClone(project),controlSection=ADDITIONAL_TEXT_SECTIONS.find(s=>s.id==='uniform-labels');
+  pendingProject.state.semantic.additionalScreenTextsV1={schema:'isssd-additional-screen-texts-v1',values:{'uniform-labels':Object.fromEntries(controlSection.fields.filter(([id])=>id!=='edit').map(([id,,pt])=>[id,pt]))}};
   const pendingBefore=structuredClone(pendingProject);
   const partial=await fetch(url+'__isssd/build-plus-project',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({project:pendingProject,cumulative:true})});
   assert.equal(partial.status,200,await(partial.ok?Promise.resolve(''):partial.text()));
@@ -112,9 +108,9 @@ test('HTTP export returns an extractable ZIP, correct manifest and canonical fin
   assert.equal(partialManifest.entries.length,9);assert.equal(partialManifest.allSelectedChangesApplied,false);
   assert.equal(partialManifest.pendingTextChanges.length,5);
   assert.equal(partialManifest.entries.find(e=>e.stage==='pre-partida').pendingTextChanges.length,5);
-  assert.match(partialFiles.get('TEXTOS-PENDENTES.txt').toString('utf8'),/TIPO-A/);
+  assert.match(partialFiles.get('TEXTOS-PENDENTES.txt').toString('utf8'),/CAMISA/);
   assert.match(partialFiles.get('LEIA-ME.txt').toString('utf8'),/5 novos textos NÃO foram aplicados/);
-  for(const entry of partialManifest.entries){assert.equal(partialFiles.get(entry.name).length,0x400000);const expected=Buffer.from(files.get(entry.name));if(entry.index>=5){const help=CURSOR_HELP_FIELDS.find(f=>f[0]==='pageHelp');expected.set(encodeCursorText(help,controlSection.fields.find(f=>f[0]==='pageHelp')[2]),help[3].native.pc);writeFinalSnesChecksum(expected);}assert.deepEqual(partialFiles.get(entry.name),expected,'supported changes and native Cursor help are applied in '+entry.name);}
+  for(const entry of partialManifest.entries){assert.equal(partialFiles.get(entry.name).length,0x400000);assert.deepEqual(partialFiles.get(entry.name),files.get(entry.name),'supported changes preserved in '+entry.name);}
   assert.deepEqual(pendingProject,pendingBefore);assert.deepEqual(fs.readFileSync(file),Buffer.from(base));
   const filtered=await fetch(url+'__isssd/build-plus-project',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({project:pendingProject,cumulative:true,selectedAreas:['jogadores']})});
   assert.equal(filtered.status,200);assert.equal(filtered.headers.get('X-ISSSD-Pending-Text-Count'),'0');assert.equal(filtered.headers.get('X-ISSSD-Export-Status'),'complete');await filtered.arrayBuffer();
