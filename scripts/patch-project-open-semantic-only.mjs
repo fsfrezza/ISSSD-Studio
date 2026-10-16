@@ -50,6 +50,14 @@ if(!hydrateRx.test(html))throw new Error('Abertura semântica: hidratação visu
 if(!html.includes('id="isssd-git-project-import-v11"'))throw new Error('Abertura semântica: módulo do importador visual não está presente no HTML final.');
 if(!html.includes('__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__'))throw new Error('Abertura semântica: overlay teamsV1 não foi instalado antes da barreira de abertura.');
 
+// Audit text records by content: object order and section metadata are not text loss.
+const textAuditOld='JSON.stringify(restored.sections?.[section])!==JSON.stringify(textData.sections?.[section])';
+const textAuditNew="!studioTextRecordsEqual(restored.sections?.[section]?.[section==='direct'?'byProfile':'values']||{},textData.sections?.[section]?.[section==='direct'?'byProfile':'values']||{})";
+if(!html.includes(textAuditOld))throw new Error('Auditoria textual de abertura não encontrada.');
+const textEqualSource=fs.readFileSync(path.join(root,'editor-src','text-records-equal.mjs'),'utf8').replace('export function','function');
+html=html.replace('async function studioApplyProjectWithBase(d,baseBytes,baseName){',()=>textEqualSource+'\nasync function studioApplyProjectWithBase(d,baseBytes,baseName){');
+html=html.replace(textAuditOld,textAuditNew);
+
 const reapplyProjectP=/window\s*\.\s*__ISSSD_GIT_REAPPLY_PROJECT_STATE__\s*\?\.\s*\(\s*(?:p|project)\s*\)\s*;?/g;
 html=html.replace(reapplyProjectP,'void 0;');
 reapplyProjectP.lastIndex=0;

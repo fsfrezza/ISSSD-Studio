@@ -35,3 +35,12 @@
 #gitMainMenuColorsV12{
   display:none!important;
 }
+
+/* Alinhar os comandos globais à direita da linha abaixo da barra superior. */
+#studioAllExpandTop{
+  grid-column:1 / -1;
+  justify-self:end;
+  justify-content:flex-end;
+  max-width:100%;
+  flex-wrap:wrap;
+}
