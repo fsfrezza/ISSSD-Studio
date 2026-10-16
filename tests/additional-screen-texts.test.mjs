@@ -112,9 +112,15 @@ test('moving control help to Cursor preserves legacy saved values and drafts wit
  assert.equal(state.values['cursor-labels'].pageHelp,'AJUDA ANTIGA');assert.equal(state.drafts['cursor-labels'].pageHelp,'RASCUNHO COM ESPACO ');
 });
 
-test('Cursor Portuguese fill preserves help translations the user has not yet defined',()=>{
- const {api,nodes}=harness();const node=nodes.get('additionalText_cursor-labels_typeBHelp');node.value='Minha ajuda ainda em edicao';
- api.fill('cursor-labels','portuguese');assert.equal(node.value,'Minha ajuda ainda em edicao');assert.equal(api.snapshot().drafts['cursor-labels'].typeBHelp,undefined);
- assert.equal(nodes.get('additionalText_cursor-labels_type').value,'TIPO');
- api.fill('cursor-labels','english');assert.equal(node.value,sections.find(s=>s.id==='cursor-labels').fields.find(f=>f[0]==='typeBHelp')[1]);
+test('Cursor Portuguese button fills all 26 fields as drafts and saves the full translations after confirmation',()=>{
+ const {api,nodes}=harness();const cursor=sections.find(s=>s.id==='cursor-labels');assert.equal(cursor.fields.length,26);
+ api.fill('cursor-labels','portuguese');
+ for(const [id,,pt] of cursor.fields){assert.equal(typeof pt,'string',id);assert.ok(pt.trim(),id);assert.equal(nodes.get('additionalText_cursor-labels_'+id).value,pt,id);}
+ assert.equal(api.snapshot().values['cursor-labels'],undefined,'language fill must not confirm');
+ api.commit('cursor-labels');const project={state:{semantic:{}}};api.finalize(project);
+ const expected=Object.fromEntries(cursor.fields.map(([id,,pt])=>[id,pt]));
+ assert.equal(JSON.stringify(project.state.semantic.additionalScreenTextsV1.values['cursor-labels']),JSON.stringify(expected));
+ const reopened=harness();reopened.api.hydrate(JSON.parse(JSON.stringify(project)));
+ assert.equal(JSON.stringify(reopened.api.snapshot().values['cursor-labels']),JSON.stringify(expected));
+ api.fill('cursor-labels','english');assert.equal(JSON.stringify(api.snapshot().values['cursor-labels']),JSON.stringify(expected),'restoring English is also only a draft until confirmed');
 });

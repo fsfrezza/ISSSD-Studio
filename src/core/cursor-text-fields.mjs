@@ -1,5 +1,5 @@
 // Audited against the Plus ROM using scripts/audit-cursor-texts.mjs.
-export const CURSOR_HELP_FIELDS=Object.freeze([
+const AUDITED_CURSOR_HELP_FIELDS=Object.freeze([
   [
     "pageHelp",
     "Turn the page by pressing\nthe L/R buttons.",
@@ -267,3 +267,34 @@ export const CURSOR_HELP_FIELDS=Object.freeze([
     }
   ]
 ]);
+
+// Portuguese presets approved for completing the Cursor screen.
+export const CURSOR_PORTUGUESE=Object.freeze({
+  "type": "TIPO",
+  "typeA": "TIPO-A",
+  "typeB": "TIPO-B",
+  "typeC": "TIPO-C",
+  "typeD": "TIPO-D",
+  "area": "ÁREA",
+  "areaA": "ÁREA-A",
+  "areaB": "ÁREA-B",
+  "areaC": "ÁREA-C",
+  "cursorChange": "TROCA DE CURSOR",
+  "cursorAuto": "AUTO",
+  "cursorManual": "MANUAL",
+  "pageHelp": "Troque a página usando os botões L/R.",
+  "typeIntro": "-Tipo de cursor-\nVeja os diferentes modos\nde seleção do cursor\ndisponíveis.",
+  "typeAHelp": "-TIPO A-\nMove o cursor para os dois\njogadores mais próximos\nda bola.",
+  "typeBHelp": "-TIPO B-\nMove o cursor para os dois\ndefensores mais próximos\nda bola. Se não houver\ndefensores por perto,\no cursor irá para o jogador\nmais próximo da bola.",
+  "typeCHelp": "-TIPO C-\nMove o cursor na direção\nescolhida no direcional,\nem direção à bola.",
+  "typeDHelp": "-TIPO D-\nMove o cursor na direção\nescolhida no direcional,\nem direção ao jogador\nmais próximo.",
+  "areaIntro": "-ÁREA-\nTipo de cursor\nVeja os diferentes modos\nde seleção do cursor\ndisponíveis.",
+  "areaHelp": "-ÁREA-\nPermite mover o cursor\npara dentro e fora da tela.\nAssim, você pode trocar\no cursor de um jogador\nfora da tela para outro\ndentro da tela.",
+  "areaAHelp": "-ÁREA A-\n Tipo de cursor\n            ………Na tela\n\n Área ………………LIGADA",
+  "areaBHelp": "-ÁREA B-\n Tipo de cursor\n            ………Na tela\n\n Área ………………DESLIGADA",
+  "areaCHelp": "-ÁREA C-\n Tipo de cursor\n          ………Campo inteiro\n\n Área ………………DESLIGADA",
+  "cursorAutoHelp": "-Movimento do cursor-\n…Automático\nMove o cursor para o jogador\nmelhor posicionado,\nautomaticamente.",
+  "cursorManualHelp": "-Movimento do cursor-\n…Manual\nPermite mover o cursor\npor conta própria.",
+  "keeperHelp": "-Selecionar o goleiro-\nPressione L e R juntos\npara assumir imediatamente\no controle manual\ndo goleiro."
+});
+export const CURSOR_HELP_FIELDS=Object.freeze(AUDITED_CURSOR_HELP_FIELDS.map(([id,english,,options])=>[id,english,CURSOR_PORTUGUESE[id],options]));

@@ -140,17 +140,17 @@
       [
         "typeB",
         "TYPE-B",
-        null
+        "TIPO-B"
       ],
       [
         "typeC",
         "TYPE-C",
-        null
+        "TIPO-C"
       ],
       [
         "typeD",
         "TYPE-D",
-        null
+        "TIPO-D"
       ],
       [
         "area",
@@ -165,12 +165,12 @@
       [
         "areaB",
         "AREA-B",
-        null
+        "ÁREA-B"
       ],
       [
         "areaC",
         "AREA-C",
-        null
+        "ÁREA-C"
       ],
       [
         "cursorChange",
@@ -209,7 +209,7 @@
       [
         "typeIntro",
         "-Controller Type-\nHere's a list of the\ndifferent controller methods\navailable to you.",
-        null,
+        "-Tipo de cursor-\nVeja os diferentes modos\nde seleção do cursor\ndisponíveis.",
         {
           "label": "Ajuda · tipos de cursor",
           "multiline": true,
@@ -228,7 +228,7 @@
       [
         "typeAHelp",
         "-A TYPE-\nMoves the control cursor to\nthe two players closest to\nthe ball.",
-        null,
+        "-TIPO A-\nMove o cursor para os dois\njogadores mais próximos\nda bola.",
         {
           "label": "Ajuda · tipo A",
           "multiline": true,
@@ -247,7 +247,7 @@
       [
         "typeBHelp",
         "-B TYPE-\nMoves the cursor to the two\ndefense players closest to\nthe ball.If there are no\ndefense players near the\ncontrol cursor will be moved\nto the closest player\nto the ball.",
-        null,
+        "-TIPO B-\nMove o cursor para os dois\ndefensores mais próximos\nda bola. Se não houver\ndefensores por perto,\no cursor irá para o jogador\nmais próximo da bola.",
         {
           "label": "Ajuda · tipo B",
           "multiline": true,
@@ -266,7 +266,7 @@
       [
         "typeCHelp",
         "-C TYPE-\nMoves the control cursor in\nthe direction you choose\nwith the D-Pad towards\nthe ball.",
-        null,
+        "-TIPO C-\nMove o cursor na direção\nescolhida no direcional,\nem direção à bola.",
         {
           "label": "Ajuda · tipo C",
           "multiline": true,
@@ -285,7 +285,7 @@
       [
         "typeDHelp",
         "-D TYPE-\nMoves the control cursor in\nthe direction you choose\nwith the D-Pad towards\nthe nearest player.",
-        null,
+        "-TIPO D-\nMove o cursor na direção\nescolhida no direcional,\nem direção ao jogador\nmais próximo.",
         {
           "label": "Ajuda · tipo D",
           "multiline": true,
@@ -304,7 +304,7 @@
       [
         "areaIntro",
         "-AREA-\nController Type\nHere's a list of the\ndifferent controller methods\navailable to you.",
-        null,
+        "-ÁREA-\nTipo de cursor\nVeja os diferentes modos\nde seleção do cursor\ndisponíveis.",
         {
           "label": "Ajuda · introdução às áreas",
           "multiline": true,
@@ -323,7 +323,7 @@
       [
         "areaHelp",
         "-AREA-\nArea\nMoving the control cursor\noff and on the screen.This\nenables you to change the\ncontrol cursor from a player\noff screen to any player\non screen.",
-        null,
+        "-ÁREA-\nPermite mover o cursor\npara dentro e fora da tela.\nAssim, você pode trocar\no cursor de um jogador\nfora da tela para outro\ndentro da tela.",
         {
           "label": "Ajuda · funcionamento da área",
           "multiline": true,
@@ -342,7 +342,7 @@
       [
         "areaAHelp",
         "-AREA A-\n Controller Type\n            ………On the screen\n\n Area ………………ON",
-        null,
+        "-ÁREA A-\n Tipo de cursor\n            ………Na tela\n\n Área ………………LIGADA",
         {
           "label": "Ajuda · área A",
           "multiline": true,
@@ -361,7 +361,7 @@
       [
         "areaBHelp",
         "-AREA B-\n Controller Type\n            ………On the screen\n\n Area ………………OFF",
-        null,
+        "-ÁREA B-\n Tipo de cursor\n            ………Na tela\n\n Área ………………DESLIGADA",
         {
           "label": "Ajuda · área B",
           "multiline": true,
@@ -380,7 +380,7 @@
       [
         "areaCHelp",
         "-AREA C-\n Controller Type\n          ………The whole field\n\n Area ……………… OFF",
-        null,
+        "-ÁREA C-\n Tipo de cursor\n          ………Campo inteiro\n\n Área ………………DESLIGADA",
         {
           "label": "Ajuda · área C",
           "multiline": true,
@@ -399,7 +399,7 @@
       [
         "cursorAutoHelp",
         "-Cursor movement type-\n…Auto\nMoves the control cursor\nautomatically to the player\nin the best position.",
-        null,
+        "-Movimento do cursor-\n…Automático\nMove o cursor para o jogador\nmelhor posicionado,\nautomaticamente.",
         {
           "label": "Ajuda · cursor automático",
           "multiline": true,
@@ -418,7 +418,7 @@
       [
         "cursorManualHelp",
         "-Cursor movement type-\n…Manual\nEnables you to move the\ncursor by yourself.",
-        null,
+        "-Movimento do cursor-\n…Manual\nPermite mover o cursor\npor conta própria.",
         {
           "label": "Ajuda · cursor manual",
           "multiline": true,
@@ -437,7 +437,7 @@
       [
         "keeperHelp",
         "-Selecting the Goalkeeper-\nPress the R and L button\nsimultaneously to take\nimmediate manual control of\nthe Goalkeeper.",
-        null,
+        "-Selecionar o goleiro-\nPressione L e R juntos\npara assumir imediatamente\no controle manual\ndo goleiro.",
         {
           "label": "Ajuda · selecionar goleiro",
           "multiline": true,

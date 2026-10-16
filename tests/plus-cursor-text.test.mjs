@@ -9,7 +9,7 @@ import {auditCursorTexts} from '../scripts/audit-cursor-texts.mjs';
 const state=values=>({additionalScreenTextsV1:{schema:'isssd-additional-screen-texts-v1',values:{'cursor-labels':values}}});
 test('Cursor audit covers all 14 native table pointers and ends before controller action help',()=>{
  const audit=JSON.parse(fs.readFileSync(new URL('../project-data/cursor-text-audit.json',import.meta.url)));
- assert.deepEqual(fields,audit.fields);assert.equal(fields.length,14);
+ assert.deepEqual(fields.map(([id,en,,o])=>[id,en,o]),audit.fields.map(([id,en,,o])=>[id,en,o]));assert.equal(fields.length,14);
  assert.deepEqual(fields.map(f=>f[0]),['pageHelp','typeIntro','typeAHelp','typeBHelp','typeCHelp','typeDHelp','areaIntro','areaHelp','areaAHelp','areaBHelp','areaCHelp','cursorAutoHelp','cursorManualHelp','keeperHelp']);
  for(let i=0;i<fields.length;i++){
   const f=fields[i],n=f[3].native;assert.equal(n.pointerPc,0x3CB0F+i*2);assert.equal(n.width,28);
@@ -56,4 +56,14 @@ test('confirming original Cursor text restores its immutable source after a lega
  const base=seedCursorTextFixture(new Uint8Array(0x40000)),work=base.slice(),f=fields[0],n=f[3].native;
  work.set(encodeCursorText(f,'ANTIGO'),n.pc);plusCursorTextWriter(work,state({pageHelp:f[1]}),base);
  assert.deepEqual(work,base);
+});
+
+
+test('every Portuguese Cursor help fits the verified font, rows and native export region',()=>{
+ const base=seedCursorTextFixture(new Uint8Array(0x40000).fill(0xA5)),rom=base.slice();
+ const values=Object.fromEntries(fields.map(([id,,pt])=>{assert.equal(typeof pt,'string',id);assert.ok(pt.trim(),id);return [id,pt];}));
+ plusCursorTextWriter(rom,state(values),base);
+ for(const field of fields){const n=field[3].native,expected=encodeCursorText(field,field[2]);assert.equal(expected.length,n.width*n.rowCount);assert.deepEqual(rom.slice(n.pc,n.pc+expected.length),expected);}
+ for(let i=0;i<rom.length;i++)if(rom[i]!==base[i])assert.ok(fields.some(f=>i>=f[3].native.pc&&i<f[3].native.pc+f[3].native.width*f[3].native.rowCount));
+ assert.match(decodeCursorText(fields.find(f=>f[0]==='typeBHelp'),encodeCursorText(fields.find(f=>f[0]==='typeBHelp'),values.typeBHelp)),/defensores/);
 });

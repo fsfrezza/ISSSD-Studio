@@ -1,4 +1,4 @@
-import {CURSOR_HELP_FIELDS} from './cursor-text-fields.mjs';
+import {CURSOR_HELP_FIELDS,CURSOR_PORTUGUESE} from './cursor-text-fields.mjs';
 // User-approved inscriptions. Keeping this catalog shared by UI and export
 // prevents a visible editable field from silently disappearing during a build.
 export const ADDITIONAL_TEXT_SECTIONS=Object.freeze([
@@ -19,9 +19,11 @@ export const ADDITIONAL_TEXT_SECTIONS=Object.freeze([
   ['one','ONE','UMA'],['four','FOUR','QUATRO'],
  ]},
  {id:'cursor-labels',aliases:['control-labels'],page:'texts-cursor',title:'Textos Cursor',area:'pre-partida',fields:[
-  ['type','TYPE','TIPO'],['typeA','TYPE-A','TIPO-A'],['typeB','TYPE-B',null],['typeC','TYPE-C',null],['typeD','TYPE-D',null],
-  ['area','AREA','ÁREA'],['areaA','AREA-A','ÁREA-A'],['areaB','AREA-B',null],['areaC','AREA-C',null],
-  ['cursorChange','CURSOR CHANGE','TROCA DE CURSOR'],['cursorAuto','AUTO','AUTO'],['cursorManual','MANUAL','MANUAL'],
+  ...[
+   ['type','TYPE'],['typeA','TYPE-A'],['typeB','TYPE-B'],['typeC','TYPE-C'],['typeD','TYPE-D'],
+   ['area','AREA'],['areaA','AREA-A'],['areaB','AREA-B'],['areaC','AREA-C'],
+   ['cursorChange','CURSOR CHANGE'],['cursorAuto','AUTO'],['cursorManual','MANUAL'],
+  ].map(([id,english])=>[id,english,CURSOR_PORTUGUESE[id]]),
   ...CURSOR_HELP_FIELDS,
  ]},
  {id:'uniform-labels',page:'uniforms',title:'Textos da tela de uniformes',area:'pre-partida',fields:[

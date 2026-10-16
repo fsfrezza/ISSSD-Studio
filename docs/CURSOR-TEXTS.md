@@ -35,7 +35,7 @@ Os blocos incluem as inscrições de seus popups, como Controller Type, Area, ON
 
 ## Edição e salvamento
 
-Os textos completos das ajudas usam caixas de várias linhas, com o limite nativo visível. Espaços, quebras de linha e campos vazios são preservados. Restaurar originais (inglês) e Usar em português preenchem rascunhos; Implementar no projeto confirma. O botão em português mantém os campos cujo texto em português ainda não foi definido pelo usuário. Não foram inventadas traduções para as novas descrições.
+Os textos completos das ajudas usam caixas de várias linhas, com o limite nativo visível. Espaços, quebras de linha e campos vazios são preservados. Restaurar originais (inglês) e Usar em português preenchem rascunhos; Implementar no projeto confirma. O botão Usar em português preenche todos os 26 campos, incluindo as 14 descrições completas. As traduções respeitam os limites nativos de linhas e células. AUTO e MANUAL são inscrições válidas em português e permanecem com a mesma grafia.
 
 ## ROM
 

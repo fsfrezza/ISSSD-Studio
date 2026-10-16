@@ -101,7 +101,7 @@ test('HTTP export returns an extractable ZIP, correct manifest and canonical fin
   // Reproduce the user's exact failure: all six new control inscriptions
   // are confirmed while the previously supported player edits stay selected.
   const pendingProject=structuredClone(project),controlSection=ADDITIONAL_TEXT_SECTIONS.find(s=>s.id==='cursor-labels');
-  pendingProject.state.semantic.additionalScreenTextsV1={schema:'isssd-additional-screen-texts-v1',values:{'control-labels':Object.fromEntries(controlSection.fields.filter(([, , pt])=>pt!=null&&pt!==undefined).map(([id,,pt])=>[id,pt]))}};
+  pendingProject.state.semantic.additionalScreenTextsV1={schema:'isssd-additional-screen-texts-v1',values:{'control-labels':Object.fromEntries(controlSection.fields.filter(([id])=>['type','typeA','area','areaA','cursorChange','pageHelp'].includes(id)).map(([id,,pt])=>[id,pt]))}};
   const pendingBefore=structuredClone(pendingProject);
   const partial=await fetch(url+'__isssd/build-plus-project',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({project:pendingProject,cumulative:true})});
   assert.equal(partial.status,200,await(partial.ok?Promise.resolve(''):partial.text()));
