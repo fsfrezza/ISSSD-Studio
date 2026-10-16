@@ -1,3 +1,4 @@
+import {CURSOR_HELP_FIELDS} from './cursor-text-fields.mjs';
 import {CONTROLLER_ACTIONS} from './plus-controller-actions.mjs';
 import {TITLE_NATIVE_GROUPS,nativeTitleStream} from './native-title-graphics.mjs';
 import {PLUS_MAIN_MENU_REGIONS} from './plus-main-menu-renderer.mjs';
@@ -50,6 +51,7 @@ export function areaClassifier(rom,base=null){
   if(contains(off,menu))return 'menu-principal';
   if((off>=0xE7F2&&off<0xE830)||(off>=0x2DDA5&&off<0x2DDA5+56*10))return 'selecao-equipes';
   if((off>=0x483C2&&off<0x483C2+56*2*34)||(off>=0x48D50&&off<0x48D50+56*24))return 'jogadores';
+  if(CURSOR_HELP_FIELDS.some(([, , , {native:n}])=>off>=n.pc&&off<n.pc+n.width*n.rowCount))return 'pre-partida';
   if(CONTROLLER_ACTIONS.some(a=>off>=a.pc&&off<a.pc+a.cells))return 'pre-partida';
   if((off>=0xF631C&&off<0xF631C+2153)||(off>=0x108162&&off<0x108162+390))return 'pre-partida';
   if(contains(off,players))return 'jogadores';

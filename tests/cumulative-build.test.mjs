@@ -1,3 +1,7 @@
+import {writeFinalSnesChecksum} from '../src/core/plus-export-finalizer.mjs';
+import {seedCursorTextFixture} from './cursor-text-fixture.mjs';
+import {CURSOR_HELP_FIELDS} from '../src/core/cursor-text-fields.mjs';
+import {encodeCursorText} from '../src/core/plus-cursor-text.mjs';
 import {ADDITIONAL_TEXT_SECTIONS} from '../src/core/additional-screen-text-fields.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -15,7 +19,7 @@ import {resolvePlusTacticalRecord} from '../src/core/plus-tactics-address.mjs';
 import {decodePlusTacticalRecord} from '../src/core/plus-tactics-record.mjs';
 import {validatePlusRuntimeMirrors} from '../src/core/plus-export-finalizer.mjs';
 function fixture(){
- const base=makePlusTacticalFixture();
+ const base=seedCursorTextFixture(makePlusTacticalFixture());
  for(let t=0;t<56;t++){const ptr=0x8000+t*160;base[PLUS_NAME_POINTER_TABLE+t*2]=ptr&255;base[PLUS_NAME_POINTER_TABLE+t*2+1]=ptr>>8;}
  for(let p=0;p<20;p++){base.set(encodeFixedPlayerName('BASE'+p),resolvePlusPlayerNameOffset(base,30,p));base.set([0x44,0x44,0x44,0x44,0x24,p,0x11],playerOffset(30,p));}
  const players=[{slot:2,baseSlot:2,playerId:'30:2',custom:{name:'Cafu',number:2,position:'DF-MF',skills:{speed:9},tactical:{x:-30,y:30,attack:true}}},{slot:3,baseSlot:3,playerId:'30:3',custom:{name:'Lucio',number:3}}];
@@ -96,21 +100,21 @@ test('HTTP export returns an extractable ZIP, correct manifest and canonical fin
   assert.deepEqual(fs.readFileSync(file),Buffer.from(base));
   // Reproduce the user's exact failure: all six new control inscriptions
   // are confirmed while the previously supported player edits stay selected.
-  const pendingProject=structuredClone(project),controlSection=ADDITIONAL_TEXT_SECTIONS.find(s=>s.id==='control-labels');
-  pendingProject.state.semantic.additionalScreenTextsV1={schema:'isssd-additional-screen-texts-v1',values:{'control-labels':Object.fromEntries(controlSection.fields.map(([id,,pt])=>[id,pt]))}};
+  const pendingProject=structuredClone(project),controlSection=ADDITIONAL_TEXT_SECTIONS.find(s=>s.id==='cursor-labels');
+  pendingProject.state.semantic.additionalScreenTextsV1={schema:'isssd-additional-screen-texts-v1',values:{'control-labels':Object.fromEntries(controlSection.fields.filter(([, , pt])=>pt!=null&&pt!==undefined).map(([id,,pt])=>[id,pt]))}};
   const pendingBefore=structuredClone(pendingProject);
   const partial=await fetch(url+'__isssd/build-plus-project',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({project:pendingProject,cumulative:true})});
   assert.equal(partial.status,200,await(partial.ok?Promise.resolve(''):partial.text()));
-  assert.equal(partial.headers.get('X-ISSSD-Pending-Text-Count'),'6');assert.equal(partial.headers.get('X-ISSSD-Export-Status'),'partial');
+  assert.equal(partial.headers.get('X-ISSSD-Pending-Text-Count'),'5');assert.equal(partial.headers.get('X-ISSSD-Export-Status'),'partial');
   const archive=Buffer.from(await partial.arrayBuffer()),partialFiles=new Map();let cursor=0;
   while(archive.readUInt32LE(cursor)===0x04034b50){const packed=archive.readUInt32LE(cursor+18),len=archive.readUInt16LE(cursor+26),extra=archive.readUInt16LE(cursor+28),start=cursor+30+len+extra,name=archive.toString('utf8',cursor+30,cursor+30+len),bytes=inflateRawSync(archive.subarray(start,start+packed));assert.equal(crc32(bytes),archive.readUInt32LE(cursor+14));partialFiles.set(name,bytes);cursor=start+packed;}
   const partialManifest=JSON.parse(partialFiles.get('indice.json'));
   assert.equal(partialManifest.entries.length,9);assert.equal(partialManifest.allSelectedChangesApplied,false);
-  assert.equal(partialManifest.pendingTextChanges.length,6);
-  assert.equal(partialManifest.entries.find(e=>e.stage==='pre-partida').pendingTextChanges.length,6);
+  assert.equal(partialManifest.pendingTextChanges.length,5);
+  assert.equal(partialManifest.entries.find(e=>e.stage==='pre-partida').pendingTextChanges.length,5);
   assert.match(partialFiles.get('TEXTOS-PENDENTES.txt').toString('utf8'),/TIPO-A/);
-  assert.match(partialFiles.get('LEIA-ME.txt').toString('utf8'),/6 novos textos NÃO foram aplicados/);
-  for(const entry of partialManifest.entries){assert.equal(partialFiles.get(entry.name).length,0x400000);assert.deepEqual(partialFiles.get(entry.name),files.get(entry.name),'supported changes remain identical in '+entry.name);}
+  assert.match(partialFiles.get('LEIA-ME.txt').toString('utf8'),/5 novos textos NÃO foram aplicados/);
+  for(const entry of partialManifest.entries){assert.equal(partialFiles.get(entry.name).length,0x400000);const expected=Buffer.from(files.get(entry.name));if(entry.index>=5){const help=CURSOR_HELP_FIELDS.find(f=>f[0]==='pageHelp');expected.set(encodeCursorText(help,controlSection.fields.find(f=>f[0]==='pageHelp')[2]),help[3].native.pc);writeFinalSnesChecksum(expected);}assert.deepEqual(partialFiles.get(entry.name),expected,'supported changes and native Cursor help are applied in '+entry.name);}
   assert.deepEqual(pendingProject,pendingBefore);assert.deepEqual(fs.readFileSync(file),Buffer.from(base));
   const filtered=await fetch(url+'__isssd/build-plus-project',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({project:pendingProject,cumulative:true,selectedAreas:['jogadores']})});
   assert.equal(filtered.status,200);assert.equal(filtered.headers.get('X-ISSSD-Pending-Text-Count'),'0');assert.equal(filtered.headers.get('X-ISSSD-Export-Status'),'complete');await filtered.arrayBuffer();

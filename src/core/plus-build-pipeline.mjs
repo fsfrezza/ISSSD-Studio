@@ -1,3 +1,4 @@
+import {plusCursorTextWriter} from './plus-cursor-text.mjs';
 import {teamsV3PlayerSteps,teamsV3TacticalSteps,hasTeamsV3Tactics,applySteps} from './teams-v3-writer.mjs';
 import {runBuildPipeline} from './build-pipeline.mjs';
 import {PLUS,reconcileKnownPlayerIntegrityMirrors} from './plus-player.mjs';
@@ -79,6 +80,10 @@ export function createPlusBuildStages({baseRom,patches=[],extraWriters=[],writeC
     {
       id:'07b-native-screen-text',kind:'semantic',when:!selectedAreas||selectedAreas.some(a=>a==='pre-partida'||a==='textos-estrategias'),
       run:(work,state)=>plusNativeScreenTextWriter(work,state,selectedAreas),
+    },
+    {
+      id:'07b-cursor-help-text',kind:'semantic',when:!selectedAreas||selectedAreas.includes('pre-partida'),
+      run:(work,state)=>plusCursorTextWriter(work,state,baseRom,selectedAreas),
     },
     {
       id:'07c-controller-text',kind:'semantic',when:!selectedAreas||selectedAreas.includes('pre-partida'),

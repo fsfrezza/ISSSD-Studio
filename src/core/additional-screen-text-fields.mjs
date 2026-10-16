@@ -1,3 +1,4 @@
+import {CURSOR_HELP_FIELDS} from './cursor-text-fields.mjs';
 // User-approved inscriptions. Keeping this catalog shared by UI and export
 // prevents a visible editable field from silently disappearing during a build.
 export const ADDITIONAL_TEXT_SECTIONS=Object.freeze([
@@ -17,10 +18,11 @@ export const ADDITIONAL_TEXT_SECTIONS=Object.freeze([
  {id:'strategy-labels',page:'strategies',title:'Textos auxiliares de estratégias',area:'textos-estrategias',fields:[
   ['one','ONE','UMA'],['four','FOUR','QUATRO'],
  ]},
- {id:'control-labels',page:'controls',title:'Textos auxiliares dos controles',area:'pre-partida',fields:[
-  ['type','TYPE','TIPO'],['typeA','TYPE-A','TIPO-A'],['area','AREA','ÁREA'],['areaA','AREA-A','ÁREA-A'],
-  ['cursorChange','CURSOR CHANGE','TROCA DE CURSOR'],
-  ['pageHelp','Turn the page by pressing the L/R buttons.','Troque a página usando os botões L/R.'],
+ {id:'cursor-labels',aliases:['control-labels'],page:'texts-cursor',title:'Textos Cursor',area:'pre-partida',fields:[
+  ['type','TYPE','TIPO'],['typeA','TYPE-A','TIPO-A'],['typeB','TYPE-B',null],['typeC','TYPE-C',null],['typeD','TYPE-D',null],
+  ['area','AREA','ÁREA'],['areaA','AREA-A','ÁREA-A'],['areaB','AREA-B',null],['areaC','AREA-C',null],
+  ['cursorChange','CURSOR CHANGE','TROCA DE CURSOR'],['cursorAuto','AUTO','AUTO'],['cursorManual','MANUAL','MANUAL'],
+  ...CURSOR_HELP_FIELDS,
  ]},
  {id:'uniform-labels',page:'uniforms',title:'Textos da tela de uniformes',area:'pre-partida',fields:[
   ['shirt','SHIRT','CAMISA'],['pants','PANTS','CALÇÃO'],['socks','SOCKS','MEIAS'],
@@ -33,7 +35,10 @@ export const ADDITIONAL_TEXT_SECTIONS=Object.freeze([
 export const normalizeAdditionalText=value=>String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/\s+/g,' ').trim();
 export function additionalTextValues(semantic={}){
  const state=semantic.additionalScreenTextsV1;
- return state?.schema==='isssd-additional-screen-texts-v1'?state.values||{}:{};
+ const values=state?.schema==='isssd-additional-screen-texts-v1'?state.values||{}:{};
+ const out={...values};
+ for(const section of ADDITIONAL_TEXT_SECTIONS)if(section.aliases)out[section.id]=Object.assign({},...section.aliases.map(a=>values[a]||{}),values[section.id]||{});
+ return out;
 }
 
 // Unimplemented inscriptions are an explicit export report, not a fatal error.
@@ -42,7 +47,8 @@ export function pendingAdditionalTextExports(semantic={},selectedAreas=null){
  const values=additionalTextValues(semantic),pending=[];
  for(const section of ADDITIONAL_TEXT_SECTIONS){
   if(selectedAreas&&!selectedAreas.includes(section.area))continue;
-  for(const [id,english] of section.fields){
+  for(const [id,english,,options] of section.fields){
+   if(options?.native)continue;
    const fields=values[section.id]||{};
    if(Object.hasOwn(fields,id)&&String(fields[id])!==english)pending.push({
     section:section.id,sectionTitle:section.title,field:id,label:english,

@@ -18,7 +18,7 @@ test('new text fields have user-approved translations and belong to their actual
  assert.deepEqual([pt.shotPower,pt.jump,pt.pointsLeft,pt.dash,pt.speed],['FORÇA-CHUTE','PULO','RESTANTES','ARRANQUE','RAPIDEZ']);
  assert.equal(normalizeAdditionalText(pt.shotPower),'FORCA-CHUTE');assert.equal(normalizeAdditionalText('CALÇÃO'),'CALCAO');
  assert.equal(sections.find(s=>s.id==='uniform-labels').page,'uniforms');
- assert.equal(sections.find(s=>s.id==='control-labels').page,'controls');
+ assert.equal(sections.find(s=>s.id==='cursor-labels').page,'texts-cursor');
  assert.ok(sections.find(s=>s.id==='navigation-labels').fields.some(([id,en,pt])=>id==='exit'&&en==='EXIT'&&pt==='SAIR'));
 });
 test('language fill is a draft, real confirmation saves full inscriptions, and reload restores them',()=>{
@@ -67,11 +67,17 @@ test('rendered cards use their own tabs, language buttons stay adjacent, and hyd
   addEventListener(name,fn){this.listeners[name]=fn;}
   querySelector(selector){return selector==='.rom-content'?this.content:null;}
  }
- for(const section of sections){if(nodes.has('page-'+section.page))continue;const page=new Element('section');page.id='page-'+section.page;page.content=page.appendChild(new Element('div'));}
+ for(const section of sections){if(section.page==='texts-cursor'||nodes.has('page-'+section.page))continue;const page=new Element('section');page.id='page-'+section.page;page.content=page.appendChild(new Element('div'));}
  const document={readyState:'complete',getElementById:id=>nodes.get(id),createElement:tag=>new Element(tag),documentElement:null,activeElement:null};
- const window={};vm.runInContext(source,vm.createContext({ADDITIONAL_TEXT_SECTIONS:sections,document,window,MutationObserver:class{},clearTimeout(){},setTimeout(){}}));
+ const controlsNav=new Element('button');controlsNav.id='nav-controls';const navigation=[];controlsNav.after=node=>navigation.push(node);
+ const window={};vm.runInContext(source,vm.createContext({ADDITIONAL_TEXT_SECTIONS:sections,document,window,
+  ensureScreenPage:(id,title)=>{const page=new Element('section');page.id='page-'+id;page.content=page.appendChild(new Element('div'));page.title=title;return page;},
+  makeNavButton:(id,page,label)=>{const button=new Element('button');button.id=id;button.dataset.page=page;button.textContent=label;return button;},
+  MutationObserver:class{},clearTimeout(){},setTimeout(){}}));
+ assert.equal(navigation[0].id,'nav-texts-cursor');assert.equal(navigation[0].textContent,'Textos Cursor');
+ assert.equal(nodes.get('page-texts-cursor').title,'Textos Cursor');assert.equal(nodes.has('additionalCard_control-labels'),false);
  const api=window.__ISSSD_ADDITIONAL_SCREEN_TEXTS__;
- assert.equal([...nodes.keys()].filter(k=>k.startsWith('additionalText_')).length,35);
+ assert.equal([...nodes.keys()].filter(k=>k.startsWith('additionalText_')).length,sections.reduce((n,s)=>n+s.fields.length,0));
  for(const section of sections){
   const card=nodes.get('additionalCard_'+section.id);assert.equal(card.parentElement,nodes.get('page-'+section.page).content);
   const english=nodes.get('additional_'+section.id+'_english'),pt=nodes.get('additional_'+section.id+'_portuguese');
@@ -95,4 +101,20 @@ test('selective graphical save includes and excludes new text state even without
  context.project={state:{semantic:{additionalScreenTextsV1:{values:{'player-labels':{jump:'PULO'}}},textWorkspaceV2:{sections:{graphicIntents:{}}}}}};
  assert.equal(vm.runInContext("cat(project)['texts.graphics'].additional.values['player-labels'].jump",context),'PULO');
  vm.runInContext("removeCategory(project,'texts.graphics')",context);assert.equal(context.project.state.semantic.additionalScreenTextsV1,undefined);
+});
+
+
+test('moving control help to Cursor preserves legacy saved values and drafts without changing the source project',()=>{
+ const {api}=harness();const project={state:{semantic:{additionalScreenTextsV1:{schema:'isssd-additional-screen-texts-v1',values:{'control-labels':{type:'MEU TIPO',pageHelp:'AJUDA ANTIGA'},'cursor-labels':{type:'TIPO MAIS NOVO'}},drafts:{'control-labels':{pageHelp:'RASCUNHO COM ESPACO '}}}}}};
+ const before=JSON.stringify(project);api.hydrate(project);assert.equal(JSON.stringify(project),before);
+ const saved={state:{semantic:{}}};api.finalize(saved);const state=saved.state.semantic.additionalScreenTextsV1;
+ assert.equal(state.values['control-labels'],undefined);assert.equal(state.values['cursor-labels'].type,'TIPO MAIS NOVO');
+ assert.equal(state.values['cursor-labels'].pageHelp,'AJUDA ANTIGA');assert.equal(state.drafts['cursor-labels'].pageHelp,'RASCUNHO COM ESPACO ');
+});
+
+test('Cursor Portuguese fill preserves help translations the user has not yet defined',()=>{
+ const {api,nodes}=harness();const node=nodes.get('additionalText_cursor-labels_typeBHelp');node.value='Minha ajuda ainda em edicao';
+ api.fill('cursor-labels','portuguese');assert.equal(node.value,'Minha ajuda ainda em edicao');assert.equal(api.snapshot().drafts['cursor-labels'].typeBHelp,undefined);
+ assert.equal(nodes.get('additionalText_cursor-labels_type').value,'TIPO');
+ api.fill('cursor-labels','english');assert.equal(node.value,sections.find(s=>s.id==='cursor-labels').fields.find(f=>f[0]==='typeBHelp')[1]);
 });
