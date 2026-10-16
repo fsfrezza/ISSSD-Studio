@@ -1,4 +1,4 @@
-import {validateAdditionalTextExport} from './additional-screen-text-fields.mjs';
+import {pendingAdditionalTextExports} from './additional-screen-text-fields.mjs';
 import {buildPlusWithPipeline,createPlusBuildStages} from './plus-build-pipeline.mjs';
 import {runBuildPipeline} from './build-pipeline.mjs';
 import {canonicalProjectSemantic} from './project-semantic.mjs';
@@ -10,7 +10,7 @@ export function buildPlusProjectRom(baseRom,project,options={}){
   const canonical=canonicalProjectState(project,{baseSize:baseRom?.length});
   const ignorePersistedPatches=options.ignorePersistedPatches===true;
   const semanticState=canonicalProjectSemantic(project);
-  validateAdditionalTextExport(semanticState,options.selectedAreas??null);
+  const pendingTextChanges=pendingAdditionalTextExports(semanticState,options.selectedAreas??null);
   const userWriters=options.writers??[];
   if(!Array.isArray(userWriters)||userWriters.some(writer=>typeof writer!=='function'))throw new TypeError('writers must be functions');
   const keepCheckpoints=options.keepCheckpoints===true;
@@ -46,6 +46,8 @@ export function buildPlusProjectRom(baseRom,project,options={}){
 
   return {
     ...result,
+    pendingTextChanges,
+    allSelectedChangesApplied:pendingTextChanges.length===0,
     diff:diffRanges(baseRom,result.rom),
     projectState:canonical,
     ignoredPersistedPatches:ignorePersistedPatches,

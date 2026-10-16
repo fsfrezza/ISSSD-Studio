@@ -1,3 +1,4 @@
+import {ADDITIONAL_TEXT_SECTIONS} from '../src/core/additional-screen-text-fields.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -93,6 +94,26 @@ test('HTTP export returns an extractable ZIP, correct manifest and canonical fin
   for(const e of manifest.entries)assert.equal(files.get(e.name).length,0x400000);
   assert.deepEqual(files.get(manifest.finalRom),Buffer.from(buildPlusProjectRom(base,project,{forceTacticalInfrastructure:true}).rom));
   assert.deepEqual(fs.readFileSync(file),Buffer.from(base));
+  // Reproduce the user's exact failure: all six new control inscriptions
+  // are confirmed while the previously supported player edits stay selected.
+  const pendingProject=structuredClone(project),controlSection=ADDITIONAL_TEXT_SECTIONS.find(s=>s.id==='control-labels');
+  pendingProject.state.semantic.additionalScreenTextsV1={schema:'isssd-additional-screen-texts-v1',values:{'control-labels':Object.fromEntries(controlSection.fields.map(([id,,pt])=>[id,pt]))}};
+  const pendingBefore=structuredClone(pendingProject);
+  const partial=await fetch(url+'__isssd/build-plus-project',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({project:pendingProject,cumulative:true})});
+  assert.equal(partial.status,200,await(partial.ok?Promise.resolve(''):partial.text()));
+  assert.equal(partial.headers.get('X-ISSSD-Pending-Text-Count'),'6');assert.equal(partial.headers.get('X-ISSSD-Export-Status'),'partial');
+  const archive=Buffer.from(await partial.arrayBuffer()),partialFiles=new Map();let cursor=0;
+  while(archive.readUInt32LE(cursor)===0x04034b50){const packed=archive.readUInt32LE(cursor+18),len=archive.readUInt16LE(cursor+26),extra=archive.readUInt16LE(cursor+28),start=cursor+30+len+extra,name=archive.toString('utf8',cursor+30,cursor+30+len),bytes=inflateRawSync(archive.subarray(start,start+packed));assert.equal(crc32(bytes),archive.readUInt32LE(cursor+14));partialFiles.set(name,bytes);cursor=start+packed;}
+  const partialManifest=JSON.parse(partialFiles.get('indice.json'));
+  assert.equal(partialManifest.entries.length,9);assert.equal(partialManifest.allSelectedChangesApplied,false);
+  assert.equal(partialManifest.pendingTextChanges.length,6);
+  assert.equal(partialManifest.entries.find(e=>e.stage==='pre-partida').pendingTextChanges.length,6);
+  assert.match(partialFiles.get('TEXTOS-PENDENTES.txt').toString('utf8'),/TIPO-A/);
+  assert.match(partialFiles.get('LEIA-ME.txt').toString('utf8'),/6 novos textos NÃO foram aplicados/);
+  for(const entry of partialManifest.entries){assert.equal(partialFiles.get(entry.name).length,0x400000);assert.deepEqual(partialFiles.get(entry.name),files.get(entry.name),'supported changes remain identical in '+entry.name);}
+  assert.deepEqual(pendingProject,pendingBefore);assert.deepEqual(fs.readFileSync(file),Buffer.from(base));
+  const filtered=await fetch(url+'__isssd/build-plus-project',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({project:pendingProject,cumulative:true,selectedAreas:['jogadores']})});
+  assert.equal(filtered.status,200);assert.equal(filtered.headers.get('X-ISSSD-Pending-Text-Count'),'0');assert.equal(filtered.headers.get('X-ISSSD-Export-Status'),'complete');await filtered.arrayBuffer();
   const invalid=structuredClone(project);invalid.state.semantic.teamsV1.teams[30].players[0].custom.number=999;
   const failed=await fetch(url+'__isssd/build-plus-project',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({project:invalid,cumulative:true})});
   assert.equal(failed.status,422);assert.match((await failed.json()).error,/Etapa cumulativa/);

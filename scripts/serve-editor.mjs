@@ -1,3 +1,4 @@
+import {pendingTextExportReport} from '../src/core/additional-screen-text-fields.mjs';
 import os from 'node:os';
 import {buildCumulativeProject} from '../src/core/cumulative-build.mjs';
 import {ZipFile} from '../src/platform/zip-file.mjs';
@@ -66,6 +67,7 @@ function writeDiagnostics(result){
   lastSuccessfulStage:result.lastSuccessfulStage,
   stages:result.report,
   finalDiff:result.diff,
+  pendingTextChanges:result.pendingTextChanges,
  };
  fs.writeFileSync(path.join(dir,'build-report.json'),JSON.stringify(report,null,2)+'\n','utf8');
  return {id,dir};
@@ -87,10 +89,12 @@ function buildPostedProject(req,res){
     const cleanup=()=>{zip.close();fs.rmSync(dir,{recursive:true,force:true});};
     try{
      const manifest=buildCumulativeProject(base,project,{selectedAreas:payload.selectedAreas,titleGraphics:payload.titleGraphics,onRom:(rom,entry)=>zip.add(entry.name,rom)});
+     const pendingReport=pendingTextExportReport(manifest.pendingTextChanges);
+     if(pendingReport)zip.add('TEXTOS-PENDENTES.txt',Buffer.from(pendingReport));
      zip.add('indice.json',Buffer.from(JSON.stringify(manifest,null,2)+'\n'));
-     zip.add('LEIA-ME.txt',Buffer.from('ROMs cumulativas das fases marcadas, em ordem fixa:\n01 Infraestrutura; 02 Metadados; 03 Tela Inicial; 04 Menu Principal; 05 Pré-Partida; 06 Textos de Estratégias; 07 Seleção de equipes; 08 Jogadores; 09 Formações.\nFases desmarcadas não são aplicadas nem geram ROM. Lacunas na numeração são intencionais.\nA preparação de 4 MiB/individualização é obrigatória em todos os arquivos.\nConsulte indice.json para fases selecionadas, alterações e dados legados sem área confirmada.\n'));
+     zip.add('LEIA-ME.txt',Buffer.from('ROMs cumulativas das fases marcadas, em ordem fixa:\n01 Infraestrutura; 02 Metadados; 03 Tela Inicial; 04 Menu Principal; 05 Pré-Partida; 06 Textos de Estratégias; 07 Seleção de equipes; 08 Jogadores; 09 Formações.\nFases desmarcadas não são aplicadas nem geram ROM. Lacunas na numeração são intencionais.\nA preparação de 4 MiB/individualização é obrigatória em todos os arquivos.\nConsulte indice.json para fases selecionadas, alterações e dados legados sem área confirmada.\n'+(pendingReport?'ATENÇÃO: '+manifest.pendingTextChanges.length+' novos textos NÃO foram aplicados. Consulte TEXTOS-PENDENTES.txt.\n':'')));
      zip.finish();
-     res.writeHead(200,{'Content-Type':'application/zip','Content-Length':fs.statSync(zipPath).size,'Cache-Control':'no-store','X-ISSSD-Builder':'plus-build-pipeline-v1','X-ISSSD-Mirrors':'ok','X-ISSSD-Archive':'cumulative-v1','X-ISSSD-ROM-Count':String(manifest.entries.length)});
+     res.writeHead(200,{'Content-Type':'application/zip','Content-Length':fs.statSync(zipPath).size,'Cache-Control':'no-store','X-ISSSD-Builder':'plus-build-pipeline-v1','X-ISSSD-Mirrors':'ok','X-ISSSD-Archive':'cumulative-v1','X-ISSSD-ROM-Count':String(manifest.entries.length),'X-ISSSD-Pending-Text-Count':String(manifest.pendingTextChanges.length),'X-ISSSD-Export-Status':manifest.allSelectedChangesApplied?'complete':'partial'});
      const stream=fs.createReadStream(zipPath);res.on('close',()=>stream.destroy());stream.on('close',cleanup);stream.on('error',()=>res.destroy()).pipe(res);return;
     }catch(e){cleanup();throw e;}
    }
@@ -105,6 +109,8 @@ function buildPostedProject(req,res){
     'X-ISSSD-Stages':String(result.report.length),
     'X-ISSSD-Last-Stage':encodeURIComponent(result.lastSuccessfulStage||''),
     'X-ISSSD-Diagnostics':diagnosticInfo?encodeURIComponent(diagnosticInfo.dir):'off',
+    'X-ISSSD-Pending-Text-Count':String(result.pendingTextChanges.length),
+    'X-ISSSD-Export-Status':result.allSelectedChangesApplied?'complete':'partial',
     'X-ISSSD-Mirrors':'ok'
    });
    res.end(body);

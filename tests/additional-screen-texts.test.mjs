@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
-import {ADDITIONAL_TEXT_SECTIONS as sections,normalizeAdditionalText,validateAdditionalTextExport} from '../src/core/additional-screen-text-fields.mjs';
+import {ADDITIONAL_TEXT_SECTIONS as sections,normalizeAdditionalText,pendingAdditionalTextExports,pendingTextExportReport} from '../src/core/additional-screen-text-fields.mjs';
 const catalog=JSON.parse(fs.readFileSync(new URL('../project-data/additional-screen-text-fields.json',import.meta.url)));
 const source=fs.readFileSync(new URL('../editor-src/additional-screen-texts.mjs',import.meta.url),'utf8');
 function harness(){
@@ -46,13 +46,16 @@ test('blank and spaced user inscriptions survive actual finalizer without auto-c
  assert.equal(project.state.semantic.additionalScreenTextsV1.values['navigation-labels'].exit,'');
  assert.equal(project.state.semantic.additionalScreenTextsV1.values['navigation-labels'].reset,'VOLTAR AO ORIGINAL');
 });
-test('export never silently drops confirmed new fields, and respects unchecked game areas',()=>{
+test('unimplemented confirmed text is reported without blocking export and respects unchecked areas',()=>{
  const {api}=harness();api.fill('player-labels','portuguese');const project={state:{semantic:{}}};api.finalize(project);
- assert.equal(validateAdditionalTextExport(project.state.semantic),true,'unconfirmed drafts do not affect ROM');
- api.commit('player-labels');api.finalize(project);
- assert.throws(()=>validateAdditionalTextExport(project.state.semantic),/gravação na ROM ainda não está disponível/);
- assert.equal(validateAdditionalTextExport(project.state.semantic,['pre-partida']),true);
- api.fill('player-labels','english');api.commit('player-labels');api.finalize(project);assert.equal(validateAdditionalTextExport(project.state.semantic),true);
+ assert.deepEqual(pendingAdditionalTextExports(project.state.semantic),[],'unconfirmed drafts do not affect ROM');
+ api.commit('player-labels');api.finalize(project);const before=structuredClone(project);
+ const pending=pendingAdditionalTextExports(project.state.semantic);
+ assert.ok(pending.length>0);assert.equal(pending.find(p=>p.field==='shotPower').requested,'FORÇA-CHUTE');
+ assert.match(pendingTextExportReport(pending),/NÃO APLICADOS/);
+ assert.deepEqual(pendingAdditionalTextExports(project.state.semantic,['pre-partida']),[]);
+ assert.equal(JSON.stringify(project),JSON.stringify(before));
+ api.fill('player-labels','english');api.commit('player-labels');api.finalize(project);assert.deepEqual(pendingAdditionalTextExports(project.state.semantic),[]);
 });
 
 test('rendered cards use their own tabs, language buttons stay adjacent, and hydration restores edited inputs',()=>{

@@ -17,7 +17,7 @@
  function commit(owner){const section=sections.find(s=>s.id===owner);if(!section)throw Error('Seção desconhecida');
   const values={};for(const [field] of section.fields){const n=document.getElementById(id(owner,field));values[field]=String(n?.value??value(section,field));}
   saved.values[owner]=values;saved.drafts[owner]={...values};dirty.delete(owner);
-  setStatus(owner,'Textos implementados no projeto. Use Salvar Projeto para gravar o arquivo. A gravação destes novos campos na ROM ainda não está disponível.');
+  setStatus(owner,'Textos implementados no projeto. Use Salvar Projeto para gravar o arquivo. Estes novos textos ainda não são gravados na ROM e serão listados em TEXTOS-PENDENTES.txt no ZIP.');
  }
  function install(){
   for(const section of sections){
@@ -37,7 +37,7 @@
     for(const [action,label] of [['english','Restaurar originais (inglês)'],['portuguese','Usar em português'],['commit','Implementar no projeto']]){
      const button=document.createElement('button');button.id='additional_'+section.id+'_'+action;button.type='button';button.className=action==='commit'?'btn primary':'btn';button.textContent=label;button.onclick=()=>action==='commit'?commit(section.id):fill(section.id,action);actions.appendChild(button);
     }
-    card.appendChild(actions);const status=document.createElement('div');status.className='note info';status.id='additionalStatus_'+section.id;status.style.marginTop='10px';status.textContent='Edite ou escolha um idioma e implemente no projeto. Estes novos campos são preservados no projeto; a gravação na ROM ainda não está disponível.';card.appendChild(status);
+    card.appendChild(actions);const status=document.createElement('div');status.className='note info';status.id='additionalStatus_'+section.id;status.style.marginTop='10px';status.textContent='Edite ou escolha um idioma e implemente no projeto. Estes novos campos são preservados no projeto. O ZIP exporta as alterações suportadas e lista os novos textos ainda não aplicados em TEXTOS-PENDENTES.txt.';card.appendChild(status);
     const host=page.querySelector('.rom-content')||page;host.appendChild(card);
    }
    for(const [field] of section.fields){const node=document.getElementById(id(section.id,field));const next=value(section,field);if(node&&document.activeElement!==node&&node.value!==next)node.value=next;}

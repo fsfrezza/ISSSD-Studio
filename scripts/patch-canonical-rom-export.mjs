@@ -19,7 +19,7 @@ if(start<0)throw new Error('Export final: studioDownloadFile não encontrado.');
 const end=html.indexOf('\n}',start);
 if(end<0)throw new Error('Export final: fim de studioDownloadFile não encontrado.');
 const newBlock=`async function studioDownloadFile(bytes,name,type="application/octet-stream"){
-  let payload=bytes,downloadName=name,downloadType=type;
+  let payload=bytes,downloadName=name,downloadType=type,pendingTextCount=0;
   const isRom=/\\.(?:smc|sfc)$/i.test(String(name||''));
   const isPlus=(activeRomProfile?.id==='iss-deluxe-plus')||/PLUS/i.test(String(name||''));
   if(isRom&&isPlus){
@@ -44,9 +44,11 @@ const newBlock=`async function studioDownloadFile(bytes,name,type="application/o
     payload=new Uint8Array(await response.arrayBuffer());
     if(response.headers.get('X-ISSSD-Archive')!=='cumulative-v1')throw new Error('Servidor não retornou o ZIP cumulativo.');
     if(payload[0]!==0x50||payload[1]!==0x4B)throw new Error('ZIP cumulativo inválido.');
+    pendingTextCount=Number(response.headers.get('X-ISSSD-Pending-Text-Count'))||0;
+    window.__ISSSD_LAST_CUMULATIVE_EXPORT__={pendingTextCount,allSelectedChangesApplied:pendingTextCount===0};
     downloadName='ISSSD-Plus-ROMs-cumulativas.zip';downloadType='application/zip';
-    window.ISSSDLog?.add?.('ROM / Build','info','ROM construída pelo pipeline canônico por estágios',{
-      size:payload.length,
+    window.ISSSDLog?.add?.('ROM / Build',pendingTextCount?'warn':'info',pendingTextCount?'ROM construída com novos textos pendentes':'ROM construída pelo pipeline canônico por estágios',{
+      size:payload.length,pendingTextCount,
       builder:response.headers.get('X-ISSSD-Builder'),
       stages:response.headers.get('X-ISSSD-Stages'),
       lastStage:decodeURIComponent(response.headers.get('X-ISSSD-Last-Stage')||''),
@@ -61,6 +63,7 @@ const newBlock=`async function studioDownloadFile(bytes,name,type="application/o
   document.body.appendChild(a);
   a.click();
   a.remove();
+  if(pendingTextCount)alert('ZIP gerado com '+pendingTextCount+' novos textos pendentes. As alterações suportadas foram exportadas. Esses novos textos continuam no projeto, mas NÃO foram aplicados às ROMs. Consulte TEXTOS-PENDENTES.txt e indice.json dentro do ZIP.');
   setTimeout(()=>URL.revokeObjectURL(url),1200);
 }`;
 html=html.slice(0,start)+newBlock+html.slice(end+2);

@@ -36,17 +36,26 @@ export function additionalTextValues(semantic={}){
  return state?.schema==='isssd-additional-screen-texts-v1'?state.values||{}:{};
 }
 
-// Until the graphics writers have verified layouts, never silently ignore
-// confirmed new text or let it appear as successfully exported in a ZIP.
-export function validateAdditionalTextExport(semantic={},selectedAreas=null){
- const values=additionalTextValues(semantic);
- const pending=[];
+// Unimplemented inscriptions are an explicit export report, not a fatal error.
+// Leave confirmed values/drafts untouched; supported writers still run normally.
+export function pendingAdditionalTextExports(semantic={},selectedAreas=null){
+ const values=additionalTextValues(semantic),pending=[];
  for(const section of ADDITIONAL_TEXT_SECTIONS){
   if(selectedAreas&&!selectedAreas.includes(section.area))continue;
   for(const [id,english] of section.fields){
-   if(Object.hasOwn(values[section.id]||{},id)&&String(values[section.id][id])!==english)pending.push(section.title+' · '+english);
+   const fields=values[section.id]||{};
+   if(Object.hasOwn(fields,id)&&String(fields[id])!==english)pending.push({
+    section:section.id,sectionTitle:section.title,field:id,label:english,
+    requested:String(fields[id]),original:english,area:section.area,
+    status:'not-applied',reason:'native-writer-unavailable',
+   });
   }
  }
- if(pending.length)throw new Error('Os novos campos estão salvos no projeto, mas sua gravação na ROM ainda não está disponível: '+pending.join(', ')+'. Restaure os originais desta seção ou desmarque a fase correspondente para exportar as demais alterações.');
- return true;
+ return pending;
+}
+export function pendingTextExportReport(pending=[]){
+ if(!pending.length)return '';
+ return 'TEXTOS PENDENTES — NÃO APLICADOS ÀS ROMS\n'+
+  'O ZIP foi gerado com as alterações suportadas. Estes novos textos continuam salvos no projeto, mas não foram gravados nas ROMs.\n\n'+
+  pending.map(p=>p.sectionTitle+' · '+p.label+'\nFase: '+p.area+'\nTexto solicitado: '+JSON.stringify(p.requested)+'\nMotivo: gravador nativo ainda não disponível.').join('\n\n')+'\n';
 }

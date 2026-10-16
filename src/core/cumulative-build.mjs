@@ -10,9 +10,10 @@ export function buildCumulativeProject(base,project,{onRom,selectedAreas,titleGr
  if(typeof onRom!=='function')throw new TypeError('onRom callback required');
  const selected=selectedCumulativeAreas(selectedAreas),original=base.slice();
  const foundation=finalize(preparePlusTacticalInfrastructure(base)),work=foundation.slice();
- let target;
+ let target,pendingTextChanges=[];
  try{
-  target=buildPlusProjectRom(base,project,{forceTacticalInfrastructure:true,selectedAreas:selected}).rom;
+  const built=buildPlusProjectRom(base,project,{forceTacticalInfrastructure:true,selectedAreas:selected});
+  target=built.rom;pendingTextChanges=built.pendingTextChanges;
   if(selected.includes('tela-inicial'))applyNativeTitleGraphics(target,base,project,titleGraphics);
   finalize(target);
  }catch(e){throw new Error('Etapa cumulativa: '+e.message,{cause:e});}
@@ -34,6 +35,7 @@ export function buildCumulativeProject(base,project,{onRom,selectedAreas,titleGr
   if(snapshot.length!==0x400000||!validatePlusRuntimeMirrors(snapshot))throw new Error('Snapshot cumulativo inválido');
   const entry={index:area.number,name,stage:area.id,change:area.id,area:area.label,size:snapshot.length,
    status:ranges.length?'aplicada':area.id==='infraestrutura'?'obrigatoria':'sem-alteracao-binaria',
+   pendingTextChanges:pendingTextChanges.filter(p=>p.area===area.id),
    changedBytes:ranges.reduce((n,r)=>n+r.end-r.start,0),ranges:ranges.map(r=>({start:r.start,end:r.end}))};
   onRom(snapshot,entry);entries.push(entry);
  }
@@ -44,11 +46,13 @@ export function buildCumulativeProject(base,project,{onRom,selectedAreas,titleGr
  finalize(expected);const final=finalize(work.slice());
  if(!equal(final,expected))throw new Error('Última ROM não corresponde às fases selecionadas');
  if(!equal(base,original))throw new Error('ROM-base foi alterada');
- return {schema:'isssd-cumulative-roms-v1',version:3,granularity:'selected-game-area',selectedAreas:selected,entries,
+ return {schema:'isssd-cumulative-roms-v1',version:4,granularity:'selected-game-area',selectedAreas:selected,entries,
+  pendingTextChanges,allSelectedChangesApplied:pendingTextChanges.length===0,
   skippedAreas:CUMULATIVE_AREAS.filter(a=>!selected.includes(a.id)).map(a=>a.id),
   unassignedLegacyRanges:unassigned.map(r=>({start:r.start,end:r.end})),
   finalRom:entries.at(-1).name,baseUnchanged:true,finalMatchesSelectedAreas:true,
   notes:['Preparação obrigatória em todas as ROMs; seleção da fase 01 controla apenas seu arquivo.',
    'Fases desmarcadas não são aplicadas nem geram ROM. A numeração 01–09 é fixa.',
+   'Textos pendentes são listados explicitamente e não foram gravados nas ROMs. Permanecem no projeto.',
    'Bytes legados sem área confirmada são reportados e não são aplicados por suposição.']};
 }
