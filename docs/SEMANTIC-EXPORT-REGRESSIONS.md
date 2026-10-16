@@ -38,3 +38,13 @@ O bloco nativo 2bpp usa índice 1 para a tinta clara, 2 para suavização e 3 pa
 O atlas agora extrai os glifos claros por limites explícitos do gráfico original, preserva a suavização e recompõe o contorno antes de desenhar as letras. C deriva dos traços do G nativo. O posicionamento pode ser ajustado dentro de cada campo para respeitar os 390 bytes reservados, sem expandir o bloco sobre dados vizinhos. Campos não alterados continuam intactos.
 
 A regressão usa um gráfico 2bpp com tinta, suavização e contorno distintos; verifica a reprodução dos pixels claros, o contorno e a imutabilidade da base. A conversão do projeto atual com a ROM Plus real também foi conferida: 346 bytes comprimidos, de 390 disponíveis, com os textos não alterados e os bytes externos preservados.
+
+## Controles: uma inscrição completa por ação
+
+O mapa antigo de palavras não correspondia às células usadas pela rotina nativa. HIGH BALL usa tiles $72..$76; PASS BALL reutiliza os três tiles de BALL e acrescenta $77/$78. Os limites anteriores também invadiam SHOOT e DASH. Apenas trocar os pixels de cada palavra produzia inversão, cortes e vazamento entre inscrições.
+
+O modelo agora resolve oito inscrições completas: highball, passball, shoot, dash, keeper, semiauto, auto e manual. `screenTextsV1.values.controls` é prioritário; as antigas chaves high/ball/pass são lidas para compatibilidade, sem modificar o projeto ao abrir. Palavra única e texto vazio são aceitos. O Editor não divide a frase ao salvar.
+
+Na exportação o writer aloca tiles exclusivos para cada inscrição dentro dos mesmos 31 tiles e atualiza os descritores nativos de cada ação. O KEEPER tem três células e as outras ações/modos têm cinco. O bloco continua limitado a 390 bytes comprimidos; limites por linha e total são verificados antes de gravar. Descritores inesperados da base são recusados. Tanto os tiles como os descritores pertencem à fase Pré-Partida; desmarcá-la preserva ambos.
+
+Regressões cobrem migração BOLA + ALTA → BOLA ALTA, frase e palavra única, linha vazia, troca de duas frases sem compartilhar tiles, seleção de fase, limites, guardas da base e preservação dos bytes externos. No navegador, o projeto anexado foi aberto, editado, salvo e reaberto: BOLA ALTA, TOCA AQUI e CHUTE permaneceram independentes, com ROM-base intacta.

@@ -1,13 +1,10 @@
+import {CONTROLLER_ACTIONS,CONTROLLER_NATIVE_DESCRIPTORS,resolveControllerActions,normalizeControllerText} from './plus-controller-actions.mjs';
 import {konamiLzCompress,konamiLzDecompress} from './konami-lz.mjs';
-const PC=0x108162, ORIGINAL_COMP=390, RAWLEN=496, KEY='controller.', LEGACY_KEY='controller.v621.';
-export const CONTROLLER_SLOTS=[
- ['high','HIGH',0,19],['ball','BALL',19,40],['pass','PASS',40,61],['shoot','SHOOT',61,93],['dash','DASH',93,129],
- ['keeper','KEEPER',129,152],['semiauto','SEMI AUTO',152,189],['auto','AUTO',189,219],['manual','MANUAL',219,248]
-];
+const PC=0x108162, ORIGINAL_COMP=390, RAWLEN=496;
 const FONT={
  A:['010','101','101','111','101','101','101'],B:['110','101','101','110','101','101','110'],C:['011','100','100','100','100','100','011'],D:['110','101','101','101','101','101','110'],E:['111','100','100','110','100','100','111'],F:['111','100','100','110','100','100','100'],G:['011','100','100','101','101','101','011'],H:['101','101','101','111','101','101','101'],I:['1','1','1','1','1','1','1'],J:['001','001','001','001','101','101','010'],K:['101','101','110','100','110','101','101'],L:['100','100','100','100','100','100','111'],M:['1001','1111','1111','1011','1001','1001','1001'],N:['101','111','111','111','111','101','101'],O:['010','101','101','101','101','101','010'],P:['110','101','101','110','100','100','100'],Q:['010','101','101','101','101','011','001'],R:['110','101','101','110','101','101','101'],S:['011','100','100','010','001','001','110'],T:['111','010','010','010','010','010','010'],U:['101','101','101','101','101','101','111'],V:['101','101','101','101','101','101','010'],W:['1001','1001','1001','1111','1111','1111','1001'],X:['101','101','010','010','010','101','101'],Y:['101','101','101','010','010','010','010'],Z:['111','001','001','010','100','100','111'],
  '0':['010','101','101','101','101','101','010'],'1':['1','1','1','1','1','1','1'],'2':['110','001','001','010','100','100','111'],'3':['110','001','001','010','001','001','110'],'4':['101','101','101','111','001','001','001'],'5':['111','100','100','110','001','001','110'],'6':['011','100','100','110','101','101','010'],'7':['111','001','001','010','010','010','010'],'8':['010','101','101','010','101','101','010'],'9':['010','101','101','011','001','001','110'],'-':['000','000','000','111','000','000','000']};
-const norm=s=>String(s??'').toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z0-9 -]/g,'').replace(/\s+/g,' ').trim();
+const norm=normalizeControllerText;
 function decode2(raw){const pix=new Uint8Array(248*8);for(let t=0;t<31;t++)for(let y=0;y<8;y++){const a=raw[t*16+y*2],b=raw[t*16+y*2+1];for(let x=0;x<8;x++){const bit=7-x;pix[y*248+t*8+x]=((a>>bit)&1)|(((b>>bit)&1)<<1)}}return pix}
 function encode2(pix){const raw=new Uint8Array(RAWLEN);for(let t=0;t<31;t++)for(let y=0;y<8;y++){let a=0,b=0;for(let x=0;x<8;x++){const v=pix[y*248+t*8+x]&3,bit=7-x;a|=(v&1)<<bit;b|=((v>>1)&1)<<bit}raw[t*16+y*2]=a;raw[t*16+y*2+1]=b}return raw}
 function controllerGlyphAtlas(pix){
@@ -15,7 +12,7 @@ function controllerGlyphAtlas(pix){
  // Native foreground is 1 (white) / 2 (edge shading); 3 is the black outline.
  // Explicit bounds avoid treating outlines and joined antialias pixels as letters.
  const ranges={H:[1,4],I:[5,6],G:[7,10],B:[20,23],A:[24,27],L:[28,31],
-  K:[130,133],E:[134,136],P:[140,143],R:[147,150],M:[220,223],
+  D:[94,98],K:[130,133],E:[134,136],P:[140,143],R:[147,150],M:[220,223],
   N:[228,231],U:[232,235],S:[153,156],T:[200,203],O:[180,183]};
  for(const [c,[a,b]] of Object.entries(ranges)){
   const rows=[],colors=[];
@@ -52,25 +49,34 @@ function drawText(pix,text,x0,x1,atlas,offset=null){
 }
 
 export function plusControllerTextWriter(rom,state={},base=rom){
- const values=state?.textWorkspaceV2?.sections?.graphicIntents?.values||{};
- const changed=CONTROLLER_SLOTS.filter(([id,original])=>Object.hasOwn(values,KEY+id)&&norm(values[KEY+id])!==original);
- if(!changed.length)return rom;
+ const values=resolveControllerActions(state);
+ if(CONTROLLER_ACTIONS.every(a=>values[a.id]===a.original))return rom;
+ for(const [pc,bytes] of CONTROLLER_NATIVE_DESCRIPTORS)
+  if(bytes.some((v,i)=>base[pc+i]!==v))throw new Error('Controller native action descriptor mismatch at '+pc.toString(16));
  const raw=konamiLzDecompress(base,PC).data;if(raw.length!==RAWLEN)throw new Error('Controller native block must decode to 496 bytes');
- const pix=decode2(raw),atlas=controllerGlyphAtlas(pix);
- for(const [id,,x0,x1] of changed)drawText(pix,values[KEY+id],x0,x1,atlas);
+ const atlas=controllerGlyphAtlas(decode2(raw)),pix=new Uint8Array(248*8),layout=[];
+ let tile=0;
+ for(const action of CONTROLLER_ACTIONS){
+  const text=values[action.id],w=width(text,atlas),tiles=text?Math.ceil((w+2)/8):0;
+  if(tiles>action.cells)throw new Error(action.id+': “'+text+'” precisa de '+(w+2)+' px; este campo possui '+(action.cells*8)+' px.');
+  if(tile+tiles>31)throw new Error('Os textos dos controles excedem os 31 tiles disponíveis. Reduza uma das inscrições.');
+  layout.push({...action,text,x0:tile*8,x1:(tile+tiles)*8,tile,tiles});
+  if(tiles)drawText(pix,text,tile*8,(tile+tiles)*8,atlas);
+  tile+=tiles;
+ }
  let result=encode2(pix),comp=konamiLzCompress(result);
- // Tile alignment affects compression. Try legal horizontal placements without
- // changing glyphs, colors or the fixed native stream allocation.
- if(comp.length>ORIGINAL_COMP)for(let pass=0;pass<2;pass++)for(const [id,,x0,x1] of changed){
-  const slack=x1-x0-width(values[KEY+id],atlas);
-  for(let offset=slack>=2?1:0;offset<=slack-(slack>=2?1:0);offset++){
-   const candidate=pix.slice();drawText(candidate,values[KEY+id],x0,x1,atlas,offset);
+ if(comp.length>ORIGINAL_COMP)for(let pass=0;pass<2;pass++)for(const a of layout){
+  if(!a.tiles)continue;
+  const slack=a.x1-a.x0-width(a.text,atlas);
+  for(let offset=1;offset<slack;offset++){
+   const candidate=pix.slice();drawText(candidate,a.text,a.x0,a.x1,atlas,offset);
    const bytes=encode2(candidate),packed=konamiLzCompress(bytes);
    if(packed.length<comp.length){pix.set(candidate);result=bytes;comp=packed}
   }
  }
-
  if(comp.length>ORIGINAL_COMP)throw new Error('Controller compressed block exceeds native capacity: '+comp.length);
  const round=konamiLzDecompress(comp).data;if(round.length!==result.length||round.some((v,i)=>v!==result[i]))throw new Error('Controller round-trip failed');
- rom.set(comp,PC);return rom;
+ rom.set(comp,PC);
+ for(const a of layout)for(let i=0;i<a.cells;i++)rom[a.pc+i]=i<a.tiles?0x72+a.tile+i:0;
+ return rom;
 }
