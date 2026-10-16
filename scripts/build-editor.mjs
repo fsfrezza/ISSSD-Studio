@@ -66,6 +66,15 @@ if((html.match(/await window\.__ISSSD_GIT_AFTER_PROJECT_OPEN__\?\.\(f\);/g)||[])
 
 const finalizeHook='window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__?.(obj);';html=html.replaceAll(finalizeHook,'');const projectObjectNeedle='const obj=await studioProjectObject();';if(!html.includes(projectObjectNeedle))throw new Error('Build interrompido: não encontrei a montagem final do .issdproj.');html=html.replace(projectObjectNeedle,projectObjectNeedle+finalizeHook);
 
+// Selective save/open must classify and filter the same complete control
+// inscriptions that the screen-owned snapshot and native writer consume.
+const graphicsCategory="'texts.graphics':tw.graphicIntents||null";
+if(!html.includes(graphicsCategory))throw new Error('Build interrompido: categoria gráfica de salvamento não encontrada.');
+html=html.replaceAll(graphicsCategory,"'texts.graphics':(sem.screenTextsV1?.values?.controls?{workspace:tw.graphicIntents||null,controls:sem.screenTextsV1.values.controls}:tw.graphicIntents||null)");
+const removeGraphics="else if(id==='texts.graphics'&&tw)tw.graphicIntents={};";
+if(!html.includes(removeGraphics))throw new Error('Build interrompido: filtro gráfico de salvamento não encontrado.');
+html=html.replaceAll(removeGraphics,"else if(id==='texts.graphics'){if(tw)tw.graphicIntents={};if(sem.screenTextsV1?.values)delete sem.screenTextsV1.values.controls;}");
+
 const css=fs.existsSync(cssFile)?fs.readFileSync(cssFile,'utf8'):'';
 const js=fs.existsSync(jsFile)?fs.readFileSync(jsFile,'utf8'):'';
 const v11=fs.existsSync(v11File)?fs.readFileSync(v11File,'utf8'):'';

@@ -48,3 +48,13 @@ O modelo agora resolve oito inscrições completas: highball, passball, shoot, d
 Na exportação o writer aloca tiles exclusivos para cada inscrição dentro dos mesmos 31 tiles e atualiza os descritores nativos de cada ação. O KEEPER tem três células e as outras ações/modos têm cinco. O bloco continua limitado a 390 bytes comprimidos; limites por linha e total são verificados antes de gravar. Descritores inesperados da base são recusados. Tanto os tiles como os descritores pertencem à fase Pré-Partida; desmarcá-la preserva ambos.
 
 Regressões cobrem migração BOLA + ALTA → BOLA ALTA, frase e palavra única, linha vazia, troca de duas frases sem compartilhar tiles, seleção de fase, limites, guardas da base e preservação dos bytes externos. No navegador, o projeto anexado foi aberto, editado, salvo e reaberto: BOLA ALTA, TOCA AQUI e CHUTE permaneceram independentes, com ROM-base intacta.
+
+## Digitação e salvamento real dos Controles
+
+A normalização com `trim()` não deve reescrever o input a cada tecla: ao digitar BOLA + espaço, ela removia o espaço antes da próxima palavra. O rascunho agora mantém o texto e a posição do cursor; a normalização ocorre ao implementar. Texto vazio também permanece vazio durante a navegação.
+
+O fluxo seletivo de Salvar Projeto usa `window.studioProjectObject()`, enquanto a captura screenTextsV1 estava instalada somente no finalizador do exportador lexical antigo. O snapshot público agora passa pelo mesmo finalizador. A categoria gráfica compara também os controles completos, e desmarcá-la remove tanto o workspace legado quanto os controles screenTextsV1. Na captura, os campos visíveis com dono explícito têm prioridade sobre inputs legados ocultos da mesma inscrição.
+
+As regressões exercitam a digitação incremental incluindo o espaço intermediário, apagar a frase inteira, normalização ao implementar, prioridade contra inputs ocultos e snapshot público → serialização → restauração sem chamar um finalizador extra no teste.
+
+Conferência no navegador: Restaurar originais → apagar campo → digitar BOLA ALTA tecla a tecla → implementar BOLA ALTA / PASSE CURTO / CHUTA → Salvar Projeto → confirmar seleção → ler o arquivo efetivamente baixado → atualizar página → abrir esse mesmo arquivo. As três inscrições reapareceram e `studioCore().bytesEqualToBase()` permaneceu verdadeiro.
