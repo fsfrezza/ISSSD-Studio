@@ -31,3 +31,11 @@ test('native field limits and base mismatch refuse all writes atomically',()=>{
  assert.throws(()=>plusNativeMenuTextWriter(copy,state({[section.id]:{[field[0]]:'Ajuda'}}),bad),/ROM-base diverge/);assert.deepEqual(copy,bad);
  assert.throws(()=>encodeNativeMenuField(field,'🙂'),/indisponível/);
 });
+
+
+test('all 138 Portuguese presets fit native fonts, row limits and ROM export',()=>{
+ const base=fixture(),before=base.slice(),rom=base.slice(),values={};
+ for(const section of sections){values[section.id]={};for(const field of section.fields){assert.equal(typeof field[2],'string',field[0]);assert.ok(field[2].trim(),field[0]);values[section.id][field[0]]=field[2];encodeNativeMenuField(field,field[2]);}}
+ plusNativeMenuTextWriter(rom,state(values),base);assert.deepEqual(base,before);assert.deepEqual(pendingAdditionalTextExports(state(values)),[]);
+ for(const section of sections)for(const field of section.fields){const encoded=encodeNativeMenuField(field,field[2]);field[3].pool.segments.forEach((seg,i)=>assert.deepEqual(rom.slice(seg.pc,seg.pc+seg.original.length),encoded[i],field[0]));}
+});

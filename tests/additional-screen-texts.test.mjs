@@ -127,13 +127,21 @@ test('Cursor Portuguese button fills all 26 fields as drafts and saves the full 
 });
 
 
-test('new native screen fields round-trip confirmed values and preserve undefined Portuguese as drafts',()=>{
+test('new native screen fields round-trip confirmed values and stage Portuguese without auto-confirming',()=>{
  const {api,nodes}=harness();const group=sections.find(s=>s.id==='controls-help-native'),field=group.fields[0];
  nodes.get('additionalText_'+group.id+'_'+field[0]).value='Minha ajuda\nLinha dois';api.commit(group.id);
  const project={state:{semantic:{}}};api.finalize(project);const reopened=harness();reopened.api.hydrate(project);
  assert.equal(reopened.api.snapshot().values[group.id][field[0]],'Minha ajuda\nLinha dois');
- reopened.api.fill(group.id,'portuguese');assert.equal(reopened.api.snapshot().values[group.id][field[0]],'Minha ajuda\nLinha dois');
+ reopened.api.fill(group.id,'portuguese');assert.equal(reopened.api.snapshot().values[group.id][field[0]],'Minha ajuda\nLinha dois');assert.equal(reopened.api.snapshot().drafts[group.id][field[0]],field[2]);
  const screen=sections.find(s=>s.id==='scenario-native');api.fill(screen.id,'english');api.finalize(project);
  assert.deepEqual(Object.keys(project.state.semantic.additionalScreenTextsV1.drafts[screen.id]),screen.fields.map(f=>f[0]));
  assert.equal(project.state.semantic.additionalScreenTextsV1.values[screen.id],undefined);
+});
+
+
+test('Portuguese button fills every newly incorporated screen field and persists all after confirmation',()=>{
+ const {api,nodes}=harness(),native=sections.filter(s=>s.nativePool);assert.equal(native.length,20);
+ for(const section of native){api.fill(section.id,'portuguese');for(const [id,,pt] of section.fields){assert.equal(typeof pt,'string');assert.ok(pt.trim());assert.equal(nodes.get('additionalText_'+section.id+'_'+id).value,pt);}assert.equal(api.snapshot().values[section.id],undefined);api.commit(section.id);}
+ const project={state:{semantic:{}}};api.finalize(project);const reopened=harness();reopened.api.hydrate(JSON.parse(JSON.stringify(project)));
+ for(const section of native)for(const [id,,pt] of section.fields)assert.equal(reopened.api.snapshot().values[section.id][id],pt);
 });

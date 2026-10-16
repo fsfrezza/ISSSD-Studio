@@ -532,7 +532,7 @@
       [
         "data_87c5cd",
         "-SELECT  TH TEAM-",
-        null,
+        "-SELEC.     TIME-",
         {
           "label": "-SELECT  TH TEAM-",
           "multiline": false,
@@ -562,7 +562,7 @@
       [
         "data_87c60c",
         "UP TO\nSubstitutes",
-        null,
+        "ATÉ\nReservas",
         {
           "label": "UP TO",
           "multiline": true,
@@ -596,7 +596,7 @@
       [
         "data_87c811",
         "-HANDICAP-",
-        null,
+        "-VANTAGEM-",
         {
           "label": "-HANDICAP-",
           "multiline": false,
@@ -616,7 +616,7 @@
       [
         "data_87c875",
         " 7P\n 8P\n 9P\n10P\n11P",
-        null,
+        " 7P\n 8P\n 9P\n10P\n11P",
         {
           "label": " 7P",
           "multiline": true,
@@ -652,7 +652,7 @@
       [
         "data_87c884",
         "the select button to change 1P and CPU controls.",
-        null,
+        " SELECT para trocar controles de 1P e CPU.",
         {
           "label": "the select button to change 1P and CPU controls.",
           "multiline": false,
@@ -682,7 +682,7 @@
       [
         "data_87c8ba",
         "NO",
-        null,
+        "SEM",
         {
           "label": "NO",
           "multiline": false,
@@ -702,7 +702,7 @@
       [
         "data_87ca1d",
         "ONE FOUR",
-        null,
+        "UMA 4",
         {
           "label": "ONE FOUR",
           "multiline": false,
@@ -732,7 +732,7 @@
       [
         "data_87ca25",
         "NUMBER OF PLAYERS",
-        null,
+        "NÚMERO DE ATLETAS",
         {
           "label": "NUMBER OF PLAYERS",
           "multiline": false,
@@ -762,7 +762,7 @@
       [
         "data_87ca36",
         "-STADIUM SELECT-",
-        null,
+        "-SELEC. ESTÁDIO-",
         {
           "label": "-STADIUM SELECT-",
           "multiline": false,
@@ -782,7 +782,7 @@
       [
         "data_87ca57",
         "  -TODAY'S GAME-",
-        null,
+        " -JOGO DE HOJE-",
         {
           "label": "  -TODAY'S GAME-",
           "multiline": false,
@@ -802,7 +802,7 @@
       [
         "data_87ca67",
         "-TONIGHT'S GAME-",
-        null,
+        "-JOGO NOTURNO-",
         {
           "label": "-TONIGHT'S GAME-",
           "multiline": false,
@@ -822,7 +822,7 @@
       [
         "data_87ca77",
         "CONDITION",
-        null,
+        "CONDIÇÃO",
         {
           "label": "CONDITION",
           "multiline": false,
@@ -842,7 +842,7 @@
       [
         "data_87ca80",
         "SNOW\nFINE\nRAIN",
-        null,
+        "NEVE\nSOL\nCHUV",
         {
           "label": "SNOW",
           "multiline": true,
@@ -870,7 +870,7 @@
       [
         "data_87ca9b",
         "  JAPAN\n  U.S.A\n  SPAIN\n  ITALY\nENGLAND\nGERMANY\n BRAZIL\nNIGERIA",
-        null,
+        " JAPÃO\n E.U.A.\nESPANHA\n ITÁLIA\nINGLAT.\nALEMAN.\n BRASIL\nNIGÉRIA",
         {
           "label": "  JAPAN",
           "multiline": true,
@@ -918,7 +918,7 @@
       [
         "data_87cad3",
         "STADIUM",
-        null,
+        "ESTÁDIO",
         {
           "label": "STADIUM",
           "multiline": false,
@@ -948,7 +948,7 @@
       [
         "data_87cada",
         "GAME START",
-        null,
+        "COMEÇAR",
         {
           "label": "GAME START",
           "multiline": false,
@@ -978,7 +978,7 @@
       [
         "data_87d2ec",
         "-High ball-\nUse for centring.The longer\nyou press,the higher the\nball flies.",
-        null,
+        "-Bola alta-\nUse para cruzar. Quanto mais\nsegurar o botão, mais alto\na bola irá.",
         {
           "label": "-High ball-",
           "multiline": true,
@@ -1010,7 +1010,7 @@
       [
         "data_87d3cc",
         "-Pass-\nUse for a short pass.To\nmake the player lift the\nball just press the button\nwithout pressing in any\ndirection on the D-Pad.This\nwill enable you to head or\nattempt an overhead kick.",
-        null,
+        "-Passe-\nUse para passes curtos. Para\nlevantar a bola, aperte o\nbotão sem pressionar uma\ndireção no direcional.\nAssim, você poderá cabecear\nou tentar uma bicicleta.",
         {
           "label": "-Pass-",
           "multiline": true,
@@ -1058,7 +1058,7 @@
       [
         "data_87d4ac",
         "-Shoot-\nPress this button while in\nyour opponent's half.The\nlonger you press the button\nthe higher the shot.",
-        null,
+        "-Chute-\nAperte no campo adversário.\nQuanto mais segurar o botão,\nmais alto será o chute.",
         {
           "label": "-Shoot-",
           "multiline": true,
@@ -1094,7 +1094,7 @@
       [
         "data_87d539",
         "-Dash-\nWhile you hold this button\ndown the player will sprint.\nBe careful not to use it too\nmuch or the player will run\nout of stamina.",
-        null,
+        "-Arranque-\nSegure o botão para correr.\nEvite usar por muito tempo,\npois o jogador poderá ficar\nsem resistência.",
         {
           "label": "-Dash-",
           "multiline": true,
@@ -1134,7 +1134,7 @@
       [
         "data_87d5e2",
         "-Goal Keeper-\nWhen in Manual or Semi-Auto\nmode,press the A button to\njump high and the B button\nto dive low.The computer\nwill decide whether to punch\nor catch the ball when you\npress the X button.",
-        null,
+        "-Goleiro-\nNo modo Manual ou Semiauto,\naperte A para saltar alto\ne B para mergulhar baixo.\nAo apertar X, o computador\ndecide se o goleiro deve\nsocar ou agarrar a bola.",
         {
           "label": "-Goal Keeper-",
           "multiline": true,
@@ -1182,7 +1182,7 @@
       [
         "data_87d6c3",
         "-Controller Operations-\nTurn the pages by pressing\nthe L/R buttons.",
-        null,
+        "-Comandos do controle-\nTroque as páginas usando\nos botões L/R.",
         {
           "label": "-Controller Operations-",
           "multiline": true,
@@ -1220,7 +1220,7 @@
       [
         "data_87d73a",
         "DON'T GIVE UP! - GAME OVER -",
-        null,
+        "NÃO DESISTA! - FIM DE JOGO -",
         {
           "label": "DON'T GIVE UP! - GAME OVER -",
           "multiline": false,
@@ -1240,7 +1240,7 @@
       [
         "data_87d75a",
         "PLAYER  WINS!",
-        null,
+        "ATLETA  GANHA",
         {
           "label": "PLAYER  WINS!",
           "multiline": false,
@@ -1260,7 +1260,7 @@
       [
         "data_87d769",
         "CONGRATULATIONS!",
-        null,
+        "PARABÉNS!",
         {
           "label": "CONGRATULATIONS!",
           "multiline": false,
@@ -1290,7 +1290,7 @@
       [
         "data_87d7a7",
         "ONE",
-        null,
+        "UM",
         {
           "label": "ONE",
           "multiline": false,
@@ -1310,7 +1310,7 @@
       [
         "data_87d7aa",
         "TWO",
-        null,
+        "2",
         {
           "label": "TWO",
           "multiline": false,
@@ -1330,7 +1330,7 @@
       [
         "data_87d7ad",
         "THREE",
-        null,
+        "TRÊS",
         {
           "label": "THREE",
           "multiline": false,
@@ -1350,7 +1350,7 @@
       [
         "data_87d7b2",
         "FOUR",
-        null,
+        "4",
         {
           "label": "FOUR",
           "multiline": false,
@@ -1370,7 +1370,7 @@
       [
         "data_87d7b6",
         "FIVE",
-        null,
+        "5",
         {
           "label": "FIVE",
           "multiline": false,
@@ -1390,7 +1390,7 @@
       [
         "data_87d7ba",
         "SIX",
-        null,
+        "6",
         {
           "label": "SIX",
           "multiline": false,
@@ -1410,7 +1410,7 @@
       [
         "data_87d7bd",
         "SEVEN",
-        null,
+        "SETE",
         {
           "label": "SEVEN",
           "multiline": false,
@@ -1430,7 +1430,7 @@
       [
         "data_87d7c2",
         "EIGHT",
-        null,
+        "OITO",
         {
           "label": "EIGHT",
           "multiline": false,
@@ -1450,7 +1450,7 @@
       [
         "data_87d7c7",
         "NEXT GAME    VS",
-        null,
+        "PRÓX. JOGO   VS",
         {
           "label": "NEXT GAME    VS",
           "multiline": false,
@@ -1470,7 +1470,7 @@
       [
         "data_87d892",
         "LEAGUE STANDINGS",
-        null,
+        "POSIÇÕES NA LIGA",
         {
           "label": "LEAGUE STANDINGS",
           "multiline": false,
@@ -1490,7 +1490,7 @@
       [
         "data_87d8a2",
         "LEAGUE POINTS TABLE",
-        null,
+        "PONTUAÇÃO DA LIGA",
         {
           "label": "LEAGUE POINTS TABLE",
           "multiline": false,
@@ -1510,7 +1510,7 @@
       [
         "data_87d8c4",
         "TOURNAMENT TABLE",
-        null,
+        "TABELA TORNEIO",
         {
           "label": "TOURNAMENT TABLE",
           "multiline": false,
@@ -1530,7 +1530,7 @@
       [
         "data_87d91c",
         "-TODAY'S GAME-",
-        null,
+        "-JOGO DE HOJE-",
         {
           "label": "-TODAY'S GAME-",
           "multiline": false,
@@ -1550,7 +1550,7 @@
       [
         "data_87d92a",
         "-TODAY'S GAME  RESULT-",
-        null,
+        "-RESULTADO DE HOJE-",
         {
           "label": "-TODAY'S GAME  RESULT-",
           "multiline": false,
@@ -1580,7 +1580,7 @@
       [
         "data_87daa2",
         "Please       select      the order.",
-        null,
+        "Escolha a ordem dos jogadores.",
         {
           "label": "Please       select      the order.",
           "multiline": false,
@@ -1600,7 +1600,7 @@
       [
         "data_87dad2",
         "Please       select      the kicker",
-        null,
+        "Escolha o cobrador.",
         {
           "label": "Please       select      the kicker",
           "multiline": false,
@@ -1620,7 +1620,7 @@
       [
         "data_87db02",
         "O.K.?        A\nYES/B\nNO",
-        null,
+        "O.K.?        A\nSIM/B\nNÃO",
         {
           "label": "O.K.?        A",
           "multiline": true,
@@ -1658,7 +1658,7 @@
       [
         "data_87db40",
         "INTERNATIONAL  CUP",
-        null,
+        "COPA INTERNACIONAL",
         {
           "label": "INTERNATIONAL  CUP",
           "multiline": false,
@@ -1678,7 +1678,7 @@
       [
         "data_87db54",
         "THE WORLD SERIES",
-        null,
+        "SÉRIE MUNDIAL",
         {
           "label": "THE WORLD SERIES",
           "multiline": false,
@@ -1698,7 +1698,7 @@
       [
         "data_87db68",
         "  THE WORLD SERIES\nAND THE CHAMPIONSHIP",
-        null,
+        "SÉRIE MUNDIAL\nE O CAMPEONATO",
         {
           "label": "  THE WORLD SERIES",
           "multiline": true,
@@ -1722,7 +1722,7 @@
       [
         "data_87db92",
         "THE WORLD SERIES\nAND SPECIAL GAME",
-        null,
+        "SÉRIE MUNDIAL\nE JOGO ESPECIAL",
         {
           "label": "THE WORLD SERIES",
           "multiline": true,
@@ -1746,7 +1746,7 @@
       [
         "data_87dbb8",
         "Aim for the next\nlevel!",
-        null,
+        "Rumo ao próximo\nnível!",
         {
           "label": "Aim for the next",
           "multiline": true,
@@ -1770,7 +1770,7 @@
       [
         "data_87dbda",
         "Now challenge the\nworld!",
-        null,
+        "Agora desafie o\nmundo!",
         {
           "label": "Now challenge the",
           "multiline": true,
@@ -1794,7 +1794,7 @@
       [
         "data_87dbfe",
         "Let's try the spe-\ncial game!",
-        null,
+        "Vamos tentar o\njogo especial!",
         {
           "label": "Let's try the spe-",
           "multiline": true,
@@ -1818,7 +1818,7 @@
       [
         "data_87dc24",
         "Now try to win the\nfirst season too!",
-        null,
+        "Vença também a\nprimeira temporada",
         {
           "label": "Now try to win the",
           "multiline": true,
@@ -1842,7 +1842,7 @@
       [
         "data_87dc4a",
         "Congratulations   for a perfect game!",
-        null,
+        "Parabéns pela partida perfeita!",
         {
           "label": "Congratulations   for a perfect game!",
           "multiline": false,
@@ -1862,7 +1862,7 @@
       [
         "data_87dc82",
         "Congratulations\nfor a perfect win!\nYou're the best!",
-        null,
+        "Parabéns por uma\nvitória perfeita!\nVocê é o melhor!",
         {
           "label": "Congratulations",
           "multiline": true,
@@ -1890,7 +1890,7 @@
       [
         "data_87dcba",
         "Now try to win the\nsecond season too!",
-        null,
+        "Vença também a\nsegunda temporada",
         {
           "label": "Now try to win the",
           "multiline": true,
@@ -1924,7 +1924,7 @@
       [
         "data_87dd89",
         "FOUL",
-        null,
+        "FAL.",
         {
           "label": "FOUL",
           "multiline": false,
@@ -1944,7 +1944,7 @@
       [
         "data_87dd8d",
         "YELLOW CARD",
-        null,
+        "C. AMARELO",
         {
           "label": "YELLOW CARD",
           "multiline": false,
@@ -1964,7 +1964,7 @@
       [
         "data_87dd98",
         "OFF SIDE",
-        null,
+        "IMPEDIM.",
         {
           "label": "OFF SIDE",
           "multiline": false,
@@ -1984,7 +1984,7 @@
       [
         "data_87dda0",
         "V-GOAL",
-        null,
+        "G.OURO",
         {
           "label": "V-GOAL",
           "multiline": false,
@@ -2004,7 +2004,7 @@
       [
         "data_87dda6",
         "OVER TIME",
-        null,
+        "PRORROG.",
         {
           "label": "OVER TIME",
           "multiline": false,
@@ -2024,7 +2024,7 @@
       [
         "data_87ddaf",
         "ON  OFF",
-        null,
+        "SIM NÃO",
         {
           "label": "ON  OFF",
           "multiline": false,
@@ -2054,7 +2054,7 @@
       [
         "data_87dde8",
         "GAME LEVEL",
-        null,
+        "NÍVEL",
         {
           "label": "GAME LEVEL",
           "multiline": false,
@@ -2074,7 +2074,7 @@
       [
         "data_87ddf2",
         "GAME TIME",
-        null,
+        "DURAÇÃO",
         {
           "label": "GAME TIME",
           "multiline": false,
@@ -2094,7 +2094,7 @@
       [
         "data_87de03",
         "SOUND",
-        null,
+        "SOM",
         {
           "label": "SOUND",
           "multiline": false,
@@ -2114,7 +2114,7 @@
       [
         "data_87de08",
         "STEREO",
-        null,
+        "ESTÉR.",
         {
           "label": "STEREO",
           "multiline": false,
@@ -2134,7 +2134,7 @@
       [
         "data_87de0e",
         "MONO",
-        null,
+        "MONO",
         {
           "label": "MONO",
           "multiline": false,
@@ -2154,7 +2154,7 @@
       [
         "data_87de12",
         "RULES",
-        null,
+        "REGRA",
         {
           "label": "RULES",
           "multiline": false,
@@ -2184,7 +2184,7 @@
       [
         "data_87de77",
         "TRAINING",
-        null,
+        "TREINO",
         {
           "label": "TRAINING",
           "multiline": false,
@@ -2204,7 +2204,7 @@
       [
         "data_87de80",
         "CHALLENGE",
-        null,
+        "DESAFIO",
         {
           "label": "CHALLENGE",
           "multiline": false,
@@ -2224,7 +2224,7 @@
       [
         "data_87de89",
         "This lets you practice\nthe basic movements\nneeded to be success-\nful in this game.",
-        null,
+        "Pratique os movimentos\nbásicos necessários\npara jogar bem\ne vencer as partidas.",
         {
           "label": "This lets you practice",
           "multiline": true,
@@ -2256,7 +2256,7 @@
       [
         "data_87dee1",
         "Try to set a new rec-\nord as you'll be com-\npeting against the\nclock.",
-        null,
+        "Tente bater um novo\nrecorde competindo\ncontra o relógio.",
         {
           "label": "Try to set a new rec-",
           "multiline": true,
@@ -2288,7 +2288,7 @@
       [
         "data_87df39",
         "FREE",
-        null,
+        "LIV.",
         {
           "label": "FREE",
           "multiline": false,
@@ -2308,7 +2308,7 @@
       [
         "data_87df3d",
         "DEFENSE",
-        null,
+        "DEFESA",
         {
           "label": "DEFENSE",
           "multiline": false,
@@ -2328,7 +2328,7 @@
       [
         "data_87df52",
         "FREE KICK",
-        null,
+        "FALTA",
         {
           "label": "FREE KICK",
           "multiline": false,
@@ -2348,7 +2348,7 @@
       [
         "data_87df5b",
         "KEEPER",
-        null,
+        "GOLE.",
         {
           "label": "KEEPER",
           "multiline": false,
@@ -2368,7 +2368,7 @@
       [
         "data_87df61",
         "MODE",
-        null,
+        "MODO",
         {
           "label": "MODE",
           "multiline": false,
@@ -2388,7 +2388,7 @@
       [
         "data_87df65",
         "DRIBBLE",
-        null,
+        "DRIBLE",
         {
           "label": "DRIBBLE",
           "multiline": false,
@@ -2408,7 +2408,7 @@
       [
         "data_87df6c",
         "PASS",
-        null,
+        "PASSE",
         {
           "label": "PASS",
           "multiline": false,
@@ -2428,7 +2428,7 @@
       [
         "data_87df73",
         "SHOOT",
-        null,
+        "CHUTE",
         {
           "label": "SHOOT",
           "multiline": false,
@@ -2448,7 +2448,7 @@
       [
         "data_87dfb7",
         "EXIT",
-        null,
+        "SAIR",
         {
           "label": "EXIT",
           "multiline": false,
@@ -2468,7 +2468,7 @@
       [
         "data_87e808",
         "Use the whole field to\npractice dribbling,\npassing and shooting.",
-        null,
+        "Use o campo inteiro para\ntreinar dribles, passes\ne chutes.",
         {
           "label": "Use the whole field to",
           "multiline": true,
@@ -2496,7 +2496,7 @@
       [
         "data_87e880",
         "Try to take the ball\naway from the 3\noffensive players who\nare aiming for a goal.",
-        null,
+        "Tire a bola dos três\natacantes que tentam\nmarcar um gol.",
         {
           "label": "Try to take the ball",
           "multiline": true,
@@ -2528,7 +2528,7 @@
       [
         "data_87e8f8",
         "Practice your free kick.",
-        null,
+        "Treine suas faltas.",
         {
           "label": "Practice your free kick.",
           "multiline": false,
@@ -2548,7 +2548,7 @@
       [
         "data_87e970",
         "Defend your goal,\ncontrol the Keeper.\nTwo opposing players\nwill try to score.",
-        null,
+        "Defenda o gol controlando\no goleiro. Dois rivais\ntentarão marcar.",
         {
           "label": "Defend your goal,",
           "multiline": true,
@@ -2590,7 +2590,7 @@
       [
         "data_87dfbe",
         "BEST SCORE",
-        null,
+        "RECORDE",
         {
           "label": "BEST SCORE",
           "multiline": false,
@@ -2610,7 +2610,7 @@
       [
         "data_87dfe8",
         "Dribble to avoid your\nopponents and capture\nthe flags as quickly as\npossible.Shoot after\ncollecting all the flags\nscore and you may get\na bonus!",
-        null,
+        "Drible os adversários e\npegue as bandeiras o mais\nrápido possível. Após pegar\ntodas, chute para marcar e\ntentar ganhar um bônus!",
         {
           "label": "Dribble to avoid your",
           "multiline": true,
@@ -2654,7 +2654,7 @@
       [
         "data_87e0c8",
         "Pass the ball as fast as\npossible to all 10\nplayers(no Goalkeeper).\nNow shoot the ball\nto receive bonus points.",
-        null,
+        "Passe a bola rapidamente\npara todos os 10 jogadores,\nsem o goleiro. Depois, chute\npara receber pontos extras.",
         {
           "label": "Pass the ball as fast as",
           "multiline": true,
@@ -2690,7 +2690,7 @@
       [
         "data_87e1a8",
         "Shoot the ball along a\nset path to avoid the\nopposition.Aim for the\ncorners of the net for\nbonus points.",
-        null,
+        "Chute pelo trajeto indicado\npara evitar os rivais. Mire\nnos cantos do gol para\nganhar pontos extras.",
         {
           "label": "Shoot the ball along a",
           "multiline": true,
@@ -2726,7 +2726,7 @@
       [
         "data_87e288",
         "Take the ball away from\nthe attacking team as\nsoon as possible.After\nstealing the ball aim\nfor a goal to get bonus\npoints.",
-        null,
+        "Roube a bola dos atacantes\no mais rápido possível.\nDepois, tente marcar um gol\npara ganhar pontos extras.",
         {
           "label": "Take the ball away from",
           "multiline": true,
@@ -2766,7 +2766,7 @@
       [
         "data_87e368",
         "Either aim straight for\nthe goal along a set\npath or opt to center\nthe ball when taking the\ncorner kick.Aim for the\ncorners of the net to\nget bonus points.",
-        null,
+        "No escanteio, mire direto\nno gol pelo trajeto indicado\nou faça um cruzamento.\nMire nos cantos do gol para\nganhar pontos extras.",
         {
           "label": "Either aim straight for",
           "multiline": true,
@@ -2810,7 +2810,7 @@
       [
         "data_87e448",
         "Avoid the wall and aim\neither straight for goal\nor try a center.Aim for\nthe corners of the net\nto get bonus points.",
-        null,
+        "Evite a barreira e chute\ndireto ao gol ou tente um\ncruzamento. Mire nos cantos\npara ganhar pontos extras.",
         {
           "label": "Avoid the wall and aim",
           "multiline": true,
@@ -2856,7 +2856,7 @@
       [
         "data_87e9e8",
         "-YOUR RECORD-",
-        null,
+        "-SEU RECORDE-",
         {
           "label": "-YOUR RECORD-",
           "multiline": false,
@@ -2876,7 +2876,7 @@
       [
         "data_87e9f5",
         "TIME\n  :  :",
-        null,
+        "TMP.\n  :  :",
         {
           "label": "TIME",
           "multiline": true,
@@ -2900,7 +2900,7 @@
       [
         "data_87ea09",
         "TIME SCORE",
-        null,
+        "PONT.TEMPO",
         {
           "label": "TIME SCORE",
           "multiline": false,
@@ -2920,7 +2920,7 @@
       [
         "data_87ea1c",
         "BONUS TIME\n  :  :",
-        null,
+        "TMP. BÔNUS\n  :  :",
         {
           "label": "BONUS TIME",
           "multiline": true,
@@ -2944,7 +2944,7 @@
       [
         "data_87ea30",
         "BONUS SCORE",
-        null,
+        "PONT. BÔNUS",
         {
           "label": "BONUS SCORE",
           "multiline": false,
@@ -2964,7 +2964,7 @@
       [
         "data_87ea8a",
         "Don't be too\nimpressed.lt's\nonly an average\nrecord.",
-        null,
+        "Não se empolgue\ntanto. Este é apenas\num resultado mediano.",
         {
           "label": "Don't be too",
           "multiline": true,
@@ -2996,7 +2996,7 @@
       [
         "data_87eada",
         "Great\nIt's a new\nrecord!\nUnbelievable!",
-        null,
+        "Ótimo\nÉ um novo\nrecorde!\nInacreditável!",
         {
           "label": "Great",
           "multiline": true,
@@ -3028,7 +3028,7 @@
       [
         "data_87eb2a",
         "Not good enough.\nPractice harder\nnext time!",
-        null,
+        "Ainda não foi bom.\nTreine mais na\npróxima tentativa!",
         {
           "label": "Not good enough.",
           "multiline": true,
@@ -3056,7 +3056,7 @@
       [
         "data_87eb7a",
         "Please try harder\nnext time.",
-        null,
+        "Tente se esforçar\nmais da próxima vez.",
         {
           "label": "Please try harder",
           "multiline": true,
@@ -3080,7 +3080,7 @@
       [
         "data_87ebca",
         "You just missed a\nnew record.\nTry again.",
-        null,
+        "Quase um novo\nrecorde.\nTente novamente.",
         {
           "label": "You just missed a",
           "multiline": true,
@@ -3108,7 +3108,7 @@
       [
         "data_87ec1a",
         "Good but try harder\nfor the record.",
-        null,
+        "Foi bom, mas tente\nbater o recorde.",
         {
           "label": "Good but try harder",
           "multiline": true,
@@ -3132,7 +3132,7 @@
       [
         "data_87ecaf",
         "INPUT NAME",
-        null,
+        "DIGITE NOME",
         {
           "label": "INPUT NAME",
           "multiline": false,
@@ -3162,7 +3162,7 @@
       [
         "data_87edbd",
         "FROM THE BIGINING",
-        null,
+        "DESDE O INÍCIO",
         {
           "label": "FROM THE BIGINING",
           "multiline": false,
@@ -3182,7 +3182,7 @@
       [
         "data_87edd6",
         "PASS WORD",
-        null,
+        "SENHA",
         {
           "label": "PASS WORD",
           "multiline": false,
@@ -3212,7 +3212,7 @@
       [
         "data_87ee15",
         "NO.",
-        null,
+        "N.",
         {
           "label": "NO.",
           "multiline": false,
@@ -3232,7 +3232,7 @@
       [
         "data_87ee3b",
         "NO.1  ITALY 1-2 CROATIA\n      1:14 ITALY'S C.K.",
-        null,
+        "N.1  ITÁLIA 1-2 CROÁCIA\n1:14 ESCANTEIO DA ITÁLIA",
         {
           "label": "NO.1  ITALY 1-2 CROATIA",
           "multiline": true,
@@ -3256,7 +3256,7 @@
       [
         "data_87ee73",
         "NO.2  GERMANY 2-3 BULGARIA\n      1:02 GERMANY'S F.K.",
-        null,
+        "N.2  ALEMANHA 2-3 BULGÁRIA\n1:02 FALTA DA ALEMANHA",
         {
           "label": "NO.2  GERMANY 2-3 BULGARIA",
           "multiline": true,
@@ -3280,7 +3280,7 @@
       [
         "data_87eeab",
         "NO.3  ENGLAND 1-3 BRAZIL\n      1:54 ENGLAND'S C.K.",
-        null,
+        "N.3  INGLATERRA 1-3 BRASIL\n1:54 ESCANTEIO DA INGLATERRA",
         {
           "label": "NO.3  ENGLAND 1-3 BRAZIL",
           "multiline": true,
@@ -3304,7 +3304,7 @@
       [
         "data_87eee3",
         "NO.4  GERMANY 0-0 ITALY\n      0:56 GERMANY'S F.K.",
-        null,
+        "N.4  ALEMANHA 0-0 ITÁLIA\n0:56 FALTA DA ALEMANHA",
         {
           "label": "NO.4  GERMANY 0-0 ITALY",
           "multiline": true,
@@ -3328,7 +3328,7 @@
       [
         "data_87ef1b",
         "NO.5  TURKEY 1-1 SWEDEN\n      0:49 TURKEY'S THROW IN",
-        null,
+        "N.5  TURQUIA 1-1 SUÉCIA\n0:49 LATERAL DA TURQUIA",
         {
           "label": "NO.5  TURKEY 1-1 SWEDEN",
           "multiline": true,
@@ -3352,7 +3352,7 @@
       [
         "data_87ef53",
         "NO.6  BELGIUM 1-1 SPAIN\n      0:42 BELGIUM'S F.K.",
-        null,
+        "N.6  BÉLGICA 1-1 ESPANHA\n0:42 FALTA DA BÉLGICA",
         {
           "label": "NO.6  BELGIUM 1-1 SPAIN",
           "multiline": true,
@@ -3376,7 +3376,7 @@
       [
         "data_87ef8b",
         "NO.7  ROMANIA 0-1 POLAND\n      1:43 ROMANIA'S F.K.",
-        null,
+        "N.7  ROMÊNIA 0-1 POLÔNIA\n1:43 FALTA DA ROMÊNIA",
         {
           "label": "NO.7  ROMANIA 0-1 POLAND",
           "multiline": true,
@@ -3400,7 +3400,7 @@
       [
         "data_87efc3",
         "NO.8  SCOTLAND 0-0 RUSSIA\n      1:24 SCOTLAND'S G.K.",
-        null,
+        "N.8  ESCÓCIA 0-0 RÚSSIA\n1:24 TIRO DE META DA ESCÓCIA",
         {
           "label": "NO.8  SCOTLAND 0-0 RUSSIA",
           "multiline": true,
@@ -3424,7 +3424,7 @@
       [
         "data_87effb",
         "NO.9  PORTUGAL 0-1 IRELAND\n      0:38 PORTUGAL'S F.K.",
-        null,
+        "N.9  PORTUGAL 0-1 IRLANDA\n0:38 FALTA DE PORTUGAL",
         {
           "label": "NO.9  PORTUGAL 0-1 IRELAND",
           "multiline": true,
@@ -3448,7 +3448,7 @@
       [
         "data_87f033",
         "NO.10 ARGENTINA 2-2 BRAZIL\n      0:49 ARGENTINA'S C.K.",
-        null,
+        "N.10 ARGENTINA 2-2 BRASIL\n0:49 ESCANTEIO DA ARGENTINA",
         {
           "label": "NO.10 ARGENTINA 2-2 BRAZIL",
           "multiline": true,
@@ -3472,7 +3472,7 @@
       [
         "data_87f06b",
         "NO.11 HOLLAND 1-3 CZECH.REP.\n      1:38 HOLLAND'S F.K.",
-        null,
+        "N.11 HOLANDA 1-3 REP.TCHECA\n1:38 FALTA DA HOLANDA",
         {
           "label": "NO.11 HOLLAND 1-3 CZECH.REP.",
           "multiline": true,
@@ -3496,7 +3496,7 @@
       [
         "data_87f0a3",
         "NO.12 ENGLAND 1-1 JAPAN\n      0:02 ENGLAND'S C.K.",
-        null,
+        "N.12 INGLATERRA 1-1 JAPÃO\n0:02 ESCANTEIO DA INGLATERRA",
         {
           "label": "NO.12 ENGLAND 1-1 JAPAN",
           "multiline": true,
@@ -3520,7 +3520,7 @@
       [
         "data_87f12d",
         "It seems like a defeat for\nITALY against the talented\nCROATIA.ITALY scored a go-\nal in the second half.Now\nthey are trying to turn\nthe tables around.",
-        null,
+        "Parece uma derrota da\nITÁLIA para a talentosa\nCROÁCIA. A ITÁLIA marcou\nno segundo tempo e agora\ntenta virar o jogo.",
         {
           "label": "It seems like a defeat for",
           "multiline": true,
@@ -3560,7 +3560,7 @@
       [
         "data_87f1c9",
         "Although GERMANY had a 2\ngoal lead,they gave BULG-\nARIA a penalty,and now th-\ney are behind by a goal.\nBULGARIA is a dangerous\nteam to handle.",
-        null,
+        "A ALEMANHA vencia por dois\ngols, mas cedeu um pênalti\nà BULGÁRIA e agora perde\npor um gol. A BULGÁRIA é\numa seleção perigosa.",
         {
           "label": "Although GERMANY had a 2",
           "multiline": true,
@@ -3600,7 +3600,7 @@
       [
         "data_87f265",
         "It is ENGLAND,\nthe home of\nfootball\nagainst\nthe cham-\npions\nBRAZIL.ENGLAND can\nnot end the game as it is,\nfor the sake of their\npride.",
-        null,
+        "A INGLATERRA,\nterra do\nfutebol\ncontra\no BRASIL,\natual\ncampeão. Os ingleses\nnão podem aceitar este\nplacar, em nome de seu\norgulho.",
         {
           "label": "It is ENGLAND,",
           "multiline": true,
@@ -3656,7 +3656,7 @@
       [
         "data_87f301",
         "GERMANY can not score a\ngoal against ITALY,even\nthough the ITALIANS are\nplaying poorly.GERMANY wa-\nnts to turn the tables\nwith this free kick.",
-        null,
+        "A ALEMANHA não consegue\nmarcar contra a ITÁLIA,\nque não joga bem. Com\nessa falta, os alemães\nquerem virar a partida.",
         {
           "label": "GERMANY can not score a",
           "multiline": true,
@@ -3696,7 +3696,7 @@
       [
         "data_87f39d",
         "TURKEY is doing extremely\nwell against SWEDEN,who\nhave been playing with\ntheir best team.One more\ngoal for a historical win.",
-        null,
+        "A TURQUIA joga muito bem\ncontra a SUÉCIA, que está\ncom sua melhor seleção.\nMais um gol pode trazer\numa vitória histórica.",
         {
           "label": "TURKEY is doing extremely",
           "multiline": true,
@@ -3732,7 +3732,7 @@
       [
         "data_87f439",
         "In the last game,when they\nfaced each other,BELGIUM\nwere soundly beaten.Alth-\nough many key players are\nout,this time they want to\nmake it even.",
-        null,
+        "No último confronto, a\nBÉLGICA perdeu de goleada\npara a ESPANHA. Mesmo com\nvários desfalques, agora\na seleção belga quer\ndar o troco.",
         {
           "label": "In the last game,when they",
           "multiline": true,
@@ -3772,7 +3772,7 @@
       [
         "data_87f4d5",
         "ROMANIA is in good condit-\nion.Even though they have\nlet POLAND take the lead,\nthere is plenty of time to\nturn it around.",
-        null,
+        "A ROMÊNIA está em boa\nforma. Embora a POLÔNIA\nesteja na frente, ainda\nhá bastante tempo para\nvirar o jogo.",
         {
           "label": "ROMANIA is in good condit-",
           "multiline": true,
@@ -3808,7 +3808,7 @@
       [
         "data_87f571",
         "SCOTLAND is eager for a\nticket to ENGLAND for\nthe finals.The most impor-\ntant thing to do,is to\ndefeat RUSSIA right now.",
-        null,
+        "A ESCÓCIA quer uma vaga\nnas finais na INGLATERRA.\nO mais importante agora\né vencer a RÚSSIA.",
         {
           "label": "SCOTLAND is eager for a",
           "multiline": true,
@@ -3844,7 +3844,7 @@
       [
         "data_87f60d",
         "PORTUGAL have regained\ntheir old strong form.But\nthey have just conceded an\nown goal.Concentrate and\nyou may yet win.",
-        null,
+        "PORTUGAL recuperou sua\nboa forma, mas acaba de\nsofrer um gol contra.\nConcentre-se: ainda é\npossível vencer.",
         {
           "label": "PORTUGAL have regained",
           "multiline": true,
@@ -3880,7 +3880,7 @@
       [
         "data_87f6a9",
         "BRAZIL are strong.They se-\nem like they can score fr-\nom anywhere.But this is\nfor the south american ch-\nampionship,so ARGENTINA\nmust fight back.",
-        null,
+        "O BRASIL é forte e parece\nmarcar de qualquer lugar.\nMas é o campeonato sul-\namericano, e a ARGENTINA\nprecisa reagir.",
         {
           "label": "BRAZIL are strong.They se-",
           "multiline": true,
@@ -3920,7 +3920,7 @@
       [
         "data_87f745",
         "HOLLAND'S defense has\nbeen shattered in the sec-\nond half.Unless their off-\nence starts something,they\nhave no choice but to\nlose.",
-        null,
+        "A defesa da HOLANDA foi\ndestruída no segundo\ntempo. Se o ataque não\nreagir, a derrota será\ninevitável.",
         {
           "label": "HOLLAND'S defense has",
           "multiline": true,
@@ -3960,7 +3960,7 @@
       [
         "data_87f7e1",
         "Unbelievably,ENGLAND conc-\neded a goal to a country\nfrom ASIA.It will be just\nas bad as losing if the\ngame ends in a tie.",
-        null,
+        "A INGLATERRA sofreu um gol\nde um país da ÁSIA! Se o\njogo acabar empatado, será\ntão ruim quanto perder.",
         {
           "label": "Unbelievably,ENGLAND conc-",
           "multiline": true,
@@ -3996,7 +3996,7 @@
       [
         "data_87f8dc",
         "UNLUCKY THIS TIME.\n    TRY AGAIN.",
-        null,
+        "NÃO FOI DESTA VEZ.\nTENTE NOVAMENTE.",
         {
           "label": "UNLUCKY THIS TIME.",
           "multiline": true,
@@ -4020,7 +4020,7 @@
       [
         "data_87f900",
         " CONGRATULATIONS!\n SCENARIO   CLEAR!",
-        null,
+        "PARABÉNS!\nCENÁRIO CONCLUÍDO!",
         {
           "label": " CONGRATULATIONS!",
           "multiline": true,
@@ -4044,7 +4044,7 @@
       [
         "data_87f928",
         "SCENARIO",
-        null,
+        "CENÁRIO",
         {
           "label": "SCENARIO",
           "multiline": false,
@@ -4064,7 +4064,7 @@
       [
         "data_87f938",
         "IN",
-        null,
+        "EM",
         {
           "label": "IN",
           "multiline": false,
@@ -4084,7 +4084,7 @@
       [
         "data_87f93a",
         "TRY!",
-        null,
+        "VEZ!",
         {
           "label": "TRY!",
           "multiline": false,
@@ -4104,7 +4104,7 @@
       [
         "data_87f93e",
         "CLEARED",
-        null,
+        "VENCIDO",
         {
           "label": "CLEARED",
           "multiline": false,
@@ -4124,7 +4124,7 @@
       [
         "data_87f945",
         "SCENARIO MODE CLEARED",
-        null,
+        "CENÁRIOS CONCLUÍDOS",
         {
           "label": "SCENARIO MODE CLEARED",
           "multiline": false,
@@ -4144,7 +4144,7 @@
       [
         "data_87f95a",
         "IN   TH TRY!",
-        null,
+        "EM      VEZ!",
         {
           "label": "IN   TH TRY!",
           "multiline": false,
@@ -4164,7 +4164,7 @@
       [
         "data_87f966",
         "  CONGRATULATIONS!",
-        null,
+        "  PARABÉNS!",
         {
           "label": "  CONGRATULATIONS!",
           "multiline": false,
@@ -4194,7 +4194,7 @@
       [
         "data_87f990",
         "You are the greatest!                     KONAMI ALL RIGHTS RESERVED.",
-        null,
+        "Você é o melhor!                    KONAMI DIREITOS RESERVADOS.",
         {
           "label": "You are the greatest!                     KONAMI ALL RIGHTS RESERVED.",
           "multiline": false,
