@@ -150,6 +150,23 @@ export const NATIVE_SCREEN_TEXT_FIELDS=Object.freeze([
   "original": "AREA A"
  }
 ]);
+export const NATIVE_AUX_TEXT_GROUPS=Object.freeze([
+ {id:'adjustStrategy',pc:248175,rows:[9,10]},
+ {id:'adjustDisplay1',pc:248197,rows:[9,10]},
+ {id:'adjustDisplay2',pc:248221,rows:[10,10]},
+ {id:'numberStrategies',pc:248327,rows:[22]},
+]);
+export function encodeNativeAuxText(group,value){
+ const text=String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/\s+/g,' ').trim();
+ if(!/^[A-Z ]*$/.test(text))throw new Error('Native auxiliary text accepts A-Z and spaces');
+ const words=text?text.split(' '):[],lines=group.rows.map(()=>''),out=[];let row=0;
+ for(const word of words){while(row<lines.length&&(lines[row]?lines[row].length+1:0)+word.length>group.rows[row])row++;
+  if(row===lines.length)throw new Error('Native auxiliary text exceeds mapped field: '+group.id);
+  lines[row]+=(lines[row]?' ':'')+word;
+ }
+ for(let i=0;i<lines.length;i++){const n=group.rows[i]-lines[i].length,left=Math.floor(n/2);out.push(...(' '.repeat(left)+lines[i]+' '.repeat(n-left)));}
+ return Uint8Array.from(out,c=>c===' '?0:c.charCodeAt(0)-65+11);
+}
 export const nativeTextArea=f=>f.pc>=248007&&f.pc<248350?'textos-estrategias':'pre-partida';
 export function plusNativeScreenTextWriter(rom,state={},selectedAreas=null){
  const values=state?.textWorkspaceV2?.sections?.graphicIntents?.values||{};
@@ -157,5 +174,11 @@ export function plusNativeScreenTextWriter(rom,state={},selectedAreas=null){
   const text=String(values[key]).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z ]/g,'').replace(/\s+/g,' ').trim();
   if(!/^[A-Z ]*$/.test(text)||text.length>f.capacity)throw new Error('Native text exceeds mapped field: '+f.name);
   rom.set(Uint8Array.from(text.padEnd(f.capacity,' '),c=>c===' '?0:c.charCodeAt(0)-65+11),f.pc);
- }return rom;
+ }
+ if(!selectedAreas||selectedAreas.includes('textos-estrategias'))for(const g of NATIVE_AUX_TEXT_GROUPS){
+  const whole=state.screenTextsV1?.values?.['strategy-aux']||{};
+  const value=whole[g.id]??values['strategy.aux.v1.'+g.id];if(value===undefined)continue;
+  rom.set(encodeNativeAuxText(g,value),g.pc);
+ }
+ return rom;
 }

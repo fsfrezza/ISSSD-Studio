@@ -50,7 +50,7 @@ test('selective project save detects complete control changes and excludes them 
  const build=fs.readFileSync(new URL('../scripts/build-editor.mjs',import.meta.url),'utf8');
  const context=vm.createContext({html:`const cat=o=>{const sem=o.state.semantic,tw=sem.textWorkspaceV2.sections;return {'texts.graphics':tw.graphicIntents||null}};
  function removeCategory(obj,id){const sem=obj.state.semantic,tw=sem.textWorkspaceV2.sections;if(id==='unused'){}else if(id==='texts.graphics'&&tw)tw.graphicIntents={};}`});
- const start=build.indexOf('// Selective save/open'),end=build.indexOf('const css=',start);
+ const start=build.indexOf('// Selective save/open'),end=build.indexOf('// Full auxiliary',start);
  vm.runInContext(build.slice(start,end),context);
  vm.runInContext(context.html,context);
  context.project={state:{semantic:{teamsV1:{schema:'preserved'},textWorkspaceV2:{sections:{graphicIntents:{values:{'controller.high':'OLD'}}}},screenTextsV1:{values:{controls:{highball:'BOLA ALTA'},'match-options':{start:'COMECA'}}}}}};

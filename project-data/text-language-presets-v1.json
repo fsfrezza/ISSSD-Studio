@@ -1,0 +1,179 @@
+{
+  "schema": "isssd-text-language-presets-v1",
+  "version": 1,
+  "sources": {
+    "english": {
+      "profile": "iss-deluxe-plus",
+      "sha256": "ca2d73b226ab252649d4c9c35bb6b81937586d908c1d9dc9d447db7babfaad0a"
+    },
+    "portuguese": {
+      "profile": "user-project",
+      "filename": "International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj",
+      "sha256": "e0e31459e24c04bf2a3eb53da91d8ddcaf6d3a8c99ea0792860b6762d2272bf1"
+    }
+  },
+  "sections": {
+    "game-modes": {
+      "english": {
+        "friendly": "OPEN GAME",
+        "league": "SHORT LEAGUE",
+        "tournament": "SHORT TOURNAMENT",
+        "friendlyDesc": "Single game only.",
+        "leagueDesc": "League up to six players.",
+        "tournamentDesc": "Tournament up to eight players."
+      },
+      "portuguese": {
+        "friendly": "JOGATINA",
+        "league": "LIGA CURTA",
+        "tournament": "TORNEIO CURTO",
+        "friendlyDesc": "X1 maroto",
+        "leagueDesc": "Max: 6 jogadores",
+        "tournamentDesc": "Max: 8 jogadores"
+      },
+      "evidence": {
+        "portugueseSource": "canonical-project",
+        "note": "Portuguese values copied verbatim from the user project; no translation fallback."
+      }
+    },
+    "main-menu": {
+      "english": {
+        "openGame": "OPEN SOCCER GAME",
+        "scenario": "SCENARIO",
+        "championship": "INTERNATIONAL",
+        "penalty": "PENALTY SHOOTKICK",
+        "cup": "WORLD SERIES",
+        "training": "TRAINING",
+        "password": "PASSWORD",
+        "options": "OPTIONS"
+      },
+      "portuguese": {
+        "openGame": "JOGATINA",
+        "scenario": "CENARIOS",
+        "championship": "CAMPEONATO",
+        "penalty": "PENAIS",
+        "cup": "MEGACOPA",
+        "training": "TREINOS",
+        "password": "SENHA",
+        "options": "OPCOES"
+      },
+      "evidence": {
+        "portugueseSource": "canonical-project",
+        "note": "Portuguese values copied verbatim from the user project; no translation fallback."
+      }
+    },
+    "strategies": {
+      "english": {
+        "alloutatk": "ALL OUT ATTACK",
+        "center": "PUSH ALONG CENTER",
+        "wings": "PUSH ALONG WINGS",
+        "counteratk": "COUNTER ATTACK",
+        "alloutdef": "ALL OUT DEFENSE",
+        "pressup": "PRESS UP",
+        "zonepress": "ZONE PRESS",
+        "offtrap": "OFFSIDE TRAP"
+      },
+      "portuguese": {
+        "alloutatk": "TODOS AO ATAQUE",
+        "center": "ATAQUE PELO MEIO",
+        "wings": "ATAQUE PELAS ALAS",
+        "counteratk": "CONTRA ATAQUE",
+        "alloutdef": "TODOS PRA DEFESA",
+        "pressup": "PRESSAO INDIVIDUAL",
+        "zonepress": "MARCACAO POR ZONA",
+        "offtrap": "LINHA DE IMPEDMENTO"
+      },
+      "evidence": {
+        "portugueseSource": "canonical-project",
+        "note": "Portuguese values copied verbatim from the user project; no translation fallback."
+      }
+    },
+    "controls": {
+      "english": {
+        "highball": "HIGH BALL",
+        "passball": "PASS BALL",
+        "shoot": "SHOT",
+        "dash": "DASH",
+        "keeper": "KEEPER",
+        "semiauto": "SEMI AUTO",
+        "auto": "AUTO",
+        "manual": "MANUAL"
+      },
+      "portuguese": {
+        "shoot": "CHUTE",
+        "dash": "CORRE",
+        "keeper": "GOLERO",
+        "semiauto": "SEMI AUTO",
+        "auto": "AUTO",
+        "manual": "MANUAL",
+        "highball": "BOLA ALTA",
+        "passball": "PASSE"
+      },
+      "evidence": {
+        "portugueseSource": "canonical-project",
+        "note": "Portuguese values copied verbatim from the user project; no translation fallback."
+      }
+    },
+    "match-options": {
+      "english": {
+        "formation": "FORMATION CHANGE",
+        "substitution": "SELECT SQUAD",
+        "teamStrategy": "ADJUST STRATEGY",
+        "markChange": "MAN TO MAN",
+        "viewData": "EDIT PLAYER SKILLS",
+        "kickOff": "GAME START"
+      },
+      "portuguese": {
+        "formation": "FORMACAO",
+        "substitution": "SUBSTITUICOES",
+        "teamStrategy": "TATICA DO TIME",
+        "markChange": "MARCACAO",
+        "viewData": "VER DADOS",
+        "kickOff": "INICIAR JOGO",
+        "formationDesc": "Ajuste a formacao.",
+        "substitutionDesc": "Faca substituicoes.",
+        "teamStrategyDesc": "Defina a tatica.",
+        "markChangeDesc": "Defina a marcacao.",
+        "viewDataDesc": "Veja dados do time.",
+        "kickOffDesc": "Comece a partida."
+      },
+      "evidence": {
+        "portugueseSource": "canonical-project",
+        "note": "Portuguese values copied verbatim from the user project; no translation fallback."
+      }
+    },
+    "strategy-aux": {
+      "english": {
+        "adjustStrategy": "ADJUST STRATEGY",
+        "adjustDisplay1": "ADJUST DISPLAY",
+        "adjustDisplay2": "ADJUST DISPLAY",
+        "numberStrategies": "NUMBER OF STRATEGIES"
+      },
+      "portuguese": {
+        "adjustStrategy": "AJUSTE TATICAS",
+        "adjustDisplay1": "AJUSTE DISPLAY",
+        "adjustDisplay2": "AJUSTE EXIBIR",
+        "numberStrategies": "NUMERO DE TATICAS"
+      },
+      "evidence": {
+        "portugueseSource": "canonical-project",
+        "note": "Portuguese values copied verbatim from the user project; no translation fallback."
+      }
+    },
+    "title-screen": {
+      "english": {
+        "copyright": "@1995KONAMIALLRIGHTSRESERVED.",
+        "license": "LICENSEDBYNINTENDO",
+        "press": "Press"
+      },
+      "portuguese": {
+        "copyright": "@1995KONAMIALLRIGHTSRESERVED.",
+        "license": "LICENSEDBYNINTENDO",
+        "press": "Toque"
+      },
+      "evidence": {
+        "portugueseSource": "canonical-project",
+        "note": "Portuguese values copied verbatim from the user project; no translation fallback."
+      }
+    }
+  }
+}

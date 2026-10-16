@@ -70,14 +70,32 @@ const finalizeHook='window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__?.(obj);';html=h
 // inscriptions that the screen-owned snapshot and native writer consume.
 const graphicsCategory="'texts.graphics':tw.graphicIntents||null";
 if(!html.includes(graphicsCategory))throw new Error('Build interrompido: categoria gráfica de salvamento não encontrada.');
-html=html.replaceAll(graphicsCategory,"'texts.graphics':(sem.screenTextsV1?.values?.controls?{workspace:tw.graphicIntents||null,controls:sem.screenTextsV1.values.controls}:tw.graphicIntents||null)");
+html=html.replaceAll(graphicsCategory,"'texts.graphics':((sem.screenTextsV1?.values?.controls||sem.screenTextsV1?.values?.strategies||sem.screenTextsV1?.values?.['strategy-aux'])?{workspace:tw.graphicIntents||null,controls:sem.screenTextsV1.values.controls,strategies:sem.screenTextsV1.values.strategies,aux:sem.screenTextsV1.values['strategy-aux']}:tw.graphicIntents||null)");
 const removeGraphics="else if(id==='texts.graphics'&&tw)tw.graphicIntents={};";
 if(!html.includes(removeGraphics))throw new Error('Build interrompido: filtro gráfico de salvamento não encontrado.');
-html=html.replaceAll(removeGraphics,"else if(id==='texts.graphics'){if(tw)tw.graphicIntents={};if(sem.screenTextsV1?.values)delete sem.screenTextsV1.values.controls;}");
+html=html.replaceAll(removeGraphics,"else if(id==='texts.graphics'){if(tw)tw.graphicIntents={};if(sem.screenTextsV1?.values)for(const owner of ['controls','strategies','strategy-aux'])delete sem.screenTextsV1.values[owner];}");
+
+// Full auxiliary inscriptions use the verified native rows, including padding.
+const oldAuxStage="function stage(g,text){const vals=split(g,text);g.parts.forEach(([pc],i)=>window.ISSSDTextIntentions?.setDraft?.(P+pc,vals[i]));return vals}";
+if(!html.includes(oldAuxStage))throw new Error('Build interrompido: staging de textos auxiliares não encontrado.');
+html=html.replace(oldAuxStage,"function stage(g,text){const q=String(text??'').toUpperCase().replace(/\\s+/g,' ').trim();window.ISSSDTextIntentions?.setDraft?.('strategy.aux.v1.'+g.id,q);return [q]}");
+
+// Keep rebuilt legacy strategy buttons on the audited preset path as well.
+html=html.replace('function fillPtBr(){for(const g of GROUPS)',"function fillPtBr(){if(window.__ISSSD_TEXT_LANGUAGE_PRESETS__){window.__ISSSD_TEXT_LANGUAGE_PRESETS__.fill('strategies','portuguese');return}for(const g of GROUPS)");
+html=html.replace('function restore(){for(const g of GROUPS)',"function restore(){if(window.__ISSSD_TEXT_LANGUAGE_PRESETS__){window.__ISSSD_TEXT_LANGUAGE_PRESETS__.fill('strategies','english');return}for(const g of GROUPS)");
+html=html.replace("$('tx622AuxPt').onclick=()=>{AUX.forEach", "$('tx622AuxPt').onclick=()=>{if(window.__ISSSD_TEXT_LANGUAGE_PRESETS__){window.__ISSSD_TEXT_LANGUAGE_PRESETS__.fill('strategy-aux','portuguese');return}AUX.forEach");
+
+// Project confirmation is semantic. Native size/region checks still run in
+// Verify, Apply and Build Pipeline; saving text must not require rasterization.
+const semanticMenuCommit="function commit(){try{const texts=uiTexts(),style=styleNow(),payload=JSON.stringify({schema:'isssd-main-menu-text-v5',version:5,texts,style});if(!window.ISSSDTextIntentions?.setDraft)throw Error('Gerenciador de projeto indisponível.');window.ISSSDTextIntentions.setDraft(KEY,payload);window.ISSSDTextIntentions.commitAll?.();window.__ISSSD_MAIN_MENU_PENDING__=null;status('Textos e estilo confirmados no projeto. Use Salvar Projeto. Verificar gravação valida separadamente o orçamento binário antes da ROM.');renderPreview()}catch(e){status('Não implementado: '+(e.message||e),true)}}";
+const menuCommitRx=/function commit\(\)\{try\{const b=verify\(\),payload=JSON.stringify\(\{schema:'isssd-main-menu-text-v5'[^\n]+/;
+if(!menuCommitRx.test(html))throw new Error('Build interrompido: confirmação do menu não encontrada.');
+html=html.replace(menuCommitRx,semanticMenuCommit);
 
 const css=fs.existsSync(cssFile)?fs.readFileSync(cssFile,'utf8'):'';
 const js=fs.existsSync(jsFile)?fs.readFileSync(jsFile,'utf8'):'';
-const v11=fs.existsSync(v11File)?fs.readFileSync(v11File,'utf8'):'';
+const languagePresets=JSON.parse(fs.readFileSync(path.join(root,'project-data','text-language-presets-v1.json'),'utf8'));
+const v11='const TEXT_LANGUAGE_PRESETS='+JSON.stringify(languagePresets)+';\n'+(fs.existsSync(v11File)?fs.readFileSync(v11File,'utf8'):'');
 try{new Function(js);new Function(v11)}catch(e){throw new Error('Build interrompido: JavaScript Git inválido: '+e.message)}
 const patch=`\n<!-- ${marker} -->\n<style id="isssd-git-visual-bridge-overrides">\n${css}\n</style>\n<script type="module" id="isssd-git-visual-bridge-runtime">\n${js}\n</script>\n<script type="module" id="isssd-git-project-import-v11">\n${v11}\n</script>\n`;
 if(html.includes('</body>'))html=html.replace('</body>',()=>patch+'\n</body>');else html+=patch;
