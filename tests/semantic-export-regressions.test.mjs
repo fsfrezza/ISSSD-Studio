@@ -11,7 +11,7 @@ import {PLUS_NAME_POINTER_TABLE,readPlusPlayerName,encodeFixedPlayerName,resolve
 import {playerOffset} from '../src/core/plus-player.mjs';
 import {resolvePlusTacticalRecord} from '../src/core/plus-tactics-address.mjs';
 import {decodePlusTacticalRecord} from '../src/core/plus-tactics-record.mjs';
-const current=JSON.parse(fs.readFileSync(new URL('../International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj',import.meta.url)));
+const current=JSON.parse(fs.readFileSync(new URL('./fixtures/semantic-export-project.json',import.meta.url)));
 function seedNativeE(raw){
  for(let y=1;y<=6;y++)for(let x=134;x<136;x++){
   const v=(x===134||[1,3,6].includes(y))?1:3,t=x>>3,k=7-x%8;
@@ -28,7 +28,7 @@ function baseFixture(){
  }
  base.set(konamiLzCompress(seedNativeE(new Uint8Array(496))),0x108162);for(const [pc,bytes] of CONTROLLER_NATIVE_DESCRIPTORS)base.set(bytes,pc);return base;
 }
-test('current project builds named Brazil and native labels cumulatively despite stale binary player mirrors',()=>{
+test('fixed reference project builds named Brazil and native labels cumulatively despite stale binary player mirrors',()=>{
  const base=baseFixture(),before=base.slice(),doc=structuredClone(current),shots=[];
  buildCumulativeProject(base,doc,{selectedAreas:['infraestrutura','pre-partida','textos-estrategias','jogadores','formacoes'],onRom:(r,e)=>shots.push({r,e})});
  const final=shots.at(-1).r;

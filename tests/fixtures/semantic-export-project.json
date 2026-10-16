@@ -1,0 +1,3963 @@
+{
+  "base": {
+    "sha256": "ca2d73b226ab252649d4c9c35bb6b81937586d908c1d9dc9d447db7babfaad0a",
+    "size": 2097152,
+    "fileName": "International Superstar Soccer Deluxe Plus.sfc",
+    "profile": "iss-deluxe-plus",
+    "headerSize": 0
+  },
+  "state": {
+    "patchFormat": "rle-base64-v1",
+    "patchesCompact": [
+      {
+        "off": 30932,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BZmYh3YnBQ=="
+      },
+      {
+        "off": 30939,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AohYiA=="
+      },
+      {
+        "off": 30943,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ADc="
+      },
+      {
+        "off": 30946,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BFV5aXU3"
+      },
+      {
+        "off": 30953,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BYd5eJZWCg=="
+      },
+      {
+        "off": 32704,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AEk="
+      },
+      {
+        "off": 32706,
+        "len": 10,
+        "encoding": "rle-base64",
+        "data": "CVRFUk5FVFNTU1U="
+      },
+      {
+        "off": 32717,
+        "len": 8,
+        "encoding": "rle-base64",
+        "data": "B0tFUlJFTEFY"
+      },
+      {
+        "off": 32727,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAw="
+      },
+      {
+        "off": 32732,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A5Wnalg="
+      },
+      {
+        "off": 95150,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ACA="
+      },
+      {
+        "off": 95154,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AEg="
+      },
+      {
+        "off": 95158,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AGg="
+      },
+      {
+        "off": 95162,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AHw="
+      },
+      {
+        "off": 95166,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AJw="
+      },
+      {
+        "off": 95170,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ALQ="
+      },
+      {
+        "off": 95174,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ANA="
+      },
+      {
+        "off": 248017,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AA4="
+      },
+      {
+        "off": 248021,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AQsZ"
+      },
+      {
+        "off": 248026,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAs="
+      },
+      {
+        "off": 248038,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAs="
+      },
+      {
+        "off": 248044,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AhoPFg=="
+      },
+      {
+        "off": 248058,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAs="
+      },
+      {
+        "off": 248064,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AhoPFg=="
+      },
+      {
+        "off": 248072,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AQsd"
+      },
+      {
+        "off": 248081,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAs="
+      },
+      {
+        "off": 248086,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAs="
+      },
+      {
+        "off": 248097,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ABk="
+      },
+      {
+        "off": 248101,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "ARwL"
+      },
+      {
+        "off": 248106,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AA4="
+      },
+      {
+        "off": 248119,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AB0="
+      },
+      {
+        "off": 248124,
+        "len": 10,
+        "encoding": "rle-base64",
+        "data": "CRMYDhMgEw4fCxY="
+      },
+      {
+        "off": 248138,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AA0="
+      },
+      {
+        "off": 248145,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AhoZHA=="
+      },
+      {
+        "off": 248149,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "AyQZGAs="
+      },
+      {
+        "off": 248161,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AQ4P"
+      },
+      {
+        "off": 248164,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BRMXGg8OFw=="
+      },
+      {
+        "off": 311958,
+        "len": 22,
+        "encoding": "rle-base64",
+        "data": "Ffx/+H/xf+5/7H/Ke6x3pndgb2NvYXM="
+      },
+      {
+        "off": 320516,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "AwAAoEU="
+      },
+      {
+        "off": 320604,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "AwAAIDY="
+      },
+      {
+        "off": 320614,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A1prxhg="
+      },
+      {
+        "off": 320671,
+        "len": 31,
+        "encoding": "rle-base64",
+        "data": "Hn/AMMAwwSzBLMIowijDKMMkxCTEIMQgxRzFHMYcxhg="
+      },
+      {
+        "off": 320704,
+        "len": 32,
+        "encoding": "rle-base64",
+        "data": "H+BjgBmAGWEZYRlCGUIZQxkjGSQZBBkEGeUY5RjmGMYY"
+      },
+      {
+        "off": 389022,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 389053,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 389084,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 389146,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 389177,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 389208,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 389239,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 389270,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 389332,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 389363,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 389394,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 389425,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 389456,
+        "len": 22,
+        "encoding": "rle-base64",
+        "data": "FQHuHu727gru4vb29goIHAjkEvYSCgU="
+      },
+      {
+        "off": 389456,
+        "len": 22,
+        "encoding": "rle-base64",
+        "data": "FQHgHtz23Arg4vb29goIHAjkIvYiCgU="
+      },
+      {
+        "off": 389456,
+        "len": 22,
+        "encoding": "rle-base64",
+        "data": "FQHgHtz23Arg4vb29goIHAjkIvYiCgU="
+      },
+      {
+        "off": 389456,
+        "len": 22,
+        "encoding": "rle-base64",
+        "data": "FQHgHtz23Arg4vb29goIHAjkIvYiCgU="
+      },
+      {
+        "off": 389480,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAU="
+      },
+      {
+        "off": 389480,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAU="
+      },
+      {
+        "off": 389480,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAU="
+      },
+      {
+        "off": 389480,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAU="
+      },
+      {
+        "off": 389482,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AgIGBg=="
+      },
+      {
+        "off": 389482,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AgIGBg=="
+      },
+      {
+        "off": 389482,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AgIGBg=="
+      },
+      {
+        "off": 389482,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AgIGBg=="
+      },
+      {
+        "off": 389487,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 389518,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 389549,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 389580,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 389611,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 389642,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 389673,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 389704,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 389735,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 389766,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 389797,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 389828,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 389859,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 389890,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 389921,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 389952,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 389983,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 390015,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "Au4g7g=="
+      },
+      {
+        "off": 390015,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AuAg3A=="
+      },
+      {
+        "off": 390015,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AuAg3A=="
+      },
+      {
+        "off": 390015,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AuAg3A=="
+      },
+      {
+        "off": 390019,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AO4="
+      },
+      {
+        "off": 390019,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ANw="
+      },
+      {
+        "off": 390019,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ANw="
+      },
+      {
+        "off": 390019,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ANw="
+      },
+      {
+        "off": 390021,
+        "len": 15,
+        "encoding": "rle-base64",
+        "data": "Du7g8vX0CggbCPwS5xIHBQ=="
+      },
+      {
+        "off": 390021,
+        "len": 15,
+        "encoding": "rle-base64",
+        "data": "DuDg8vX0CggbCPwX5yIHBQ=="
+      },
+      {
+        "off": 390021,
+        "len": 15,
+        "encoding": "rle-base64",
+        "data": "DuDg8vX0CggbCPwX5yIHBQ=="
+      },
+      {
+        "off": 390021,
+        "len": 15,
+        "encoding": "rle-base64",
+        "data": "DuDg8vX0CggbCPwX5yIHBQ=="
+      },
+      {
+        "off": 390038,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AgUCAg=="
+      },
+      {
+        "off": 390038,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AgUCAg=="
+      },
+      {
+        "off": 390038,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AgUCAg=="
+      },
+      {
+        "off": 390038,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AgUCAg=="
+      },
+      {
+        "off": 390045,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 390076,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 390108,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AQcg"
+      },
+      {
+        "off": 390108,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AQcg"
+      },
+      {
+        "off": 390109,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ACA="
+      },
+      {
+        "off": 390109,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ACA="
+      },
+      {
+        "off": 390114,
+        "len": 14,
+        "encoding": "rle-base64",
+        "data": "DQfg7vbyChDnCgD6Be8e"
+      },
+      {
+        "off": 390114,
+        "len": 14,
+        "encoding": "rle-base64",
+        "data": "DQfg7vbyChDnCgD6Be8e"
+      },
+      {
+        "off": 390115,
+        "len": 13,
+        "encoding": "rle-base64",
+        "data": "DODw9vELD+IKAP0F9x4="
+      },
+      {
+        "off": 390115,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AuDw9Q=="
+      },
+      {
+        "off": 390116,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AfD1"
+      },
+      {
+        "off": 390116,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AfD1"
+      },
+      {
+        "off": 390119,
+        "len": 9,
+        "encoding": "rle-base64",
+        "data": "CAsK4gUA/Pv3Hg=="
+      },
+      {
+        "off": 390119,
+        "len": 9,
+        "encoding": "rle-base64",
+        "data": "CAsK4gUA/Pv3Hg=="
+      },
+      {
+        "off": 390119,
+        "len": 9,
+        "encoding": "rle-base64",
+        "data": "CAsK4gUA/Pv3Hg=="
+      },
+      {
+        "off": 390138,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 390200,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 390231,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 390262,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 390293,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 392801,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 392832,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 794552,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AtQAiw=="
+      },
+      {
+        "off": 794556,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AHQ="
+      },
+      {
+        "off": 794558,
+        "len": 67,
+        "encoding": "rle-base64",
+        "data": "QhAUEAoQDA4MwKDAqMCwwLjAwMDIwNDA2MCYO+rA4Dv8wKzAtMC8wMTAzMAgwCjAMMA4wEDASMBQwFgoKsAkwCzANMA="
+      },
+      {
+        "off": 794626,
+        "len": 103,
+        "encoding": "rle-base64",
+        "data": "ZsBEwEzAVCg4ABMwXoLg6EBughAYMIIAWRiSaF44hCDGmgECAwQFBgcICQoJCwwIBwgNDgcIDwgQERITANQA3gjYAOwA5gDqANYI4I0DBBARBwgUFRITDAgWDN8BCAjughAXANwBAAE="
+      },
+      {
+        "off": 794730,
+        "len": 59,
+        "encoding": "rle-base64",
+        "data": "IQDoERIBGgEeAPIBGAEiCNwJHAkACP4BMAE4zwHfAd8B3wGYAA=="
+      },
+      {
+        "off": 794790,
+        "len": 8,
+        "encoding": "rle-base64",
+        "data": "hwA="
+      },
+      {
+        "off": 794799,
+        "len": 8,
+        "encoding": "rle-base64",
+        "data": "hwA="
+      },
+      {
+        "off": 794808,
+        "len": 28,
+        "encoding": "rle-base64",
+        "data": "mwA="
+      },
+      {
+        "off": 983040,
+        "len": 112,
+        "encoding": "rle-base64",
+        "data": "GSUB/aEcHAggAqIiIjYUEBSg9EgQHqAwMOKpg7RRzEh4ADg4RChCoca6qhhUGEgIPuIQWKa6xkR8ADw8QBCCqFxcQsK+oKC+oqIYXgh+4hBSorrCQn4wPKB8fCBOobqCgihE4ihSo+4AfHwQIQKigg=="
+      },
+      {
+        "off": 983153,
+        "len": 67,
+        "encoding": "rle-base64",
+        "data": "Qu4oGRQpAuIBFCEuCGgZIgj+ISqz7oKC/gBERGRkVFRMTKq6mpqqqrKyEH4hghiOGZQZhhimAZgQlBC2EVyhbGxUEcY="
+      },
+      {
+        "off": 983221,
+        "len": 125,
+        "encoding": "rle-base64",
+        "data": "Zaq6kpIY8qB4eBjionh4hIYY0qCGhCmC44G8JZSB4BD8GgIJ6glWEZKgvIQh/AlGEgoRsBFWMHwIviGOorzERgQSfgoq4qV6Cgr6hoT8EbwowhDwINSgUFAIIhjmo6ystLa6CPj/vIn/jAA="
+      },
+      {
+        "off": 983347,
+        "len": 23,
+        "encoding": "rle-base64",
+        "data": "lgA="
+      },
+      {
+        "off": 983371,
+        "len": 28,
+        "encoding": "rle-base64",
+        "data": "mwA="
+      },
+      {
+        "off": 983400,
+        "len": 15,
+        "encoding": "rle-base64",
+        "data": "jgA="
+      },
+      {
+        "off": 983416,
+        "len": 18,
+        "encoding": "rle-base64",
+        "data": "kQA="
+      },
+      {
+        "off": 983435,
+        "len": 19,
+        "encoding": "rle-base64",
+        "data": "kgA="
+      },
+      {
+        "off": 983455,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AgAAAA=="
+      },
+      {
+        "off": 983459,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "hQA="
+      },
+      {
+        "off": 983466,
+        "len": 19,
+        "encoding": "rle-base64",
+        "data": "kgA="
+      },
+      {
+        "off": 983486,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "gwA="
+      },
+      {
+        "off": 983491,
+        "len": 19,
+        "encoding": "rle-base64",
+        "data": "kgA="
+      },
+      {
+        "off": 983511,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "hAA="
+      },
+      {
+        "off": 983517,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AgAAAA=="
+      },
+      {
+        "off": 983521,
+        "len": 22,
+        "encoding": "rle-base64",
+        "data": "lQA="
+      },
+      {
+        "off": 983544,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AgAAAA=="
+      },
+      {
+        "off": 983548,
+        "len": 23,
+        "encoding": "rle-base64",
+        "data": "lgA="
+      },
+      {
+        "off": 983572,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "gwA="
+      },
+      {
+        "off": 983577,
+        "len": 24,
+        "encoding": "rle-base64",
+        "data": "lwA="
+      },
+      {
+        "off": 983602,
+        "len": 34,
+        "encoding": "rle-base64",
+        "data": "oQA="
+      },
+      {
+        "off": 983637,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "hAA="
+      },
+      {
+        "off": 983643,
+        "len": 40,
+        "encoding": "rle-base64",
+        "data": "pwA="
+      },
+      {
+        "off": 983684,
+        "len": 40,
+        "encoding": "rle-base64",
+        "data": "pwA="
+      },
+      {
+        "off": 983725,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "hQA="
+      },
+      {
+        "off": 983732,
+        "len": 86,
+        "encoding": "rle-base64",
+        "data": "1QA="
+      },
+      {
+        "off": 983819,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AgAAAA=="
+      },
+      {
+        "off": 983823,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AgAAAA=="
+      },
+      {
+        "off": 983827,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "gwA="
+      },
+      {
+        "off": 983832,
+        "len": 18,
+        "encoding": "rle-base64",
+        "data": "kQA="
+      },
+      {
+        "off": 983851,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AgAAAA=="
+      },
+      {
+        "off": 983855,
+        "len": 19,
+        "encoding": "rle-base64",
+        "data": "kgA="
+      },
+      {
+        "off": 983875,
+        "len": 20,
+        "encoding": "rle-base64",
+        "data": "kwA="
+      },
+      {
+        "off": 983896,
+        "len": 18,
+        "encoding": "rle-base64",
+        "data": "kQA="
+      },
+      {
+        "off": 983915,
+        "len": 10,
+        "encoding": "rle-base64",
+        "data": "iQA="
+      },
+      {
+        "off": 983926,
+        "len": 53,
+        "encoding": "rle-base64",
+        "data": "tAA="
+      },
+      {
+        "off": 983980,
+        "len": 44,
+        "encoding": "rle-base64",
+        "data": "qwA="
+      },
+      {
+        "off": 984025,
+        "len": 32,
+        "encoding": "rle-base64",
+        "data": "nwA="
+      },
+      {
+        "off": 984058,
+        "len": 25,
+        "encoding": "rle-base64",
+        "data": "mAA="
+      },
+      {
+        "off": 984084,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "hgA="
+      },
+      {
+        "off": 984092,
+        "len": 19,
+        "encoding": "rle-base64",
+        "data": "kgA="
+      },
+      {
+        "off": 984112,
+        "len": 26,
+        "encoding": "rle-base64",
+        "data": "mQA="
+      },
+      {
+        "off": 984139,
+        "len": 27,
+        "encoding": "rle-base64",
+        "data": "mgA="
+      },
+      {
+        "off": 984167,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "hgA="
+      },
+      {
+        "off": 984175,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AgAAAA=="
+      },
+      {
+        "off": 984179,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AgAAAA=="
+      },
+      {
+        "off": 984183,
+        "len": 9,
+        "encoding": "rle-base64",
+        "data": "iAA="
+      },
+      {
+        "off": 984193,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AgAAAA=="
+      },
+      {
+        "off": 984197,
+        "len": 21,
+        "encoding": "rle-base64",
+        "data": "lAA="
+      },
+      {
+        "off": 984219,
+        "len": 26,
+        "encoding": "rle-base64",
+        "data": "mQA="
+      },
+      {
+        "off": 984246,
+        "len": 46,
+        "encoding": "rle-base64",
+        "data": "rQA="
+      },
+      {
+        "off": 984298,
+        "len": 13,
+        "encoding": "rle-base64",
+        "data": "jAA="
+      },
+      {
+        "off": 984312,
+        "len": 23,
+        "encoding": "rle-base64",
+        "data": "lgA="
+      },
+      {
+        "off": 984336,
+        "len": 41,
+        "encoding": "rle-base64",
+        "data": "qAA="
+      },
+      {
+        "off": 984378,
+        "len": 25,
+        "encoding": "rle-base64",
+        "data": "mAA="
+      },
+      {
+        "off": 984404,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AgAAAA=="
+      },
+      {
+        "off": 984408,
+        "len": 23,
+        "encoding": "rle-base64",
+        "data": "lgA="
+      },
+      {
+        "off": 984432,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AgAAAA=="
+      },
+      {
+        "off": 984436,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "hgA="
+      },
+      {
+        "off": 984444,
+        "len": 24,
+        "encoding": "rle-base64",
+        "data": "lwA="
+      },
+      {
+        "off": 984469,
+        "len": 12,
+        "encoding": "rle-base64",
+        "data": "iwA="
+      },
+      {
+        "off": 984482,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "hgA="
+      },
+      {
+        "off": 984490,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AgAAAA=="
+      },
+      {
+        "off": 984494,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "hQA="
+      },
+      {
+        "off": 984501,
+        "len": 14,
+        "encoding": "rle-base64",
+        "data": "jQA="
+      },
+      {
+        "off": 984516,
+        "len": 61,
+        "encoding": "rle-base64",
+        "data": "vAA="
+      },
+      {
+        "off": 984578,
+        "len": 33,
+        "encoding": "rle-base64",
+        "data": "oAA="
+      },
+      {
+        "off": 984612,
+        "len": 10,
+        "encoding": "rle-base64",
+        "data": "iQA="
+      },
+      {
+        "off": 984625,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 984630,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "gwA="
+      },
+      {
+        "off": 984635,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 984639,
+        "len": 13,
+        "encoding": "rle-base64",
+        "data": "jAA="
+      },
+      {
+        "off": 984653,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "gwA="
+      },
+      {
+        "off": 984658,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "hgA="
+      },
+      {
+        "off": 984666,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 1005739,
+        "len": 59,
+        "encoding": "rle-base64",
+        "data": "MRsB/aEcHAggAu6hODhEICLuoTw8QBBCoFxcaA6gfHzuoXx8ECCC7qZERGRkVFRMTO6kg0gEMDDyGGI="
+      },
+      {
+        "off": 1005799,
+        "len": 210,
+        "encoding": "rle-base64",
+        "data": "f15oygg+8igi8iiCaSoYalAuIYJIbhmGoHh47gmqGSIJqmluSOYZ4hkGWe5ZZqBQUAjCXSaBBBJeCcpZCqFsbFQShu4pgvKhBwcBIsLuoMfHGl4Kvu6gh4cZwgr+Ss4axqCBge6kxMQGBgUFCubuoENDGwILPu6gg4MbYgte7qDATMDmoICA7irC8gtGGuJaSqKEhEdH4luuCx5qSgtq8iuCagoLCmhqC6ryoAMDGD4IvmrOCIZrLggCaQ4IJktOSSIrohieG55aqvIrAv/qhP8="
+      },
+      {
+        "off": 1006010,
+        "len": 15,
+        "encoding": "rle-base64",
+        "data": "i/8CAAAA"
+      },
+      {
+        "off": 1006026,
+        "len": 29,
+        "encoding": "rle-base64",
+        "data": "nAA="
+      },
+      {
+        "off": 1006056,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "hgA="
+      },
+      {
+        "off": 1006064,
+        "len": 11,
+        "encoding": "rle-base64",
+        "data": "igA="
+      },
+      {
+        "off": 1006076,
+        "len": 57,
+        "encoding": "rle-base64",
+        "data": "uAA="
+      },
+      {
+        "off": 1006134,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "gwA="
+      },
+      {
+        "off": 1006139,
+        "len": 100,
+        "encoding": "rle-base64",
+        "data": "4wA="
+      },
+      {
+        "off": 1006240,
+        "len": 19,
+        "encoding": "rle-base64",
+        "data": "kgA="
+      },
+      {
+        "off": 1006260,
+        "len": 33,
+        "encoding": "rle-base64",
+        "data": "oAA="
+      },
+      {
+        "off": 1006294,
+        "len": 69,
+        "encoding": "rle-base64",
+        "data": "xAA="
+      },
+      {
+        "off": 1006364,
+        "len": 37,
+        "encoding": "rle-base64",
+        "data": "pAA="
+      },
+      {
+        "off": 1006402,
+        "len": 53,
+        "encoding": "rle-base64",
+        "data": "tAA="
+      },
+      {
+        "off": 1006456,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "gwA="
+      },
+      {
+        "off": 1006461,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "hQA="
+      },
+      {
+        "off": 1006468,
+        "len": 29,
+        "encoding": "rle-base64",
+        "data": "nAA="
+      },
+      {
+        "off": 1006498,
+        "len": 30,
+        "encoding": "rle-base64",
+        "data": "nQA="
+      },
+      {
+        "off": 1006529,
+        "len": 42,
+        "encoding": "rle-base64",
+        "data": "qQA="
+      },
+      {
+        "off": 1006572,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "gwA="
+      },
+      {
+        "off": 1006577,
+        "len": 10,
+        "encoding": "rle-base64",
+        "data": "iQA="
+      },
+      {
+        "off": 1006588,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "hAA="
+      },
+      {
+        "off": 1006594,
+        "len": 48,
+        "encoding": "rle-base64",
+        "data": "rwA="
+      },
+      {
+        "off": 1006643,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AQAA"
+      },
+      {
+        "off": 1006646,
+        "len": 43,
+        "encoding": "rle-base64",
+        "data": "qgA="
+      },
+      {
+        "off": 1006690,
+        "len": 11,
+        "encoding": "rle-base64",
+        "data": "igA="
+      },
+      {
+        "off": 1006702,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "hgA="
+      },
+      {
+        "off": 1006710,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 1006712,
+        "len": 50,
+        "encoding": "rle-base64",
+        "data": "sQA="
+      },
+      {
+        "off": 1006763,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "hgA="
+      },
+      {
+        "off": 1006771,
+        "len": 51,
+        "encoding": "rle-base64",
+        "data": "sgA="
+      },
+      {
+        "off": 1006823,
+        "len": 11,
+        "encoding": "rle-base64",
+        "data": "igA="
+      },
+      {
+        "off": 1006835,
+        "len": 29,
+        "encoding": "rle-base64",
+        "data": "nAA="
+      },
+      {
+        "off": 1006865,
+        "len": 18,
+        "encoding": "rle-base64",
+        "data": "kQA="
+      },
+      {
+        "off": 1006884,
+        "len": 28,
+        "encoding": "rle-base64",
+        "data": "mwA="
+      },
+      {
+        "off": 1006913,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "hgA="
+      },
+      {
+        "off": 1006921,
+        "len": 131,
+        "encoding": "rle-base64",
+        "data": "/wACAAAA"
+      },
+      {
+        "off": 1007054,
+        "len": 31,
+        "encoding": "rle-base64",
+        "data": "ngA="
+      },
+      {
+        "off": 1007086,
+        "len": 32,
+        "encoding": "rle-base64",
+        "data": "nwA="
+      },
+      {
+        "off": 1007119,
+        "len": 32,
+        "encoding": "rle-base64",
+        "data": "nwA="
+      },
+      {
+        "off": 1007152,
+        "len": 32,
+        "encoding": "rle-base64",
+        "data": "nwA="
+      },
+      {
+        "off": 1007185,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 1007187,
+        "len": 20,
+        "encoding": "rle-base64",
+        "data": "kwA="
+      },
+      {
+        "off": 1007208,
+        "len": 28,
+        "encoding": "rle-base64",
+        "data": "mwA="
+      },
+      {
+        "off": 1007237,
+        "len": 12,
+        "encoding": "rle-base64",
+        "data": "iwA="
+      },
+      {
+        "off": 1007250,
+        "len": 25,
+        "encoding": "rle-base64",
+        "data": "mAA="
+      },
+      {
+        "off": 1007276,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "hQA="
+      },
+      {
+        "off": 1007283,
+        "len": 31,
+        "encoding": "rle-base64",
+        "data": "ngA="
+      },
+      {
+        "off": 1007315,
+        "len": 32,
+        "encoding": "rle-base64",
+        "data": "nwA="
+      },
+      {
+        "off": 1007348,
+        "len": 32,
+        "encoding": "rle-base64",
+        "data": "nwA="
+      },
+      {
+        "off": 1007381,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "hgA="
+      },
+      {
+        "off": 1007389,
+        "len": 24,
+        "encoding": "rle-base64",
+        "data": "lwA="
+      },
+      {
+        "off": 1007414,
+        "len": 56,
+        "encoding": "rle-base64",
+        "data": "twA="
+      },
+      {
+        "off": 1007472,
+        "len": 41,
+        "encoding": "rle-base64",
+        "data": "qAA="
+      },
+      {
+        "off": 1007515,
+        "len": 55,
+        "encoding": "rle-base64",
+        "data": "tgA="
+      },
+      {
+        "off": 1007571,
+        "len": 36,
+        "encoding": "rle-base64",
+        "data": "owA="
+      },
+      {
+        "off": 1007608,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AgAAAA=="
+      },
+      {
+        "off": 1007612,
+        "len": 8,
+        "encoding": "rle-base64",
+        "data": "hwA="
+      },
+      {
+        "off": 1007621,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 1007623,
+        "len": 8,
+        "encoding": "rle-base64",
+        "data": "hwA="
+      },
+      {
+        "off": 1007632,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 1007634,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "hAA="
+      },
+      {
+        "off": 1007640,
+        "len": 20,
+        "encoding": "rle-base64",
+        "data": "kwA="
+      },
+      {
+        "off": 1007661,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AgAAAA=="
+      },
+      {
+        "off": 1007665,
+        "len": 19,
+        "encoding": "rle-base64",
+        "data": "kgA="
+      },
+      {
+        "off": 1007685,
+        "len": 9,
+        "encoding": "rle-base64",
+        "data": "iAA="
+      },
+      {
+        "off": 1007695,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "hAA="
+      },
+      {
+        "off": 1007701,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "gwA="
+      },
+      {
+        "off": 1007707,
+        "len": 14,
+        "encoding": "rle-base64",
+        "data": "jQA="
+      },
+      {
+        "off": 1007722,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "hQA="
+      },
+      {
+        "off": 1007729,
+        "len": 35,
+        "encoding": "rle-base64",
+        "data": "ogA="
+      },
+      {
+        "off": 1007765,
+        "len": 8,
+        "encoding": "rle-base64",
+        "data": "hwA="
+      },
+      {
+        "off": 1007774,
+        "len": 20,
+        "encoding": "rle-base64",
+        "data": "kwA="
+      },
+      {
+        "off": 1007795,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "hAA="
+      },
+      {
+        "off": 1007801,
+        "len": 129,
+        "encoding": "rle-base64",
+        "data": "/wAAAA=="
+      },
+      {
+        "off": 1007931,
+        "len": 20,
+        "encoding": "rle-base64",
+        "data": "kwA="
+      },
+      {
+        "off": 1007952,
+        "len": 18,
+        "encoding": "rle-base64",
+        "data": "kQA="
+      },
+      {
+        "off": 1007971,
+        "len": 24,
+        "encoding": "rle-base64",
+        "data": "lwA="
+      },
+      {
+        "off": 1007996,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 1007998,
+        "len": 27,
+        "encoding": "rle-base64",
+        "data": "mgA="
+      },
+      {
+        "off": 1008026,
+        "len": 104,
+        "encoding": "rle-base64",
+        "data": "5wA="
+      },
+      {
+        "off": 1008131,
+        "len": 21,
+        "encoding": "rle-base64",
+        "data": "lAA="
+      },
+      {
+        "off": 1081698,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ADM="
+      },
+      {
+        "off": 1081701,
+        "len": 61,
+        "encoding": "rle-base64",
+        "data": "PBPCKsA7xCrgwBLCqsA6wqrAq+DKAsCD4MARwirAOsIqwKngwCDIoMA44MAkyFTAJ+DAM8hEwDPgwHDKIOA="
+      },
+      {
+        "off": 1081763,
+        "len": 75,
+        "encoding": "rle-base64",
+        "data": "Sg3IEcAN4MBUwlXA1cJVwFzgwJzISMCI8MADyATAA+DAZ8JUwGbCVMBX4MB3wkLAYsJCwHLwwEbCRRDfwHXgwCfCUsByxFLgwHbCRQ=="
+      },
+      {
+        "off": 1081839,
+        "len": 63,
+        "encoding": "rle-base64",
+        "data": "PmYY55p/f67Z/6u+2U97/6uu2X9/vLz9Vf8Xv1X/VwEhBSmJ/fv7X7X/Vf8VBTODVfVbwv6E9Rv/tRFDivW77g=="
+      },
+      {
+        "off": 1081903,
+        "len": 9,
+        "encoding": "rle-base64",
+        "data": "CAMDBQYHBQVTgQ=="
+      },
+      {
+        "off": 1081913,
+        "len": 114,
+        "encoding": "rle-base64",
+        "data": "cQ1Thwf//79t/60FY40t/63ts/7+///2Gf+2EXOC9rnA7+DKgOCHGxsfFR8RGwGSDZbAHwkvh/tV/xH/UfsFOMD7wP8BOwE3AacJNwGhwO/BwIFAEcGE8HDwEMDwcPAQwPBAEcGE8HDwEMDwhPBw8BDA8A=="
+      },
+      {
+        "off": 1082034,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AII="
+      },
+      {
+        "off": 1082037,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AMA="
+      },
+      {
+        "off": 1082039,
+        "len": 12,
+        "encoding": "rle-base64",
+        "data": "C+DKgODAGwQJghEbAA=="
+      },
+      {
+        "off": 1082052,
+        "len": 14,
+        "encoding": "rle-base64",
+        "data": "DQ2WwB8JL4f7Vf8R/1H7"
+      },
+      {
+        "off": 1082067,
+        "len": 19,
+        "encoding": "rle-base64",
+        "data": "EjjA+8D/ATsBNwAbCTcBocDvOB8="
+      },
+      {
+        "off": 1141200,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AEE="
+      },
+      {
+        "off": 1141205,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AG8="
+      },
+      {
+        "off": 1141207,
+        "len": 20,
+        "encoding": "rle-base64",
+        "data": "E3/8fB18PnxffIB8oXzCfON9BImB"
+      },
+      {
+        "off": 1141228,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AII="
+      },
+      {
+        "off": 1141230,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AIM="
+      },
+      {
+        "off": 1141232,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AIQ="
+      },
+      {
+        "off": 1141234,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AIU="
+      },
+      {
+        "off": 1141236,
+        "len": 9,
+        "encoding": "rle-base64",
+        "data": "CC6BhgEsPRaDjQ=="
+      },
+      {
+        "off": 1141246,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "Bo4NMoGPATA="
+      },
+      {
+        "off": 1141254,
+        "len": 11,
+        "encoding": "rle-base64",
+        "data": "CiiBkD02i4cFiAWJ"
+      },
+      {
+        "off": 1141266,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AIo="
+      },
+      {
+        "off": 1141268,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AIs="
+      },
+      {
+        "off": 1141270,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BYwBbAFyPQ=="
+      },
+      {
+        "off": 1141277,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AYOR"
+      },
+      {
+        "off": 1141280,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "BpINcoGTAXA="
+      },
+      {
+        "off": 1141288,
+        "len": 21,
+        "encoding": "rle-base64",
+        "data": "FGiBlFUGfat9zH3tfg5+L35QfnFBNg=="
+      },
+      {
+        "off": 1141310,
+        "len": 79,
+        "encoding": "rle-base64",
+        "data": "TkyBlQFOAUgBUglKCVA6lAqqErABVEF2DYqBlgGIAZIC5glsAu461ALqEYgBkCmUfxx/PX9ef39/oH/Bf+J8AwKoAsoJKgKkArYCyEU0j5c="
+      },
+      {
+        "off": 1141390,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AJg="
+      },
+      {
+        "off": 1141392,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AJk="
+      },
+      {
+        "off": 1141394,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AJo="
+      },
+      {
+        "off": 1141396,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BJsFnAWd"
+      },
+      {
+        "off": 1141402,
+        "len": 19,
+        "encoding": "rle-base64",
+        "data": "Ep44NgMOAwoJagLkAvYDCEV0j58="
+      },
+      {
+        "off": 1141422,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "BqAFoQWiBaM="
+      },
+      {
+        "off": 1141430,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AKQ="
+      },
+      {
+        "off": 1141432,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AKU="
+      },
+      {
+        "off": 1141434,
+        "len": 73,
+        "encoding": "rle-base64",
+        "data": "SKYkBnyffMB84X0CfSN9RH1lfYaLpwWoBakFqgWrBaxJlAgwCC4AKALSTbSDrQWuAI4S5knUCHAIbgBoexJ+MH5RfnJ+k360ftU="
+      },
+      {
+        "off": 1141508,
+        "len": 29,
+        "encoding": "rle-base64",
+        "data": "DPZ/F384f1l/en+bf7yPAA=="
+      },
+      {
+        "off": 1377388,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAE="
+      },
+      {
+        "off": 1377388,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAE="
+      },
+      {
+        "off": 1377388,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAE="
+      },
+      {
+        "off": 1377388,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAE="
+      },
+      {
+        "off": 1377394,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ACk="
+      },
+      {
+        "off": 1377394,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ACk="
+      },
+      {
+        "off": 1377394,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ACk="
+      },
+      {
+        "off": 1377394,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ACk="
+      },
+      {
+        "off": 1377408,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "ASgC"
+      },
+      {
+        "off": 1377408,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "ASgC"
+      },
+      {
+        "off": 1377408,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "ASgC"
+      },
+      {
+        "off": 1377408,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "ASgC"
+      },
+      {
+        "off": 1377415,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ADg="
+      },
+      {
+        "off": 1377415,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ADg="
+      },
+      {
+        "off": 1377415,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ADg="
+      },
+      {
+        "off": 1377415,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ADg="
+      },
+      {
+        "off": 1377430,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAc="
+      },
+      {
+        "off": 1377430,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAc="
+      },
+      {
+        "off": 1377430,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAc="
+      },
+      {
+        "off": 1377430,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAc="
+      },
+      {
+        "off": 1377436,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AVgG"
+      },
+      {
+        "off": 1377436,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AVgG"
+      },
+      {
+        "off": 1377436,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AVgG"
+      },
+      {
+        "off": 1377436,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AVgG"
+      },
+      {
+        "off": 1377444,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAo="
+      },
+      {
+        "off": 1377444,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAo="
+      },
+      {
+        "off": 1377444,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAo="
+      },
+      {
+        "off": 1377444,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAo="
+      },
+      {
+        "off": 1377451,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AQgB"
+      },
+      {
+        "off": 1377451,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAg="
+      },
+      {
+        "off": 1377451,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAg="
+      },
+      {
+        "off": 1377451,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAg="
+      },
+      {
+        "off": 1380456,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A0QiaDg="
+      },
+      {
+        "off": 1380456,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A0QiaDg="
+      },
+      {
+        "off": 1380456,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A0QiaDg="
+      },
+      {
+        "off": 1380456,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A0QiaDg="
+      },
+      {
+        "off": 1380463,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BYhWd3YpAQ=="
+      },
+      {
+        "off": 1380463,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BYhWd3YpAQ=="
+      },
+      {
+        "off": 1380463,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BYhWd3YpAQ=="
+      },
+      {
+        "off": 1380463,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BJmYh3Yp"
+      },
+      {
+        "off": 1380467,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "ASgB"
+      },
+      {
+        "off": 1380467,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "ASgB"
+      },
+      {
+        "off": 1380468,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAE="
+      },
+      {
+        "off": 1380468,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAE="
+      },
+      {
+        "off": 1380469,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 1380484,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BZmYh3YpBQ=="
+      },
+      {
+        "off": 1380484,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BZmYh3YpBQ=="
+      },
+      {
+        "off": 1380484,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BZmYh3YpBQ=="
+      },
+      {
+        "off": 1380484,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BIhWd3Yp"
+      },
+      {
+        "off": 1380488,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AScF"
+      },
+      {
+        "off": 1380488,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AScF"
+      },
+      {
+        "off": 1380489,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAU="
+      },
+      {
+        "off": 1380489,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAU="
+      },
+      {
+        "off": 1380490,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "BhGHeXiWVgo="
+      },
+      {
+        "off": 1380491,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AohYiA=="
+      },
+      {
+        "off": 1380491,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AohYiA=="
+      },
+      {
+        "off": 1380491,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AohYiA=="
+      },
+      {
+        "off": 1380495,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ADc="
+      },
+      {
+        "off": 1380495,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ADc="
+      },
+      {
+        "off": 1380495,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ADc="
+      },
+      {
+        "off": 1380495,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ADc="
+      },
+      {
+        "off": 1380495,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ADc="
+      },
+      {
+        "off": 1380498,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BFV5aXU3"
+      },
+      {
+        "off": 1380498,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BFV5aXU3"
+      },
+      {
+        "off": 1380498,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BFV5aXU3"
+      },
+      {
+        "off": 1380502,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "ATcE"
+      },
+      {
+        "off": 1380505,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BYd5eJZWCg=="
+      },
+      {
+        "off": 1380505,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BYd5eJZWCg=="
+      },
+      {
+        "off": 1380505,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BYd5eJZWCg=="
+      },
+      {
+        "off": 1380505,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BVV5aXU3Bw=="
+      },
+      {
+        "off": 1380510,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAo="
+      },
+      {
+        "off": 1380510,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAo="
+      },
+      {
+        "off": 1380510,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAo="
+      },
+      {
+        "off": 1380510,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAo="
+      },
+      {
+        "off": 1380510,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAo="
+      },
+      {
+        "off": 1380512,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BJmYmZlY"
+      },
+      {
+        "off": 1380512,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BJmYmZlY"
+      },
+      {
+        "off": 1380512,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BJmYmZlY"
+      },
+      {
+        "off": 1380512,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BJmYmZlY"
+      },
+      {
+        "off": 1380520,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BJeYl2cI"
+      },
+      {
+        "off": 1380520,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BJeYl2cI"
+      },
+      {
+        "off": 1380520,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BJeYl2cI"
+      },
+      {
+        "off": 1380520,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BJeYl2cI"
+      },
+      {
+        "off": 1380524,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAg="
+      },
+      {
+        "off": 1380524,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAg="
+      },
+      {
+        "off": 1380524,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAg="
+      },
+      {
+        "off": 1380524,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAg="
+      },
+      {
+        "off": 1380524,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAg="
+      },
+      {
+        "off": 1380527,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A3h4lWc="
+      },
+      {
+        "off": 1380527,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A3h4lWc="
+      },
+      {
+        "off": 1380527,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A3h4lWc="
+      },
+      {
+        "off": 1380527,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A3h4lWc="
+      },
+      {
+        "off": 1380533,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A0QiaDg="
+      },
+      {
+        "off": 1380533,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A0QiaDg="
+      },
+      {
+        "off": 1380533,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A0QiaDg="
+      },
+      {
+        "off": 1380533,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A0QiaDg="
+      },
+      {
+        "off": 1380547,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BHdmeXco"
+      },
+      {
+        "off": 1380547,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BHdmeXco"
+      },
+      {
+        "off": 1380547,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BHdmeXco"
+      },
+      {
+        "off": 1380547,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BHdmeXco"
+      },
+      {
+        "off": 1380554,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BFZEiFgn"
+      },
+      {
+        "off": 1380554,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BFZEiFgn"
+      },
+      {
+        "off": 1380554,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BFZEiFgn"
+      },
+      {
+        "off": 1380554,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BFZEiFgn"
+      },
+      {
+        "off": 1380561,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A2Z3eYY="
+      },
+      {
+        "off": 1380561,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A2Z3eYY="
+      },
+      {
+        "off": 1380561,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A2Z3eYY="
+      },
+      {
+        "off": 1380561,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A2Z3eYY="
+      },
+      {
+        "off": 1380568,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BHeYiIdY"
+      },
+      {
+        "off": 1380568,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BHeYiIdY"
+      },
+      {
+        "off": 1380568,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BHeYiIdY"
+      },
+      {
+        "off": 1380568,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BHeYiIdY"
+      },
+      {
+        "off": 1380575,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A3eZeZY="
+      },
+      {
+        "off": 1380575,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A3eZeZY="
+      },
+      {
+        "off": 1380575,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A3eZeZY="
+      },
+      {
+        "off": 1380575,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A3eZeZY="
+      },
+      {
+        "off": 1380582,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A5iIaJU="
+      },
+      {
+        "off": 1380582,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A5iIaJU="
+      },
+      {
+        "off": 1380582,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A5iIaJU="
+      },
+      {
+        "off": 1380582,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A5iIaJU="
+      },
+      {
+        "off": 1380589,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BJiXeZZm"
+      },
+      {
+        "off": 1380589,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BJiXeZZm"
+      },
+      {
+        "off": 1380589,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BJiXeZZm"
+      },
+      {
+        "off": 1380589,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BJiXeZZm"
+      },
+      {
+        "off": 1380607,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ACg="
+      },
+      {
+        "off": 1380607,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ACg="
+      },
+      {
+        "off": 1380607,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ACg="
+      },
+      {
+        "off": 1380607,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ACg="
+      },
+      {
+        "off": 1380642,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ADY="
+      },
+      {
+        "off": 1380642,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ADY="
+      },
+      {
+        "off": 1380642,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ADY="
+      },
+      {
+        "off": 1380642,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ADY="
+      },
+      {
+        "off": 1380645,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BJmZiZZY"
+      },
+      {
+        "off": 1380645,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BJmZiZZY"
+      },
+      {
+        "off": 1380645,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BJmZiZZY"
+      },
+      {
+        "off": 1380645,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BJmZiZZY"
+      },
+      {
+        "off": 1380652,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AZmZ"
+      },
+      {
+        "off": 1380652,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AZmZ"
+      },
+      {
+        "off": 1380652,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AZmZ"
+      },
+      {
+        "off": 1380652,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AZmZ"
+      },
+      {
+        "off": 1380655,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AZdY"
+      },
+      {
+        "off": 1380655,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AZdY"
+      },
+      {
+        "off": 1380655,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AZdY"
+      },
+      {
+        "off": 1380655,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AZdY"
+      },
+      {
+        "off": 1380659,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AIk="
+      },
+      {
+        "off": 1380659,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AIk="
+      },
+      {
+        "off": 1380659,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AIk="
+      },
+      {
+        "off": 1380659,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AIk="
+      },
+      {
+        "off": 1380661,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AXiG"
+      },
+      {
+        "off": 1380661,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AXiG"
+      },
+      {
+        "off": 1380661,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AXiG"
+      },
+      {
+        "off": 1380661,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AXiG"
+      },
+      {
+        "off": 1380665,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AhB4lw=="
+      },
+      {
+        "off": 1380666,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AXiX"
+      },
+      {
+        "off": 1380666,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AXiX"
+      },
+      {
+        "off": 1380666,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AXiX"
+      },
+      {
+        "off": 1380669,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AHg="
+      },
+      {
+        "off": 1380669,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AHg="
+      },
+      {
+        "off": 1380669,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AHg="
+      },
+      {
+        "off": 1380669,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AHg="
+      },
+      {
+        "off": 1380672,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "ABA="
+      },
+      {
+        "off": 1557024,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "BnWGloaTAAA="
+      },
+      {
+        "off": 1557032,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "BnOCiY4AAAA="
+      },
+      {
+        "off": 1557040,
+        "len": 12,
+        "encoding": "rle-base64",
+        "data": "C2mGhIyGj4OCcpCJjQ=="
+      },
+      {
+        "off": 1557053,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AJM="
+      },
+      {
+        "off": 1557056,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AWmT"
+      },
+      {
+        "off": 1557059,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AIk="
+      },
+      {
+        "off": 1557061,
+        "len": 25,
+        "encoding": "rle-base64",
+        "data": "GIYAAHSClZWJgpaUcpOQkJQAAAB+go2VhpM="
+      },
+      {
+        "off": 1557088,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BHmWjo6G"
+      },
+      {
+        "off": 1557094,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AoqIdA=="
+      },
+      {
+        "off": 1557098,
+        "len": 2,
+        "encoding": "rle-base64",
+        "data": "AY2N"
+      },
+      {
+        "off": 1557102,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AAA="
+      },
+      {
+        "off": 1557104,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BXKNkJSGAA=="
+      },
+      {
+        "off": 1557112,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AHQ="
+      },
+      {
+        "off": 1557114,
+        "len": 13,
+        "encoding": "rle-base64",
+        "data": "DIqGkwAAAH2QiJWUAAA="
+      },
+      {
+        "off": 1557128,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A3qCjo4="
+      },
+      {
+        "off": 1557133,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AJM="
+      },
+      {
+        "off": 1557136,
+        "len": 8,
+        "encoding": "rle-base64",
+        "data": "B2mThoqVj4aT"
+      },
+      {
+        "off": 1557147,
+        "len": 12,
+        "encoding": "rle-base64",
+        "data": "C5iGio+UaYKNjYKEjA=="
+      },
+      {
+        "off": 1557160,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "Bnabio0AAAA="
+      },
+      {
+        "off": 1557168,
+        "len": 16,
+        "encoding": "rle-base64",
+        "data": "D3KNio+UjoKPeoaGjYaTAAA="
+      },
+      {
+        "off": 1560544,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AHs="
+      },
+      {
+        "off": 1560546,
+        "len": 22,
+        "encoding": "rle-base64",
+        "data": "FYeHgpOGjQAAaoKHlgAAa1SFgm6WioI="
+      },
+      {
+        "off": 1560569,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A3OWhIo="
+      },
+      {
+        "off": 1560576,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BXlUaoKTjQ=="
+      },
+      {
+        "off": 1560583,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AJQ="
+      },
+      {
+        "off": 1560585,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A2uWj4g="
+      },
+      {
+        "off": 1560593,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A26Gk5Q="
+      },
+      {
+        "off": 1560598,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AI8="
+      },
+      {
+        "off": 1560600,
+        "len": 15,
+        "encoding": "rle-base64",
+        "data": "DnlUboKWhImQAHeGjYZaAA=="
+      },
+      {
+        "off": 1560616,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "BnmQj4KNhZA="
+      },
+      {
+        "off": 1560624,
+        "len": 8,
+        "encoding": "rle-base64",
+        "data": "B26Ck5OKj4SJ"
+      },
+      {
+        "off": 1560633,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A26KjY4="
+      },
+      {
+        "off": 1560638,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AJM="
+      },
+      {
+        "off": 1560640,
+        "len": 4,
+        "encoding": "rle-base64",
+        "data": "A2tUeoI="
+      },
+      {
+        "off": 1560645,
+        "len": 11,
+        "encoding": "rle-base64",
+        "data": "CpWQlHVUeoKPlZCU"
+      },
+      {
+        "off": 1560657,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BWiNhYKKkw=="
+      },
+      {
+        "off": 1560665,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BW2CjYSCkA=="
+      },
+      {
+        "off": 1560672,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "BnmKl4KNhZA="
+      },
+      {
+        "off": 1560680,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "BgAAgYqEkAA="
+      },
+      {
+        "off": 1560689,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AHU="
+      },
+      {
+        "off": 1560691,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "ApqOgg=="
+      },
+      {
+        "off": 1560696,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "BnmQjoKTipA="
+      },
+      {
+        "off": 1560704,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "Bm2KjY2QjQA="
+      },
+      {
+        "off": 1560712,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AIE="
+      },
+      {
+        "off": 1560714,
+        "len": 5,
+        "encoding": "rle-base64",
+        "data": "BI+GlZWK"
+      },
+      {
+        "off": 1560720,
+        "len": 3,
+        "encoding": "rle-base64",
+        "data": "AneClA=="
+      },
+      {
+        "off": 1560724,
+        "len": 11,
+        "encoding": "rle-base64",
+        "data": "CoKTho15loiIhpOK"
+      },
+      {
+        "off": 1560736,
+        "len": 17,
+        "encoding": "rle-base64",
+        "data": "EHaNgpOVioSQdIKUhImGk4J5"
+      },
+      {
+        "off": 1560754,
+        "len": 12,
+        "encoding": "rle-base64",
+        "data": "C4WQj4WQAHSGlJSKAA=="
+      },
+      {
+        "off": 1560768,
+        "len": 17,
+        "encoding": "rle-base64",
+        "data": "EHSCk4KFkI+Ca4oAdIKTioJp"
+      },
+      {
+        "off": 1560786,
+        "len": 1,
+        "encoding": "rle-base64",
+        "data": "AJU="
+      },
+      {
+        "off": 1560788,
+        "len": 19,
+        "encoding": "rle-base64",
+        "data": "EpSVlpV0gpOVio+Gm3eGk4eWjpA="
+      },
+      {
+        "off": 1560808,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "Bmiago2CAAA="
+      },
+      {
+        "off": 1560816,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "BnqQk4qPAAA="
+      },
+      {
+        "off": 1560824,
+        "len": 7,
+        "encoding": "rle-base64",
+        "data": "BnqKjoaQj4Y="
+      },
+      {
+        "off": 1560832,
+        "len": 6,
+        "encoding": "rle-base64",
+        "data": "BXKGjpGGlA=="
+      },
+      {
+        "off": 1560840,
+        "len": 23,
+        "encoding": "rle-base64",
+        "data": "FnmKkpaGjY6GaoKPioiIioJqk4aUkZAA"
+      }
+    ],
+    "semantic": {
+      "teamsV1": {
+        "schema": "isssd-teams-v1",
+        "version": 3,
+        "mode": "sparse-overrides",
+        "identityModel": "player-id-v1",
+        "teams": {
+          "30": {
+            "teamId": 30,
+            "players": [
+              {
+                "playerId": "30:1",
+                "baseSlot": 1,
+                "slot": 1,
+                "custom": {
+                  "name": "Taffarel",
+                  "nameHex": "7B8287878293868D",
+                  "skills": {
+                    "acceleration": 5,
+                    "speed": 5,
+                    "shot": 3,
+                    "curve": 3,
+                    "balance": 7,
+                    "intelligence": 9,
+                    "dribbling": 4,
+                    "jump": 9,
+                    "energy": 8
+                  }
+                }
+              },
+              {
+                "playerId": "30:2",
+                "baseSlot": 2,
+                "slot": 2,
+                "custom": {
+                  "name": "Cafu",
+                  "nameHex": "00006A8287960000",
+                  "number": 2,
+                  "skills": {
+                    "acceleration": 9,
+                    "speed": 9,
+                    "shot": 6,
+                    "curve": 7,
+                    "balance": 8,
+                    "intelligence": 8,
+                    "dribbling": 8,
+                    "jump": 7,
+                    "energy": 10
+                  },
+                  "tactical": {
+                    "y": 32
+                  }
+                }
+              },
+              {
+                "playerId": "30:3",
+                "baseSlot": 3,
+                "slot": 3,
+                "custom": {
+                  "name": "D.daGuia",
+                  "nameHex": "6B5485826E968A82",
+                  "skills": {
+                    "acceleration": 8,
+                    "speed": 8,
+                    "shot": 8,
+                    "curve": 7,
+                    "balance": 9,
+                    "intelligence": 8,
+                    "dribbling": 7,
+                    "jump": 10,
+                    "energy": 8
+                  }
+                }
+              },
+              {
+                "playerId": "30:4",
+                "baseSlot": 4,
+                "slot": 4,
+                "custom": {
+                  "name": "Lucio",
+                  "nameHex": "007396848A900000",
+                  "skills": {
+                    "acceleration": 8,
+                    "speed": 9,
+                    "shot": 8,
+                    "curve": 6,
+                    "balance": 9,
+                    "intelligence": 9,
+                    "dribbling": 8,
+                    "jump": 10,
+                    "energy": 9
+                  }
+                }
+              },
+              {
+                "playerId": "30:5",
+                "baseSlot": 5,
+                "slot": 5,
+                "custom": {
+                  "name": "R.Carlos",
+                  "nameHex": "79546A82938D9094",
+                  "number": 6,
+                  "skills": {
+                    "acceleration": 10,
+                    "speed": 10,
+                    "shot": 10,
+                    "curve": 9,
+                    "balance": 9,
+                    "intelligence": 8,
+                    "dribbling": 8,
+                    "jump": 7,
+                    "energy": 10
+                  },
+                  "tactical": {
+                    "y": -32
+                  }
+                }
+              },
+              {
+                "playerId": "30:6",
+                "baseSlot": 6,
+                "slot": 6,
+                "custom": {
+                  "name": "Dunga",
+                  "nameHex": "006B968F88820000",
+                  "skills": {
+                    "acceleration": 9,
+                    "speed": 9,
+                    "shot": 6,
+                    "curve": 9,
+                    "balance": 9,
+                    "intelligence": 9,
+                    "dribbling": 9,
+                    "jump": 9,
+                    "energy": 8
+                  },
+                  "tactical": {
+                    "x": -16,
+                    "y": -10
+                  }
+                }
+              },
+              {
+                "playerId": "30:7",
+                "baseSlot": 7,
+                "slot": 7,
+                "custom": {
+                  "name": "Gerson",
+                  "nameHex": "006E869394908F00",
+                  "skills": {
+                    "acceleration": 6,
+                    "speed": 6,
+                    "shot": 8,
+                    "curve": 10,
+                    "balance": 7,
+                    "intelligence": 10,
+                    "dribbling": 8,
+                    "jump": 6,
+                    "energy": 8
+                  },
+                  "tactical": {
+                    "x": -15,
+                    "y": 11
+                  }
+                }
+              },
+              {
+                "playerId": "30:8",
+                "baseSlot": 8,
+                "slot": 8,
+                "custom": {
+                  "name": "R.Gaucho",
+                  "nameHex": "79546E8296848990",
+                  "number": 11,
+                  "skills": {
+                    "acceleration": 9,
+                    "speed": 8,
+                    "shot": 8,
+                    "curve": 10,
+                    "balance": 8,
+                    "intelligence": 9,
+                    "dribbling": 10,
+                    "jump": 7,
+                    "energy": 7
+                  },
+                  "tactical": {
+                    "x": 15,
+                    "y": -30
+                  }
+                }
+              },
+              {
+                "playerId": "30:9",
+                "baseSlot": 9,
+                "slot": 9,
+                "custom": {
+                  "name": "Pele'",
+                  "nameHex": "0077868D865A0000",
+                  "skills": {
+                    "acceleration": 10,
+                    "speed": 10,
+                    "shot": 10,
+                    "curve": 9,
+                    "balance": 10,
+                    "intelligence": 10,
+                    "dribbling": 10,
+                    "jump": 10,
+                    "energy": 9
+                  },
+                  "tactical": {
+                    "x": 10,
+                    "y": 0
+                  }
+                }
+              },
+              {
+                "playerId": "30:10",
+                "baseSlot": 10,
+                "slot": 10,
+                "custom": {
+                  "name": "Ronaldo",
+                  "nameHex": "79908F828D859000",
+                  "number": 9,
+                  "skills": {
+                    "acceleration": 10,
+                    "speed": 10,
+                    "shot": 10,
+                    "curve": 8,
+                    "balance": 10,
+                    "intelligence": 9,
+                    "dribbling": 10,
+                    "jump": 8,
+                    "energy": 8
+                  },
+                  "tactical": {
+                    "x": 36,
+                    "y": 5
+                  }
+                }
+              },
+              {
+                "playerId": "30:11",
+                "baseSlot": 11,
+                "slot": 11,
+                "custom": {
+                  "name": "Garrinch",
+                  "nameHex": "6E8293938A8F8489",
+                  "skills": {
+                    "acceleration": 10,
+                    "speed": 10,
+                    "shot": 8,
+                    "curve": 9,
+                    "balance": 8,
+                    "intelligence": 9,
+                    "dribbling": 10,
+                    "jump": 6,
+                    "energy": 8
+                  },
+                  "tactical": {
+                    "x": 30,
+                    "y": 30
+                  }
+                }
+              },
+              {
+                "playerId": "30:12",
+                "baseSlot": 12,
+                "slot": 12,
+                "custom": {
+                  "name": "Gilmar",
+                  "nameHex": "006E8A8D8E829300",
+                  "skills": {
+                    "acceleration": 5,
+                    "speed": 5,
+                    "shot": 3,
+                    "curve": 3,
+                    "balance": 7,
+                    "intelligence": 9,
+                    "dribbling": 4,
+                    "jump": 9,
+                    "energy": 8
+                  }
+                }
+              },
+              {
+                "playerId": "30:13",
+                "baseSlot": 13,
+                "slot": 13,
+                "custom": {
+                  "name": "D.Santos",
+                  "nameHex": "6B547A828F959094",
+                  "skills": {
+                    "acceleration": 8,
+                    "speed": 8,
+                    "shot": 9,
+                    "curve": 8,
+                    "balance": 9,
+                    "intelligence": 7,
+                    "dribbling": 7,
+                    "jump": 10,
+                    "energy": 8
+                  }
+                }
+              },
+              {
+                "playerId": "30:14",
+                "baseSlot": 14,
+                "slot": 14,
+                "custom": {
+                  "name": "N.Santos",
+                  "nameHex": "75547A828F959094",
+                  "skills": {
+                    "acceleration": 8,
+                    "speed": 8,
+                    "shot": 7,
+                    "curve": 7,
+                    "balance": 8,
+                    "intelligence": 10,
+                    "dribbling": 8,
+                    "jump": 8,
+                    "energy": 9
+                  }
+                }
+              },
+              {
+                "playerId": "30:15",
+                "baseSlot": 15,
+                "slot": 15,
+                "custom": {
+                  "name": "Aldair",
+                  "nameHex": "00688D85828A9300",
+                  "skills": {
+                    "acceleration": 6,
+                    "speed": 7,
+                    "shot": 5,
+                    "curve": 5,
+                    "balance": 9,
+                    "intelligence": 9,
+                    "dribbling": 6,
+                    "jump": 9,
+                    "energy": 8
+                  }
+                }
+              },
+              {
+                "playerId": "30:16",
+                "baseSlot": 16,
+                "slot": 16,
+                "custom": {
+                  "name": "Falcao",
+                  "nameHex": "006D828D84829000",
+                  "skills": {
+                    "acceleration": 7,
+                    "speed": 7,
+                    "shot": 8,
+                    "curve": 8,
+                    "balance": 8,
+                    "intelligence": 10,
+                    "dribbling": 9,
+                    "jump": 7,
+                    "energy": 9
+                  }
+                }
+              },
+              {
+                "playerId": "30:17",
+                "baseSlot": 17,
+                "slot": 17,
+                "custom": {
+                  "name": "Rivaldo",
+                  "nameHex": "798A97828D859000",
+                  "skills": {
+                    "acceleration": 8,
+                    "speed": 8,
+                    "shot": 10,
+                    "curve": 9,
+                    "balance": 9,
+                    "intelligence": 9,
+                    "dribbling": 9,
+                    "jump": 8,
+                    "energy": 9
+                  }
+                }
+              },
+              {
+                "playerId": "30:18",
+                "baseSlot": 18,
+                "slot": 18,
+                "custom": {
+                  "name": "Zico",
+                  "nameHex": "0000818A84900000",
+                  "skills": {
+                    "acceleration": 8,
+                    "speed": 8,
+                    "shot": 10,
+                    "curve": 10,
+                    "balance": 8,
+                    "intelligence": 10,
+                    "dribbling": 10,
+                    "jump": 7,
+                    "energy": 9
+                  }
+                }
+              },
+              {
+                "playerId": "30:19",
+                "baseSlot": 19,
+                "slot": 19,
+                "custom": {
+                  "name": "Neymar",
+                  "nameHex": "0075869A8E829300",
+                  "skills": {
+                    "acceleration": 10,
+                    "speed": 9,
+                    "shot": 9,
+                    "curve": 9,
+                    "balance": 7,
+                    "intelligence": 9,
+                    "dribbling": 10,
+                    "jump": 6,
+                    "energy": 8
+                  }
+                }
+              },
+              {
+                "playerId": "30:20",
+                "baseSlot": 20,
+                "slot": 20,
+                "custom": {
+                  "name": "Romario",
+                  "nameHex": "79908E82938A9000",
+                  "skills": {
+                    "acceleration": 10,
+                    "speed": 9,
+                    "shot": 10,
+                    "curve": 8,
+                    "balance": 8,
+                    "intelligence": 10,
+                    "dribbling": 10,
+                    "jump": 7,
+                    "energy": 7
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "textWorkspaceV2": {
+        "format": "ISSSD_TEXT_WORKSPACE",
+        "version": 2,
+        "sections": {
+          "direct": {
+            "byProfile": {
+              "iss-deluxe-plus": {
+                "press": "Toque",
+                "friendly": "JOGATINA",
+                "league": "LIGA CURTA",
+                "tournament": "TORNEIO CURTO",
+                "friendlyDesc": "X1 maroto",
+                "leagueDesc": "Max: 6 jogadores",
+                "tournamentDesc": "Max: 8 jogadores"
+              }
+            }
+          },
+          "preKickoff": {
+            "values": {
+              "formation": "FORMACAO",
+              "substitution": "SUBSTITUICOES",
+              "teamStrategy": "TATICA DO TIME",
+              "markChange": "MARCACAO",
+              "viewData": "VER DADOS",
+              "kickOff": "INICIAR JOGO",
+              "formationDesc": "Ajuste a formacao.",
+              "substitutionDesc": "Faca substituicoes.",
+              "teamStrategyDesc": "Defina a tatica.",
+              "markChangeDesc": "Defina a marcacao.",
+              "viewDataDesc": "Veja dados do time.",
+              "kickOffDesc": "Comece a partida."
+            }
+          },
+          "mainMenu": {
+            "values": {
+              "openGame": "JOGATINA",
+              "championship": "CAMPEONATO",
+              "cup": "MEGACOPA",
+              "password": "SENHA",
+              "scenario": "CENÁRIOS",
+              "penalty": "P├èNALTIS",
+              "training": "TREINOS",
+              "options": "OPÇÕES",
+              "megaCup": "MEGACOPA"
+            }
+          },
+          "graphicIntents": {
+            "values": {
+              "strategy.screen.v614.alloutatk": "TODOS AO ATAQUE",
+              "strategy.screen.v614.center": "ATAQUE PELO MEIO",
+              "strategy.screen.v614.wings": "ATAQUE PELAS ALAS",
+              "strategy.screen.v614.counteratk": "CONTRA ATAQUE",
+              "strategy.screen.v614.alloutdef": "TODOS PRA DEFESA",
+              "strategy.screen.v614.pressup": "PRESSAO INDIVIDUAL",
+              "strategy.screen.v614.zonepress": "MARCACAO POR ZONA",
+              "strategy.screen.v614.offtrap": "LINHA DE IMPEDMENTO",
+              "__pk590.native.248175": "AJUSTE",
+              "__pk590.native.248186": "TATICAS",
+              "__pk590.native.248197": "AJUSTE",
+              "__pk590.native.248208": "DISPLAY",
+              "__pk590.native.248221": "AJUSTE",
+              "__pk590.native.248232": "EXIBIR",
+              "__pk590.native.248327": "NUMERO",
+              "__pk590.native.248334": "DE",
+              "__pk590.native.248339": "TATICAS",
+              "mainMenuGraphicTextsV600": "{\"schema\":\"isssd-main-menu-text-v5\",\"version\":5,\"texts\":[\"JOGATINA\",\"CENARIOS\",\"CAMPEONATO\",\"PENAIS\",\"MEGACOPA\",\"TREINOS\",\"SENHA\",\"OPCOES\"],\"style\":{\"previewSelected\":0,\"items\":[{\"scale\":115,\"width\":100,\"height\":100,\"x\":0,\"y\":0,\"letterSpacing\":0,\"lineSpacing\":16,\"align\":\"center\",\"bold\":0},{\"scale\":115,\"width\":100,\"height\":100,\"x\":0,\"y\":0,\"letterSpacing\":0,\"lineSpacing\":16,\"align\":\"center\",\"bold\":0},{\"scale\":115,\"width\":100,\"height\":100,\"x\":0,\"y\":0,\"letterSpacing\":0,\"lineSpacing\":16,\"align\":\"center\",\"bold\":0},{\"scale\":115,\"width\":100,\"height\":100,\"x\":0,\"y\":0,\"letterSpacing\":0,\"lineSpacing\":16,\"align\":\"center\",\"bold\":0},{\"scale\":115,\"width\":100,\"height\":100,\"x\":0,\"y\":0,\"letterSpacing\":0,\"lineSpacing\":16,\"align\":\"center\",\"bold\":0},{\"scale\":115,\"width\":100,\"height\":100,\"x\":0,\"y\":0,\"letterSpacing\":0,\"lineSpacing\":16,\"align\":\"center\",\"bold\":0},{\"scale\":115,\"width\":100,\"height\":100,\"x\":0,\"y\":0,\"letterSpacing\":0,\"lineSpacing\":16,\"align\":\"center\",\"bold\":0},{\"scale\":115,\"width\":100,\"height\":100,\"x\":0,\"y\":0,\"letterSpacing\":0,\"lineSpacing\":16,\"align\":\"center\",\"bold\":0}]}}",
+              "unknownMenu1": "",
+              "unknownMenu2": "",
+              "unknownMenu3": "",
+              "unknownMenu4": "",
+              "goalLetters": "",
+              "flashingLetters": "",
+              "teamStats": "",
+              "mainMisc": "",
+              "variousText": "",
+              "largeMainLetters": "",
+              "goalieNames": "",
+              "gameStartText": "",
+              "continentText": "",
+              "penaltyMF": "",
+              "skillsMisc": "",
+              "penaltyGKDF": "",
+              "teamSelectMisc": "",
+              "keyActions": "",
+              "teamColorsMisc": "",
+              "konamiCopyright": "",
+              "internationalCup": "CAMPEONATO",
+              "worldSeries": "MEGACOPA",
+              "shortLeague1": "CAMPEONATO FASE ELIMINATORIA",
+              "shortLeague2": "V D E P",
+              "victoryText": "VITORIA",
+              "mainUnknown": "",
+              "internationalR2a": "FASE PREMILINAR",
+              "internationalR2b": "",
+              "titleSmall": "",
+              "creditsLetters": "",
+              "__pk590.native.247287": "ELEJA",
+              "__pk590.native.247297": "MARCACOES",
+              "__pk590.native.248007": "TATICAS",
+              "__pk590.native.248252": "NAO",
+              "__pk590.native.248272": "MOSTRAR",
+              "__pk590.native.248283": "SO'",
+              "__pk590.native.248292": "MOSTRAR",
+              "__pk590.native.248303": "TATICA",
+              "__pk590.native.248391": "NEVE",
+              "__pk590.native.248397": "BOM",
+              "__pk590.native.248403": "CHUV",
+              "__pk590.native.248790": "A TYPE",
+              "__pk590.native.248903": "B TYPE",
+              "__pk590.native.249127": "C TYPE",
+              "__pk590.native.249268": "D TYPE",
+              "__pk590.native.249775": "AREA A",
+              "controller.high": "BOLA",
+              "controller.ball": "ALTA",
+              "controller.pass": "PASSE",
+              "controller.shoot": "CHUTE",
+              "controller.dash": "CORRE",
+              "controller.keeper": "GOLERO",
+              "controller.semiauto": "SEMI AUTO",
+              "controller.auto": "AUTO",
+              "controller.manual": "MANUAL"
+            }
+          },
+          "title": {
+            "values": {
+              "copyright": "@1995KONAMIALLRIGHTSRESERVED.",
+              "license": "LICENSEDBYNINTENDO"
+            }
+          }
+        },
+        "support": {
+          "direct": "rom-write",
+          "preKickoff": "project-and-layout-preview",
+          "mainMenu": "project-and-preview",
+          "graphicIntents": "project-only"
+        }
+      },
+      "menuScreenV1": {
+        "schema": "isssd-menu-screen-v1",
+        "version": 1,
+        "background": "menu-principal-base-768x669-v2",
+        "cursor": 0,
+        "items": [
+          {
+            "id": "openGame",
+            "mode": "text",
+            "text": "JOGATINA",
+            "image": "",
+            "x": 192,
+            "y": 143,
+            "w": 345,
+            "h": 94,
+            "font": "retro",
+            "size": 44
+          },
+          {
+            "id": "scenario",
+            "mode": "text",
+            "text": "CENÁRIOS",
+            "image": "",
+            "x": 575,
+            "y": 143,
+            "w": 346,
+            "h": 94,
+            "font": "retro",
+            "size": 36
+          },
+          {
+            "id": "championship",
+            "mode": "text",
+            "text": "CAMPEONATO",
+            "image": "",
+            "x": 192,
+            "y": 288,
+            "w": 345,
+            "h": 94,
+            "font": "retro",
+            "size": 34
+          },
+          {
+            "id": "penalty",
+            "mode": "text",
+            "text": "P├èNALTIS",
+            "image": "",
+            "x": 575,
+            "y": 288,
+            "w": 346,
+            "h": 94,
+            "font": "retro",
+            "size": 30
+          },
+          {
+            "id": "cup",
+            "mode": "text",
+            "text": "MEGACOPA",
+            "image": "",
+            "x": 192,
+            "y": 433,
+            "w": 345,
+            "h": 96,
+            "font": "retro",
+            "size": 34
+          },
+          {
+            "id": "training",
+            "mode": "text",
+            "text": "TREINOS",
+            "image": "",
+            "x": 575,
+            "y": 433,
+            "w": 346,
+            "h": 94,
+            "font": "retro",
+            "size": 36
+          },
+          {
+            "id": "password",
+            "mode": "text",
+            "text": "SENHA",
+            "image": "",
+            "x": 192,
+            "y": 576,
+            "w": 345,
+            "h": 94,
+            "font": "retro",
+            "size": 38
+          },
+          {
+            "id": "options",
+            "mode": "text",
+            "text": "OPÇÕES",
+            "image": "",
+            "x": 575,
+            "y": 576,
+            "w": 346,
+            "h": 94,
+            "font": "retro",
+            "size": 36
+          }
+        ]
+      },
+      "romInternalTitle": "INTERNETSSSUCKERRELAX"
+    }
+  }
+}
