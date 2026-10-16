@@ -9,7 +9,10 @@
     "portuguese": {
       "profile": "user-project",
       "filename": "International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj",
-      "sha256": "e0e31459e24c04bf2a3eb53da91d8ddcaf6d3a8c99ea0792860b6762d2272bf1"
+      "sha256": "e0e31459e24c04bf2a3eb53da91d8ddcaf6d3a8c99ea0792860b6762d2272bf1",
+      "userOverrides": {
+        "controls.dash": "ARRANQUE"
+      }
     }
   },
   "sections": {
@@ -100,7 +103,7 @@
       },
       "portuguese": {
         "shoot": "CHUTE",
-        "dash": "CORRE",
+        "dash": "ARRANQUE",
         "keeper": "GOLERO",
         "semiauto": "SEMI AUTO",
         "auto": "AUTO",

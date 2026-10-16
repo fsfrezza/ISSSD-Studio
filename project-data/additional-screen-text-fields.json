@@ -1,0 +1,225 @@
+[
+  {
+    "id": "player-labels",
+    "page": "players",
+    "title": "Textos da tela de jogadores",
+    "area": "jogadores",
+    "fields": [
+      [
+        "player",
+        "PLAYER",
+        "JOGADOR"
+      ],
+      [
+        "substitute",
+        "SUBSTITUTE",
+        "RESERVA"
+      ],
+      [
+        "speed",
+        "SPEED",
+        "RAPIDEZ"
+      ],
+      [
+        "dash",
+        "DASH",
+        "ARRANQUE"
+      ],
+      [
+        "shotPower",
+        "SHOTPOWR",
+        "FORÇA-CHUTE"
+      ],
+      [
+        "curlSkill",
+        "CURLSKILL",
+        "EFEITO"
+      ],
+      [
+        "balance",
+        "BALANCE",
+        "EQUILÍBRIO"
+      ],
+      [
+        "intelligence",
+        "INTELLIGENCE",
+        "INTELIGÊNCIA"
+      ],
+      [
+        "jump",
+        "JUMP",
+        "PULO"
+      ],
+      [
+        "dribble",
+        "DRIBBLE",
+        "DRIBLE"
+      ],
+      [
+        "stamina",
+        "STAMINA",
+        "RESISTÊNCIA"
+      ],
+      [
+        "pointsLeft",
+        "POINTS LEFT",
+        "RESTANTES"
+      ]
+    ]
+  },
+  {
+    "id": "formation-labels",
+    "page": "teams",
+    "title": "Textos da tela de formações",
+    "area": "formacoes",
+    "fields": [
+      [
+        "formationType",
+        "TYPE OF FORMATION",
+        "TIPO DE FORMAÇÃO"
+      ],
+      [
+        "attackParticipation",
+        "ATTACK PARTICIPATION",
+        "APOIO AO ATAQUE"
+      ],
+      [
+        "defenders",
+        "DF",
+        "DF"
+      ],
+      [
+        "midfielders",
+        "MF",
+        "MC"
+      ],
+      [
+        "forwards",
+        "FW",
+        "AT"
+      ]
+    ]
+  },
+  {
+    "id": "strategy-labels",
+    "page": "strategies",
+    "title": "Textos auxiliares de estratégias",
+    "area": "textos-estrategias",
+    "fields": [
+      [
+        "one",
+        "ONE",
+        "UMA"
+      ],
+      [
+        "four",
+        "FOUR",
+        "QUATRO"
+      ]
+    ]
+  },
+  {
+    "id": "control-labels",
+    "page": "controls",
+    "title": "Textos auxiliares dos controles",
+    "area": "pre-partida",
+    "fields": [
+      [
+        "type",
+        "TYPE",
+        "TIPO"
+      ],
+      [
+        "typeA",
+        "TYPE-A",
+        "TIPO-A"
+      ],
+      [
+        "area",
+        "AREA",
+        "ÁREA"
+      ],
+      [
+        "areaA",
+        "AREA-A",
+        "ÁREA-A"
+      ],
+      [
+        "cursorChange",
+        "CURSOR CHANGE",
+        "TROCA DE CURSOR"
+      ],
+      [
+        "pageHelp",
+        "Turn the page by pressing the L/R buttons.",
+        "Troque a página usando os botões L/R."
+      ]
+    ]
+  },
+  {
+    "id": "uniform-labels",
+    "page": "uniforms",
+    "title": "Textos da tela de uniformes",
+    "area": "pre-partida",
+    "fields": [
+      [
+        "shirt",
+        "SHIRT",
+        "CAMISA"
+      ],
+      [
+        "pants",
+        "PANTS",
+        "CALÇÃO"
+      ],
+      [
+        "socks",
+        "SOCKS",
+        "MEIAS"
+      ],
+      [
+        "color",
+        "COLOR",
+        "COR"
+      ],
+      [
+        "type",
+        "TYPE",
+        "TIPO"
+      ],
+      [
+        "edit",
+        "EDIT",
+        "EDITAR"
+      ]
+    ]
+  },
+  {
+    "id": "navigation-labels",
+    "page": "match-options",
+    "title": "Botões de navegação compartilhados",
+    "area": "pre-partida",
+    "fields": [
+      [
+        "exit",
+        "EXIT",
+        "SAIR"
+      ],
+      [
+        "reset",
+        "RESET",
+        "RESTAURAR"
+      ],
+      [
+        "cancel",
+        "CANCEL",
+        "CANCELAR"
+      ],
+      [
+        "ok",
+        "OK",
+        "OK"
+      ]
+    ]
+  }
+]

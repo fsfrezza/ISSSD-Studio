@@ -70,10 +70,10 @@ const finalizeHook='window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__?.(obj);';html=h
 // inscriptions that the screen-owned snapshot and native writer consume.
 const graphicsCategory="'texts.graphics':tw.graphicIntents||null";
 if(!html.includes(graphicsCategory))throw new Error('Build interrompido: categoria gráfica de salvamento não encontrada.');
-html=html.replaceAll(graphicsCategory,"'texts.graphics':((sem.screenTextsV1?.values?.controls||sem.screenTextsV1?.values?.strategies||sem.screenTextsV1?.values?.['strategy-aux'])?{workspace:tw.graphicIntents||null,controls:sem.screenTextsV1.values.controls,strategies:sem.screenTextsV1.values.strategies,aux:sem.screenTextsV1.values['strategy-aux']}:tw.graphicIntents||null)");
+html=html.replaceAll(graphicsCategory,"'texts.graphics':((sem.additionalScreenTextsV1||sem.screenTextsV1?.values?.controls||sem.screenTextsV1?.values?.strategies||sem.screenTextsV1?.values?.['strategy-aux'])?{additional:sem.additionalScreenTextsV1||null,workspace:tw.graphicIntents||null,controls:sem.screenTextsV1?.values?.controls,strategies:sem.screenTextsV1?.values?.strategies,aux:sem.screenTextsV1?.values?.['strategy-aux']}:tw.graphicIntents||null)");
 const removeGraphics="else if(id==='texts.graphics'&&tw)tw.graphicIntents={};";
 if(!html.includes(removeGraphics))throw new Error('Build interrompido: filtro gráfico de salvamento não encontrado.');
-html=html.replaceAll(removeGraphics,"else if(id==='texts.graphics'){if(tw)tw.graphicIntents={};if(sem.screenTextsV1?.values)for(const owner of ['controls','strategies','strategy-aux'])delete sem.screenTextsV1.values[owner];}");
+html=html.replaceAll(removeGraphics,"else if(id==='texts.graphics'){if(tw)tw.graphicIntents={};delete sem.additionalScreenTextsV1;if(sem.screenTextsV1?.values)for(const owner of ['controls','strategies','strategy-aux'])delete sem.screenTextsV1.values[owner];}");
 
 // Full auxiliary inscriptions use the verified native rows, including padding.
 const oldAuxStage="function stage(g,text){const vals=split(g,text);g.parts.forEach(([pc],i)=>window.ISSSDTextIntentions?.setDraft?.(P+pc,vals[i]));return vals}";
@@ -95,7 +95,9 @@ html=html.replace(menuCommitRx,semanticMenuCommit);
 const css=fs.existsSync(cssFile)?fs.readFileSync(cssFile,'utf8'):'';
 const js=fs.existsSync(jsFile)?fs.readFileSync(jsFile,'utf8'):'';
 const languagePresets=JSON.parse(fs.readFileSync(path.join(root,'project-data','text-language-presets-v1.json'),'utf8'));
-const v11='const TEXT_LANGUAGE_PRESETS='+JSON.stringify(languagePresets)+';\n'+(fs.existsSync(v11File)?fs.readFileSync(v11File,'utf8'):'');
+const additionalSections=JSON.parse(fs.readFileSync(path.join(root,'project-data','additional-screen-text-fields.json'),'utf8'));
+const additionalRuntime='const ADDITIONAL_TEXT_SECTIONS='+JSON.stringify(additionalSections)+';\n'+fs.readFileSync(path.join(root,'editor-src','additional-screen-texts.mjs'),'utf8');
+const v11='const TEXT_LANGUAGE_PRESETS='+JSON.stringify(languagePresets)+';\n'+(fs.existsSync(v11File)?fs.readFileSync(v11File,'utf8'):'')+'\n'+additionalRuntime;
 try{new Function(js);new Function(v11)}catch(e){throw new Error('Build interrompido: JavaScript Git inválido: '+e.message)}
 const patch=`\n<!-- ${marker} -->\n<style id="isssd-git-visual-bridge-overrides">\n${css}\n</style>\n<script type="module" id="isssd-git-visual-bridge-runtime">\n${js}\n</script>\n<script type="module" id="isssd-git-project-import-v11">\n${v11}\n</script>\n`;
 if(html.includes('</body>'))html=html.replace('</body>',()=>patch+'\n</body>');else html+=patch;
