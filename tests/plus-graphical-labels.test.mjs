@@ -16,9 +16,10 @@ const unpack=(r,a)=>{const d=konamiLzDecompress(r,a.slot).data;return a.planar?t
 test('all 18 pending graphical requests write native streams with immutable base and complete classification',()=>{
  const base=baseFixture(),before=base.slice(),s=state(),beforeState=structuredClone(s),rom=expandPlusTo4MiB(base),initial=rom.slice();
  plusGraphicalLabelsWriter(rom,s,base);assert.deepEqual(base,before);assert.deepEqual(s,beforeState);assert.deepEqual(pendingAdditionalTextExports(s),[]);
- for(const a of GRAPHICAL_LABEL_ASSETS.filter(a=>a.id!=='formationRoleButtonTop')){assert.ok(unpack(rom,a).some(Boolean),a.id);for(const pc of a.pointers){const cpu=rom[pc]|rom[pc+1]<<8|rom[pc+2]<<16;const at=((cpu>>16)&127)*0x8000+(cpu&0x7fff);assert.equal(at,a.slot);}}
+ for(const a of GRAPHICAL_LABEL_ASSETS.filter(a=>!['formationRoleButtonTop','uniformLabels','handicapLabels','handicapStrength','playerNumberLabel'].includes(a.id))){assert.ok(unpack(rom,a).some(Boolean),a.id);for(const pc of a.pointers){const cpu=rom[pc]|rom[pc+1]<<8|rom[pc+2]<<16;const at=((cpu>>16)&127)*0x8000+(cpu&0x7fff);assert.equal(at,a.slot);}}
  for(let i=0;i<rom.length;i++)if(rom[i]!==initial[i])assert.notEqual(graphicalLabelArea(i),undefined,'unclassified write '+i.toString(16));
  assert.equal(unpack(rom,asset('playerSkills')).length,768);
+ assert.ok(unpack(rom,asset('playerSkills')).slice(28*16,39*16).every(v=>v===0),'all eleven digit/icon tiles preserved');
  assert.deepEqual(rom.slice(0x3C626,0x3C64A),base.slice(0x3C626,0x3C64A),'native layout unchanged');
  assert.deepEqual([...rom.slice(0x3dfb7,0x3dfbe)],[0x7a,0x68,0x70,0x79,0,0,0]);
  const attack=unpack(rom,asset('attackParticipation'));assert.ok(attack.slice(8*32,50*32).every(v=>v===0));assert.ok(attack.slice(68*32,69*32).every(v=>v===0));
@@ -78,4 +79,17 @@ test('custom DF keeps independent MF copies and remaps both halves of its native
 test('default CANCELAR also fits the native B-arrow header without replacing its prefix',()=>{
  const base=baseFixture(),rom=expandPlusTo4MiB(base),s=state();s.additionalScreenTextsV1.values['navigation-labels'].cancel='CANCELAR';plusGraphicalLabelsWriter(rom,s,base);
  const raw=unpack(rom,asset('cancelHeader'));assert.ok(raw.slice(17*16).some(Boolean));assert.ok(raw.slice(0,16*16).every(v=>v===0));
+});
+test('uniform and handicap captions preserve arrows and wrap NUMERO DE ATLETAS at a word boundary',()=>{
+ const base=baseFixture(),rom=expandPlusTo4MiB(base),values={};for(const id of ['uniform-labels','handicap-labels'])values[id]=Object.fromEntries(ADDITIONAL_TEXT_SECTIONS.find(s=>s.id===id).fields.map(f=>[f[0],f[2]]));
+ plusGraphicalLabelsWriter(rom,{additionalScreenTextsV1:{schema:'isssd-additional-screen-texts-v1',values}},base,['pre-partida']);
+ const uniform=unpack(rom,asset('uniformLabels'));assert.ok(uniform.slice(0,15*16).some(Boolean));assert.ok(uniform.slice(15*16,24*16).every(v=>v===0),'RGB arrows preserved');
+ const handicap=unpack(rom,asset('handicapLabels'));assert.ok(handicap.slice(31*16).every(v=>v===0),'unreferenced tile 31 retained');
+ const expected=new Uint8Array(11*16);drawGraphicalLabel(expected,'NUMERO DE',{tile:0,tiles:6,align:'center'});drawGraphicalLabel(expected,'ATLETAS',{tile:6,tiles:5,align:'center'});assert.deepEqual(handicap.slice(20*16,31*16),expected);
+});
+test('shared selection headers and B-arrow captions remain in their independent cumulative phases',()=>{
+ const base=seedGraphicalLabelFixture(makePlusTacticalFixture()),values={'navigation-labels':{cancel:'DESFAZ'},'team-selection-labels':{formation:'FORMACAO',statistics:'VER DADOS',keeperAbbr:'GO'}},state={additionalScreenTextsV1:{schema:'isssd-additional-screen-texts-v1',values}},shots=[];
+ buildCumulativeProject(base,{state:{semantic:state}},{selectedAreas:['infraestrutura','pre-partida','selecao-equipes'],onRom:(r,e)=>shots.push({r,e})});
+ const pre=unpack(shots[1].r,asset('cancelHeader')),selection=unpack(shots[2].r,asset('cancelHeader'));
+ assert.ok(pre.slice(0,11*16).every(v=>v===0));assert.ok(pre.slice(16*16).some(Boolean));assert.ok(selection.slice(0,11*16).some(Boolean));assert.deepEqual(selection.slice(16*16),pre.slice(16*16));
 });

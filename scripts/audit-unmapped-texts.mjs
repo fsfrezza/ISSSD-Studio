@@ -35,7 +35,6 @@ const ranges=[
  ...NATIVE_SCREEN_TEXT_FIELDS.map(f=>({pc:f.pc,len:f.capacity,owner:'native-screen/'+f.name})),
  ...PLUS_STRATEGY_TEXTS.map(f=>({pc:f.pc,len:20,owner:'strategies/'+f.id})),
  {pc:0x3da0d,len:0x82,owner:'game-modes'},
- {pc:0x3c884,len:6,owner:'Press'},
  {pc:0x3cafa,len:5,owner:'Cursor/AUTO'},
 ];
 const blocks=[];let font=null,block=null,offset=0;

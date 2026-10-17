@@ -1,3 +1,5 @@
+import {PREMATCH_GRAPHIC_MAPS} from './plus-prematch-graphics.mjs';
+import {LINKED_SCREEN_FIELDS} from './plus-linked-screen-text.mjs';
 import {graphicalLabelArea} from './graphical-label-layout.mjs';
 import {NATIVE_MENU_TEXT_SECTIONS} from './native-menu-text-fields.mjs';
 import {CURSOR_HELP_FIELDS} from './cursor-text-fields.mjs';
@@ -34,7 +36,7 @@ export function areaClassifier(rom,base=null){
  const title=[[0x11971,0x11981],[0x1198B,0x11993],[0x1199A,0x119A2],
   [0x1764EA,0x178000],[0x1842DE,0x188000],[0xDEA6D,0xE0000],[0x12617F,0x126C00],
   [0x46E13,0x46ED2],[0x4C292,0x4C2B2],[0x4C2B4,0x4C2D4],[0x4C318,0x4C338],[0x4C2D6,0x4C2F6],
-  [0x3C884,0x3C88A],[0x270000,0x290000]];
+  [0x270000,0x290000]];
  for(const id of Object.keys(TITLE_NATIVE_GROUPS))for(const source of [rom,base].filter(Boolean)){
   try{const r=nativeTitleStream(source,id);title.push([r.pc,r.pc+r.size]);}catch{/* invalid/non-title fixture; never guess */}
  }
@@ -48,6 +50,8 @@ export function areaClassifier(rom,base=null){
  }
  for(let p=1;p<=7;p++)for(const s of knownMirrorSlices(30,p))derived.push([s.mirror,s.mirror+s.length]);
  return off=>{
+  if(PREMATCH_GRAPHIC_MAPS.some(m=>off>=m.pc&&off<m.pc+m.size))return 'pre-partida';
+  if(LINKED_SCREEN_FIELDS.some(([, ,pc,w,h])=>off>=pc&&off<pc+w*h))return 'pre-partida';
   const graphic=graphicalLabelArea(off);if(graphic!==undefined)return graphic;
   if(NATIVE_AUX_TEXT_GROUPS.some(g=>off>=g.pc&&off<g.pc+g.rows.reduce((a,b)=>a+b,0)))return 'textos-estrategias';
   if(contains(off,derived))return null;

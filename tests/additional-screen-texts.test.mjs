@@ -15,7 +15,7 @@ test('new text fields have user-approved translations and belong to their actual
  assert.deepEqual(catalog,sections);
  const players=sections.find(s=>s.id==='player-labels');assert.equal(players.page,'players');
  const pt=Object.fromEntries(players.fields.map(([id,,value])=>[id,value]));
- assert.deepEqual([pt.shotPower,pt.jump,pt.pointsLeft,pt.dash,pt.speed],['FORÇA-CHUTE','PULO','RESTANTES','ARRANQUE','RAPIDEZ']);
+ assert.deepEqual([pt.shotPower,pt.jump,pt.pointsLeft,pt.dash,pt.speed],['FORÇA-CHUTE','PULO','FALTAM','ARRANQUE','RAPIDEZ']);
  assert.equal(normalizeAdditionalText(pt.shotPower),'FORCA-CHUTE');assert.equal(normalizeAdditionalText('CALÇÃO'),'CALCAO');
  assert.equal(sections.find(s=>s.id==='uniform-labels').page,'uniforms');
  assert.equal(sections.find(s=>s.id==='cursor-labels').page,'texts-cursor');
@@ -52,7 +52,7 @@ test('supported player text leaves no pending report; unsupported text still res
  api.commit('player-labels');api.finalize(project);const before=structuredClone(project);
  const pending=pendingAdditionalTextExports(project.state.semantic);
  assert.deepEqual(pending,[]);
- const unsupported={additionalScreenTextsV1:{schema:'isssd-additional-screen-texts-v1',values:{'uniform-labels':{shirt:'CAMISA'}}}};
+ const unsupported={additionalScreenTextsV1:{schema:'isssd-additional-screen-texts-v1',values:{'navigation-labels':{reset:'RESTAURAR'}}}};
  assert.match(pendingTextExportReport(pendingAdditionalTextExports(unsupported)),/NÃO APLICADOS/);
  assert.deepEqual(pendingAdditionalTextExports(unsupported,['jogadores']),[]);
  assert.deepEqual(pendingAdditionalTextExports(project.state.semantic,['pre-partida']),[]);

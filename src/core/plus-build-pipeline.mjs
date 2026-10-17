@@ -1,3 +1,5 @@
+import {plusPrematchGraphicsWriter} from './plus-prematch-graphics.mjs';
+import {plusLinkedScreenTextWriter} from './plus-linked-screen-text.mjs';
 import {plusGraphicalLabelsWriter} from './plus-graphical-labels.mjs';
 import {plusNativeMenuTextWriter} from './plus-native-menu-text.mjs';
 import {plusCursorTextWriter} from './plus-cursor-text.mjs';
@@ -88,6 +90,8 @@ export function createPlusBuildStages({baseRom,patches=[],extraWriters=[],writeC
       run:(work,state)=>plusCursorTextWriter(work,state,baseRom,selectedAreas),
     },
     {id:'07b-native-menu-pool',kind:'semantic',run:(work,state)=>plusNativeMenuTextWriter(work,state,baseRom,selectedAreas)},
+    {id:'07b-prematch-graphics',kind:'semantic',run:(work,state)=>plusPrematchGraphicsWriter(work,state,baseRom,selectedAreas)},
+    {id:'07b-linked-screen-text',kind:'semantic',run:(work,state)=>plusLinkedScreenTextWriter(work,state,baseRom,selectedAreas)},
     {id:'07b-graphical-labels',kind:'semantic',run:(work,state)=>plusGraphicalLabelsWriter(work,state,baseRom,selectedAreas)},
     {
       id:'07c-controller-text',kind:'semantic',when:!selectedAreas||selectedAreas.includes('pre-partida'),

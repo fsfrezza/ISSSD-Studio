@@ -95,21 +95,21 @@ test('HTTP export returns an extractable ZIP, correct manifest and canonical fin
   for(const e of manifest.entries)assert.equal(files.get(e.name).length,0x400000);
   assert.deepEqual(files.get(manifest.finalRom),Buffer.from(buildPlusProjectRom(base,project,{forceTacticalInfrastructure:true}).rom));
   assert.deepEqual(fs.readFileSync(file),Buffer.from(base));
-  // Unsupported uniform captions still export a partial ZIP; Cursor captions now write natively.
-  const pendingProject=structuredClone(project),controlSection=ADDITIONAL_TEXT_SECTIONS.find(s=>s.id==='uniform-labels');
-  pendingProject.state.semantic.additionalScreenTextsV1={schema:'isssd-additional-screen-texts-v1',values:{'uniform-labels':Object.fromEntries(controlSection.fields.filter(([id])=>id!=='edit').map(([id,,pt])=>[id,pt]))}};
+  // Unsupported RESET customization still produces an explicit partial ZIP.
+  const pendingProject=structuredClone(project);
+  pendingProject.state.semantic.additionalScreenTextsV1={schema:'isssd-additional-screen-texts-v1',values:{'navigation-labels':{reset:'RESTAURAR'}}};
   const pendingBefore=structuredClone(pendingProject);
   const partial=await fetch(url+'__isssd/build-plus-project',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({project:pendingProject,cumulative:true})});
   assert.equal(partial.status,200,await(partial.ok?Promise.resolve(''):partial.text()));
-  assert.equal(partial.headers.get('X-ISSSD-Pending-Text-Count'),'5');assert.equal(partial.headers.get('X-ISSSD-Export-Status'),'partial');
+  assert.equal(partial.headers.get('X-ISSSD-Pending-Text-Count'),'1');assert.equal(partial.headers.get('X-ISSSD-Export-Status'),'partial');
   const archive=Buffer.from(await partial.arrayBuffer()),partialFiles=new Map();let cursor=0;
   while(archive.readUInt32LE(cursor)===0x04034b50){const packed=archive.readUInt32LE(cursor+18),len=archive.readUInt16LE(cursor+26),extra=archive.readUInt16LE(cursor+28),start=cursor+30+len+extra,name=archive.toString('utf8',cursor+30,cursor+30+len),bytes=inflateRawSync(archive.subarray(start,start+packed));assert.equal(crc32(bytes),archive.readUInt32LE(cursor+14));partialFiles.set(name,bytes);cursor=start+packed;}
   const partialManifest=JSON.parse(partialFiles.get('indice.json'));
   assert.equal(partialManifest.entries.length,9);assert.equal(partialManifest.allSelectedChangesApplied,false);
-  assert.equal(partialManifest.pendingTextChanges.length,5);
-  assert.equal(partialManifest.entries.find(e=>e.stage==='pre-partida').pendingTextChanges.length,5);
-  assert.match(partialFiles.get('TEXTOS-PENDENTES.txt').toString('utf8'),/CAMISA/);
-  assert.match(partialFiles.get('LEIA-ME.txt').toString('utf8'),/5 novos textos NÃO foram aplicados/);
+  assert.equal(partialManifest.pendingTextChanges.length,1);
+  assert.equal(partialManifest.entries.find(e=>e.stage==='pre-partida').pendingTextChanges.length,1);
+  assert.match(partialFiles.get('TEXTOS-PENDENTES.txt').toString('utf8'),/RESTAURAR/);
+  assert.match(partialFiles.get('LEIA-ME.txt').toString('utf8'),/1 novos textos NÃO foram aplicados/);
   for(const entry of partialManifest.entries){assert.equal(partialFiles.get(entry.name).length,0x400000);assert.deepEqual(partialFiles.get(entry.name),files.get(entry.name),'supported changes preserved in '+entry.name);}
   assert.deepEqual(pendingProject,pendingBefore);assert.deepEqual(fs.readFileSync(file),Buffer.from(base));
   const filtered=await fetch(url+'__isssd/build-plus-project',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({project:pendingProject,cumulative:true,selectedAreas:['jogadores']})});

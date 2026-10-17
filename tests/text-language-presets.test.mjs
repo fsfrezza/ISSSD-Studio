@@ -7,7 +7,7 @@ const catalog=JSON.parse(fs.readFileSync(new URL('../project-data/text-language-
 const source=fs.readFileSync(new URL('../editor-src/project-import-v11.mjs',import.meta.url),'utf8');
 test('Portuguese presets use user project text without FB96 fallback',()=>{
  assert.equal(catalog.sources.portuguese.profile,'user-project');
- assert.equal(catalog.sections['main-menu'].portuguese.scenario,'CENARIOS');
+ assert.equal(catalog.sections['main-menu'].portuguese.scenario,'CENÁRIOS');
  assert.equal(catalog.sections['match-options'].portuguese.substitution,'SUBSTITUICOES');
  assert.equal(catalog.sections.controls.portuguese.highball,'BOLA ALTA');
  assert.equal(catalog.sections.controls.portuguese.passball,'PASSE');

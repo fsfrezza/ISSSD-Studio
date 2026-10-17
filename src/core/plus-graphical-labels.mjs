@@ -13,7 +13,7 @@ export function transformLabelPlanes(raw,inverse=false){
  return out;
 }
 // One horizontal strip; supports native 2bpp menu text and 4bpp formation text.
-export function drawGraphicalLabel(raw,text,{tile=0,tiles,bpp=2,background=0,ink=1,outline=3,x=0,right=tiles*8,condense=false}={}){
+export function drawGraphicalLabel(raw,text,{tile=0,tiles,bpp=2,background=0,ink=1,outline=3,x=0,right=tiles*8,condense=false,align='left'}={}){
  const q=normalizeAdditionalText(text),glyphs=[...q].map(c=>{
   if(c===' ')return {rows:[],w:2,space:true};
   const rows=condense&&c==='-'?['0','0','0','1','0','0','0']:COMPACT_MENU_FONT[c];if(!rows)throw Error('Caractere indisponível no texto gráfico: '+c);
@@ -30,7 +30,7 @@ export function drawGraphicalLabel(raw,text,{tile=0,tiles,bpp=2,background=0,ink
   pix[y*w+t*8+xx]=v;
  }
  for(let yy=0;yy<8;yy++)pix.fill(background,yy*w+x,yy*w+right);
- const strokes=[];let cursor=x;
+ const strokes=[];let cursor=x+(align==='center'?Math.floor((right-x-width)/2):0);
  for(const g of glyphs){for(let yy=0;yy<g.rows.length;yy++)for(let xx=0;xx<g.w;xx++)if(g.rows[yy][xx]==='1')strokes.push([cursor+xx,yy]);cursor+=g.w+(g.space?0:gap);}
  for(const [xx,yy] of strokes)for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
   const nx=xx+dx,ny=yy+dy;if(nx>=x&&nx<right&&ny>=0&&ny<8)pix[ny*w+nx]=outline;
@@ -41,6 +41,13 @@ export function drawGraphicalLabel(raw,text,{tile=0,tiles,bpp=2,background=0,ink
   raw[(tile+t)*stride+(p>>1)*16+y*2+(p&1)]=v;
  }
  return raw;
+}
+function drawTallLabel(raw,value,tiles){
+ const text=normalizeAdditionalText(value),w=tiles.length/2*8,pix=new Uint8Array(w*16);
+ const width=[...text].reduce((n,c)=>n+(c===' '?2:(COMPACT_MENU_FONT[c]?.[0].length??99)+1),0)-1;
+ if(width>w)throw Error('Rótulo alto: texto excede '+w+' px.');let x=Math.floor((w-width)/2);
+ for(const c of text){if(c===' '){x+=2;continue;}const g=COMPACT_MENU_FONT[c];for(let y=0;y<7;y++)for(let xx=0;xx<g[0].length;xx++)if(g[y][xx]==='1')for(let yy=0;yy<2;yy++)pix[(y*2+yy+1)*w+x+xx]=1;x+=g[0].length+1;}
+ for(let t=0;t<tiles.length;t++)for(let y=0;y<8;y++){let b=0;for(let xx=0;xx<8;xx++)b|=pix[(Math.floor(t/(w/8))*8+y)*w+(t%(w/8))*8+xx]<<(7-xx);raw[tiles[t]*16+y*2]=b;raw[tiles[t]*16+y*2+1]=0;}
 }
 // Four non-contiguous 4bpp tiles form each 16x16 role button. Keep its
 // triangular border and replace only the seven-pixel letter band.
@@ -60,12 +67,16 @@ export function literalLabelStream(source,planar=false){
 }
 export function prepareSharedGraphicalBaseline(rom,state={},base=rom,selectedAreas=null){
  const values=additionalTextValues(state),active=area=>!selectedAreas||selectedAreas.includes(area);
- const fields=[['navigation-labels','cancel','CANCEL','pre-partida'],['formation-labels','defenders','DF','formacoes'],['formation-labels','midfielders','MF','formacoes'],['formation-labels','forwards','FW','formacoes']];
- if(!fields.some(([s,id,en,area])=>active(area)&&Object.hasOwn(values[s]||{},id)&&normalizeAdditionalText(values[s][id])!==en))return rom;
- const a=GRAPHICAL_LABEL_ASSETS.find(a=>a.literal),d=konamiLzDecompress(base,a.pc);
- if(d.data.length!==a.raw||d.compressedSize>a.size||!(base[a.pc+1]&128)||a.pointers.some(pc=>pointer(a.cpu).some((v,i)=>base[pc+i]!==v)))throw Error('teamStats: ROM-base divergente.');
- if(base.slice(a.slot,a.slot+a.capacity).length!==a.capacity||base.slice(a.slot,a.slot+a.capacity).some(v=>v!==255))throw Error('teamStats: reserva ocupada.');
- rom.set(literalLabelStream(d.data,true),a.slot);for(const pc of a.pointers)rom.set(pointer(cpu(a.slot)),pc);return rom;
+ const allFields={teamStats:[['navigation-labels','cancel','CANCEL','pre-partida'],['formation-labels','defenders','DF','formacoes'],['formation-labels','midfielders','MF','formacoes'],['formation-labels','forwards','FW','formacoes']],cancelHeader:[['navigation-labels','cancel','CANCEL','pre-partida'],['team-selection-labels','formation','FORMATION','selecao-equipes'],['team-selection-labels','statistics','TEAM STATISTICS','selecao-equipes']]};
+ const writes=[];
+ for(const a of GRAPHICAL_LABEL_ASSETS.filter(a=>a.literal)){
+  if(!allFields[a.id].some(([s,id,en,area])=>active(area)&&Object.hasOwn(values[s]||{},id)&&normalizeAdditionalText(values[s][id])!==en))continue;
+  const d=konamiLzDecompress(base,a.pc);
+  if(d.data.length!==a.raw||d.compressedSize>a.size||!!(base[a.pc+1]&128)!==a.planar||a.pointers.some(pc=>pointer(a.cpu).some((v,i)=>base[pc+i]!==v)))throw Error(a.id+': ROM-base divergente.');
+  if(base.slice(a.slot,a.slot+a.capacity).length!==a.capacity||base.slice(a.slot,a.slot+a.capacity).some(v=>v!==255))throw Error(a.id+': reserva ocupada.');
+  writes.push([a.slot,literalLabelStream(d.data,a.planar)]);for(const pc of a.pointers)writes.push([pc,pointer(cpu(a.slot))]);
+ }
+ for(const [pc,bytes] of writes)rom.set(bytes,pc);return rom;
 }
 export function plusGraphicalLabelsWriter(rom,state={},base=rom,selectedAreas=null){
  const values=additionalTextValues(state),writes=[];
@@ -83,14 +94,19 @@ export function plusGraphicalLabelsWriter(rom,state={},base=rom,selectedAreas=nu
  const draw=(assetId,s,id,tile,tiles,extra={})=>{if(changed(s,id))drawGraphicalLabel(asset(assetId),values[s][id],{tile,tiles,...extra});};
  if(active('jogadores')){
   const s='player-labels';draw('playerMisc',s,'player',0,4);draw('playerMisc',s,'substitute',4,4);
-  draw('playerSkills',s,'pointsLeft',38,6);
+  draw('playerSkills',s,'pointsLeft',39,5);
   draw('playerMisc',s,'speed',8,4);
   // Keep the native four-cell rectangles: wider descriptors collide with
   // live points/counter overlays. Long inscriptions use the same 3x7 alphabet
   // with zero inter-letter spacing (and a one-pixel hyphen), without truncation.
   for(const [id,tile] of [['dash',44],['shotPower',0],['curlSkill',4],['balance',8],['intelligence',12],['jump',16],['dribble',20],['stamina',24]])draw('playerSkills',s,id,tile,4,{condense:true});
  }
+ if(active('selecao-equipes')){
+  draw('cancelHeader','team-selection-labels','statistics',0,6,{condense:true});draw('cancelHeader','team-selection-labels','formation',6,5);
+  if(changed('team-selection-labels','keeperAbbr')){const text=normalizeAdditionalText(values['team-selection-labels'].keeperAbbr);if(!/^[A-Z ]{0,2}$/.test(text))throw Error('GO: máximo de duas letras.');writes.push([0x3C530,Uint8Array.from(text.padEnd(2),c=>NATIVE_MENU_FONTS.SmallMenuText[c])]);}
+ }
  if(active('formacoes')){
+  for(const [id,pc] of [['defenders',0x3C532],['midfielders',0x3C534],['forwards',0x3C536]])if(changed('formation-labels',id)){const text=normalizeAdditionalText(values['formation-labels'][id]);if(text.length>2||!/^[A-Z ]*$/.test(text))throw Error('Posição: máximo de duas letras.');writes.push([pc,Uint8Array.from(text.padEnd(2),c=>NATIVE_MENU_FONTS.SmallMenuText[c])]);}
   const s='formation-labels';
   if(changed(s,'formationType')){
    const text=normalizeAdditionalText(values[s].formationType),words=text.split(' ');let line='';
@@ -127,6 +143,16 @@ export function plusGraphicalLabelsWriter(rom,state={},base=rom,selectedAreas=nu
   }
  }
  if(active('pre-partida')){
+  for(const [id,tile,tiles] of [['shirt',0,4],['pants',4,4],['socks',8,4],['color',12,3],['type',24,4],['edit',28,3]])draw('uniformLabels','uniform-labels',id,tile,tiles,{condense:true});
+  for(const [id,tile,tiles] of [['keeper',8,8],['skill',16,4]])draw('handicapLabels','handicap-labels',id,tile,tiles,{condense:true,align:'center'});
+  if(changed('handicap-labels','players')){
+   const words=normalizeAdditionalText(values['handicap-labels'].players).split(' ');let first='';const width=q=>[...q].reduce((n,c)=>n+(c===' '?2:(COMPACT_MENU_FONT[c]?.[0].length??99)+1),0)-1;
+   while(words.length&&width(first?first+' '+words[0]:words[0])<=48)first+=(first?' ':'')+words.shift();
+   drawGraphicalLabel(asset('handicapLabels'),first,{tile:20,tiles:6,align:'center'});drawGraphicalLabel(asset('handicapLabels'),words.join(' '),{tile:26,tiles:5,align:'center'});
+  }
+  if(changed('handicap-labels','condition'))drawTallLabel(asset('handicapLabels'),values['handicap-labels'].condition,[0,2,4,6,1,3,5,7]);
+  draw('handicapStrength','handicap-labels','strong',0,4);draw('handicapStrength','handicap-labels','weak',4,4);
+  draw('playerNumberLabel','navigation-labels','numbers',0,3,{bpp:4,background:12,ink:9,outline:12,x:1,right:23,condense:true});
   const s='navigation-labels';
   if(changed(s,'cancel')){
    drawGraphicalLabel(asset('teamStats'),values[s].cancel,{tile:2,tiles:4,bpp:4,background:12,ink:9,outline:12,x:1});

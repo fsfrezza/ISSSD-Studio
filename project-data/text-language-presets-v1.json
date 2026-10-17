@@ -9,9 +9,9 @@
     "portuguese": {
       "profile": "user-project",
       "filename": "International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj",
-      "sha256": "e0e31459e24c04bf2a3eb53da91d8ddcaf6d3a8c99ea0792860b6762d2272bf1",
+      "sha256": "9b81dd640f81857fe9a081205f14f2a57adcad23dfaf34948e660c81f9ae11df",
       "userOverrides": {
-        "controls.dash": "ARRANQUE"
+        "player-labels.pointsLeft": "FALTAM"
       }
     }
   },
@@ -51,13 +51,13 @@
       },
       "portuguese": {
         "openGame": "JOGATINA",
-        "scenario": "CENARIOS",
+        "scenario": "CENÁRIOS",
         "championship": "CAMPEONATO",
         "penalty": "PENAIS",
         "cup": "MEGACOPA",
         "training": "TREINOS",
         "password": "SENHA",
-        "options": "OPCOES"
+        "options": "OPÇÕES"
       },
       "evidence": {
         "portugueseSource": "canonical-project",
@@ -102,8 +102,8 @@
         "manual": "MANUAL"
       },
       "portuguese": {
-        "shoot": "CHUTE",
-        "dash": "ARRANQUE",
+        "shoot": "CHUTAR",
+        "dash": "CORRER",
         "keeper": "GOLERO",
         "semiauto": "SEMI AUTO",
         "auto": "AUTO",

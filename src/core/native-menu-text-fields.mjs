@@ -1,3 +1,4 @@
+import {USER_PORTUGUESE_PRESETS} from './user-portuguese-presets.mjs';
 import {NATIVE_MENU_PORTUGUESE} from './native-menu-portuguese.mjs';
 // Native UI strings audited against the original Plus ROM. Generated from unmapped-text-audit.json.
 export const NATIVE_MENU_FONTS={"SmallMenuText":{" ":0,"0":1,"1":2,"2":3,"3":4,"4":5,"5":6,"6":7,"7":8,"8":9,"9":10,"A":11,"B":12,"C":13,"D":14,"E":15,"F":16,"G":17,"H":18,"I":19,"J":20,"K":21,"L":22,"M":23,"N":24,"O":25,"P":26,"Q":27,"R":28,"S":29,"T":30,"U":31,"V":32,"W":33,"X":34,"Y":35,"Z":36,":":37,"-":38,"!":39,"%":40,".":41,"a":42,"b":43,"c":44,"d":45,"e":46,"f":47,"g":48,"h":49,"i":50,"j":51,"k":52,"l":53,"m":54,"n":55,"o":56,"p":57,"q":58,"r":59,"s":60,"t":61,"u":62,"v":63,"w":64,"x":65,"y":66,"z":67,"(":68,")":69,"+":71,"=":72,"<":73,">":74,"$":75,"?":76,"*":77,"#":78,"~":79,"'":80,"/":81,",":82},"TallMenuText":{" ":0,"!":82,".":84,"+":86,"-":87,"%":88,"/":89,"'":90,"~":91,":":92,"?":93,"0":94,"1":95,"2":96,"3":97,"4":98,"5":99,"6":100,"7":101,"8":102,"9":103,"A":104,"B":105,"C":106,"D":107,"E":108,"F":109,"G":110,"H":111,"I":112,"J":113,"K":114,"L":115,"M":116,"N":117,"O":118,"P":119,"Q":120,"R":121,"S":122,"T":123,"U":124,"V":125,"W":126,"X":127,"Y":128,"Z":129,"a":130,"b":131,"c":132,"d":133,"e":134,"f":135,"g":136,"h":137,"i":138,"j":139,"k":140,"l":141,"m":142,"n":143,"o":144,"p":145,"q":146,"r":147,"s":148,"t":149,"u":150,"v":151,"w":152,"x":153,"y":154,"z":155}};
@@ -3696,4 +3697,8 @@ const AUDITED_NATIVE_MENU_TEXT_SECTIONS=[
   }
 ];
 
-export const NATIVE_MENU_TEXT_SECTIONS=AUDITED_NATIVE_MENU_TEXT_SECTIONS.map(section=>({...section,fields:section.fields.map(([id,en,,options])=>[id,en,NATIVE_MENU_PORTUGUESE[id]??null,options])}));
+const handicapHelp=AUDITED_NATIVE_MENU_TEXT_SECTIONS.find(s=>s.id==='handicap-native').fields.find(f=>f[0]==='data_87c884');
+handicapHelp[1]='Press the select button to change 1P and CPU controls.';
+handicapHelp[3]={...handicapHelp[3],multiline:true,rows:2,pool:{...handicapHelp[3].pool,segments:[{pc:0x3C884,original:handicapHelp[1].slice(0,27)},{pc:0x3C89F,original:handicapHelp[1].slice(27)}]}};
+
+export const NATIVE_MENU_TEXT_SECTIONS=AUDITED_NATIVE_MENU_TEXT_SECTIONS.map(section=>({...section,fields:section.fields.map(([id,en,,options])=>[id,en,USER_PORTUGUESE_PRESETS.additional[section.id]?.[id]??NATIVE_MENU_PORTUGUESE[id]??null,options])}));

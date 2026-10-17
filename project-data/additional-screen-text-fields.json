@@ -63,7 +63,7 @@
       [
         "pointsLeft",
         "POINTS LEFT",
-        "RESTANTES"
+        "FALTAM"
       ]
     ]
   },
@@ -109,12 +109,12 @@
       [
         "one",
         "ONE",
-        "UMA"
+        "1"
       ],
       [
         "four",
         "FOUR",
-        "QUATRO"
+        "4"
       ]
     ]
   },
@@ -505,19 +505,118 @@
         "SAIR"
       ],
       [
+        "numbers",
+        "NUMBER",
+        "NÚM."
+      ],
+      [
         "reset",
         "RESET",
-        "RESTAURAR"
+        "RESET"
       ],
       [
         "cancel",
         "CANCEL",
-        "CANCELAR"
+        "DESFAZ"
       ],
       [
         "ok",
         "OK",
         "OK"
+      ]
+    ]
+  },
+  {
+    "id": "team-selection-labels",
+    "page": "texts-team-selection",
+    "title": "Rótulos gráficos da seleção",
+    "area": "selecao-equipes",
+    "fields": [
+      [
+        "formation",
+        "FORMATION",
+        "FORMACAO"
+      ],
+      [
+        "statistics",
+        "TEAM STATISTICS",
+        "VER DADOS"
+      ],
+      [
+        "keeperAbbr",
+        "GK",
+        "GO"
+      ]
+    ]
+  },
+  {
+    "id": "handicap-labels",
+    "page": "texts-handicap",
+    "title": "Rótulos gráficos de Vantagem",
+    "area": "pre-partida",
+    "fields": [
+      [
+        "condition",
+        "CONDITION",
+        "CONDIÇÃO"
+      ],
+      [
+        "keeper",
+        "GOALKEEPER",
+        "GOLERO"
+      ],
+      [
+        "skill",
+        "SKILL",
+        "NÍVEL"
+      ],
+      [
+        "players",
+        "NUMBER OF PLAYERS",
+        "NÚMERO DE ATLETAS"
+      ],
+      [
+        "strong",
+        "STRONG",
+        "FORTE"
+      ],
+      [
+        "weak",
+        "WEAK",
+        "FRACO"
+      ]
+    ]
+  },
+  {
+    "id": "pre-match-labels",
+    "page": "match-options",
+    "title": "Outros rótulos da pré-partida",
+    "area": "pre-partida",
+    "fields": [
+      [
+        "keyConfiguration",
+        "KEY CONFIGURATION",
+        "COMANDOS"
+      ],
+      [
+        "changeController",
+        "CHANGE CONTROLLER",
+        "TROCAR CONTROLE"
+      ],
+      [
+        "numberPlayers",
+        "NUMBER OF PLAYERS",
+        "NÚMERO DE ATLETAS"
+      ],
+      [
+        "editPlayers",
+        "EDIT PLAYER SKILLS",
+        "EDITAR ATLETAS"
+      ],
+      [
+        "teamColors",
+        "TEAM COLORS",
+        "UNIFORMES"
       ]
     ]
   },
@@ -651,18 +750,22 @@
       ],
       [
         "data_87c884",
-        "the select button to change 1P and CPU controls.",
+        "Press the select button to change 1P and CPU controls.",
         " SELECT para trocar controles de 1P e CPU.",
         {
           "label": "the select button to change 1P and CPU controls.",
-          "multiline": false,
-          "rows": 1,
+          "multiline": true,
+          "rows": 2,
           "pool": {
             "font": "TallMenuText",
             "segments": [
               {
-                "pc": 247946,
-                "original": "the select button to change 1P and CPU controls."
+                "pc": 247940,
+                "original": "Press the select button to "
+              },
+              {
+                "pc": 247967,
+                "original": "change 1P and CPU controls."
               }
             ],
             "symbol": "DATA_87C884"
@@ -682,7 +785,7 @@
       [
         "data_87c8ba",
         "NO",
-        "SEM",
+        "NAO",
         {
           "label": "NO",
           "multiline": false,
@@ -702,7 +805,7 @@
       [
         "data_87ca1d",
         "ONE FOUR",
-        "UMA 4",
+        "1 4",
         {
           "label": "ONE FOUR",
           "multiline": false,
@@ -1058,7 +1161,7 @@
       [
         "data_87d4ac",
         "-Shoot-\nPress this button while in\nyour opponent's half.The\nlonger you press the button\nthe higher the shot.",
-        "-Chute-\nAperte no campo adversário.\nQuanto mais segurar o botão,\nmais alto será o chute.",
+        "-Chutar-\nAperte no campo adversário.\nQuanto mais segurar o botão,\nmais alto será o chute.",
         {
           "label": "-Shoot-",
           "multiline": true,
@@ -1094,7 +1197,7 @@
       [
         "data_87d539",
         "-Dash-\nWhile you hold this button\ndown the player will sprint.\nBe careful not to use it too\nmuch or the player will run\nout of stamina.",
-        "-Arranque-\nSegure o botão para correr.\nEvite usar por muito tempo,\npois o jogador poderá ficar\nsem resistência.",
+        "-Correr-\nSegure o botão para correr.\nEvite usar por muito tempo,\npois o jogador poderá ficar\nsem resistência.",
         {
           "label": "-Dash-",
           "multiline": true,
@@ -1240,7 +1343,7 @@
       [
         "data_87d75a",
         "PLAYER  WINS!",
-        "ATLETA  GANHA",
+        "VITÓRIA!",
         {
           "label": "PLAYER  WINS!",
           "multiline": false,
@@ -1290,7 +1393,7 @@
       [
         "data_87d7a7",
         "ONE",
-        "UM",
+        "1",
         {
           "label": "ONE",
           "multiline": false,
@@ -1330,7 +1433,7 @@
       [
         "data_87d7ad",
         "THREE",
-        "TRÊS",
+        "3",
         {
           "label": "THREE",
           "multiline": false,
@@ -1410,7 +1513,7 @@
       [
         "data_87d7bd",
         "SEVEN",
-        "SETE",
+        "7",
         {
           "label": "SEVEN",
           "multiline": false,
@@ -1430,7 +1533,7 @@
       [
         "data_87d7c2",
         "EIGHT",
-        "OITO",
+        "8",
         {
           "label": "EIGHT",
           "multiline": false,
