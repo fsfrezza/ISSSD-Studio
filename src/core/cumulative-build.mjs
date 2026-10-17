@@ -1,3 +1,5 @@
+import {prepareSharedGraphicalBaseline} from './plus-graphical-labels.mjs';
+import {canonicalProjectSemantic} from './project-semantic.mjs';
 import {buildPlusProjectRom} from './project-build.mjs';
 import {preparePlusTacticalInfrastructure} from './plus-tactics-infrastructure.mjs';
 import {syncPlusRuntimeMirrors,validatePlusRuntimeMirrors,writeFinalSnesChecksum} from './plus-export-finalizer.mjs';
@@ -9,7 +11,7 @@ function finalize(rom){syncPlusRuntimeMirrors(rom);writeFinalSnesChecksum(rom);r
 export function buildCumulativeProject(base,project,{onRom,selectedAreas,titleGraphics}={}){
  if(typeof onRom!=='function')throw new TypeError('onRom callback required');
  const selected=selectedCumulativeAreas(selectedAreas),original=base.slice();
- const foundation=finalize(preparePlusTacticalInfrastructure(base)),work=foundation.slice();
+ const foundation=finalize(prepareSharedGraphicalBaseline(preparePlusTacticalInfrastructure(base),canonicalProjectSemantic(project),base,selected)),work=foundation.slice();
  let target,pendingTextChanges=[];
  try{
   const built=buildPlusProjectRom(base,project,{forceTacticalInfrastructure:true,selectedAreas:selected});

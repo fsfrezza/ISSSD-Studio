@@ -1,3 +1,4 @@
+import {graphicalLabelArea} from './graphical-label-layout.mjs';
 import {NATIVE_MENU_TEXT_SECTIONS} from './native-menu-text-fields.mjs';
 import {CURSOR_HELP_FIELDS} from './cursor-text-fields.mjs';
 import {CONTROLLER_ACTIONS} from './plus-controller-actions.mjs';
@@ -6,7 +7,7 @@ import {PLUS_MAIN_MENU_REGIONS} from './plus-main-menu-renderer.mjs';
 import {resolvePlusPlayerNameOffset} from './plus-player-name.mjs';
 import {resolvePlusTacticalRecord} from './plus-tactics-address.mjs';
 import {knownMirrorSlices} from './plus-player.mjs';
-import {NATIVE_SCREEN_TEXT_FIELDS,nativeTextArea} from './plus-native-screen-text.mjs';
+import {NATIVE_SCREEN_TEXT_FIELDS,NATIVE_AUX_TEXT_GROUPS,nativeTextArea} from './plus-native-screen-text.mjs';
 
 // PC ranges taken from legacy TITLE_GROUPS/TITLE_PALETTES/PROFILE_TEXT_MAPS,
 // the verified main-menu renderer, and live player/tactical pointers.
@@ -47,6 +48,8 @@ export function areaClassifier(rom,base=null){
  }
  for(let p=1;p<=7;p++)for(const s of knownMirrorSlices(30,p))derived.push([s.mirror,s.mirror+s.length]);
  return off=>{
+  const graphic=graphicalLabelArea(off);if(graphic!==undefined)return graphic;
+  if(NATIVE_AUX_TEXT_GROUPS.some(g=>off>=g.pc&&off<g.pc+g.rows.reduce((a,b)=>a+b,0)))return 'textos-estrategias';
   if(contains(off,derived))return null;
   if(contains(off,title))return 'tela-inicial';
   if(contains(off,menu))return 'menu-principal';

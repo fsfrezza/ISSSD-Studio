@@ -46,13 +46,15 @@ test('blank and spaced user inscriptions survive actual finalizer without auto-c
  assert.equal(project.state.semantic.additionalScreenTextsV1.values['navigation-labels'].exit,'');
  assert.equal(project.state.semantic.additionalScreenTextsV1.values['navigation-labels'].reset,'VOLTAR AO ORIGINAL');
 });
-test('unimplemented confirmed text is reported without blocking export and respects unchecked areas',()=>{
+test('supported player text leaves no pending report; unsupported text still respects selected areas',()=>{
  const {api}=harness();api.fill('player-labels','portuguese');const project={state:{semantic:{}}};api.finalize(project);
  assert.deepEqual(pendingAdditionalTextExports(project.state.semantic),[],'unconfirmed drafts do not affect ROM');
  api.commit('player-labels');api.finalize(project);const before=structuredClone(project);
  const pending=pendingAdditionalTextExports(project.state.semantic);
- assert.ok(pending.length>0);assert.equal(pending.find(p=>p.field==='shotPower').requested,'FORÇA-CHUTE');
- assert.match(pendingTextExportReport(pending),/NÃO APLICADOS/);
+ assert.deepEqual(pending,[]);
+ const unsupported={additionalScreenTextsV1:{schema:'isssd-additional-screen-texts-v1',values:{'uniform-labels':{shirt:'CAMISA'}}}};
+ assert.match(pendingTextExportReport(pendingAdditionalTextExports(unsupported)),/NÃO APLICADOS/);
+ assert.deepEqual(pendingAdditionalTextExports(unsupported,['jogadores']),[]);
  assert.deepEqual(pendingAdditionalTextExports(project.state.semantic,['pre-partida']),[]);
  assert.equal(JSON.stringify(project),JSON.stringify(before));
  api.fill('player-labels','english');api.commit('player-labels');api.finalize(project);assert.deepEqual(pendingAdditionalTextExports(project.state.semantic),[]);
