@@ -35,7 +35,7 @@ export const ADDITIONAL_TEXT_SECTIONS=Object.freeze([
   ['color','COLOR','COR'],['type','TYPE','TIPO'],['edit','EDIT','EDITAR'],
  ]},
  {id:'navigation-labels',page:'match-options',title:'Botões de navegação compartilhados',area:'pre-partida',fields:[
-  ['exit','EXIT','SAIR'],['numbers','NUMBER','NÚM.'],['reset','RESET','RESTAURAR'],['cancel','CANCEL','CANCELAR'],['ok','OK','OK'],
+  ['exit','EXIT','SAIR'],['numbers','NUMBER','NÚM.'],['reset','RESET','RESET'],['cancel','CANCEL','CANCELAR'],['ok','OK','OK'],
  ]},
  {id:'team-selection-labels',page:'texts-team-selection',title:'Rótulos gráficos da seleção',area:'selecao-equipes',fields:[['formation','FORMATION','FORMACAO'],['statistics','TEAM STATISTICS','VER DADOS'],['keeperAbbr','GK','GO']]},
  {id:'handicap-labels',page:'texts-handicap',title:'Rótulos gráficos de Vantagem',area:'pre-partida',fields:[['condition','CONDITION','CONDIÇÃO'],['keeper','GOALKEEPER','GOLERO'],['skill','SKILL','NÍVEL'],['players','NUMBER OF PLAYERS','NÚMERO DE ATLETAS'],['strong','STRONG','FORTE'],['weak','WEAK','FRACO']]},

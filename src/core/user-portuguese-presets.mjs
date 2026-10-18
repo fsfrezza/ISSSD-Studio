@@ -299,7 +299,7 @@ export const USER_PORTUGUESE_PRESETS={
    "data_87f990": "Você é o melhor!                    KONAMI DIREITOS RESERVADOS."
   },
   "match-options-native": {
-   "data_87cada": "COMEÇAR"
+   "data_87cada": "INICIO"
   },
   "strategies-native": {
    "data_87c8ba": "NAO",
