@@ -59,7 +59,7 @@ export const USER_PORTUGUESE_PRESETS={
    "passball": "PASSE"
   },
   "title-screen": {
-   "rom-internal-title": "SNESFOREVER.COM.BR",
+   "rom-internal-title": "INTERNETSUCKERRELAX",
    "copyright": "@1995KONAMIALLRIGHTSRESERVED.",
    "license": "LICENSEDBYNINTENDO"
   },

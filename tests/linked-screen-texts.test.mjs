@@ -31,4 +31,7 @@ test('every Portuguese preset supplied by the user remains verbatim and FALTAM i
  for(const section of ADDITIONAL_TEXT_SECTIONS)for(const [id,,pt] of section.fields)if(Object.hasOwn(USER_PORTUGUESE_PRESETS.additional[section.id]||{},id))assert.equal(pt,USER_PORTUGUESE_PRESETS.additional[section.id][id]);
  assert.equal(ADDITIONAL_TEXT_SECTIONS.find(s=>s.id==='player-labels').fields.find(f=>f[0]==='pointsLeft')[2],'FALTAM');
  assert.equal(ADDITIONAL_TEXT_SECTIONS.find(s=>s.id==='navigation-labels').fields.find(f=>f[0]==='cancel')[2],'DESFAZ');
+ assert.equal(ADDITIONAL_TEXT_SECTIONS.find(s=>s.id==='navigation-labels').fields.find(f=>f[0]==='numbers')[2],'NUMERO');
+ assert.equal(ADDITIONAL_TEXT_SECTIONS.find(s=>s.id==='navigation-labels').fields.find(f=>f[0]==='reset')[2],'RESET');
+ assert.equal(ADDITIONAL_TEXT_SECTIONS.find(s=>s.id==='match-options-native').fields.find(f=>f[0]==='data_87cada')[2],'INICIO');
 });
