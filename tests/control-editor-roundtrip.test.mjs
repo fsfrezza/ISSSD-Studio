@@ -60,3 +60,18 @@ test('selective project save detects complete control changes and excludes them 
  assert.equal(context.project.state.semantic.screenTextsV1.values['match-options'].start,'COMECA');
  assert.equal(context.project.state.semantic.teamsV1.schema,'preserved');
 });
+
+test('opening Portuguese project then saving ignores English values recreated by legacy renders',async()=>{
+ const nodes=[input('gm610_friendly','OPEN GAME'),input('gm610_league','SHORT LEAGUE'),{id:'matchopt_formation',value:'FORMATION CHANGE',dataset:{screenTextOwner:'match-options',screenTextField:'formation'},matches:q=>q==='[data-screen-text-owner][data-screen-text-field]'}];
+ const {context,window}=runtime(nodes);
+ context.savedProject={state:{semantic:{screenTextsV1:{schema:'isssd-screen-texts-v1',values:{'game-modes':{friendly:'JOGATINA',league:'LIGA CURTA'},'match-options':{formation:'FORMACAO'}}}}}};
+ vm.runInContext('currentProject=JSON.parse(JSON.stringify(savedProject));screenTextsBaseline=projectScreenTexts(currentProject)',context);
+ window.studioProjectObject=async()=>({state:{semantic:{}}});
+ const start=source.indexOf('const priorFinalize='),end=source.indexOf('const previousAfterOpen=',start);
+ vm.runInContext(source.slice(start,end),context);
+ const result=await window.studioProjectObject();
+ assert.deepEqual(JSON.parse(JSON.stringify(result.state.semantic.screenTextsV1)),context.savedProject.state.semantic.screenTextsV1);
+ nodes[0].value='PARTIDA';vm.runInContext("touched.screen.add('game-modes.friendly')",context);
+ const edited=await window.studioProjectObject();assert.equal(edited.state.semantic.screenTextsV1.values['game-modes'].friendly,'PARTIDA');
+ assert.equal(edited.state.semantic.screenTextsV1.values['game-modes'].league,'LIGA CURTA');
+});
