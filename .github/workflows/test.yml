@@ -27,8 +27,5 @@ jobs:
           node --version
           npm --version
 
-      - name: Build editor for server integration tests
-        run: npm run build:editor
-
       - name: Regression tests
         run: npm test

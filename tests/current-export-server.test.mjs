@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import http from 'node:http';
+import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {spawn} from 'node:child_process';
@@ -22,13 +24,20 @@ test('the exact eight reported pending fields are supported and actually write n
  assert.deepEqual(base,before);
 });
 test('a fresh editor server avoids an occupied port and identifies its active build',async()=>{
+ // Serve a controlled HTML fixture from an isolated checkout: generated editor
+ // artifacts and the private legacy UI source are intentionally absent in CI.
+ const fixtureRoot=fs.mkdtempSync(path.join(os.tmpdir(),'isssd-server-test-'));
+ const sourceRoot=fileURLToPath(new URL('..',import.meta.url));
+ for(const dir of ['src','scripts'])fs.cpSync(path.join(sourceRoot,dir),path.join(fixtureRoot,dir),{recursive:true});
+ fs.mkdirSync(path.join(fixtureRoot,'editor'));
+ fs.writeFileSync(path.join(fixtureRoot,'editor','ISSSD-Studio.html'),'<!doctype html><html><body><main>Server integration fixture</main></body></html>');
  const busy=http.createServer();await new Promise(r=>busy.listen(0,'127.0.0.1',r));
  const port=busy.address().port;
- const child=spawn(process.execPath,['scripts/serve-editor.mjs'],{cwd:new URL('..',import.meta.url),env:{...process.env,ISSSD_PORT:String(port),ISSSD_NO_OPEN:'1'},stdio:['ignore','pipe','pipe']});
+ const child=spawn(process.execPath,['scripts/serve-editor.mjs'],{cwd:fixtureRoot,env:{...process.env,ISSSD_PORT:String(port),ISSSD_NO_OPEN:'1'},stdio:['ignore','pipe','pipe']});
  try{
   const url=await new Promise((resolve,reject)=>{let log='';const timer=setTimeout(()=>reject(Error('server startup timeout')),10000);child.stdout.on('data',b=>{log+=b;const m=log.match(/http:\/\/127\.0\.0\.1:\d+\//);if(m){clearTimeout(timer);resolve(m[0]);}});child.once('exit',code=>{clearTimeout(timer);reject(Error('server exited '+code));});});
   assert.notEqual(new URL(url).port,String(port));
-  const response=await fetch(url+'__isssd/build-info'),info=await response.json();assert.equal(response.status,200);assert.equal(info.root,path.resolve(fileURLToPath(new URL('..',import.meta.url))));assert.ok(info.supportedTextWriters.includes('uniform-labels'));assert.ok(info.supportedTextWriters.includes('strategy-one-four'));assert.ok(info.commit);
-  const html=await (await fetch(url)).text();assert.ok(html.includes('id="isssd-active-server"'));assert.ok(html.includes('Servidor '+info.commit));assert.ok(html.includes('textos 1/4 + uniformes ativos'));
- }finally{child.kill();await new Promise(r=>busy.close(r));}
+  const response=await fetch(url+'__isssd/build-info'),info=await response.json();assert.equal(response.status,200);assert.equal(info.root,fixtureRoot);assert.ok(info.supportedTextWriters.includes('uniform-labels'));assert.ok(info.supportedTextWriters.includes('strategy-one-four'));assert.ok(info.commit);
+  const page=await fetch(url);assert.equal(page.status,200);const html=await page.text();assert.ok(html.includes('Server integration fixture'));assert.ok(html.includes('id="isssd-active-server"'));assert.ok(html.includes('Servidor '+info.commit));assert.ok(html.includes('textos 1/4 + uniformes ativos'));
+ }finally{child.kill();await new Promise(r=>busy.close(r));await new Promise(r=>child.exitCode!==null||child.signalCode!==null?r():child.once('exit',r));fs.rmSync(fixtureRoot,{recursive:true,force:true});}
 });
