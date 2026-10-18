@@ -147,3 +147,13 @@ test('Portuguese button fills every newly incorporated screen field and persists
  const project={state:{semantic:{}}};api.finalize(project);const reopened=harness();reopened.api.hydrate(JSON.parse(JSON.stringify(project)));
  for(const section of native)for(const [id,,pt] of section.fields)assert.equal(reopened.api.snapshot().values[section.id][id],pt);
 });
+
+test('match announcements have their own tab and all 17 Portuguese values survive save and reopen',()=>{
+ const section=sections.find(s=>s.id==='match-announcements');assert.equal(section.page,'texts-match');assert.equal(section.area,'partida');assert.equal(section.fields.length,17);
+ const {api,nodes}=harness();api.fill(section.id,'portuguese');assert.equal(api.snapshot().values[section.id],undefined);
+ assert.equal(nodes.get('additionalText_match-announcements_goal').value,'GOL!');assert.equal(nodes.get('additionalText_match-announcements_yellowCard').value,'CARTÃO AMARELO');
+ api.commit(section.id);const project={state:{semantic:{}}};api.finalize(project);const saved=JSON.parse(JSON.stringify(project)),next=harness();next.api.hydrate(saved);
+ for(const [id,,pt]of section.fields){assert.equal(next.api.snapshot().values[section.id][id],pt);}
+ assert.deepEqual(pendingAdditionalTextExports(saved.state.semantic,['partida']),[]);
+ next.api.fill(section.id,'english');next.api.commit(section.id);for(const [id,en]of section.fields)assert.equal(next.api.snapshot().values[section.id][id],en);
+});

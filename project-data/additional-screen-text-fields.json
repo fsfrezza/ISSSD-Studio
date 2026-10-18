@@ -621,6 +621,151 @@
     ]
   },
   {
+    "id": "match-announcements",
+    "page": "texts-match",
+    "title": "Avisos durante a partida",
+    "area": "partida",
+    "createPage": true,
+    "fields": [
+      [
+        "goal",
+        "GOAL",
+        "GOL!",
+        {
+          "announcement": true
+        }
+      ],
+      [
+        "foul",
+        "FOUL",
+        "FALTA",
+        {
+          "announcement": true
+        }
+      ],
+      [
+        "ownGoal",
+        "OWN GOAL",
+        "GOL CONTRA",
+        {
+          "announcement": true
+        }
+      ],
+      [
+        "yellowCard",
+        "YELLOW CARD",
+        "CARTÃO AMARELO",
+        {
+          "announcement": true
+        }
+      ],
+      [
+        "redCard",
+        "RED CARD",
+        "CARTÃO VERMELHO",
+        {
+          "announcement": true
+        }
+      ],
+      [
+        "cornerKick",
+        "CORNER KICK",
+        "ESCANTEIO",
+        {
+          "announcement": true
+        }
+      ],
+      [
+        "offside",
+        "OFF SIDE",
+        "IMPEDIMENTO",
+        {
+          "announcement": true
+        }
+      ],
+      [
+        "penaltyKick",
+        "PENALTY KICK",
+        "PÊNALTI",
+        {
+          "announcement": true
+        }
+      ],
+      [
+        "timeUp",
+        "TIME UP",
+        "FIM DE JOGO",
+        {
+          "announcement": true
+        }
+      ],
+      [
+        "freeKick",
+        "FREE KICK",
+        "TIRO LIVRE",
+        {
+          "announcement": true
+        }
+      ],
+      [
+        "goalKick",
+        "GOAL KICK",
+        "TIRO DE META",
+        {
+          "announcement": true
+        }
+      ],
+      [
+        "halfTime",
+        "HALF TIME",
+        "INTERVALO",
+        {
+          "announcement": true
+        }
+      ],
+      [
+        "throwIn",
+        "THROW IN",
+        "LATERAL",
+        {
+          "announcement": true
+        }
+      ],
+      [
+        "player1Win",
+        "1P WIN",
+        "1P VENCEU",
+        {
+          "announcement": true
+        }
+      ],
+      [
+        "player2Win",
+        "2P WIN",
+        "2P VENCEU",
+        {
+          "announcement": true
+        }
+      ],
+      [
+        "win",
+        "WIN",
+        "VITÓRIA",
+        {
+          "announcement": true
+        }
+      ],
+      [
+        "lose",
+        "LOSE",
+        "DERROTA",
+        {
+          "announcement": true
+        }
+      ]
+    ]
+  },
+  {
     "id": "team-selection-native",
     "page": "texts-team-selection",
     "title": "Textos Seleção de Equipes",

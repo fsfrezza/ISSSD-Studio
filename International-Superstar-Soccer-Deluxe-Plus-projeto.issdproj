@@ -10484,6 +10484,25 @@
             "formation": "FORMACAO",
             "statistics": "GRAFICOS",
             "keeperAbbr": "GO"
+          },
+          "match-announcements": {
+            "goal": "GOL!",
+            "foul": "FALTA",
+            "ownGoal": "GOL CONTRA",
+            "yellowCard": "CARTÃO AMARELO",
+            "redCard": "CARTÃO VERMELHO",
+            "cornerKick": "ESCANTEIO",
+            "offside": "IMPEDIMENTO",
+            "penaltyKick": "PÊNALTI",
+            "timeUp": "FIM DE JOGO",
+            "freeKick": "TIRO LIVRE",
+            "goalKick": "TIRO DE META",
+            "halfTime": "INTERVALO",
+            "throwIn": "LATERAL",
+            "player1Win": "1P VENCEU",
+            "player2Win": "2P VENCEU",
+            "win": "VITÓRIA",
+            "lose": "DERROTA"
           }
         },
         "drafts": {
@@ -10752,6 +10771,25 @@
             "formation": "FORMACAO",
             "statistics": "GRAFICOS",
             "keeperAbbr": "GO"
+          },
+          "match-announcements": {
+            "goal": "GOL!",
+            "foul": "FALTA",
+            "ownGoal": "GOL CONTRA",
+            "yellowCard": "CARTÃO AMARELO",
+            "redCard": "CARTÃO VERMELHO",
+            "cornerKick": "ESCANTEIO",
+            "offside": "IMPEDIMENTO",
+            "penaltyKick": "PÊNALTI",
+            "timeUp": "FIM DE JOGO",
+            "freeKick": "TIRO LIVRE",
+            "goalKick": "TIRO DE META",
+            "halfTime": "INTERVALO",
+            "throwIn": "LATERAL",
+            "player1Win": "1P VENCEU",
+            "player2Win": "2P VENCEU",
+            "win": "VITÓRIA",
+            "lose": "DERROTA"
           }
         }
       },

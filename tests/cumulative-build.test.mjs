@@ -105,7 +105,7 @@ test('HTTP export returns an extractable ZIP, correct manifest and canonical fin
   const archive=Buffer.from(await partial.arrayBuffer()),partialFiles=new Map();let cursor=0;
   while(archive.readUInt32LE(cursor)===0x04034b50){const packed=archive.readUInt32LE(cursor+18),len=archive.readUInt16LE(cursor+26),extra=archive.readUInt16LE(cursor+28),start=cursor+30+len+extra,name=archive.toString('utf8',cursor+30,cursor+30+len),bytes=inflateRawSync(archive.subarray(start,start+packed));assert.equal(crc32(bytes),archive.readUInt32LE(cursor+14));partialFiles.set(name,bytes);cursor=start+packed;}
   const partialManifest=JSON.parse(partialFiles.get('indice.json'));
-  assert.equal(partialManifest.entries.length,9);assert.equal(partialManifest.allSelectedChangesApplied,false);
+  assert.equal(partialManifest.entries.length,10);assert.equal(partialManifest.allSelectedChangesApplied,false);
   assert.equal(partialManifest.pendingTextChanges.length,1);
   assert.equal(partialManifest.entries.find(e=>e.stage==='pre-partida').pendingTextChanges.length,1);
   assert.match(partialFiles.get('TEXTOS-PENDENTES.txt').toString('utf8'),/RESTAURAR/);
@@ -148,7 +148,7 @@ test('title and menu write sets are atomic game areas before player edits',()=>{
 test('mandatory individualization also runs with no player or tactical overrides',()=>{
  const {base}=fixture(),shots=[];
  const manifest=buildCumulativeProject(base,{state:{semantic:{}}},{onRom:(rom,e)=>shots.push({rom,e})});
- assert.equal(manifest.entries.length,9);
+ assert.equal(manifest.entries.length,10);
  const a=resolvePlusTacticalRecord(shots[0].rom,30),b=resolvePlusTacticalRecord(shots[0].rom,31);
  assert.notEqual(a.recordPc,b.recordPc);assert.equal(shots[0].rom.length,0x400000);
  assert.equal(manifest.entries[2].status,'sem-alteracao-binaria');

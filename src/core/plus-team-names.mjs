@@ -42,10 +42,13 @@ function tokenize(text,pairs){
  const tokens=[];for(let i=text.length;i>0;){const [p,t]=prev[i];tokens.push(t);i=p;}return {count:cost.at(-1),tokens:tokens.reverse()};
 }
 export function renderBigTeamNames(names,baseFont=new Uint8Array(4096)){
+ const glyph=c=>c==='I'?['1','1','1','1','1','1','1']:c==='.'?['0','0','0','0','0','0','1']:PLUS_MAIN_MENU_GLYPHS[c]?.slice(0,7).map(v=>Array.from({length:5},(_,x)=>v&(1<<(6-x))?'1':'0').join(''));
+ const glyphWidth=c=>glyph(c)?.[0].length??99;
+ const advance=s=>[...s].reduce((n,c)=>n+(c===' '?3:glyphWidth(c)+1),0);
  const chars=[...new Set(names.join('').replace(/ /g,''))].sort(),pairs=new Set();
  const reserved=new Set([108,109,110,111,124,125,126,127]);
  if(chars.length>120)throw Error('Nomes grandes: conjunto de caracteres excede a fonte.');
- const candidates=[...new Set(names.flatMap(n=>Array.from({length:n.length-1},(_,i)=>n.slice(i,i+2)).filter(p=>!p.includes(' '))))].sort();
+ const candidates=[...new Set(names.flatMap(n=>Array.from({length:n.length-1},(_,i)=>n.slice(i,i+2)).filter(p=>!p.includes(' ')&&advance(p)-1<=8)))].sort();
  const total=p=>names.reduce((n,s)=>n+tokenize(s,p).count,0);
  while(chars.length+pairs.size<80){let best=null,score=total(pairs);for(const p of candidates){if(pairs.has(p))continue;const next=total(new Set([...pairs,p]));if(next<score){score=next;best=p;}}if(best===null)break;pairs.add(best);}
  const tokens=names.map(n=>tokenize(n,pairs)),count=tokens.reduce((n,t)=>n+t.count,0);
@@ -58,14 +61,14 @@ export function renderBigTeamNames(names,baseFont=new Uint8Array(4096)){
  for(const [index,text]of dictionary.entries()){
   const tile=slots[index];tiles.set(text,0x80+tile);const pixels=Array.from({length:8},()=>new Uint8Array(8));
   for(let i=0;i<text.length;i++){
-   const ch=text[i],g=COMPACT_MENU_FONT[ch];if(!g)throw Error('Nomes grandes: caractere indisponível '+ch);
-   const width=Math.min(3,g[0].length);
-   for(let y=0;y<7;y++)for(let x=0;x<width;x++){let ink=false;for(let sx=Math.floor(x*g[0].length/width);sx<Math.floor((x+1)*g[0].length/width);sx++)ink||=g[y][sx]==='1';if(ink)pixels[y][i*4+x]=10;}
+   const ch=text[i],g=glyph(ch);if(!g)throw Error('Nomes grandes: caractere indisponível '+ch);
+   const width=g[0].length;
+   for(let y=0;y<8;y++)for(let x=0;x<width;x++){let ink=false;for(let sx=Math.floor(x*g[0].length/width);sx<Math.floor((x+1)*g[0].length/width);sx++)ink||=g[Math.floor(y*7/8)][sx]==='1';if(ink)pixels[y][advance(text.slice(0,i))+x]=10;}
   }
   const copy=pixels.map(r=>r.slice());for(let y=0;y<8;y++)for(let x=0;x<8;x++)if(copy[y][x])for(const [dx,dy]of [[-1,0],[1,0],[0,-1],[0,1]]){const xx=x+dx,yy=y+dy;if(xx>=0&&xx<8&&yy>=0&&yy<8&&!pixels[yy][xx])pixels[yy][xx]=9;}
   for(let y=0;y<8;y++)for(let x=0;x<8;x++){const at=tile*32+y*2,bit=7-x,v=pixels[y][x];for(let plane=0;plane<4;plane++)font[at+(plane>>1)*16+(plane&1)]|=((v>>plane)&1)<<bit;}
  }
- const lists=tokens.map(t=>{const width=t.tokens.reduce((n,s)=>n+(s===' '?3:s.length*4),0);if(width>80)throw Error('Nome grande excede 80 px. Abrevie o campo Nome grande.');let x=Math.round(40-width/2);return t.tokens.flatMap(s=>{if(s===' '){x+=3;return [];}const sprite={x:x&255,y:7,tile:tiles.get(s),prop:0x0A};x+=s.length*4;return [sprite];});});
+ const lists=tokens.map(t=>{const width=t.tokens.reduce((n,s)=>n+advance(s),0);if(width>80)throw Error('Nome grande excede 80 px. Abrevie o campo Nome grande.');let x=Math.round(40-width/2);return t.tokens.flatMap(s=>{if(s===' '){x+=3;return [];}const sprite={x:x&255,y:6,tile:tiles.get(s),prop:0x0A};x+=advance(s);return [sprite];});});
  const raw=new Uint8Array(59+count*4),pointers=new Uint8Array(112);raw[0]=56;raw[1]=count&255;raw[2]=count>>8;let offset=0;
  lists.forEach((list,i)=>{raw[3+i]=list.length;pointers.set(word(0x4F02+2*offset),i*2);for(const sp of list){raw[59+offset]=sp.x;raw[59+count+offset]=sp.y;raw[59+count*2+offset]=sp.tile;raw[59+count*3+offset]=sp.prop;offset++;}});
  return {font,raw,pointers,count,dictionary};

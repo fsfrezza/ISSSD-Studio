@@ -1,3 +1,4 @@
+import {plusMatchAnnouncementsWriter} from './plus-match-announcements.mjs';
 import {plusTeamNamesWriter} from './plus-team-names.mjs';
 import {plusGroupTitlesWriter} from './plus-group-titles.mjs';
 import {plusGroupIdentityWriter} from './plus-group-identity.mjs';
@@ -109,6 +110,7 @@ export function createPlusBuildStages({baseRom,patches=[],extraWriters=[],writeC
     {id:'07e-team-names',kind:'semantic',run:(work,state)=>plusTeamNamesWriter(work,state,baseRom,selectedAreas)},
     {id:'07e-team-group-identity',kind:'semantic',when:!!selectedAreas?.includes('selecao-equipes'),run:(work,state)=>plusGroupIdentityWriter(work,state,baseRom,selectedAreas)},
     {id:'07e-team-group-titles',kind:'semantic',when:!!selectedAreas?.includes('selecao-equipes'),run:(work,state)=>plusGroupTitlesWriter(work,state,baseRom,selectedAreas)},
+    {id:'07f-match-announcements',kind:'semantic',run:(work,state)=>plusMatchAnnouncementsWriter(work,state,baseRom,selectedAreas)},
     {
       id:'08-rom-metadata',kind:'semantic',when:!selectedAreas||selectedAreas.includes('metadados'),
       run:(work,state)=>plusRomMetaWriter(work,state),

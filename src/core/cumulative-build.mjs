@@ -54,7 +54,7 @@ export function buildCumulativeProject(base,project,{onRom,selectedAreas,titleGr
   unassignedLegacyRanges:unassigned.map(r=>({start:r.start,end:r.end})),
   finalRom:entries.at(-1).name,baseUnchanged:true,finalMatchesSelectedAreas:true,
   notes:['Preparação obrigatória em todas as ROMs; seleção da fase 01 controla apenas seu arquivo.',
-   'Fases desmarcadas não são aplicadas nem geram ROM. A numeração 01–09 é fixa.',
+   'Fases desmarcadas não são aplicadas nem geram ROM. A numeração das fases é fixa.',
    'Textos pendentes são listados explicitamente e não foram gravados nas ROMs. Permanecem no projeto.',
    'Bytes legados sem área confirmada são reportados e não são aplicados por suposição.']};
 }
