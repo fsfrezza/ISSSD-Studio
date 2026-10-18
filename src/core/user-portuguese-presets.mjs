@@ -97,7 +97,7 @@ export const USER_PORTUGUESE_PRESETS={
    "reset": "RESET",
    "cancel": "DESFAZ",
    "ok": "OK",
-   "numbers": "NÚM."
+   "numbers": "NUMERO"
   },
   "controls-help-native": {
    "data_87d2ec": "-Bola alta-\nUse para cruzar. Quanto mais\nsegurar o botão, mais alto\na bola irá.",
