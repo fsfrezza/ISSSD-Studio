@@ -29,5 +29,6 @@ test('a fresh editor server avoids an occupied port and identifies its active bu
   const url=await new Promise((resolve,reject)=>{let log='';const timer=setTimeout(()=>reject(Error('server startup timeout')),10000);child.stdout.on('data',b=>{log+=b;const m=log.match(/http:\/\/127\.0\.0\.1:\d+\//);if(m){clearTimeout(timer);resolve(m[0]);}});child.once('exit',code=>{clearTimeout(timer);reject(Error('server exited '+code));});});
   assert.notEqual(new URL(url).port,String(port));
   const response=await fetch(url+'__isssd/build-info'),info=await response.json();assert.equal(response.status,200);assert.equal(info.root,path.resolve(fileURLToPath(new URL('..',import.meta.url))));assert.ok(info.supportedTextWriters.includes('uniform-labels'));assert.ok(info.supportedTextWriters.includes('strategy-one-four'));assert.ok(info.commit);
+  const html=await (await fetch(url)).text();assert.ok(html.includes('id="isssd-active-server"'));assert.ok(html.includes('Servidor '+info.commit));assert.ok(html.includes('textos 1/4 + uniformes ativos'));
  }finally{child.kill();await new Promise(r=>busy.close(r));}
 });

@@ -138,6 +138,12 @@ const server=http.createServer((req,res)=>{
  if(!target.startsWith(editorRoot+path.sep)&&target!==editorRoot){res.writeHead(403);res.end('Forbidden');return;}
  fs.stat(target,(err,st)=>{
   if(err||!st.isFile()){res.writeHead(404);res.end('Not found');return;}
+  if(path.extname(target).toLowerCase()==='.html'){
+   // The visible stamp identifies BOTH the served file and the backend used by export.
+   const stamp='<div id="isssd-active-server" style="position:fixed;bottom:4px;right:8px;z-index:2147483647;background:#152131;color:#fff;padding:5px 9px;border:1px solid #7e9ab5;border-radius:4px;font:12px sans-serif" title="'+root.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'">Servidor '+serverBuild.commit+' · textos 1/4 + uniformes ativos</div>';
+   const html=fs.readFileSync(target,'utf8').replace('</body>',stamp+'</body>');
+   res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'});res.end(html);return;
+  }
   res.writeHead(200,{'Content-Type':mime[path.extname(target).toLowerCase()]||'application/octet-stream','Cache-Control':'no-store'});
   fs.createReadStream(target).pipe(res);
  });
