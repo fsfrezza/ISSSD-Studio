@@ -1,3 +1,4 @@
+import {TEAM_NAME_REGIONS,teamNameEntries} from './plus-team-names.mjs';
 import {PLUS_GROUP_RANGES} from './plus-group-identity.mjs';
 import {teamsV3Entries} from './teams-v3-writer.mjs';
 import {playerOffset,knownMirrorSlices} from './plus-player.mjs';
@@ -8,6 +9,7 @@ import {resolvePlusTacticalRecord} from './plus-tactics-address.mjs';
 // not override absent fields (which mean preserve the immutable baseline).
 export function withoutLegacyTeamSnapshots(base,state,patches){
  const ranges=[];
+ if(teamNameEntries(state).length)ranges.push(...TEAM_NAME_REGIONS);
  if(state?.plusGroups?.groups){ranges.push(...PLUS_GROUP_RANGES,[0xE82E,0xE830]);}
  for(const {team} of teamsV3Entries(state)){
   ranges.push([playerOffset(team,0),playerOffset(team,19)+7]);

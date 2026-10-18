@@ -1,3 +1,4 @@
+import {TEAM_NAME_REGIONS} from './plus-team-names.mjs';
 import {PREMATCH_GRAPHIC_MAPS} from './plus-prematch-graphics.mjs';
 import {LINKED_SCREEN_FIELDS} from './plus-linked-screen-text.mjs';
 import {graphicalLabelArea} from './graphical-label-layout.mjs';
@@ -55,6 +56,7 @@ export function areaClassifier(rom,base=null){
   const graphic=graphicalLabelArea(off);if(graphic!==undefined)return graphic;
   if(NATIVE_AUX_TEXT_GROUPS.some(g=>off>=g.pc&&off<g.pc+g.rows.reduce((a,b)=>a+b,0)))return 'textos-estrategias';
   if(contains(off,derived))return null;
+  if(contains(off,TEAM_NAME_REGIONS))return 'selecao-equipes';
   if(contains(off,title))return 'tela-inicial';
   if(contains(off,menu))return 'menu-principal';
   if((off>=0xF6C78&&off<0xF6F2B)||(off>=0x3FAC8&&off<0x3FB7C)||(off>=0xE7F2&&off<0xE830)||(off>=0x2DDA5&&off<0x2DDA5+56*10))return 'selecao-equipes';

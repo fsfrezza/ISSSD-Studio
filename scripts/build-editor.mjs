@@ -1,3 +1,4 @@
+import {TEAM_NAME_LANGUAGE_PRESETS} from '../src/core/team-name-presets.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -97,7 +98,7 @@ const js=fs.existsSync(jsFile)?fs.readFileSync(jsFile,'utf8'):'';
 const languagePresets=JSON.parse(fs.readFileSync(path.join(root,'project-data','text-language-presets-v1.json'),'utf8'));
 const additionalSections=JSON.parse(fs.readFileSync(path.join(root,'project-data','additional-screen-text-fields.json'),'utf8'));
 const additionalRuntime='const ADDITIONAL_TEXT_SECTIONS='+JSON.stringify(additionalSections)+';\n'+fs.readFileSync(path.join(root,'editor-src','additional-screen-texts.mjs'),'utf8');
-const teamNameRuntime='const TEAM_NAME_LANGUAGE_PRESETS='+fs.readFileSync(path.join(root,'project-data','team-name-language-presets.json'),'utf8')+';\n'+fs.readFileSync(path.join(root,'editor-src','team-name-language-presets.mjs'),'utf8');
+const teamNameRuntime='const TEAM_NAME_LANGUAGE_PRESETS='+JSON.stringify(TEAM_NAME_LANGUAGE_PRESETS)+';\n'+fs.readFileSync(path.join(root,'editor-src','team-name-language-presets.mjs'),'utf8');
 const v11='const TEXT_LANGUAGE_PRESETS='+JSON.stringify(languagePresets)+';\n'+(fs.existsSync(v11File)?fs.readFileSync(v11File,'utf8'):'')+'\n'+additionalRuntime+'\n'+teamNameRuntime;
 try{new Function(js);new Function(v11)}catch(e){throw new Error('Build interrompido: JavaScript Git inválido: '+e.message)}
 const patch=`\n<!-- ${marker} -->\n<style id="isssd-git-visual-bridge-overrides">\n${css}\n</style>\n<script type="module" id="isssd-git-visual-bridge-runtime">\n${js}\n</script>\n<script type="module" id="isssd-git-project-import-v11">\n${v11}\n</script>\n`;

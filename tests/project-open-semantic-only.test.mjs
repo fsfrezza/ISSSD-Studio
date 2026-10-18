@@ -80,11 +80,12 @@ test('actual semantic-open wrapper restores group state and loads both text stor
  const begin=patch.indexOf("const marker='isssd-project-open-semantic-only-v4'"),end=patch.indexOf("if(!html.includes('</body>'))",begin);
  const script=vm.runInNewContext(patch.slice(begin,end)+'\nguard',{html:''});
  const body=script.slice(script.indexOf('>')+1,script.lastIndexOf('</script>'));
- const base=new Uint8Array([1,2,3,4]),calls=[];let current=base.slice(),groupState=null,loaded=null,additional=null;
+ const base=new Uint8Array([1,2,3,4]),calls=[];let current=base.slice(),groupState=null,loaded=null,additional=null,names=null;
  const project={base:{profile:'iss-deluxe-plus'},state:{semantic:{plusGroups:{labels:['CONMEBOL 1'],groups:[[30,31,32,35,40,39]]},screenTextsV1:{schema:'isssd-screen-texts-v1',values:{'game-modes':{friendly:'JOGATINA'}}},additionalScreenTextsV1:{schema:'isssd-additional-screen-texts-v1',values:{'uniform-labels':{shirt:'CAMISA'}}}}}};
- const window={__ISSSD_RESTORE_CLEAN_CURRENT_V1__:bytes=>{current=bytes.slice();calls.push('clean');},__ISSSD_GIT_PROJECT_IMPORT_V11__:{loadProject:p=>{loaded=structuredClone(p);calls.push('screen');}},__ISSSD_ADDITIONAL_SCREEN_TEXTS__:{hydrate:p=>{additional=structuredClone(p.state.semantic.additionalScreenTextsV1);calls.push('additional');}}};
+ project.state.semantic.teamNamesV1={schema:'isssd-team-names-v1',values:{30:{full:'BRASIL',big:'BRASIL',short:'BRASIL'}}};
+ const window={__ISSSD_TEAM_NAME_LANGUAGES__:{hydrate:p=>{names=structuredClone(p.state.semantic.teamNamesV1);calls.push('names');}},__ISSSD_RESTORE_CLEAN_CURRENT_V1__:bytes=>{current=bytes.slice();calls.push('clean');},__ISSSD_GIT_PROJECT_IMPORT_V11__:{loadProject:p=>{loaded=structuredClone(p);calls.push('screen');}},__ISSSD_ADDITIONAL_SCREEN_TEXTS__:{hydrate:p=>{additional=structuredClone(p.state.semantic.additionalScreenTextsV1);calls.push('additional');}}};
  const context=vm.createContext({window,Uint8Array,console,studioApplyProjectWithBase:async()=>{current.fill(255);return true;},studioCore:()=>({restorePlusGroupsProjectState:s=>{groupState=structuredClone(s);calls.push('groups');},bytesEqualToBase:()=>current.every((v,i)=>v===base[i])}),syncModelsFromRom:()=>{groupState={labels:['AMERICA 1']};calls.push('sync');},renderEverything:()=>calls.push('render'),studioMessage:async()=>{}});
  vm.runInContext(body,context);await context.studioApplyProjectWithBase(project,base,'base.sfc');
  assert.deepEqual(groupState,project.state.semantic.plusGroups);assert.deepEqual(loaded.state.semantic.screenTextsV1,project.state.semantic.screenTextsV1);assert.deepEqual(additional,project.state.semantic.additionalScreenTextsV1);
- assert.ok(calls.indexOf('groups')>calls.indexOf('sync'));assert.ok(calls.indexOf('screen')>calls.indexOf('sync'));assert.deepEqual(current,base);
+ assert.deepEqual(names,project.state.semantic.teamNamesV1);assert.ok(calls.indexOf('names')>calls.indexOf('sync'));assert.ok(calls.indexOf('groups')>calls.indexOf('sync'));assert.ok(calls.indexOf('screen')>calls.indexOf('sync'));assert.deepEqual(current,base);
 });

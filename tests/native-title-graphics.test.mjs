@@ -46,7 +46,7 @@ test('browser export prepares custom photos and materializes only a base copy',a
 test('export dialog always prepares infrastructure and offers only the eight editable phases',async()=>{
  const {CUMULATIVE_AREAS}=await import('../src/core/cumulative-areas.mjs');
  const source=fs.readFileSync(new URL('../editor-src/cumulative-export-ui.mjs',import.meta.url),'utf8').replace('__CUMULATIVE_PHASES__',JSON.stringify(CUMULATIVE_AREAS));
- const nodes=[];const document={createElement:tag=>{const n={tag,style:{},append(){},addEventListener(){},close(){},remove(){},showModal(){}};nodes.push(n);return n},createTextNode:text=>text,body:{append(){}}};
+ const nodes=[];const document={createElement:tag=>{const n={tag,style:{setProperty(name,value){this[name]=value}},append(){},addEventListener(){},close(){},remove(){},showModal(){}};nodes.push(n);return n},createTextNode:text=>text,body:{append(){}}};
  const window={};vm.runInNewContext(source,{window,document});
  const pending=window.__ISSSD_PICK_CUMULATIVE_AREAS__();
  const boxes=nodes.filter(n=>n.type==='checkbox');assert.equal(boxes.length,8);
@@ -59,7 +59,7 @@ test('export dialog always prepares infrastructure and offers only the eight edi
 test('export dialog can export the mandatory infrastructure alone',async()=>{
  const {CUMULATIVE_AREAS}=await import('../src/core/cumulative-areas.mjs');
  const source=fs.readFileSync(new URL('../editor-src/cumulative-export-ui.mjs',import.meta.url),'utf8').replace('__CUMULATIVE_PHASES__',JSON.stringify(CUMULATIVE_AREAS));
- const nodes=[];const document={createElement:tag=>{const n={tag,style:{},append(){},addEventListener(){},close(){},remove(){},showModal(){}};nodes.push(n);return n},createTextNode:text=>text,body:{append(){}}};
+ const nodes=[];const document={createElement:tag=>{const n={tag,style:{setProperty(name,value){this[name]=value}},append(){},addEventListener(){},close(){},remove(){},showModal(){}};nodes.push(n);return n},createTextNode:text=>text,body:{append(){}}};
  const window={};vm.runInNewContext(source,{window,document});
  const pending=window.__ISSSD_PICK_CUMULATIVE_AREAS__();
  nodes.filter(n=>n.type==='checkbox').forEach(n=>n.checked=false);

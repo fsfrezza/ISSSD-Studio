@@ -10754,6 +10754,291 @@
             "keeperAbbr": "GO"
           }
         }
+      },
+      "teamNamesV1": {
+        "schema": "isssd-team-names-v1",
+        "values": {
+          "0": {
+            "full": "ITÁLIA",
+            "short": "ITÁLIA",
+            "big": "ITÁLIA"
+          },
+          "1": {
+            "full": "HOLANDA",
+            "short": "HOLANDA",
+            "big": "HOLANDA"
+          },
+          "2": {
+            "full": "INGLATERRA",
+            "short": "INGLATERRA",
+            "big": "INGLATERRA"
+          },
+          "3": {
+            "full": "NORUEGA",
+            "short": "NORUEGA",
+            "big": "NORUEGA"
+          },
+          "4": {
+            "full": "ESPANHA",
+            "short": "ESPANHA",
+            "big": "ESPANHA"
+          },
+          "5": {
+            "full": "IRLANDA",
+            "short": "IRLANDA",
+            "big": "IRLANDA"
+          },
+          "6": {
+            "full": "PORTUGAL",
+            "short": "PORTUGAL",
+            "big": "PORTUGAL"
+          },
+          "7": {
+            "full": "DINAMARCA",
+            "short": "DINAMARCA",
+            "big": "DINAMARCA"
+          },
+          "8": {
+            "full": "ALEMANHA",
+            "short": "ALEMANHA",
+            "big": "ALEMANHA"
+          },
+          "9": {
+            "full": "FRANÇA",
+            "short": "FRANÇA",
+            "big": "FRANÇA"
+          },
+          "10": {
+            "full": "BÉLGICA",
+            "short": "BÉLGICA",
+            "big": "BÉLGICA"
+          },
+          "11": {
+            "full": "SUÉCIA",
+            "short": "SUÉCIA",
+            "big": "SUÉCIA"
+          },
+          "12": {
+            "full": "ROMÊNIA",
+            "short": "ROMÊNIA",
+            "big": "ROMÊNIA"
+          },
+          "13": {
+            "full": "BULGÁRIA",
+            "short": "BULGÁRIA",
+            "big": "BULGÁRIA"
+          },
+          "14": {
+            "full": "RÚSSIA",
+            "short": "RÚSSIA",
+            "big": "RÚSSIA"
+          },
+          "15": {
+            "full": "SUÍÇA",
+            "short": "SUÍÇA",
+            "big": "SUÍÇA"
+          },
+          "16": {
+            "full": "GRÉCIA",
+            "short": "GRÉCIA",
+            "big": "GRÉCIA"
+          },
+          "17": {
+            "full": "CROÁCIA",
+            "short": "CROÁCIA",
+            "big": "CROÁCIA"
+          },
+          "18": {
+            "full": "ÁUSTRIA",
+            "short": "ÁUSTRIA",
+            "big": "ÁUSTRIA"
+          },
+          "19": {
+            "full": "PAÍS DE GALES",
+            "short": "GALES",
+            "big": "PAÍS DE GALES"
+          },
+          "20": {
+            "full": "ESCÓCIA",
+            "short": "ESCÓCIA",
+            "big": "ESCÓCIA"
+          },
+          "21": {
+            "full": "TURQUIA",
+            "short": "TURQUIA",
+            "big": "TURQUIA"
+          },
+          "22": {
+            "full": "REPÚBLICA TCHECA",
+            "short": "TCHEQUIA",
+            "big": "TCHÉQUIA"
+          },
+          "23": {
+            "full": "POLÔNIA",
+            "short": "POLÔNIA",
+            "big": "POLÔNIA"
+          },
+          "24": {
+            "full": "JAPÃO",
+            "short": "JAPÃO",
+            "big": "JAPÃO"
+          },
+          "25": {
+            "full": "COREIA DO SUL",
+            "short": "COREIA SUL",
+            "big": "COREIA DO SUL"
+          },
+          "26": {
+            "full": "ARÁBIA SAUDITA",
+            "short": "ARABIA",
+            "big": "ARÁBIA"
+          },
+          "27": {
+            "full": "NIGÉRIA",
+            "short": "NIGÉRIA",
+            "big": "NIGÉRIA"
+          },
+          "28": {
+            "full": "CAMARÕES",
+            "short": "CAMARÕES",
+            "big": "CAMARÕES"
+          },
+          "29": {
+            "full": "MARROCOS",
+            "short": "MARROCOS",
+            "big": "MARROCOS"
+          },
+          "30": {
+            "full": "BRASIL",
+            "short": "BRASIL",
+            "big": "BRASIL"
+          },
+          "31": {
+            "full": "ARGENTINA",
+            "short": "ARGENTINA",
+            "big": "ARGENTINA"
+          },
+          "32": {
+            "full": "COLÔMBIA",
+            "short": "COLÔMBIA",
+            "big": "COLÔMBIA"
+          },
+          "33": {
+            "full": "MÉXICO",
+            "short": "MÉXICO",
+            "big": "MÉXICO"
+          },
+          "34": {
+            "full": "EUA",
+            "short": "EUA",
+            "big": "EUA"
+          },
+          "35": {
+            "full": "URUGUAI",
+            "short": "URUGUAI",
+            "big": "URUGUAI"
+          },
+          "36": {
+            "full": "VENEZUELA",
+            "short": "VENEZUELA",
+            "big": "VENEZUELA"
+          },
+          "37": {
+            "full": "EQUADOR",
+            "short": "EQUADOR",
+            "big": "EQUADOR"
+          },
+          "38": {
+            "full": "CHILE",
+            "short": "CHILE",
+            "big": "CHILE"
+          },
+          "39": {
+            "full": "BOLÍVIA",
+            "short": "BOLÍVIA",
+            "big": "BOLÍVIA"
+          },
+          "40": {
+            "full": "PARAGUAI",
+            "short": "PARAGUAI",
+            "big": "PARAGUAI"
+          },
+          "41": {
+            "full": "PERU",
+            "short": "PERU",
+            "big": "PERU"
+          },
+          "42": {
+            "full": "CHINA",
+            "short": "CHINA",
+            "big": "CHINA"
+          },
+          "43": {
+            "full": "IRÃ",
+            "short": "IRÃ",
+            "big": "IRÃ"
+          },
+          "44": {
+            "full": "UZBEQUISTÃO",
+            "short": "UZBEQUISTAO",
+            "big": "UZBEQUISTÃO"
+          },
+          "45": {
+            "full": "ZÂMBIA",
+            "short": "ZÂMBIA",
+            "big": "ZÂMBIA"
+          },
+          "46": {
+            "full": "GANA",
+            "short": "GANA",
+            "big": "GANA"
+          },
+          "47": {
+            "full": "ÁFRICA DO SUL",
+            "short": "AFRICA SUL",
+            "big": "ÁFRICA DO SUL"
+          },
+          "48": {
+            "full": "CANADÁ",
+            "short": "CANADÁ",
+            "big": "CANADÁ"
+          },
+          "49": {
+            "full": "HONDURAS",
+            "short": "HONDURAS",
+            "big": "HONDURAS"
+          },
+          "50": {
+            "full": "COSTA RICA",
+            "short": "COSTA RICA",
+            "big": "COSTA RICA"
+          },
+          "51": {
+            "full": "AUSTRÁLIA",
+            "short": "AUSTRÁLIA",
+            "big": "AUSTRÁLIA"
+          },
+          "52": {
+            "full": "IUGOSLÁVIA",
+            "short": "IUGOSLÁVIA",
+            "big": "IUGOSLÁVIA"
+          },
+          "53": {
+            "full": "IRLANDA DO NORTE",
+            "short": "IRLANDA N",
+            "big": "IRLANDA NORTE"
+          },
+          "54": {
+            "full": "EQUIPE DOS AUTORES",
+            "short": "AUTORES",
+            "big": "AUTORES"
+          },
+          "55": {
+            "full": "TODAS AS ESTRELAS",
+            "short": "ESTRELAS",
+            "big": "ESTRELAS"
+          }
+        }
       }
     }
   },

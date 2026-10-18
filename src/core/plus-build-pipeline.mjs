@@ -1,3 +1,4 @@
+import {plusTeamNamesWriter} from './plus-team-names.mjs';
 import {plusGroupTitlesWriter} from './plus-group-titles.mjs';
 import {plusGroupIdentityWriter} from './plus-group-identity.mjs';
 import {plusPrematchGraphicsWriter} from './plus-prematch-graphics.mjs';
@@ -105,6 +106,7 @@ export function createPlusBuildStages({baseRom,patches=[],extraWriters=[],writeC
       id:'07d-main-menu-text',kind:'semantic',when:state=>!!selectedAreas?.includes('menu-principal')&&state.plusMainMenu?.nativeCommitted===true,
       run:(work,state)=>plusMainMenuWriter(work,state),
     },
+    {id:'07e-team-names',kind:'semantic',run:(work,state)=>plusTeamNamesWriter(work,state,baseRom,selectedAreas)},
     {id:'07e-team-group-identity',kind:'semantic',when:!!selectedAreas?.includes('selecao-equipes'),run:(work,state)=>plusGroupIdentityWriter(work,state,baseRom,selectedAreas)},
     {id:'07e-team-group-titles',kind:'semantic',when:!!selectedAreas?.includes('selecao-equipes'),run:(work,state)=>plusGroupTitlesWriter(work,state,baseRom,selectedAreas)},
     {
