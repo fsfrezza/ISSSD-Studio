@@ -1,4 +1,4 @@
-// Confirmed user inscriptions, including FALTAM (2026-10-17).
+// Confirmed user inscriptions, including FALTA (2026-10-17).
 export const USER_PORTUGUESE_PRESETS={
  "screen": {
   "game-modes": {
@@ -76,14 +76,14 @@ export const USER_PORTUGUESE_PRESETS={
    "substitute": "RESERVA",
    "speed": "RAPIDEZ",
    "dash": "ARRANQUE",
-   "shotPower": "FORÇA-CHUTE",
+   "shotPower": "CHUTE (POT)",
    "curlSkill": "EFEITO",
-   "balance": "EQUILÍBRIO",
+   "balance": "FIRMEZA",
    "intelligence": "INTELIGÊNCIA",
    "jump": "PULO",
    "dribble": "DRIBLE",
    "stamina": "RESISTÊNCIA",
-   "pointsLeft": "FALTAM"
+   "pointsLeft": "FALTA"
   },
   "formation-labels": {
    "formationType": "TIPO DE FORMAÇÃO",
@@ -95,7 +95,7 @@ export const USER_PORTUGUESE_PRESETS={
   "navigation-labels": {
    "exit": "SAIR",
    "reset": "RESET",
-   "cancel": "DESFAZ",
+   "cancel": "CANCELA",
    "ok": "OK",
    "numbers": "NUMERO"
   },
@@ -117,7 +117,7 @@ export const USER_PORTUGUESE_PRESETS={
    "areaA": "ÁREA-A",
    "areaB": "ÁREA-B",
    "areaC": "ÁREA-C",
-   "cursorChange": "CURSOR ALTERA",
+   "cursorChange": "TROCA CURSOR",
    "cursorAuto": "AUTO",
    "cursorManual": "MANUAL",
    "pageHelp": "Troque a página usando os botões L/R.",
@@ -311,30 +311,30 @@ export const USER_PORTUGUESE_PRESETS={
   },
   "uniform-labels": {
    "shirt": "CAMISA",
-   "pants": "CALÇÃO",
+   "pants": "SHORT",
    "socks": "MEIAS",
    "color": "COR",
    "type": "TIPO",
    "edit": "EDITAR"
   },
   "handicap-labels": {
-   "keeper": "GOLERO",
-   "skill": "NÍVEL",
+   "keeper": "NIVEL -",
+   "skill": "GOLEIRO",
    "players": "NÚMERO DE ATLETAS",
    "strong": "FORTE",
    "weak": "FRACO",
-   "condition": "CONDIÇÃO"
+   "condition": "STATUS"
   },
   "pre-match-labels": {
    "keyConfiguration": "COMANDOS",
-   "changeController": "TROCAR CONTROLE",
-   "numberPlayers": "NÚMERO DE ATLETAS",
+   "changeController": "MODO DE CURSOR",
+   "numberPlayers": "QTD. DE JOGADORES",
    "editPlayers": "EDITAR ATLETAS",
    "teamColors": "UNIFORMES"
   },
   "team-selection-labels": {
    "formation": "FORMACAO",
-   "statistics": "VER DADOS",
+   "statistics": "GRAFICOS",
    "keeperAbbr": "GO"
   }
  }

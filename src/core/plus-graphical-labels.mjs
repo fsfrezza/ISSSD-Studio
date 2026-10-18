@@ -30,7 +30,7 @@ export function drawGraphicalLabel(raw,text,{tile=0,tiles,bpp=2,background=0,ink
   pix[y*w+t*8+xx]=v;
  }
  for(let yy=0;yy<8;yy++)pix.fill(background,yy*w+x,yy*w+right);
- const strokes=[];let cursor=x+(align==='center'?Math.floor((right-x-width)/2):0);
+ const strokes=[];let cursor=x+(align==='center'?Math.floor((right-x-width)/2):align==='right'?right-x-width:0);
  for(const g of glyphs){for(let yy=0;yy<g.rows.length;yy++)for(let xx=0;xx<g.w;xx++)if(g.rows[yy][xx]==='1')strokes.push([cursor+xx,yy]);cursor+=g.w+(g.space?0:gap);}
  for(const [xx,yy] of strokes)for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
   const nx=xx+dx,ny=yy+dy;if(nx>=x&&nx<right&&ny>=0&&ny<8)pix[ny*w+nx]=outline;
@@ -57,6 +57,17 @@ function paintRoleButton(parts,value){
  const set=(x,y,v)=>{const [raw,tile]=parts[(y>>3)*2+(x>>3)];for(let p=0;p<4;p++){const at=tile*32+(p>>1)*16+(y%8)*2+(p&1),bit=1<<(7-x%8);raw[at]=(raw[at]&~bit)|(((v>>p)&1)?bit:0);}};
  for(let y=4;y<11;y++)for(let x=1;x<15;x++)set(x,y,11);
  let x=Math.floor((16-w)/2);for(const c of text){if(c===' '){x+=2;continue;}const g=COMPACT_MENU_FONT[c];if(!g)throw Error('Ícone: caractere indisponível.');for(let y=0;y<7;y++)for(let xx=0;xx<g[0].length;xx++)if(g[y][xx]==='1')set(x+xx,y+4,12);x+=g[0].length+1;}
+}
+// The native participation caption spans eleven top cells and seven bottom
+// cells. Four extra cells complete the second row without touching role icons.
+function paintTallButton(raw,value,tiles,columns){
+ const text=normalizeAdditionalText(value),width=[...text].reduce((n,c)=>n+(c===' '?2:(COMPACT_MENU_FONT[c]?.[0].length??99)+1),0)-1;
+ const w=columns*8,scale=Math.min(2,(w-8)/width),target=Math.floor(width*scale),origin=Math.floor((w-target)/2),pix=new Uint8Array(w*16).fill(11),mask=new Uint8Array(width*7);let x=0;
+ for(const c of text){if(c===' '){x+=2;continue;}const glyph=COMPACT_MENU_FONT[c];if(!glyph)throw Error('Botão: caractere indisponível.');for(let y=0;y<7;y++)for(let xx=0;xx<glyph[0].length;xx++)if(glyph[y][xx]==='1')mask[y*width+x+xx]=1;x+=glyph[0].length+1;}
+ const strokes=[];for(let y=1;y<15;y++)for(let xx=0;xx<target;xx++)if(mask[Math.floor((y-1)/2)*width+Math.floor(xx/scale)])strokes.push([origin+xx,y]);
+ for(const [xx,y] of strokes)for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const nx=xx+dx,ny=y+dy;if(nx>=0&&nx<w&&ny>=0&&ny<16)pix[ny*w+nx]=9;}
+ for(const [xx,y] of strokes)pix[y*w+xx]=8;
+ for(let t=0;t<tiles.length;t++)for(let y=0;y<8;y++)for(let p=0;p<4;p++){let b=0;for(let xx=0;xx<8;xx++)b|=((pix[(Math.floor(t/columns)*8+y)*w+t%columns*8+xx]>>p)&1)<<(7-xx);raw[tiles[t]*32+(p>>1)*16+y*2+(p&1)]=b;}
 }
 function cpu(pc){return (0x80+(pc>>15))*0x10000+0x8000+(pc&0x7FFF);}
 function pointer(a){return [a&255,(a>>8)&255,(a>>16)&255];}
@@ -94,7 +105,15 @@ export function plusGraphicalLabelsWriter(rom,state={},base=rom,selectedAreas=nu
  const draw=(assetId,s,id,tile,tiles,extra={})=>{if(changed(s,id))drawGraphicalLabel(asset(assetId),values[s][id],{tile,tiles,...extra});};
  if(active('jogadores')){
   const s='player-labels';draw('playerMisc',s,'player',0,4);draw('playerMisc',s,'substitute',4,4);
-  draw('playerSkills',s,'pointsLeft',39,5);
+  draw('playerSkills',s,'pointsLeft',39,3);
+  if(changed(s,'pointsLeft')){
+   // DATA_87C7FC is a 7x3 BG3 rectangle. Both counters keep their
+   // independent native calculations; only their coordinates move right.
+   const expected=[2,1,1,169,170,171,0,172,173,0,0,0,0,0,0,0,10,1,169,170,171];
+   if(expected.some((v,i)=>base[0x3C7FC+i]!==v)||base[0x3347A]!==0xA0||base[0x33485]!==0xA0)throw Error('Pontos: descritores nativos divergentes.');
+   writes.push([0x3C7FC,Uint8Array.from([169,170,171,2,1,1,0,0,0,0,0,0,0,0,169,170,171,0,10,1,0])]);
+   writes.push([0x3347B,Uint8Array.of(0x12)],[0x33486,Uint8Array.of(0x12)]);
+  }
   draw('playerMisc',s,'speed',8,4);
   // Keep the native four-cell rectangles: wider descriptors collide with
   // live points/counter overlays. Long inscriptions use the same 3x7 alphabet
@@ -114,13 +133,19 @@ export function plusGraphicalLabelsWriter(rom,state={},base=rom,selectedAreas=nu
    while(words.length&&measure(line?line+' '+words[0]:words[0])<=32)line+=(line?' ':'')+words.shift();
    drawGraphicalLabel(asset('formationType'),line,{tile:0,tiles:4});drawGraphicalLabel(asset('formationType'),words.join(' '),{tile:4,tiles:5});
   }
-  draw('attackParticipation',s,'attackParticipation',50,18,{bpp:4,background:11,ink:8,outline:9});
+  if(changed(s,'attackParticipation')){
+   const old=asset('attackParticipation'),raw=new Uint8Array(75*32);raw.set(old);assets.get('attackParticipation').raw=raw;
+   const tiles=[...Array.from({length:18},(_,i)=>50+i),71,72,73,74];
+   paintTallButton(raw,values[s].attackParticipation,tiles,11);
+   const map=asset('formationRoleMap');
+   for(let x=0;x<11;x++){const at=((25*32)+5+x)*2,word=map[at]|map[at+1]<<8;const tile=0x69+tiles[11+x];map[at]=(word&0xFC00|tile)&255;map[at+1]=(word&0xFC00|tile)>>8;}
+  }
   for(const [id,tile] of [['defenders',6],['midfielders',8],['forwards',10]])draw('teamStats',s,id,tile,2,{bpp:4,background:8,ink:9,outline:13,x:1});
   const mf=changed(s,'midfielders'),fw=changed(s,'forwards'),df=changed(s,'defenders');
   if(mf||fw||df){
    let raw=asset('attackParticipation');
    if(mf||df){
-    const next=new Uint8Array(71*32);next.set(raw);
+    const next=new Uint8Array(Math.max(raw.length,71*32));next.set(raw);
     const top=transformLabelPlanes(konamiLzDecompress(base,0xF6F2B).data);
     if(top.length!==544)throw Error('Ícones: gráficos-base divergentes.');
     next.set(top.subarray(2*32,3*32),69*32);next.set(raw.subarray(32,64),70*32);raw=next;assets.get('attackParticipation').raw=raw;
@@ -150,9 +175,18 @@ export function plusGraphicalLabelsWriter(rom,state={},base=rom,selectedAreas=nu
    while(words.length&&width(first?first+' '+words[0]:words[0])<=48)first+=(first?' ':'')+words.shift();
    drawGraphicalLabel(asset('handicapLabels'),first,{tile:20,tiles:6,align:'center'});drawGraphicalLabel(asset('handicapLabels'),words.join(' '),{tile:26,tiles:5,align:'center'});
   }
+  if(['condition','keeper','skill','players','strong','weak'].some(id=>changed('handicap-labels',id))){
+   const expected=[0,101,119,0,102,119,0,103,119,95,94,119,95,95,119];
+   if(expected.some((v,i)=>base[0x3C875+i]!==v))throw Error('Vantagem: tabela de quantidade divergente.');
+   const counts=Uint8Array.from(expected);for(const i of [2,5,8,11,14])counts[i]=0;writes.push([0x3C875,counts]);
+  }
   if(changed('handicap-labels','condition'))drawTallLabel(asset('handicapLabels'),values['handicap-labels'].condition,[0,2,4,6,1,3,5,7]);
-  draw('handicapStrength','handicap-labels','strong',0,4);draw('handicapStrength','handicap-labels','weak',4,4);
-  draw('playerNumberLabel','navigation-labels','numbers',0,3,{bpp:4,background:12,ink:9,outline:12,x:1,right:23,condense:true});
+  draw('handicapStrength','handicap-labels','strong',0,4,{align:'right'});
+  if(changed('handicap-labels','strong')){
+   if(base[0x3AFCA]!==0x15||base[0x3AFCB]!==2)throw Error('Vantagem: posição de FORTE divergente.');
+   writes.push([0x3AFCA,Uint8Array.of(0x12,2)]);
+  }draw('handicapStrength','handicap-labels','weak',4,4);
+  draw('playerNumberLabel','navigation-labels','numbers',0,3,{bpp:4,background:12,ink:9,outline:12,x:1,right:23,condense:true,align:'center'});
   const s='navigation-labels';
   if(changed(s,'cancel')){
    drawGraphicalLabel(asset('teamStats'),values[s].cancel,{tile:2,tiles:4,bpp:4,background:12,ink:9,outline:12,x:1});

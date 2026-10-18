@@ -28,3 +28,9 @@ Nomes de lugares dos estádios e os textos narrativos fixos dos cenários contin
 - Testes de todos os 56 IDs, Q, nomes curtos, limites, ponteiros, fonte, OAM, atomicidade, fase desmarcada e salvamento/reabertura dos campos.
 - Build cumulativo do projeto canônico: zero textos pendentes e zero intervalos sem classificação nas sete fases de texto/equipes/jogadores/formações.
 - Execução com Snes9x 2005: seleção com BRASIL, ARGENTINA, COLÔMBIA e IRLANDA NORTE; apresentação com BRASIL/INGLATERRA; partida com nomes em português no placar. Não foi realizado teste visual automatizado do navegador.
+
+## Correção da apresentação e da fonte (2026-10-18)
+
+Os nomes usam células OBJ de 8×8 e alfabeto compacto de sete pixels de altura. O bit P inferior do descritor nativo seleciona o tamanho; não é um bit de prioridade comum. Isso reduz a fonte em todas as telas e evita exceder os 34 segmentos de oito pixels por linha do SNES quando dois nomes aparecem com as bandeiras e VS. Brasil × Inglaterra reproduzia o desaparecimento de letras na implementação com células de 16×16; E.U.A. × Inglaterra podia escapar por ter menos células.
+
+Os tiles EC..EF e FC..FF são compartilhados com números do campo e VS e ficam fora do atlas reconstruído. Os testes verificam sua preservação e o orçamento de sprites para todas as combinações dos 56 times. A apresentação de Brasil × Inglaterra foi conferida no Snes9x 2005 depois da correção.

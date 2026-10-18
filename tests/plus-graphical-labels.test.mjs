@@ -93,3 +93,21 @@ test('shared selection headers and B-arrow captions remain in their independent 
  const pre=unpack(shots[1].r,asset('cancelHeader')),selection=unpack(shots[2].r,asset('cancelHeader'));
  assert.ok(pre.slice(0,11*16).every(v=>v===0));assert.ok(pre.slice(16*16).some(Boolean));assert.ok(selection.slice(0,11*16).some(Boolean));assert.deepEqual(selection.slice(16*16),pre.slice(16*16));
 });
+
+test('points captions precede two independent counters without leftover LEFT or adjacent skill damage',()=>{
+ const base=baseFixture(),rom=expandPlusTo4MiB(base);plusGraphicalLabelsWriter(rom,state(),base,['jogadores']);
+ assert.deepEqual([...rom.slice(0x3C7FC,0x3C803)],[169,170,171,2,1,1,0]);
+ assert.deepEqual([...rom.slice(0x3C803,0x3C80A)],Array(7).fill(0));
+ assert.deepEqual([...rom.slice(0x3C80A,0x3C811)],[169,170,171,0,10,1,0]);
+ assert.equal(rom[0x3347B],0x12);assert.equal(rom[0x33486],0x12);
+ const raw=unpack(rom,asset('playerSkills')),original=transformLabelPlanes(konamiLzDecompress(base,asset('playerSkills').pc).data);
+ assert.deepEqual(raw.slice(42*16,44*16),original.slice(42*16,44*16));
+});
+
+test('handicap removes P suffixes and aligns FORTE with both mirrored fives',()=>{
+ const base=baseFixture(),rom=expandPlusTo4MiB(base),section=ADDITIONAL_TEXT_SECTIONS.find(s=>s.id==='handicap-labels'),values=Object.fromEntries(section.fields.map(([id,,pt])=>[id,pt]));
+ plusGraphicalLabelsWriter(rom,{additionalScreenTextsV1:{schema:'isssd-additional-screen-texts-v1',values:{'handicap-labels':values}}},base,['pre-partida']);
+ for(const i of [2,5,8,11,14])assert.equal(rom[0x3C875+i],0);
+ for(const i of [0,1,3,4,6,7,9,10,12,13])assert.equal(rom[0x3C875+i],base[0x3C875+i]);
+ assert.deepEqual([...rom.slice(0x3AFCA,0x3AFCC)],[0x12,2]);
+});

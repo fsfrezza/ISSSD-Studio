@@ -41,27 +41,31 @@ function tokenize(text,pairs){
  }
  const tokens=[];for(let i=text.length;i>0;){const [p,t]=prev[i];tokens.push(t);i=p;}return {count:cost.at(-1),tokens:tokens.reverse()};
 }
-export function renderBigTeamNames(names){
+export function renderBigTeamNames(names,baseFont=new Uint8Array(4096)){
  const chars=[...new Set(names.join('').replace(/ /g,''))].sort(),pairs=new Set();
- if(chars.length>32)throw Error('Nomes grandes: conjunto de caracteres excede os 32 blocos da fonte.');
+ const reserved=new Set([108,109,110,111,124,125,126,127]);
+ if(chars.length>120)throw Error('Nomes grandes: conjunto de caracteres excede a fonte.');
  const candidates=[...new Set(names.flatMap(n=>Array.from({length:n.length-1},(_,i)=>n.slice(i,i+2)).filter(p=>!p.includes(' '))))].sort();
  const total=p=>names.reduce((n,s)=>n+tokenize(s,p).count,0);
- while(chars.length+pairs.size<32){let best=null,score=total(pairs);for(const p of candidates){if(pairs.has(p))continue;const next=total(new Set([...pairs,p]));if(next<score){score=next;best=p;}}if(best===null)break;pairs.add(best);}
+ while(chars.length+pairs.size<80){let best=null,score=total(pairs);for(const p of candidates){if(pairs.has(p))continue;const next=total(new Set([...pairs,p]));if(next<score){score=next;best=p;}}if(best===null)break;pairs.add(best);}
  const tokens=names.map(n=>tokenize(n,pairs)),count=tokens.reduce((n,t)=>n+t.count,0);
- if(count>411)throw Error('Nomes grandes exigem '+count+' sprites; limite nativo de 411. Abrevie os nomes completos.');
- const dictionary=[...chars,...pairs],font=new Uint8Array(4096),tiles=new Map();
+ if(tokens.some(t=>t.count>12))throw Error('Nome grande exige mais de 12 sprites; abrevie para preservar nomes, bandeiras e VS.');
+ if(count>411)throw Error('Nomes grandes exigem '+count+' sprites; limite nativo de 411.');
+ const dictionary=[...chars,...pairs],font=new Uint8Array(4096),tiles=new Map(),slots=Array.from({length:128},(_,i)=>i).filter(i=>!reserved.has(i));
+ // Small OBJ cells avoid the SNES 34-tile scanline limit when two long names,
+ // both flags and VS appear together. The lower P bit is the native size flag.
+ for(const tile of reserved)font.set(baseFont.slice(tile*32,(tile+1)*32),tile*32);
  for(const [index,text]of dictionary.entries()){
-  const tile=Math.floor(index/8)*32+index%8*2;tiles.set(text,0x80+tile);
-  const pixels=Array.from({length:16},()=>new Uint8Array(16));
+  const tile=slots[index];tiles.set(text,0x80+tile);const pixels=Array.from({length:8},()=>new Uint8Array(8));
   for(let i=0;i<text.length;i++){
-   const ch=text[i],g=ch==='.'?[0,0,0,0,0,16,16,0]:PLUS_MAIN_MENU_GLYPHS[ch];if(!g)throw Error('Nomes grandes: caractere indisponível '+ch);
-   for(let y=0;y<7;y++)for(let x=0;x<5;x++)if((g[y]>>(6-x))&1)for(let dy=0;dy<2;dy++)pixels[1+y*2+dy][2+i*6+x]=10;
+   const ch=text[i],g=COMPACT_MENU_FONT[ch];if(!g)throw Error('Nomes grandes: caractere indisponível '+ch);
+   const width=Math.min(3,g[0].length);
+   for(let y=0;y<7;y++)for(let x=0;x<width;x++){let ink=false;for(let sx=Math.floor(x*g[0].length/width);sx<Math.floor((x+1)*g[0].length/width);sx++)ink||=g[y][sx]==='1';if(ink)pixels[y][i*4+x]=10;}
   }
-  // Outline stays inside the 16x16 metatile; transparent margin avoids masking adjacent letters.
-  const copy=pixels.map(r=>r.slice());for(let y=0;y<16;y++)for(let x=0;x<16;x++)if(copy[y][x])for(const [dx,dy]of [[-1,0],[1,0],[0,-1],[0,1]]){const xx=x+dx,yy=y+dy;if(xx>=0&&xx<16&&yy>=0&&yy<16&&!pixels[yy][xx])pixels[yy][xx]=9;}
-  for(let y=0;y<16;y++)for(let x=0;x<16;x++){const at=(tile+Math.floor(y/8)*16+Math.floor(x/8))*32+(y%8)*2,bit=7-x%8,v=pixels[y][x];for(let plane=0;plane<4;plane++)font[at+(plane>>1)*16+(plane&1)]|=((v>>plane)&1)<<bit;}
+  const copy=pixels.map(r=>r.slice());for(let y=0;y<8;y++)for(let x=0;x<8;x++)if(copy[y][x])for(const [dx,dy]of [[-1,0],[1,0],[0,-1],[0,1]]){const xx=x+dx,yy=y+dy;if(xx>=0&&xx<8&&yy>=0&&yy<8&&!pixels[yy][xx])pixels[yy][xx]=9;}
+  for(let y=0;y<8;y++)for(let x=0;x<8;x++){const at=tile*32+y*2,bit=7-x,v=pixels[y][x];for(let plane=0;plane<4;plane++)font[at+(plane>>1)*16+(plane&1)]|=((v>>plane)&1)<<bit;}
  }
- const lists=tokens.map(t=>{const width=t.tokens.reduce((n,s)=>n+(s===' '?4:s.length*6),0);if(width>80)throw Error('Nome grande “'+names[tokens.indexOf(t)]+'” excede 80 px. Abrevie o campo Nome grande.');let x=Math.round(40-width/2);return t.tokens.flatMap(s=>{if(s===' '){x+=4;return [];}const sprite={x:x&255,y:4,tile:tiles.get(s),prop:0x1A};x+=s.length*6;return [sprite];});});
+ const lists=tokens.map(t=>{const width=t.tokens.reduce((n,s)=>n+(s===' '?3:s.length*4),0);if(width>80)throw Error('Nome grande excede 80 px. Abrevie o campo Nome grande.');let x=Math.round(40-width/2);return t.tokens.flatMap(s=>{if(s===' '){x+=3;return [];}const sprite={x:x&255,y:7,tile:tiles.get(s),prop:0x0A};x+=s.length*4;return [sprite];});});
  const raw=new Uint8Array(59+count*4),pointers=new Uint8Array(112);raw[0]=56;raw[1]=count&255;raw[2]=count>>8;let offset=0;
  lists.forEach((list,i)=>{raw[3+i]=list.length;pointers.set(word(0x4F02+2*offset),i*2);for(const sp of list){raw[59+offset]=sp.x;raw[59+count+offset]=sp.y;raw[59+count*2+offset]=sp.tile;raw[59+count*3+offset]=sp.prop;offset++;}});
  return {font,raw,pointers,count,dictionary};
@@ -85,7 +89,7 @@ export function planPlusTeamNames(base,state){
   if(team===0)writes.push([0xE6B8,long(cpu)]);if(team===1)writes.push([0xE6BD,long(cpu)]);
  }
  writes.push([0xDEA6D,layerPool]);
- const big=renderBigTeamNames(names.map(n=>normalizeTeamName(n.big))),font=konamiLzCompress(big.font),oam=konamiLzCompress(big.raw);
+ const big=renderBigTeamNames(names.map(n=>normalizeTeamName(n.big)),konamiLzDecompress(base,0xEE13C).data),font=konamiLzCompress(big.font),oam=konamiLzCompress(big.raw);
  for(const [pc,data,capacity]of [[0xEE13C,font,konamiLzDecompress(base,0xEE13C).compressedSize],[0x13E4B6,oam,konamiLzDecompress(base,0x13E4B6).compressedSize]]){
   if(data.length>capacity)throw Error('Nomes: o bloco nativo excede a capacidade em '+pc.toString(16)+': '+data.length+'/'+capacity);const slot=new Uint8Array(capacity).fill(255);slot.set(data);writes.push([pc,slot]);
  }

@@ -19,6 +19,9 @@ const generatedMarkers=['ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE','isssd-git-controlle
 if(generatedMarkers.some(m=>fs.readFileSync(source,'utf8').includes(m)))throw new Error('Baseline contém build gerado; .editor-vendor foi preservado.');
 
 let html=fs.readFileSync(source,'utf8');
+// Keep the protected visual baseline immutable; replace its legacy Portuguese
+// proposals in the generated editor, including an intentionally empty second line.
+html=html.replaceAll('"pc":248272,"original":"DISPLAYS","pilot":"MOSTRA "','"pc":248272,"original":"DISPLAYS","pilot":"SO MOSTRA"').replaceAll('"pc":248272,"original":"DISPLAYS","pilot":"SO MOSTRA","capacity":8','"pc":248272,"original":"DISPLAYS","pilot":"SO MOSTRA","capacity":9').replaceAll('"pc":248283,"original":"ONLY","pilot":"SO"','"pc":248283,"original":"ONLY","pilot":""');
 const marker='ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE';
 html=html.replace(/<!--\s*ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE\s*-->\s*/g,'')
  .replace(/<style\s+id=["']isssd-git-visual-bridge-overrides["'][^>]*>[\s\S]*?<\/style>\s*/g,'')

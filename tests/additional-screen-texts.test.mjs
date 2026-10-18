@@ -15,8 +15,8 @@ test('new text fields have user-approved translations and belong to their actual
  assert.deepEqual(catalog,sections);
  const players=sections.find(s=>s.id==='player-labels');assert.equal(players.page,'players');
  const pt=Object.fromEntries(players.fields.map(([id,,value])=>[id,value]));
- assert.deepEqual([pt.shotPower,pt.jump,pt.pointsLeft,pt.dash,pt.speed],['FORÇA-CHUTE','PULO','FALTAM','ARRANQUE','RAPIDEZ']);
- assert.equal(normalizeAdditionalText(pt.shotPower),'FORCA-CHUTE');assert.equal(normalizeAdditionalText('CALÇÃO'),'CALCAO');
+ assert.deepEqual([pt.shotPower,pt.jump,pt.pointsLeft,pt.dash,pt.speed],['CHUTE (POT)','PULO','FALTA','ARRANQUE','RAPIDEZ']);
+ assert.equal(normalizeAdditionalText(pt.shotPower),'CHUTE (POT)');assert.equal(normalizeAdditionalText('CALÇÃO'),'CALCAO');
  assert.equal(sections.find(s=>s.id==='uniform-labels').page,'uniforms');
  assert.equal(sections.find(s=>s.id==='cursor-labels').page,'texts-cursor');
  assert.ok(sections.find(s=>s.id==='navigation-labels').fields.some(([id,en,pt])=>id==='exit'&&en==='EXIT'&&pt==='SAIR'));
@@ -24,10 +24,10 @@ test('new text fields have user-approved translations and belong to their actual
 test('language fill is a draft, real confirmation saves full inscriptions, and reload restores them',()=>{
  const {api,nodes}=harness();api.fill('player-labels','portuguese');
  assert.equal(api.snapshot().values['player-labels'],undefined);
- assert.equal(nodes.get('additionalText_player-labels_shotPower').value,'FORÇA-CHUTE');
+ assert.equal(nodes.get('additionalText_player-labels_shotPower').value,'CHUTE (POT)');
  const project={state:{semantic:{romInternalTitle:'UNCHANGED'}}};api.finalize(project);
  const reopened=harness();reopened.api.hydrate(JSON.parse(JSON.stringify(project)));
- assert.equal(reopened.api.snapshot().drafts['player-labels'].shotPower,'FORÇA-CHUTE');
+ assert.equal(reopened.api.snapshot().drafts['player-labels'].shotPower,'CHUTE (POT)');
  // In a browser install hydrates DOM inputs; the mock has no rendered pages.
  for(const [field,,pt] of sections[0].fields)reopened.nodes.get('additionalText_player-labels_'+field).value=pt;
  reopened.nodes.get('additionalText_player-labels_shotPower').value='FORCA DO CHUTE';
@@ -88,7 +88,7 @@ test('rendered cards use their own tabs, language buttons stay adjacent, and hyd
   assert.equal(english.textContent,'Restaurar originais (inglês)');assert.equal(pt.textContent,'Usar em português');
  }
  nodes.get('additional_player-labels_portuguese').onclick();const input=nodes.get('additionalText_player-labels_shotPower');
- assert.equal(input.value,'FORÇA-CHUTE');input.value='FORÇA ';input.listeners.input();api.install();assert.equal(input.value,'FORÇA ');
+ assert.equal(input.value,'CHUTE (POT)');input.value='FORÇA ';input.listeners.input();api.install();assert.equal(input.value,'FORÇA ');
  input.value='FORÇA DO CHUTE';input.listeners.input();nodes.get('additional_player-labels_commit').onclick();
  const project={state:{semantic:{}}};window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__(project);
  api.fill('player-labels','english');assert.equal(input.value,'SHOTPOWR');api.hydrate(JSON.parse(JSON.stringify(project)));

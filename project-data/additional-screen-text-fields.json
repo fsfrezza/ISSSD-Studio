@@ -28,7 +28,7 @@
       [
         "shotPower",
         "SHOTPOWR",
-        "FORÇA-CHUTE"
+        "CHUTE (POT)"
       ],
       [
         "curlSkill",
@@ -38,7 +38,7 @@
       [
         "balance",
         "BALANCE",
-        "EQUILÍBRIO"
+        "FIRMEZA"
       ],
       [
         "intelligence",
@@ -63,7 +63,7 @@
       [
         "pointsLeft",
         "POINTS LEFT",
-        "FALTAM"
+        "FALTA"
       ]
     ]
   },
@@ -175,7 +175,7 @@
       [
         "cursorChange",
         "CURSOR CHANGE",
-        "CURSOR ALTERA"
+        "TROCA CURSOR"
       ],
       [
         "cursorAuto",
@@ -469,7 +469,7 @@
       [
         "pants",
         "PANTS",
-        "CALÇÃO"
+        "SHORT"
       ],
       [
         "socks",
@@ -517,7 +517,7 @@
       [
         "cancel",
         "CANCEL",
-        "DESFAZ"
+        "CANCELA"
       ],
       [
         "ok",
@@ -540,7 +540,7 @@
       [
         "statistics",
         "TEAM STATISTICS",
-        "VER DADOS"
+        "GRAFICOS"
       ],
       [
         "keeperAbbr",
@@ -558,17 +558,17 @@
       [
         "condition",
         "CONDITION",
-        "CONDIÇÃO"
+        "STATUS"
       ],
       [
         "keeper",
         "GOALKEEPER",
-        "GOLERO"
+        "NIVEL -"
       ],
       [
         "skill",
         "SKILL",
-        "NÍVEL"
+        "GOLEIRO"
       ],
       [
         "players",
@@ -601,12 +601,12 @@
       [
         "changeController",
         "CHANGE CONTROLLER",
-        "TROCAR CONTROLE"
+        "MODO DE CURSOR"
       ],
       [
         "numberPlayers",
         "NUMBER OF PLAYERS",
-        "NÚMERO DE ATLETAS"
+        "QTD. DE JOGADORES"
       ],
       [
         "editPlayers",

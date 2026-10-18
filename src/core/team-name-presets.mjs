@@ -241,9 +241,9 @@ export const TEAM_NAME_LANGUAGE_PRESETS=[
   {
     "teamId": 34,
     "english": "USA",
-    "portuguese": "EUA",
-    "compact": "EUA",
-    "big": "EUA"
+    "portuguese": "E.U.A.",
+    "compact": "E.U.A.",
+    "big": "E.U.A."
   },
   {
     "teamId": 35,

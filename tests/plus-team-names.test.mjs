@@ -40,7 +40,17 @@ test('native plans update all names and scoreboard pointers without relocating t
   const cpu=long(rom,0x17CA6+i*6+3);assert.equal(word(rom,0xFEB0+i*2),cpu&65535);
   const data=konamiLzDecompress(rom,pc(cpu)).data;assert.equal(data.length,i===54?128:64);assert.deepEqual(data.slice(0,64),renderSmallTeamName(presets[i].compact).raw);
  }
- const big=renderBigTeamNames(presets.map(r=>normalizeTeamName(r.big)));assert.deepEqual(konamiLzDecompress(rom,0x13E4B6).data,big.raw);assert.deepEqual(konamiLzDecompress(rom,0xEE13C).data,big.font);
+ const originalFont=konamiLzDecompress(base,0xEE13C).data;const big=renderBigTeamNames(presets.map(r=>normalizeTeamName(r.big)),originalFont);for(const t of [108,109,110,111,124,125,126,127])assert.deepEqual(big.font.slice(t*32,(t+1)*32),originalFont.slice(t*32,(t+1)*32));assert.deepEqual(konamiLzDecompress(rom,0x13E4B6).data,big.raw);assert.deepEqual(konamiLzDecompress(rom,0xEE13C).data,big.font);
  assert.equal(long(rom,0x10A70),0x9DE13C);assert.equal(long(rom,0x10C21),0xA7E4B6);assert.deepEqual(base,before);
  for(let off=0;off<base.length;off++)if(base[off]!==rom[off])assert.ok(TEAM_NAME_REGIONS.some(([a,b])=>off>=a&&off<b));
+});
+
+test('both translated names, flags and VS fit the native scanline sprite budget',()=>{
+ const big=renderBigTeamNames(presets.map(r=>normalizeTeamName(r.big))),counts=[...big.raw.slice(3,59)];
+ // Native flags use four 16px sprites and VS uses one: ten 8px slivers.
+ // Small text OBJ cells use one sliver apiece, including both longest names.
+ for(const left of counts)for(const right of counts)assert.ok(left+right+10<=34,'two names must not hide each other or VS');
+ const props=big.raw.slice(59+big.count*3);assert.ok(props.every(p=>(p&0x10)===0),'native lower priority bit must select small OBJ cells');
+ assert.equal(counts[30]+counts[0]+10<=34,true,'Brasil × Inglaterra');
+ assert.equal(counts[34]+counts[0]+10<=34,true,'E.U.A. × Inglaterra');
 });

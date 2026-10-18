@@ -9623,7 +9623,7 @@
         "labels": [
           "CONMEBOL 1",
           "CONMEBOL 2",
-          "CONCACAF",
+          "INTERCONTINENTAL",
           "UEFA 1",
           "UEFA 2",
           "UEFA 3",
@@ -10013,8 +10013,8 @@
               "__pk590.native.247297": "MARCACOES",
               "__pk590.native.248007": "TATICAS",
               "__pk590.native.248252": "NAO",
-              "__pk590.native.248272": "MOSTRAR",
-              "__pk590.native.248283": "SO'",
+              "__pk590.native.248272": "SO MOSTRA",
+              "__pk590.native.248283": "",
               "__pk590.native.248292": "MOSTRAR",
               "__pk590.native.248303": "TATICA",
               "__pk590.native.248391": "NEVE",
@@ -10224,14 +10224,14 @@
             "substitute": "RESERVA",
             "speed": "RAPIDEZ",
             "dash": "ARRANQUE",
-            "shotPower": "FORÇA-CHUTE",
+            "shotPower": "CHUTE (POT)",
             "curlSkill": "EFEITO",
-            "balance": "EQUILÍBRIO",
+            "balance": "FIRMEZA",
             "intelligence": "INTELIGÊNCIA",
             "jump": "PULO",
             "dribble": "DRIBLE",
             "stamina": "RESISTÊNCIA",
-            "pointsLeft": "FALTAM"
+            "pointsLeft": "FALTA"
           },
           "formation-labels": {
             "formationType": "TIPO DE FORMAÇÃO",
@@ -10243,7 +10243,7 @@
           "navigation-labels": {
             "exit": "SAIR",
             "reset": "RESET",
-            "cancel": "DESFAZ",
+            "cancel": "CANCELA",
             "ok": "OK",
             "numbers": "NUMERO"
           },
@@ -10265,7 +10265,7 @@
             "areaA": "ÁREA-A",
             "areaB": "ÁREA-B",
             "areaC": "ÁREA-C",
-            "cursorChange": "CURSOR ALTERA",
+            "cursorChange": "TROCA CURSOR",
             "cursorAuto": "AUTO",
             "cursorManual": "MANUAL",
             "pageHelp": "Troque a página usando os botões L/R.",
@@ -10466,12 +10466,12 @@
             "edit": "EDITAR"
           },
           "handicap-labels": {
-            "keeper": "GOLERO",
-            "skill": "NÍVEL",
+            "keeper": "NIVEL -",
+            "skill": "GOLEIRO",
             "players": "NÚMERO DE ATLETAS",
             "strong": "FORTE",
             "weak": "FRACO",
-            "condition": "CONDIÇÃO"
+            "condition": "STATUS"
           },
           "pre-match-labels": {
             "keyConfiguration": "COMANDOS",
@@ -10492,14 +10492,14 @@
             "substitute": "RESERVA",
             "speed": "RAPIDEZ",
             "dash": "ARRANQUE",
-            "shotPower": "FORÇA-CHUTE",
+            "shotPower": "CHUTE (POT)",
             "curlSkill": "EFEITO",
-            "balance": "EQUILÍBRIO",
+            "balance": "FIRMEZA",
             "intelligence": "INTELIGÊNCIA",
             "jump": "PULO",
             "dribble": "DRIBLE",
             "stamina": "RESISTÊNCIA",
-            "pointsLeft": "FALTAM"
+            "pointsLeft": "FALTA"
           },
           "formation-labels": {
             "formationType": "TIPO DE FORMAÇÃO",
@@ -10511,7 +10511,7 @@
           "navigation-labels": {
             "exit": "SAIR",
             "reset": "RESET",
-            "cancel": "DESFAZ",
+            "cancel": "CANCELA",
             "ok": "OK",
             "numbers": "NUMERO"
           },
@@ -10533,7 +10533,7 @@
             "areaA": "ÁREA-A",
             "areaB": "ÁREA-B",
             "areaC": "ÁREA-C",
-            "cursorChange": "CURSOR ALTERA",
+            "cursorChange": "TROCA CURSOR",
             "cursorAuto": "AUTO",
             "cursorManual": "MANUAL",
             "pageHelp": "Troque a página usando os botões L/R.",
@@ -10734,12 +10734,12 @@
             "edit": "EDITAR"
           },
           "handicap-labels": {
-            "keeper": "GOLERO",
-            "skill": "NÍVEL",
+            "keeper": "NIVEL -",
+            "skill": "GOLEIRO",
             "players": "NÚMERO DE ATLETAS",
             "strong": "FORTE",
             "weak": "FRACO",
-            "condition": "CONDIÇÃO"
+            "condition": "STATUS"
           },
           "pre-match-labels": {
             "keyConfiguration": "COMANDOS",
@@ -10929,9 +10929,9 @@
             "big": "MÉXICO"
           },
           "34": {
-            "full": "EUA",
-            "short": "EUA",
-            "big": "EUA"
+            "full": "E.U.A.",
+            "big": "E.U.A.",
+            "short": "E.U.A."
           },
           "35": {
             "full": "URUGUAI",

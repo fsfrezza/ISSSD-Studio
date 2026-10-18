@@ -27,10 +27,10 @@ test('handicap help includes the former untranslated Press prefix and wraps whol
  const classify=areaClassifier(rom,base);for(let i=0x3c884;i<0x3c8ba;i++)assert.equal(classify(i),'pre-partida');
  assert.ok(!text.slice(0,27).endsWith('c'),'do not split controles across native rows');
 });
-test('every Portuguese preset supplied by the user remains verbatim and FALTAM is the default',()=>{
+test('every Portuguese preset supplied by the user remains verbatim and FALTA is the default',()=>{
  for(const section of ADDITIONAL_TEXT_SECTIONS)for(const [id,,pt] of section.fields)if(Object.hasOwn(USER_PORTUGUESE_PRESETS.additional[section.id]||{},id))assert.equal(pt,USER_PORTUGUESE_PRESETS.additional[section.id][id]);
- assert.equal(ADDITIONAL_TEXT_SECTIONS.find(s=>s.id==='player-labels').fields.find(f=>f[0]==='pointsLeft')[2],'FALTAM');
- assert.equal(ADDITIONAL_TEXT_SECTIONS.find(s=>s.id==='navigation-labels').fields.find(f=>f[0]==='cancel')[2],'DESFAZ');
+ assert.equal(ADDITIONAL_TEXT_SECTIONS.find(s=>s.id==='player-labels').fields.find(f=>f[0]==='pointsLeft')[2],'FALTA');
+ assert.equal(ADDITIONAL_TEXT_SECTIONS.find(s=>s.id==='navigation-labels').fields.find(f=>f[0]==='cancel')[2],'CANCELA');
  assert.equal(ADDITIONAL_TEXT_SECTIONS.find(s=>s.id==='navigation-labels').fields.find(f=>f[0]==='numbers')[2],'NUMERO');
  assert.equal(ADDITIONAL_TEXT_SECTIONS.find(s=>s.id==='navigation-labels').fields.find(f=>f[0]==='reset')[2],'RESET');
  assert.equal(ADDITIONAL_TEXT_SECTIONS.find(s=>s.id==='match-options-native').fields.find(f=>f[0]==='data_87cada')[2],'INICIO');

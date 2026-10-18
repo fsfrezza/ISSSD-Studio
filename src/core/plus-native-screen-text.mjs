@@ -62,7 +62,7 @@ export const NATIVE_SCREEN_TEXT_FIELDS=Object.freeze([
  {
   "name": "Mostrar · instrução 3",
   "pc": 248272,
-  "capacity": 8,
+  "capacity": 9,
   "original": "DISPLAYS"
  },
  {

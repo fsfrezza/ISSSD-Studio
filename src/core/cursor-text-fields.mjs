@@ -279,7 +279,7 @@ export const CURSOR_PORTUGUESE=Object.freeze({
   "areaA": "ÁREA-A",
   "areaB": "ÁREA-B",
   "areaC": "ÁREA-C",
-  "cursorChange": "CURSOR ALTERA",
+  "cursorChange": "TROCA CURSOR",
   "cursorAuto": "AUTO",
   "cursorManual": "MANUAL",
   "pageHelp": "Troque a página usando os botões L/R.",

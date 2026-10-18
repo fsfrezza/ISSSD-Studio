@@ -9,10 +9,10 @@ export const ADDITIONAL_TEXT_SECTIONS=Object.freeze([
  {id:'player-labels',page:'players',title:'Textos da tela de jogadores',area:'jogadores',fields:[
   ['player','PLAYER','JOGADOR'],['substitute','SUBSTITUTE','RESERVA'],
   ['speed','SPEED','RAPIDEZ'],['dash','DASH','ARRANQUE'],
-  ['shotPower','SHOTPOWR','FORÇA-CHUTE'],['curlSkill','CURLSKILL','EFEITO'],
-  ['balance','BALANCE','EQUILÍBRIO'],['intelligence','INTELLIGENCE','INTELIGÊNCIA'],
+  ['shotPower','SHOTPOWR','CHUTE (POT)'],['curlSkill','CURLSKILL','EFEITO'],
+  ['balance','BALANCE','FIRMEZA'],['intelligence','INTELLIGENCE','INTELIGÊNCIA'],
   ['jump','JUMP','PULO'],['dribble','DRIBBLE','DRIBLE'],
-  ['stamina','STAMINA','RESISTÊNCIA'],['pointsLeft','POINTS LEFT','FALTAM'],
+  ['stamina','STAMINA','RESISTÊNCIA'],['pointsLeft','POINTS LEFT','FALTA'],
  ]},
  {id:'formation-labels',page:'teams',title:'Textos da tela de formações',area:'formacoes',fields:[
   ['formationType','TYPE OF FORMATION','TIPO DE FORMAÇÃO'],

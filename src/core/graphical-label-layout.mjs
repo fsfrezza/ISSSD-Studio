@@ -28,6 +28,8 @@ export const GRAPHICAL_LABEL_FIELDS=Object.freeze({
  'navigation-labels':['exit','cancel','numbers'],
 });
 export function graphicalLabelArea(off){
+ if((off>=0x3C7FC&&off<0x3C811)||off===0x3347B||off===0x33486)return 'jogadores';
+ if((off>=0x3C875&&off<0x3C884)||(off>=0x3AFCA&&off<0x3AFCC))return 'pre-partida';
  for(const shared of GRAPHICAL_LABEL_ASSETS.filter(a=>a.literal)){
   if(shared.pointers.some(pc=>off>=pc&&off<pc+3))return null;
   if(off>=shared.slot&&off<shared.slot+shared.capacity){
