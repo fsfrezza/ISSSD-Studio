@@ -44,3 +44,11 @@
   max-width:100%;
   flex-wrap:wrap;
 }
+
+/* Native dialog buttons must not inherit white text on the browser's light face.
+   Styled .btn controls retain their own explicit palette. */
+dialog button:not(.btn){
+  color:#111827;
+  -webkit-text-fill-color:#111827;
+  background-color:#e2e8f0;
+}
