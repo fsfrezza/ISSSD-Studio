@@ -6,7 +6,7 @@ import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {exec} from 'node:child_process';
+import {exec,spawnSync} from 'node:child_process';
 import {validatePlusRuntimeMirrors} from '../src/core/plus-export-finalizer.mjs';
 import {buildPlusProjectRom} from '../src/core/project-build.mjs';
 
@@ -14,6 +14,9 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const editorRoot=path.join(root,'editor');
 const diagnosticsRoot=path.join(root,'build-diagnostics');
 const port=Number(process.env.ISSSD_PORT||4173);
+let listeningPort=port,portRetries=0;
+const gitHead=spawnSync('git',['rev-parse','--short=12','HEAD'],{cwd:root,encoding:'utf8',shell:false});
+const serverBuild={commit:gitHead.status===0?gitHead.stdout.trim():'local',root,startedAt:new Date().toISOString(),supportedTextWriters:['strategy-one-four','uniform-labels']};
 const defaultPlusRomPath=process.env.ISSSD_PLUS_ROM_PATH||'C:\\Users\\fsfre\\Downloads\\ISSSD-Studio\\roms\\International Superstar Soccer Deluxe Plus.sfc';
 const defaultPlusRomName=path.basename(defaultPlusRomPath);
 const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.svg':'image/svg+xml','.json':'application/json; charset=utf-8'};
@@ -122,6 +125,7 @@ const server=http.createServer((req,res)=>{
  let u=decodeURIComponent((req.url||'/').split('?')[0]);
  if(req.method==='POST'&&u==='/__isssd/build-plus-project'){buildPostedProject(req,res);return;}
  if(req.method!=='GET'){res.writeHead(405,{'Allow':'GET, POST'});res.end('Method not allowed');return;}
+ if(u==='/__isssd/build-info'){res.writeHead(200,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(serverBuild));return;}
  if(u==='/__isssd/default-plus-rom'){serveDefaultPlusRom(res);return;}
  if(u==='/__isssd/default-plus-rom-info'){
   const exists=fs.existsSync(defaultPlusRomPath);
@@ -139,9 +143,17 @@ const server=http.createServer((req,res)=>{
  });
 });
 
-server.listen(port,'127.0.0.1',()=>{
+server.on('error',error=>{
+ if(error.code==='EADDRINUSE'&&port!==0&&portRetries<10){
+  console.warn('Porta '+listeningPort+' ocupada. Iniciando esta versão em outra porta para evitar o servidor antigo.');
+  listeningPort++;portRetries++;server.listen(listeningPort,'127.0.0.1');return;
+ }
+ console.error(error);process.exitCode=1;
+});
+server.on('listening',()=>{
  const url=`http://127.0.0.1:${server.address().port}/`;
  console.log('ISSSD Studio Editor: '+url);
+ console.log('Versão do servidor: '+serverBuild.commit+' · '+root);
  console.log('ROM-base Plus fixa: '+defaultPlusRomPath);
  console.log('Build canônico: POST /__isssd/build-plus-project');
  console.log(fs.existsSync(defaultPlusRomPath)?'ROM-base Plus encontrada; projetos Plus não pedirão seleção manual.':'ATENÇÃO: ROM-base Plus não encontrada no caminho fixo.');
@@ -150,3 +162,5 @@ server.listen(port,'127.0.0.1',()=>{
   exec(cmd,()=>{});
  }
 });
+
+server.listen(listeningPort,'127.0.0.1');
