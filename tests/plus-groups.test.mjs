@@ -62,7 +62,7 @@ test('logical America-first order maps to historical physical order',()=>{
   }
 });
 
-test('native writer touches only group table, secret table, terminator and counter',()=>{
+test('native writer touches only group references and preserves adjacent descriptor',()=>{
   const rom=new Uint8Array(0x200000);rom.fill(0xAA);
   const before=rom.slice();
   plusGroupsWriter(rom,{plusGroups:sample()});
@@ -71,12 +71,11 @@ test('native writer touches only group table, secret table, terminator and count
   const allowed=new Set([
     ...Array.from({length:54},(_,i)=>PLUS_GROUP_TABLE_BASE+i),
     ...Array.from({length:6},(_,i)=>PLUS_SECRET_GROUP_BASE+i),
-    PLUS_SECRET_TERMINATOR,PLUS_SECRET_GROUP_COUNT,
   ]);
   assert.ok(changed.length>0);
   for(const offset of changed)assert.ok(allowed.has(offset),'unexpected write at 0x'+offset.toString(16));
-  assert.equal(rom[PLUS_SECRET_TERMINATOR],PLUS_GROUP_EMPTY);
-  assert.equal(rom[PLUS_SECRET_GROUP_COUNT],2);
+  assert.equal(rom[PLUS_SECRET_TERMINATOR],0xAA);
+  assert.equal(rom[PLUS_SECRET_GROUP_COUNT],0xAA);
 });
 
 test('Plus groups reader round-trips writer semantics',()=>{
@@ -85,7 +84,7 @@ test('Plus groups reader round-trips writer semantics',()=>{
   const read=readPlusGroups(rom);
   assert.deepEqual(read.groups,sample().groups);
   assert.deepEqual(read.secret,sample().secret);
-  assert.equal(read.rawSecretCounter,2);
+  assert.equal(read.rawSecretCounter,PLUS_GROUP_EMPTY);
 });
 
 test('duplicates are reported but remain valid like the historical Studio validator',()=>{

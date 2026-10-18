@@ -36,5 +36,5 @@ test('Plus groups writer remains available only through explicit opt-in',()=>{
   const {rom}=buildPlusProjectRom(base,project(),{writers:[plusGroupsWriter],writeChecksum:false});
   assert.notEqual(rom[PLUS_GROUP_TABLE_BASE],0xA5);
   assert.notEqual(rom[PLUS_SECRET_GROUP_BASE],0xA5);
-  assert.equal(rom[PLUS_SECRET_GROUP_COUNT],6);
+  assert.equal(rom[PLUS_SECRET_GROUP_COUNT],0xA5);
 });

@@ -1,3 +1,4 @@
+import {plusGroupIdentityWriter} from './plus-group-identity.mjs';
 import {plusPrematchGraphicsWriter} from './plus-prematch-graphics.mjs';
 import {plusLinkedScreenTextWriter} from './plus-linked-screen-text.mjs';
 import {plusGraphicalLabelsWriter} from './plus-graphical-labels.mjs';
@@ -103,6 +104,7 @@ export function createPlusBuildStages({baseRom,patches=[],extraWriters=[],writeC
       id:'07d-main-menu-text',kind:'semantic',when:state=>!!selectedAreas?.includes('menu-principal')&&state.plusMainMenu?.nativeCommitted===true,
       run:(work,state)=>plusMainMenuWriter(work,state),
     },
+    {id:'07e-team-group-identity',kind:'semantic',when:!!selectedAreas?.includes('selecao-equipes'),run:(work,state)=>plusGroupIdentityWriter(work,state,baseRom,selectedAreas)},
     {
       id:'08-rom-metadata',kind:'semantic',when:!selectedAreas||selectedAreas.includes('metadados'),
       run:(work,state)=>plusRomMetaWriter(work,state),

@@ -2,6 +2,7 @@ export const PLUS_GROUP_SCHEMA='isssd-plus-groups-v1';
 export const PLUS_GROUP_VERSION=1;
 export const PLUS_GROUP_TABLE_BASE=0x00E7F2;
 export const PLUS_SECRET_GROUP_BASE=0x00E828;
+// Deprecated names retained for API compatibility: these bytes belong to DATA_81E82E.
 export const PLUS_SECRET_TERMINATOR=0x00E82E;
 export const PLUS_SECRET_GROUP_COUNT=0x00E82F;
 export const PLUS_GROUP_EMPTY=0x70;
@@ -129,7 +130,6 @@ export function plusGroupsWriter(rom,state={}){
   const encoded=encodePlusGroupsNative(value);
   rom.set(encoded.normal,PLUS_GROUP_TABLE_BASE);
   rom.set(encoded.secret,PLUS_SECRET_GROUP_BASE);
-  rom[PLUS_SECRET_TERMINATOR]=encoded.terminator;
-  rom[PLUS_SECRET_GROUP_COUNT]=encoded.secretCount;
+  // Preserve the unrelated DATA_81E82E descriptor immediately after the table.
   return rom;
 }
