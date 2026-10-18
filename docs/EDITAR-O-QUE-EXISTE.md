@@ -8,6 +8,14 @@
 Ordem: 1.1 Identidade das equipes; 1.2 Uniformes; 1.3 Bandeiras/símbolos; 1.5 Regras/opções; 1.6 Competições; 1.9 Áudio; 1.7 Cenários; 1.4 Estádios; 1.8 Apresentação.
 Completar os demais elencos/formações depois de uniformes e símbolos. Separar recursos compartilhados, quando necessário para editar as identidades existentes, é suporte à primeira parte.
 
+## 1.1 — Escopo confirmado pelo usuário
+
+A definição dos grupos deve ser livre, como nas versões anteriores: mover equipes existentes entre grupos e editar seus nomes. Isso pertence à edição do conteúdo existente, não deve ser adiado como bônus estrutural. Os nomes personalizados precisam aparecer na ROM, além do Studio/JSON.
+
+As restrições atuais do primeiro gravador são limites temporários de implementação, não o escopo final aprovado. Completar esse suporte antes de encerrar 1.1; conferir os fluxos anteriores para recuperar o comportamento sem reintroduzir as gravações incorretas em DATA_81E82E.
+
+Depois, investigar a reabilitação de todos os times do grupo ALL STAR. Distinguir registros nativos preservados e desabilitados na Plus de equipes novas; conferir seleção, loaders, elencos, identidade, táticas, uniformes e símbolos antes de habilitar. O usuário está se referindo à recuperação dos Special Teams existentes, não à criação imediata de novas equipes.
+
 ## 1.1 — Auditoria e primeira correção
 
 ### Organização dos grupos e ordem de seleção
