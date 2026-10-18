@@ -8,7 +8,9 @@
   const inputs=[];
   for(const phase of PHASES.filter(p=>p.id!=='infraestrutura')){const row=document.createElement('label'),input=document.createElement('input');input.type='checkbox';input.checked=true;input.value=phase.id;row.style.cssText='display:flex;gap:10px;margin:10px 0';row.append(input,document.createTextNode(String(phase.number).padStart(2,'0')+' — '+phase.label));form.append(row);inputs.push(input);}
   const note=document.createElement('p');note.style.fontSize='12px';note.textContent='01 — Infraestrutura automática: expansão para 4 MB e individualização das táticas aplicadas antes das demais fases.';form.append(note);
-  const cancel=document.createElement('button'),save=document.createElement('button');cancel.type='button';cancel.textContent='Cancelar';save.type='submit';save.textContent='Gerar ZIP';cancel.style.marginRight='12px';
+  const cancel=document.createElement('button'),save=document.createElement('button');cancel.type='button';cancel.textContent='Cancelar';save.type='submit';save.textContent='Gerar ZIP';cancel.className='btn';save.className='btn primary';
+  for(const button of [cancel,save])button.style.cssText='background:#24384e;color:#ffffff;border:1px solid #7e9ab5;border-radius:6px;padding:9px 16px;font:inherit;font-weight:600;cursor:pointer';
+  save.style.background='#155eab';cancel.style.marginRight='12px';
   let done=false;const finish=value=>{if(done)return;done=true;dialog.close();dialog.remove();resolve(value)};
   cancel.onclick=()=>finish(null);dialog.addEventListener('cancel',e=>{e.preventDefault();finish(null)});
   form.onsubmit=e=>{e.preventDefault();const ids=['infraestrutura',...inputs.filter(i=>i.checked).map(i=>i.value)];finish(ids)};
