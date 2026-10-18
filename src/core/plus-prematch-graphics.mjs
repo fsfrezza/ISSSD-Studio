@@ -12,7 +12,7 @@ function renderLabel(text){
  const q=normalize(text),width=[...q].reduce((n,c)=>n+(c===' '?3:6),0)-1;
  if(width>112)throw Error('Pré-partida: “'+q+'” excede os 112 px da linha.');
  const tiles=Math.max(1,Math.ceil(width/8)),raw=new Uint8Array(tiles*2*16),pix=new Uint8Array(tiles*8*16),w=tiles*8;let x=Math.floor((w-width)/2);
- for(const c of q){if(c===' '){x+=3;continue;}const glyph=PLUS_MAIN_MENU_GLYPHS[c];if(!glyph)throw Error('Pré-partida: caractere indisponível '+c);
+ for(const c of q){if(c===' '){x+=3;continue;}const glyph=c==='.'?[0,0,0,0,0,16,16]:PLUS_MAIN_MENU_GLYPHS[c];if(!glyph)throw Error('Pré-partida: caractere indisponível '+c);
   for(let y=0;y<7;y++)for(let xx=0;xx<5;xx++)if((glyph[y]>>(6-xx))&1)for(let dy=0;dy<2;dy++)pix[(y*2+dy+1)*w+x+xx]=1;x+=6;
  }
  for(let t=0;t<tiles*2;t++)for(let y=0;y<8;y++){let a=0;for(let xx=0;xx<8;xx++)a|=pix[(Math.floor(t/tiles)*8+y)*w+(t%tiles)*8+xx]<<(7-xx);raw[t*16+y*2]=a;}

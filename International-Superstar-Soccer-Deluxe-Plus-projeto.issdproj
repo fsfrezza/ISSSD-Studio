@@ -10459,7 +10459,7 @@
           },
           "uniform-labels": {
             "shirt": "CAMISA",
-            "pants": "CALÇÃO",
+            "pants": "SHORT",
             "socks": "MEIAS",
             "color": "COR",
             "type": "TIPO",
@@ -10475,14 +10475,14 @@
           },
           "pre-match-labels": {
             "keyConfiguration": "COMANDOS",
-            "changeController": "TROCAR CONTROLE",
-            "numberPlayers": "NÚMERO DE ATLETAS",
+            "changeController": "MODO DE CURSOR",
+            "numberPlayers": "QTD. DE JOGADORES",
             "editPlayers": "EDITAR ATLETAS",
             "teamColors": "UNIFORMES"
           },
           "team-selection-labels": {
             "formation": "FORMACAO",
-            "statistics": "VER DADOS",
+            "statistics": "GRAFICOS",
             "keeperAbbr": "GO"
           }
         },
@@ -10727,7 +10727,7 @@
           },
           "uniform-labels": {
             "shirt": "CAMISA",
-            "pants": "CALÇÃO",
+            "pants": "SHORT",
             "socks": "MEIAS",
             "color": "COR",
             "type": "TIPO",
@@ -10743,14 +10743,14 @@
           },
           "pre-match-labels": {
             "keyConfiguration": "COMANDOS",
-            "changeController": "TROCAR CONTROLE",
-            "numberPlayers": "NÚMERO DE ATLETAS",
+            "changeController": "MODO DE CURSOR",
+            "numberPlayers": "QTD. DE JOGADORES",
             "editPlayers": "EDITAR ATLETAS",
             "teamColors": "UNIFORMES"
           },
           "team-selection-labels": {
             "formation": "FORMACAO",
-            "statistics": "VER DADOS",
+            "statistics": "GRAFICOS",
             "keeperAbbr": "GO"
           }
         }
