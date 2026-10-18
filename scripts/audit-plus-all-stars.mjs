@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+const file=process.argv[2];if(!file)throw new Error('Uso: node scripts/audit-plus-all-stars.mjs caminho/Plus.sfc');
+const bytes=fs.readFileSync(file);if(bytes.length!==0x200000)throw new Error('Informe a ROM-base Plus de 2 MiB sem cabeçalho.');
+const word=pc=>bytes[pc]|bytes[pc+1]<<8;
+const pointers=Array.from({length:6},(_,i)=>word(0x127643+i*2));
+const expected=[0xF64F,0xF69F,0xF6EF,0xF73F,0xF78F,0xF7DF];
+if(pointers.some((v,i)=>v!==expected[i]))throw new Error('Mapas de elenco dos Special Teams não correspondem à Plus documentada.');
+const names=['ALL STAR','EURO STAR A','EURO STAR B','ASIAN STAR','AFRICAN STAR','ALL AMERICAN STAR'];
+const rosterMaps=pointers.map((pointer,i)=>{const pc=0x120000+(pointer&0x7FFF),data=bytes.subarray(pc,pc+80);return {name:names[i],engineId:0x70+i*2,pc,bytes:data.length,sha256:crypto.createHash('sha256').update(data).digest('hex')};});
+console.log(JSON.stringify({baseSha256:crypto.createHash('sha256').update(bytes).digest('hex'),secretPageBytes:Array.from(bytes.subarray(0xE828,0xE82E)),rosterMaps,adjacentUnrelatedDescriptor:Array.from(bytes.subarray(0xE82E,0xE831)),pageCountInstructions:[0x2FC58,0x2FC5C].map(pc=>({pc,bytes:Array.from(bytes.subarray(pc,pc+3))})),status:'research-only; roster maps preserved; native identities and all runtime consumers still require validation'},null,2));

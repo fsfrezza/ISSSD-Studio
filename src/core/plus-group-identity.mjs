@@ -1,7 +1,7 @@
 // Plus selection uses bank-81 byte IDs (team * 2), not roster indices.
 export const PLUS_GROUP_ORDER=Object.freeze([6,7,8,0,1,2,3,4,5]);
 export const PLUS_GROUP_TITLES=Object.freeze([0xFADC,0xFAEC,0xFAFC,0xFB0C,0xFB1C,0xFB2C,0xFB3C,0xFB4C,0xFB5C,0xFB6C]);
-export const PLUS_GROUP_RANGES=Object.freeze([[0xE7F2,0xE82E],[0x3FAC8,0x3FADC]]);
+export const PLUS_GROUP_RANGES=Object.freeze([[0xE7F2,0xE82E],[0x3FAC8,0x3FB7C],[0xF6C78,0xF6F2B]]);
 const word=(rom,pc)=>rom[pc]|rom[pc+1]<<8;
 export function readPlusGroupIdentity(rom){
  if(!(rom instanceof Uint8Array)||rom.length<0x3FADC)throw new Error('ROM Plus incompleta para ler grupos.');

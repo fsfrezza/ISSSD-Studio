@@ -12,7 +12,7 @@ Completar os demais elencos/formações depois de uniformes e símbolos. Separar
 
 A definição dos grupos deve ser livre, como nas versões anteriores: mover equipes existentes entre grupos e editar seus nomes. Isso pertence à edição do conteúdo existente, não deve ser adiado como bônus estrutural. Os nomes personalizados precisam aparecer na ROM, além do Studio/JSON.
 
-As restrições atuais do primeiro gravador são limites temporários de implementação, não o escopo final aprovado. Completar esse suporte antes de encerrar 1.1; conferir os fluxos anteriores para recuperar o comportamento sem reintroduzir as gravações incorretas em DATA_81E82E.
+As restrições remanescentes de quantidade/ocupação do primeiro gravador são limites temporários de implementação, não o escopo final aprovado. Completar esse suporte antes de encerrar 1.1; conferir os fluxos anteriores para recuperar o comportamento sem reintroduzir as gravações incorretas em DATA_81E82E.
 
 Depois, investigar a reabilitação de todos os times do grupo ALL STAR. Distinguir registros nativos preservados e desabilitados na Plus de equipes novas; conferir seleção, loaders, elencos, identidade, táticas, uniformes e símbolos antes de habilitar. O usuário está se referindo à recuperação dos Special Teams existentes, não à criação imediata de novas equipes.
 
@@ -30,7 +30,7 @@ Mapa Plus confirmado:
 - PC 3FAC8: dez ponteiros de títulos gráficos. Mover grupos pode mover os respectivos títulos nativos.
 - E82E/E82F NÃO são terminador/contador dos grupos: são o início de `DATA_81E82E`, um stream de registros de três bytes. O disassembly o lê em `CODE_A4905A`; a Plus preserva as leituras nos PCs 12105C e 121069. Removidas as gravações desses dois bytes do fluxo normal da UI e descartados seus mirrors legados na exportação com grupos semânticos.
 
-O gravador preserva a quantidade e as posições ocupadas atuais, impede IDs inválidos e duplicações, valida antes de gravar e respeita a seleção de fases. Mudar os nomes lógicos dos grupos não desenha títulos personalizados: somente os descritores nativos verificados são aceitos aqui.
+O gravador preserva a quantidade e as posições ocupadas atuais, impede IDs inválidos e duplicações, valida antes de gravar e respeita a seleção de fases. Nomes personalizados dos grupos agora são rasterizados na exportação: ver `docs/FREE-GROUP-TITLES-AND-ALL-STARS.md`. Quando os nomes não mudam, a arte original permanece intacta.
 
 ### Nomes e abreviações — trabalho ainda necessário
 
