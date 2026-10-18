@@ -6,12 +6,12 @@
   const heading=document.createElement('h3');heading.textContent='Salvar ROMs cumulativas';form.append(heading);
   const text=document.createElement('p');text.textContent='Marque as áreas que deseja incluir. Cada ROM acumula somente as fases marcadas anteriores.';form.append(text);
   const inputs=[];
-  for(const phase of PHASES){const row=document.createElement('label'),input=document.createElement('input');input.type='checkbox';input.checked=true;input.value=phase.id;row.style.cssText='display:flex;gap:10px;margin:10px 0';row.append(input,document.createTextNode(String(phase.number).padStart(2,'0')+' — '+phase.label));form.append(row);inputs.push(input);}
-  const note=document.createElement('p');note.style.fontSize='12px';note.textContent='A expansão e individualização são obrigatórias em todas as ROMs. Desmarcar 01 apenas omite seu arquivo separado.';form.append(note);
+  for(const phase of PHASES.filter(p=>p.id!=='infraestrutura')){const row=document.createElement('label'),input=document.createElement('input');input.type='checkbox';input.checked=true;input.value=phase.id;row.style.cssText='display:flex;gap:10px;margin:10px 0';row.append(input,document.createTextNode(String(phase.number).padStart(2,'0')+' — '+phase.label));form.append(row);inputs.push(input);}
+  const note=document.createElement('p');note.style.fontSize='12px';note.textContent='01 — Infraestrutura automática: expansão para 4 MB e individualização das táticas aplicadas antes das demais fases.';form.append(note);
   const cancel=document.createElement('button'),save=document.createElement('button');cancel.type='button';cancel.textContent='Cancelar';save.type='submit';save.textContent='Gerar ZIP';cancel.style.marginRight='12px';
   let done=false;const finish=value=>{if(done)return;done=true;dialog.close();dialog.remove();resolve(value)};
   cancel.onclick=()=>finish(null);dialog.addEventListener('cancel',e=>{e.preventDefault();finish(null)});
-  form.onsubmit=e=>{e.preventDefault();const ids=inputs.filter(i=>i.checked).map(i=>i.value);if(!ids.length){alert('Marque ao menos uma fase.');return;}finish(ids)};
+  form.onsubmit=e=>{e.preventDefault();const ids=['infraestrutura',...inputs.filter(i=>i.checked).map(i=>i.value)];finish(ids)};
   form.append(cancel,save);dialog.append(form);document.body.append(dialog);dialog.showModal();
  });
  window.__ISSSD_PREPARE_TITLE_GRAPHICS__=async project=>{

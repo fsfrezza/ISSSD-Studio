@@ -43,15 +43,26 @@ test('browser export prepares custom photos and materializes only a base copy',a
  assert.equal(called,true);assert.equal(result.groups[0].bytes[0],9);assert.equal(base[10],0);
 });
 
-test('export dialog uses the nine phases and returns exactly the checked items',async()=>{
+test('export dialog always prepares infrastructure and offers only the eight editable phases',async()=>{
  const {CUMULATIVE_AREAS}=await import('../src/core/cumulative-areas.mjs');
  const source=fs.readFileSync(new URL('../editor-src/cumulative-export-ui.mjs',import.meta.url),'utf8').replace('__CUMULATIVE_PHASES__',JSON.stringify(CUMULATIVE_AREAS));
  const nodes=[];const document={createElement:tag=>{const n={tag,style:{},append(){},addEventListener(){},close(){},remove(){},showModal(){}};nodes.push(n);return n},createTextNode:text=>text,body:{append(){}}};
  const window={};vm.runInNewContext(source,{window,document});
  const pending=window.__ISSSD_PICK_CUMULATIVE_AREAS__();
- const boxes=nodes.filter(n=>n.type==='checkbox');assert.equal(boxes.length,9);
- assert.deepEqual(boxes.map(n=>n.value),['infraestrutura','metadados','tela-inicial','menu-principal','pre-partida','textos-estrategias','selecao-equipes','jogadores','formacoes']);
- boxes[2].checked=false;boxes[3].checked=false;
+ const boxes=nodes.filter(n=>n.type==='checkbox');assert.equal(boxes.length,8);
+ assert.deepEqual(boxes.map(n=>n.value),['metadados','tela-inicial','menu-principal','pre-partida','textos-estrategias','selecao-equipes','jogadores','formacoes']);
+ boxes[1].checked=false;boxes[2].checked=false;
  nodes.find(n=>n.tag==='form').onsubmit({preventDefault(){}});
- const selected=Array.from(await pending);assert.equal(selected.length,7);assert.ok(!selected.includes('tela-inicial'));assert.ok(!selected.includes('menu-principal'));
+ const selected=Array.from(await pending);assert.equal(selected.length,7);assert.equal(selected[0],'infraestrutura');assert.ok(!selected.includes('tela-inicial'));assert.ok(!selected.includes('menu-principal'));
+});
+
+test('export dialog can export the mandatory infrastructure alone',async()=>{
+ const {CUMULATIVE_AREAS}=await import('../src/core/cumulative-areas.mjs');
+ const source=fs.readFileSync(new URL('../editor-src/cumulative-export-ui.mjs',import.meta.url),'utf8').replace('__CUMULATIVE_PHASES__',JSON.stringify(CUMULATIVE_AREAS));
+ const nodes=[];const document={createElement:tag=>{const n={tag,style:{},append(){},addEventListener(){},close(){},remove(){},showModal(){}};nodes.push(n);return n},createTextNode:text=>text,body:{append(){}}};
+ const window={};vm.runInNewContext(source,{window,document});
+ const pending=window.__ISSSD_PICK_CUMULATIVE_AREAS__();
+ nodes.filter(n=>n.type==='checkbox').forEach(n=>n.checked=false);
+ nodes.find(n=>n.tag==='form').onsubmit({preventDefault(){}});
+ assert.deepEqual(Array.from(await pending),['infraestrutura']);
 });
