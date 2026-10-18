@@ -10503,6 +10503,18 @@
             "player2Win": "2P VENCEU",
             "win": "VITÓRIA",
             "lose": "DERROTA"
+          },
+          "match-statistics": {
+            "shots": "CHUTES",
+            "freeKicks": "FALTAS",
+            "cornerKicks": "ESCANTEIOS",
+            "penaltyKicks": "PÊNALTIS",
+            "yellowCards": "CARTÕES AMARELOS",
+            "redCards": "CARTÕES VERMELHOS",
+            "offsides": "IMPEDIMENTOS",
+            "ownGoal": "GOL CONTRA",
+            "firstHalf": "1T",
+            "secondHalf": "2T"
           }
         },
         "drafts": {
@@ -10790,6 +10802,18 @@
             "player2Win": "2P VENCEU",
             "win": "VITÓRIA",
             "lose": "DERROTA"
+          },
+          "match-statistics": {
+            "shots": "CHUTES",
+            "freeKicks": "FALTAS",
+            "cornerKicks": "ESCANTEIOS",
+            "penaltyKicks": "PÊNALTIS",
+            "yellowCards": "CARTÕES AMARELOS",
+            "redCards": "CARTÕES VERMELHOS",
+            "offsides": "IMPEDIMENTOS",
+            "ownGoal": "GOL CONTRA",
+            "firstHalf": "1T",
+            "secondHalf": "2T"
           }
         }
       },

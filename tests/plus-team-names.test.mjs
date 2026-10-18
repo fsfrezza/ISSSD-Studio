@@ -54,3 +54,8 @@ test('both translated names, flags and VS fit the native scanline sprite budget'
  assert.equal(counts[30]+counts[0]+10<=34,true,'Brasil × Inglaterra');
  assert.equal(counts[34]+counts[0]+10<=34,true,'E.U.A. × Inglaterra');
 });
+
+test('pre-game letters have a six-pixel body while remaining inside small OBJ cells',()=>{
+ const r=renderBigTeamNames(['A']);const xs=[],ys=[];for(let y=0;y<8;y++)for(let x=0;x<8;x++){let v=0;for(let p=0;p<4;p++)v|=((r.font[(p>>1)*16+y*2+(p&1)]>>(7-x))&1)<<p;if(v===10){xs.push(x);ys.push(y);}}
+ assert.equal(Math.max(...xs)-Math.min(...xs)+1,6);assert.equal(Math.max(...ys)-Math.min(...ys)+1,8);assert.equal(r.count,1);
+});

@@ -10,13 +10,14 @@ import {makePlusTacticalFixture} from './plus-tactics-fixture.mjs';
 const word=n=>[n&255,n>>8&255],long=n=>[n&255,n>>8&255,n>>16&255];
 const values=Object.fromEntries(MATCH_ANNOUNCEMENTS.map(([id,,pt])=>[id,pt]));
 const state=v=>({additionalScreenTextsV1:{schema:'isssd-additional-screen-texts-v1',values:{'match-announcements':v}}});
-function fixture(){const b=makePlusTacticalFixture();
+function fixture(){const b=makePlusTacticalFixture();b.fill(255,0x184400,0x184800);
  for(const [pc,size,len]of [[0x116D81,151,240],[0x116E18,66,240],[0x116E5A,509,656],[0x117057,267,656]]){const p=konamiLzCompress(new Uint8Array(len)),pad=new Uint8Array(size).fill(128);pad.set(p);pad[0]=size&255;pad[1]=size>>8;b.set(pad,pc);}
+ for(let i=0;i<4;i++){const p=[0x116D81,0x116E18,0x116E5A,0x117057][i];b.set(long((0x800000|((p>>15)<<16)|0x8000|(p&32767))^0x400000),0x12038+i*6);}
  for(let i=0;i<4;i++)b.set([128,0,1,24,...word(0x5D00+i*128),...long(0x99FA63+i*256),...word(i===3?192:256),0,0],[0x1271F3,0x127200,0x12720D,0x12721A][i]);
  MATCH_ANNOUNCEMENTS.forEach((f,i)=>b.set(word(f[3]),0x5E7D2+i*2));return b;
 }
 test('all 17 complete Portuguese announcements fit, preserve accents and use GOL! without fallbacks',()=>{
- const r=renderMatchAnnouncements(values);assert.equal(r.texts[0],'GOL!');assert.equal(r.texts[3],'CARTÃO AMARELO');assert.equal(r.texts[4],'CARTÃO VERMELHO');assert.equal(r.texts[6],'IMPEDIMENTO');assert.deepEqual(r.fallbacks,[]);assert.ok(r.blockCount<=41);assert.ok(r.characters.length*3<=96);
+ const r=renderMatchAnnouncements(values);assert.equal(r.texts[0],'GOL!');assert.equal(r.texts[3],'CARTÃO AMARELO');assert.equal(r.texts[4],'CARTÃO VERMELHO');assert.equal(r.texts[6],'IMPEDIMENTO');assert.deepEqual(r.fallbacks,[]);assert.ok(r.blockCount<=41);assert.ok(r.fontTileCount<=96);
  assert.ok(r.characters.includes('Ã')&&r.characters.includes('Ê')&&r.characters.includes('Ó'));
  for(let i=0;i<4;i++)assert.deepEqual(konamiLzDecompress(r.packed[i]).data,r.raw[i]);
  for(const [i,[pc,bytes]]of r.descriptors.entries()){const f=MATCH_ANNOUNCEMENTS[i];assert.equal(pc,0x50000+f[3]);assert.equal(bytes.length,f[4]*4+2);assert.deepEqual([...bytes.slice(-2)],[255,255],'preserve shared sentinel, including score-only DATA_8BE836');let ended=false;for(let at=0;at<bytes.length-2;at+=4){if((bytes[at]|bytes[at+1]<<8)===65535){ended=true;break;}const source=bytes[at+2]|bytes[at+3]<<8;assert.ok(source>=0xC000&&source<0xC720);}assert.ok(ended||(bytes.at(-1)===255&&bytes.at(-2)===255));}

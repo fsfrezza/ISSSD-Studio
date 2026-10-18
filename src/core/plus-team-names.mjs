@@ -43,8 +43,10 @@ function tokenize(text,pairs){
 }
 export function renderBigTeamNames(names,baseFont=new Uint8Array(4096)){
  const glyph=c=>c==='I'?['1','1','1','1','1','1','1']:c==='.'?['0','0','0','0','0','0','1']:PLUS_MAIN_MENU_GLYPHS[c]?.slice(0,7).map(v=>Array.from({length:5},(_,x)=>v&(1<<(6-x))?'1':'0').join(''));
- const glyphWidth=c=>glyph(c)?.[0].length??99;
- const advance=s=>[...s].reduce((n,c)=>n+(c===' '?3:glyphWidth(c)+1),0);
+ const sourceGlyph=glyph;
+ const scaledGlyph=c=>{const g=sourceGlyph(c);return g?.map(row=>Array.from({length:row.length===5?6:row.length},(_,x)=>row[Math.floor(x*row.length/(row.length===5?6:row.length))]).join(''));};
+ const glyphWidth=c=>scaledGlyph(c)?.[0].length??99;
+ const advance=s=>[...s].reduce((n,c)=>n+(c===' '?3:glyphWidth(c)),0);
  const chars=[...new Set(names.join('').replace(/ /g,''))].sort(),pairs=new Set();
  const reserved=new Set([108,109,110,111,124,125,126,127]);
  if(chars.length>120)throw Error('Nomes grandes: conjunto de caracteres excede a fonte.');
@@ -61,7 +63,7 @@ export function renderBigTeamNames(names,baseFont=new Uint8Array(4096)){
  for(const [index,text]of dictionary.entries()){
   const tile=slots[index];tiles.set(text,0x80+tile);const pixels=Array.from({length:8},()=>new Uint8Array(8));
   for(let i=0;i<text.length;i++){
-   const ch=text[i],g=glyph(ch);if(!g)throw Error('Nomes grandes: caractere indisponível '+ch);
+   const ch=text[i],g=scaledGlyph(ch);if(!g)throw Error('Nomes grandes: caractere indisponível '+ch);
    const width=g[0].length;
    for(let y=0;y<8;y++)for(let x=0;x<width;x++){let ink=false;for(let sx=Math.floor(x*g[0].length/width);sx<Math.floor((x+1)*g[0].length/width);sx++)ink||=g[Math.floor(y*7/8)][sx]==='1';if(ink)pixels[y][advance(text.slice(0,i))+x]=10;}
   }

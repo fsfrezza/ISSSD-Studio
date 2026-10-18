@@ -766,6 +766,94 @@
     ]
   },
   {
+    "id": "match-statistics",
+    "page": "texts-match",
+    "title": "Estatísticas e histórico de gols",
+    "area": "partida",
+    "fields": [
+      [
+        "shots",
+        "SHOTS",
+        "CHUTES",
+        {
+          "matchStatistics": true
+        }
+      ],
+      [
+        "freeKicks",
+        "F.K.",
+        "FALTAS",
+        {
+          "matchStatistics": true
+        }
+      ],
+      [
+        "cornerKicks",
+        "C.K.",
+        "ESCANTEIOS",
+        {
+          "matchStatistics": true
+        }
+      ],
+      [
+        "penaltyKicks",
+        "P.K.",
+        "PÊNALTIS",
+        {
+          "matchStatistics": true
+        }
+      ],
+      [
+        "yellowCards",
+        "YELLOW CARDS",
+        "CARTÕES AMARELOS",
+        {
+          "matchStatistics": true
+        }
+      ],
+      [
+        "redCards",
+        "RED CARDS",
+        "CARTÕES VERMELHOS",
+        {
+          "matchStatistics": true
+        }
+      ],
+      [
+        "offsides",
+        "OFF SIDE",
+        "IMPEDIMENTOS",
+        {
+          "matchStatistics": true
+        }
+      ],
+      [
+        "ownGoal",
+        "OWN GOAL",
+        "GOL CONTRA",
+        {
+          "matchStatistics": true
+        }
+      ],
+      [
+        "firstHalf",
+        "1ST",
+        "1T",
+        {
+          "matchStatistics": true
+        }
+      ],
+      [
+        "secondHalf",
+        "2ND",
+        "2T",
+        {
+          "matchStatistics": true
+        }
+      ]
+    ]
+  },
+  {
     "id": "team-selection-native",
     "page": "texts-team-selection",
     "title": "Textos Seleção de Equipes",

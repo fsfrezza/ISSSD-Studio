@@ -34,3 +34,7 @@ Nomes de lugares dos estádios e os textos narrativos fixos dos cenários contin
 Os nomes usam células OBJ de 8×8 e alfabeto de oito pixels de altura e letras de até cinco pixels de largura. O bit P inferior do descritor nativo seleciona o tamanho; não é um bit de prioridade comum. Isso reduz a fonte em todas as telas e evita exceder os 34 segmentos de oito pixels por linha do SNES quando dois nomes aparecem com as bandeiras e VS. Brasil × Inglaterra reproduzia o desaparecimento de letras na implementação com células de 16×16; E.U.A. × Inglaterra podia escapar por ter menos células.
 
 Os tiles EC..EF e FC..FF são compartilhados com números do campo e VS e ficam fora do atlas reconstruído. Os testes verificam sua preservação e o orçamento de sprites para todas as combinações dos 56 times. A apresentação de Brasil × Inglaterra foi conferida no Snes9x 2005 depois da correção.
+
+## Ampliação do pré-jogo
+
+O corpo das letras normais passou de 5 para 6 pixels de largura (20%); a altura permanece em 8 pixels para manter uma célula OBJ pequena por token. O avanço horizontal foi ajustado para que nomes longos continuem dentro dos 80 pixels. O ponto e o I conservam suas larguras menores. Não se alterou o texto do placar durante a partida. Os limites de 411 registros e de 34 slivers por linha continuam validados para qualquer par de equipes.
