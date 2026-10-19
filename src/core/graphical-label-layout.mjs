@@ -28,7 +28,9 @@ export const GRAPHICAL_LABEL_FIELDS=Object.freeze({
  'navigation-labels':['exit','cancel','numbers'],
 });
 export function graphicalLabelArea(off){
+ if((off>=0x3ADC8&&off<0x3ADD4)||(off>=0x3FB90&&off<0x3FB98))return 'formacoes';
  if((off>=0x3C7FC&&off<0x3C811)||off===0x3347B||off===0x33486)return 'jogadores';
+ if((off>=0x3AFC8&&off<0x3AFCC)||(off>=0x3AFD4&&off<0x3AFD8)||(off>=0x3FB80&&off<0x3FB88))return 'pre-partida';
  if((off>=0x3C875&&off<0x3C884)||(off>=0x3AFCA&&off<0x3AFCC))return 'pre-partida';
  for(const shared of GRAPHICAL_LABEL_ASSETS.filter(a=>a.literal)){
   if(shared.pointers.some(pc=>off>=pc&&off<pc+3))return null;
@@ -36,7 +38,7 @@ export function graphicalLabelArea(off){
    const index=off-shared.slot-2;if(index<0||index%32===0)return null;
    const raw=Math.floor(index/32)*31+index%32-1,tile=Math.floor(raw/(shared.id==='cancelHeader'?16:32));
    if(shared.id==='teamStats'){
-    if(tile>=2&&tile<6)return 'pre-partida';if(tile>=6&&tile<12)return 'formacoes';
+    if(tile>=2&&tile<6)return 'pre-partida';if((tile>=6&&tile<12)||(tile>=80&&tile<86))return 'formacoes';
    }else{if(tile<11)return 'selecao-equipes';if(tile>=16&&tile<21)return 'pre-partida';}
    return null;
   }

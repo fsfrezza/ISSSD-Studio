@@ -334,7 +334,7 @@ export const USER_PORTUGUESE_PRESETS={
   },
   "team-selection-labels": {
    "formation": "FORMACAO",
-   "statistics": "GRAFICOS",
+   "statistics": "ESTATÍSTICAS",
    "keeperAbbr": "GO"
   }
  }

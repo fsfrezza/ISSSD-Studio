@@ -10482,7 +10482,7 @@
           },
           "team-selection-labels": {
             "formation": "FORMACAO",
-            "statistics": "GRAFICOS",
+            "statistics": "ESTATÍSTICAS",
             "keeperAbbr": "GO"
           },
           "match-announcements": {
@@ -10781,7 +10781,7 @@
           },
           "team-selection-labels": {
             "formation": "FORMACAO",
-            "statistics": "GRAFICOS",
+            "statistics": "ESTATÍSTICAS",
             "keeperAbbr": "GO"
           },
           "match-announcements": {

@@ -84,7 +84,7 @@ test('uniform and handicap captions preserve arrows and wrap NUMERO DE ATLETAS a
  const base=baseFixture(),rom=expandPlusTo4MiB(base),values={};for(const id of ['uniform-labels','handicap-labels'])values[id]=Object.fromEntries(ADDITIONAL_TEXT_SECTIONS.find(s=>s.id===id).fields.map(f=>[f[0],f[2]]));
  plusGraphicalLabelsWriter(rom,{additionalScreenTextsV1:{schema:'isssd-additional-screen-texts-v1',values}},base,['pre-partida']);
  const uniform=unpack(rom,asset('uniformLabels'));assert.ok(uniform.slice(0,15*16).some(Boolean));assert.ok(uniform.slice(15*16,24*16).every(v=>v===0),'RGB arrows preserved');
- const handicap=unpack(rom,asset('handicapLabels'));assert.ok(handicap.slice(31*16).every(v=>v===0),'unreferenced tile 31 retained');
+ const handicap=unpack(rom,asset('handicapLabels'));assert.ok(handicap.slice(31*16,32*16).every(v=>v===0),'unreferenced tile 31 retained');
  const expected=new Uint8Array(11*16);drawGraphicalLabel(expected,'NUMERO DE',{tile:0,tiles:6,align:'center'});drawGraphicalLabel(expected,'ATLETAS',{tile:6,tiles:5,align:'center'});assert.deepEqual(handicap.slice(20*16,31*16),expected);
 });
 test('shared selection headers and B-arrow captions remain in their independent cumulative phases',()=>{
@@ -109,5 +109,14 @@ test('handicap removes P suffixes and aligns FORTE with both mirrored fives',()=
  plusGraphicalLabelsWriter(rom,{additionalScreenTextsV1:{schema:'isssd-additional-screen-texts-v1',values:{'handicap-labels':values}}},base,['pre-partida']);
  for(const i of [2,5,8,11,14])assert.equal(rom[0x3C875+i],0);
  for(const i of [0,1,3,4,6,7,9,10,12,13])assert.equal(rom[0x3C875+i],base[0x3C875+i]);
- assert.deepEqual([...rom.slice(0x3AFCA,0x3AFCC)],[0x12,2]);
+ assert.deepEqual([...rom.slice(0x3AFCA,0x3AFCC)],[0x16,2]);assert.deepEqual([...rom.slice(0x3AFD6,0x3AFD8)],[0x1B,2]);assert.deepEqual([...rom.slice(0x3FB80,0x3FB88)],[0xB2,0xB3,0xB4,0xB5,0xB6,0xB7,0xB8,0xB9]);
+});
+
+test('formation CANCELA uses a six-cell footer and its live highlight shares the expanded rectangle',()=>{
+ const base=baseFixture(),rom=expandPlusTo4MiB(base),s={additionalScreenTextsV1:{schema:'isssd-additional-screen-texts-v1',values:{'navigation-labels':{cancel:'CANCELA'}}}};
+ plusGraphicalLabelsWriter(rom,s,base,['formacoes']);
+ const raw=unpack(rom,asset('teamStats'));assert.equal(raw.length,86*32);assert.ok(raw.slice(80*32).some(Boolean));
+ assert.deepEqual([...rom.slice(0x3ADC8,0x3ADD4)],[0x44,0x03,0xC2,0xA7,2,2,0x44,0x90,0xFB,0xA9,2,6]);
+ assert.deepEqual([...rom.slice(0x3FB90,0x3FB98)],[0xFD,0x3D,0,1,2,3,4,5]);
+ const map=unpack(rom,asset('formationRoleMap'));for(let x=0;x<6;x++){const at=(21*32+9+x)*2;assert.equal(map[at]|map[at+1]<<8,0x1D00+x);}
 });

@@ -1,10 +1,11 @@
+import {teamNameHookWrites,TEAM_NAME_HOOK_SLOT,TEAM_NAME_HOOK_SIZE,TEAM_NAME_POINTER_READS} from './plus-team-name-hooks.mjs';
 import {konamiLzCompress,konamiLzDecompress} from './konami-lz.mjs';
 import {transformLabelPlanes} from './plus-graphical-labels.mjs';
 import {COMPACT_MENU_FONT} from './plus-controller-text.mjs';
 import {PLUS_MAIN_MENU_GLYPHS} from './plus-main-menu-renderer.mjs';
 import {TEAM_NAME_LANGUAGE_PRESETS as PRESETS} from './team-name-presets.mjs';
 export const TEAM_NAME_SCHEMA='isssd-team-names-v1';
-export const TEAM_NAME_REGIONS=[[0xDEA6D,0xDF6CE],[0x17CA6,0x17DF6],[0xFEB0,0xFF20],[0xE6B8,0xE6BB],[0xE6BD,0xE6C0],[0x17BC4,0x17C34],[0xEE13C,0xEE706],[0x13E4B6,0x13EBB0],...[0x10A70,0x10E14,0x11719,0x10C21,0x10E49,0x116B5].map(p=>[p,p+3])];
+export const TEAM_NAME_REGIONS=[[TEAM_NAME_HOOK_SLOT,TEAM_NAME_HOOK_SLOT+TEAM_NAME_HOOK_SIZE],[0x2A756,0x2A75D],[0x3B00,0x3B04],[0x3B59,0x3B5D],...TEAM_NAME_POINTER_READS.map(p=>[p,p+4]),[0xDEA6D,0xDF6CE],[0x17CA6,0x17DF6],[0xFEB0,0xFF20],[0xE6B8,0xE6BB],[0xE6BD,0xE6C0],[0x17BC4,0x17C34],[0xEE13C,0xEE706],[0x13E4B6,0x13EBB0],...[0x10A70,0x10E14,0x11719,0x10C21,0x10E49,0x116B5].map(p=>[p,p+3])];
 const toPc=c=>((c>>>16)&127)*0x8000+(c&0x7FFF),toCpu=p=>0x800000|((p>>>15)<<16)|0x8000|(p&0x7FFF);
 const u16=(b,p)=>b[p]|b[p+1]<<8,u24=(b,p)=>u16(b,p)|b[p+2]<<16;
 const word=n=>Uint8Array.of(n&255,n>>>8&255),long=n=>Uint8Array.of(n&255,n>>>8&255,n>>>16&255);
@@ -42,7 +43,7 @@ function tokenize(text,pairs){
  const tokens=[];for(let i=text.length;i>0;){const [p,t]=prev[i];tokens.push(t);i=p;}return {count:cost.at(-1),tokens:tokens.reverse()};
 }
 export function renderBigTeamNames(names,baseFont=new Uint8Array(4096)){
- const glyph=c=>c==='I'?['1','1','1','1','1','1','1']:c==='.'?['0','0','0','0','0','0','1']:PLUS_MAIN_MENU_GLYPHS[c]?.slice(0,7).map(v=>Array.from({length:5},(_,x)=>v&(1<<(6-x))?'1':'0').join(''));
+ const glyph=c=>c==='I'?['1','1','1','1','1','1','1']:c==='.'?['000','000','000','000','000','000','010']:PLUS_MAIN_MENU_GLYPHS[c]?.slice(0,7).map(v=>Array.from({length:5},(_,x)=>v&(1<<(6-x))?'1':'0').join(''));
  const sourceGlyph=glyph;
  const scaledGlyph=c=>{const g=sourceGlyph(c);return g?.map(row=>Array.from({length:row.length===5?6:row.length},(_,x)=>row[Math.floor(x*row.length/(row.length===5?6:row.length))]).join(''));};
  const glyphWidth=c=>scaledGlyph(c)?.[0].length??99;
@@ -50,29 +51,29 @@ export function renderBigTeamNames(names,baseFont=new Uint8Array(4096)){
  const chars=[...new Set(names.join('').replace(/ /g,''))].sort(),pairs=new Set();
  const reserved=new Set([108,109,110,111,124,125,126,127]);
  if(chars.length>120)throw Error('Nomes grandes: conjunto de caracteres excede a fonte.');
- const candidates=[...new Set(names.flatMap(n=>Array.from({length:n.length-1},(_,i)=>n.slice(i,i+2)).filter(p=>!p.includes(' ')&&advance(p)-1<=8)))].sort();
+ const candidates=[...new Set(names.flatMap(n=>Array.from({length:n.length-1},(_,i)=>n.slice(i,i+2)).filter(p=>!p.includes(' ')&&advance(p)<=8)))].sort();
  const total=p=>names.reduce((n,s)=>n+tokenize(s,p).count,0);
  while(chars.length+pairs.size<80){let best=null,score=total(pairs);for(const p of candidates){if(pairs.has(p))continue;const next=total(new Set([...pairs,p]));if(next<score){score=next;best=p;}}if(best===null)break;pairs.add(best);}
- const tokens=names.map(n=>tokenize(n,pairs)),count=tokens.reduce((n,t)=>n+t.count,0);
- if(tokens.some(t=>t.count>12))throw Error('Nome grande exige mais de 12 sprites; abrevie para preservar nomes, bandeiras e VS.');
- if(count>411)throw Error('Nomes grandes exigem '+count+' sprites; limite nativo de 411.');
+ const tokens=names.map(n=>tokenize(n,pairs)),count=tokens.reduce((n,t)=>n+t.count*2,0);
+ if(tokens.some(t=>t.count>12))throw Error('Nome grande exige mais de 12 sprites por linha; abrevie para preservar nomes, bandeiras e VS.');
+ if(count>763)throw Error('Nomes grandes exigem '+count+' sprites; limite reservado de 763.');
  const dictionary=[...chars,...pairs],font=new Uint8Array(4096),tiles=new Map(),slots=Array.from({length:128},(_,i)=>i).filter(i=>!reserved.has(i));
  // Small OBJ cells avoid the SNES 34-tile scanline limit when two long names,
  // both flags and VS appear together. The lower P bit is the native size flag.
  for(const tile of reserved)font.set(baseFont.slice(tile*32,(tile+1)*32),tile*32);
  for(const [index,text]of dictionary.entries()){
-  const tile=slots[index];tiles.set(text,0x80+tile);const pixels=Array.from({length:8},()=>new Uint8Array(8));
+  if(dictionary.length*2>slots.length)throw Error('Nomes altos: alfabeto excede os tiles disponíveis.');const tile=slots[index*2],bottom=slots[index*2+1];tiles.set(text,[0x80+tile,0x80+bottom]);const pixels=Array.from({length:16},()=>new Uint8Array(8));
   for(let i=0;i<text.length;i++){
    const ch=text[i],g=scaledGlyph(ch);if(!g)throw Error('Nomes grandes: caractere indisponível '+ch);
    const width=g[0].length;
-   for(let y=0;y<8;y++)for(let x=0;x<width;x++){let ink=false;for(let sx=Math.floor(x*g[0].length/width);sx<Math.floor((x+1)*g[0].length/width);sx++)ink||=g[Math.floor(y*7/8)][sx]==='1';if(ink)pixels[y][advance(text.slice(0,i))+x]=10;}
+   for(let y=0;y<12;y++)for(let x=0;x<width;x++){let ink=false;for(let sx=Math.floor(x*g[0].length/width);sx<Math.floor((x+1)*g[0].length/width);sx++)ink||=g[Math.floor(y*7/12)][sx]==='1';if(ink)pixels[y+1][advance(text.slice(0,i))+x]=10;}
   }
-  const copy=pixels.map(r=>r.slice());for(let y=0;y<8;y++)for(let x=0;x<8;x++)if(copy[y][x])for(const [dx,dy]of [[-1,0],[1,0],[0,-1],[0,1]]){const xx=x+dx,yy=y+dy;if(xx>=0&&xx<8&&yy>=0&&yy<8&&!pixels[yy][xx])pixels[yy][xx]=9;}
-  for(let y=0;y<8;y++)for(let x=0;x<8;x++){const at=tile*32+y*2,bit=7-x,v=pixels[y][x];for(let plane=0;plane<4;plane++)font[at+(plane>>1)*16+(plane&1)]|=((v>>plane)&1)<<bit;}
+  const copy=pixels.map(r=>r.slice());for(let y=0;y<16;y++)for(let x=0;x<8;x++)if(copy[y][x])for(const [dx,dy]of [[-1,0],[1,0],[0,-1],[0,1]]){const xx=x+dx,yy=y+dy;if(xx>=0&&xx<8&&yy>=0&&yy<16&&!pixels[yy][xx])pixels[yy][xx]=9;}
+  for(let y=0;y<16;y++)for(let x=0;x<8;x++){const at=(y<8?tile:bottom)*32+(y%8)*2,bit=7-x,v=pixels[y][x];for(let plane=0;plane<4;plane++)font[at+(plane>>1)*16+(plane&1)]|=((v>>plane)&1)<<bit;}
  }
- const lists=tokens.map(t=>{const width=t.tokens.reduce((n,s)=>n+advance(s),0);if(width>80)throw Error('Nome grande excede 80 px. Abrevie o campo Nome grande.');let x=Math.round(40-width/2);return t.tokens.flatMap(s=>{if(s===' '){x+=3;return [];}const sprite={x:x&255,y:6,tile:tiles.get(s),prop:0x0A};x+=advance(s);return [sprite];});});
+ const lists=tokens.map(t=>{const width=t.tokens.reduce((n,s)=>n+advance(s),0);if(width>80)throw Error('Nome grande excede 80 px. Abrevie o campo Nome grande.');let x=Math.round(40-width/2);return t.tokens.flatMap(s=>{if(s===' '){x+=3;return [];}const [top,bottom]=tiles.get(s),sprites=[{x:x&255,y:1,tile:top,prop:0x0A},{x:x&255,y:9,tile:bottom,prop:0x0A}];x+=advance(s);return sprites;});});
  const raw=new Uint8Array(59+count*4),pointers=new Uint8Array(112);raw[0]=56;raw[1]=count&255;raw[2]=count>>8;let offset=0;
- lists.forEach((list,i)=>{raw[3+i]=list.length;pointers.set(word(0x4F02+2*offset),i*2);for(const sp of list){raw[59+offset]=sp.x;raw[59+count+offset]=sp.y;raw[59+count*2+offset]=sp.tile;raw[59+count*3+offset]=sp.prop;offset++;}});
+ lists.forEach((list,i)=>{raw[3+i]=list.length;pointers.set(word(2*offset),i*2);for(const sp of list){raw[59+offset]=sp.x;raw[59+count+offset]=sp.y;raw[59+count*2+offset]=sp.tile;raw[59+count*3+offset]=sp.prop;offset++;}});
  return {font,raw,pointers,count,dictionary};
 }
 export function planPlusTeamNames(base,state){
@@ -98,9 +99,9 @@ export function planPlusTeamNames(base,state){
  for(const [pc,data,capacity]of [[0xEE13C,font,konamiLzDecompress(base,0xEE13C).compressedSize],[0x13E4B6,oam,konamiLzDecompress(base,0x13E4B6).compressedSize]]){
   if(data.length>capacity)throw Error('Nomes: o bloco nativo excede a capacidade em '+pc.toString(16)+': '+data.length+'/'+capacity);const slot=new Uint8Array(capacity).fill(255);slot.set(data);writes.push([pc,slot]);
  }
- writes.push([0x17BC4,big.pointers]);return writes;
+ writes.push([0x17BC4,big.pointers],...teamNameHookWrites(base));return writes;
 }
 export function plusTeamNamesWriter(rom,state,base=rom,selectedAreas=null){
  if(selectedAreas&&!selectedAreas.includes('selecao-equipes'))return rom;
- const writes=planPlusTeamNames(base,state);for(const [pc,data]of writes)if(pc+data.length>rom.length)throw Error('Nomes: destino fora da ROM.');for(const [pc,data]of writes)rom.set(data,pc);return rom;
+ const writes=planPlusTeamNames(base,state);if(writes.length&&(rom.length<TEAM_NAME_HOOK_SLOT+TEAM_NAME_HOOK_SIZE||rom.slice(TEAM_NAME_HOOK_SLOT,TEAM_NAME_HOOK_SLOT+TEAM_NAME_HOOK_SIZE).some(v=>v!==255)))throw Error('Nomes altos: reserva de código indisponível.');for(const [pc,data]of writes)if(pc+data.length>rom.length)throw Error('Nomes: destino fora da ROM.');for(const [pc,data]of writes)rom.set(data,pc);return rom;
 }
