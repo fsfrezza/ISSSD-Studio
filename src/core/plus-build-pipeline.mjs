@@ -1,3 +1,4 @@
+import {plusSoundsWriter} from './plus-sounds.mjs';
 import {plusExtraMenuGraphicsWriter} from './plus-extra-menu-graphics.mjs';
 import {plusTrainingHudWriter} from './plus-training-hud.mjs';
 import {plusMatchStatisticsWriter} from './plus-match-statistics.mjs';
@@ -96,6 +97,7 @@ export function createPlusBuildStages({baseRom,patches=[],extraWriters=[],writeC
       id:'07b-cursor-help-text',kind:'semantic',when:!selectedAreas||selectedAreas.includes('pre-partida'),
       run:(work,state)=>plusCursorTextWriter(work,state,baseRom,selectedAreas),
     },
+    {id:'07b-sounds',kind:'semantic',run:(work,state)=>plusSoundsWriter(work,state,baseRom,selectedAreas)},
     {id:'07b-native-menu-pool',kind:'semantic',run:(work,state)=>plusNativeMenuTextWriter(work,state,baseRom,selectedAreas)},
     {id:'07b-prematch-graphics',kind:'semantic',run:(work,state)=>plusPrematchGraphicsWriter(work,state,baseRom,selectedAreas)},
     {id:'07b-linked-screen-text',kind:'semantic',run:(work,state)=>plusLinkedScreenTextWriter(work,state,baseRom,selectedAreas)},

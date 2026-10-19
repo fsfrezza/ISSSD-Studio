@@ -1,3 +1,4 @@
+import {SOUND_REGIONS} from './plus-sounds.mjs';
 import {TRAINING_SELECTOR_POSITIONS,TRAINING_CHOICE_REGIONS} from './plus-native-menu-text.mjs';
 import {EXTRA_MENU_GRAPHIC_REGIONS} from './plus-extra-menu-graphics.mjs';
 import {TRAINING_HUD_REGIONS} from './plus-training-hud.mjs';
@@ -31,6 +32,7 @@ export const CUMULATIVE_AREAS=Object.freeze([
  {id:'jogadores',label:'Jogadores',number:8},
  {id:'formacoes',label:'Formações',number:9},
  {id:'partida',label:'Textos durante a partida',number:10},
+ {id:'sons',label:'Sons',number:11},
 ]);
 export function selectedCumulativeAreas(selection){
  if(selection===undefined)return CUMULATIVE_AREAS.map(a=>a.id);
@@ -57,6 +59,7 @@ export function areaClassifier(rom,base=null){
  }
  for(let p=1;p<=7;p++)for(const s of knownMirrorSlices(30,p))derived.push([s.mirror,s.mirror+s.length]);
  return off=>{
+  if(contains(off,SOUND_REGIONS))return 'sons';
   if(contains(off,EXTRA_MENU_GRAPHIC_REGIONS))return 'pre-partida';
   if(contains(off,TRAINING_HUD_REGIONS))return 'partida';
   if(contains(off,MATCH_STATISTICS_REGIONS))return 'partida';

@@ -1,3 +1,4 @@
+import {SOUND_SLOTS} from '../src/core/sound-slots.mjs';
 import {TEAM_NAME_LANGUAGE_PRESETS} from '../src/core/team-name-presets.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -22,6 +23,12 @@ let html=fs.readFileSync(source,'utf8');
 // Keep the protected visual baseline immutable; replace its legacy Portuguese
 // proposals in the generated editor, including an intentionally empty second line.
 html=html.replaceAll('"pc":248272,"original":"DISPLAYS","pilot":"MOSTRA "','"pc":248272,"original":"DISPLAYS","pilot":"SO MOSTRA"').replaceAll('"pc":248272,"original":"DISPLAYS","pilot":"SO MOSTRA","capacity":8','"pc":248272,"original":"DISPLAYS","pilot":"SO MOSTRA","capacity":9').replaceAll('"pc":248283,"original":"ONLY","pilot":"SO"','"pc":248283,"original":"ONLY","pilot":""');
+// Expose audio in the existing selective open/save categories without editing the baseline.
+html=html.replaceAll("'rom.title':'Título interno'","'sounds':'Sons · amostras e narração','rom.title':'Título interno'")
+ .replaceAll("'rom.title':sem.romInternalTitle", "'sounds':sem.soundsV1||null,'rom.title':sem.romInternalTitle")
+ .replaceAll("if(id==='teams.names'&&sem", "if(id==='sounds')delete sem.soundsV1;else if(id==='teams.names'&&sem")
+ .replaceAll("if(id==='teams.names'&&ss", "if(id==='sounds')ds.soundsV1=clone(ss.soundsV1);else if(id==='teams.names'&&ss")
+ .replace(" add('groups','Organização e nomes dos grupos'", " add('sounds','Sons · amostras e narração',studioProjectChangeHasValues(sem.soundsV1?.values),x=>delete x.soundsV1);\n add('groups','Organização e nomes dos grupos'");
 const marker='ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE';
 html=html.replace(/<!--\s*ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE\s*-->\s*/g,'')
  .replace(/<style\s+id=["']isssd-git-visual-bridge-overrides["'][^>]*>[\s\S]*?<\/style>\s*/g,'')
@@ -102,7 +109,8 @@ const languagePresets=JSON.parse(fs.readFileSync(path.join(root,'project-data','
 const additionalSections=JSON.parse(fs.readFileSync(path.join(root,'project-data','additional-screen-text-fields.json'),'utf8'));
 const additionalRuntime='const ADDITIONAL_TEXT_SECTIONS='+JSON.stringify(additionalSections)+';\n'+fs.readFileSync(path.join(root,'editor-src','additional-screen-texts.mjs'),'utf8');
 const teamNameRuntime='const TEAM_NAME_LANGUAGE_PRESETS='+JSON.stringify(TEAM_NAME_LANGUAGE_PRESETS)+';\n'+fs.readFileSync(path.join(root,'editor-src','team-name-language-presets.mjs'),'utf8');
-const v11='const TEXT_LANGUAGE_PRESETS='+JSON.stringify(languagePresets)+';\n'+(fs.existsSync(v11File)?fs.readFileSync(v11File,'utf8'):'')+'\n'+additionalRuntime+'\n'+teamNameRuntime;
+const soundsRuntime='const SOUND_SLOTS='+JSON.stringify(SOUND_SLOTS)+';\nconst FB96_SOUND_REFERENCES='+fs.readFileSync(path.join(root,'project-data','fb96-sound-references.json'),'utf8')+';\n'+fs.readFileSync(path.join(root,'editor-src','sounds-editor.mjs'),'utf8');
+const v11='const TEXT_LANGUAGE_PRESETS='+JSON.stringify(languagePresets)+';\n'+(fs.existsSync(v11File)?fs.readFileSync(v11File,'utf8'):'')+'\n'+additionalRuntime+'\n'+teamNameRuntime+'\n'+soundsRuntime;
 try{new Function(js);new Function(v11)}catch(e){throw new Error('Build interrompido: JavaScript Git inválido: '+e.message)}
 const patch=`\n<!-- ${marker} -->\n<style id="isssd-git-visual-bridge-overrides">\n${css}\n</style>\n<script type="module" id="isssd-git-visual-bridge-runtime">\n${js}\n</script>\n<script type="module" id="isssd-git-project-import-v11">\n${v11}\n</script>\n`;
 if(html.includes('</body>'))html=html.replace('</body>',()=>patch+'\n</body>');else html+=patch;

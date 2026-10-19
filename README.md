@@ -47,3 +47,5 @@ A lista de funções, status de migração e ordem recomendada está em:
 - `docs/HISTORY.md`
 - `docs/V692-V693-ROOT-CAUSE.md`
 - `docs/EMULATOR-TESTING.md`
+
+A aba **Sons** permite ouvir e aplicar as referências Galvão/FB96 individualmente ou nos 74 slots catalogados. As escolhas ficam no projeto e são exportadas pela fase **11 — Sons**. Veja [SOUNDS.md](docs/SOUNDS.md).
