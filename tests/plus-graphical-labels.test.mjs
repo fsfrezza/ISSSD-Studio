@@ -109,7 +109,7 @@ test('handicap removes P suffixes and aligns FORTE with both mirrored fives',()=
  plusGraphicalLabelsWriter(rom,{additionalScreenTextsV1:{schema:'isssd-additional-screen-texts-v1',values:{'handicap-labels':values}}},base,['pre-partida']);
  for(const i of [2,5,8,11,14])assert.equal(rom[0x3C875+i],0);
  for(const i of [0,1,3,4,6,7,9,10,12,13])assert.equal(rom[0x3C875+i],base[0x3C875+i]);
- assert.deepEqual([...rom.slice(0x3AFCA,0x3AFCC)],[0x16,2]);assert.deepEqual([...rom.slice(0x3AFD6,0x3AFD8)],[0x1B,2]);assert.deepEqual([...rom.slice(0x3FB80,0x3FB88)],[0xB2,0xB3,0xB4,0xB5,0xB6,0xB7,0xB8,0xB9]);
+ assert.deepEqual([...rom.slice(0x3AFCA,0x3AFCC)],[0x15,2]);assert.deepEqual([...rom.slice(0x3AFD6,0x3AFD8)],[0x1A,2]);assert.deepEqual([...rom.slice(0x3FB80,0x3FB88)],[0xB2,0xB3,0xB4,0xB5,0xB6,0xB7,0xB8,0xB9]);
 });
 
 test('formation CANCELA uses a six-cell footer and its live highlight shares the expanded rectangle',()=>{

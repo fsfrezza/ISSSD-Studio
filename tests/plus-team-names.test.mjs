@@ -80,9 +80,17 @@ test('E.U.A. keeps visible periods between the tall letters',()=>{
  for(let y=0;y<16;y++)for(let x=0;x<8;x++){let v=0;for(let p=0;p<4;p++)v|=((r.font[(index*2+(y>>3))*32+(p>>1)*16+(y%8)*2+(p&1)]>>(7-x))&1)<<p;if(v===10)body.push([x,y]);}
  assert.ok(body.length>0);assert.ok(body.every(([x,y])=>x===1&&y>=10));
  const count=r.raw[3],xs=[...r.raw.slice(59,59+count)].filter((_,i)=>i%2===0);
- assert.deepEqual(xs.slice(0,3).map(x=>x-xs[0]),[0,6,9]);
+ assert.deepEqual(xs.slice(0,3).map(x=>x-xs[0]),[0,7,11]);
 });
 test('custom team names respect the smaller token pool while preserving native training glyphs',()=>{
  const alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-',names=Array.from({length:56},(_,i)=>'I'+alphabet[i%alphabet.length]+alphabet[i*7%alphabet.length]);
  const r=renderBigTeamNames(names);assert.ok(r.dictionary.length<=48);assert.ok(r.count<=763);
+});
+
+test('large team letters retain a clear ink column between adjacent six-pixel bodies',()=>{
+ const r=renderBigTeamNames(['BR']),n=r.count,xs=Array.from({length:n},(_,i)=>r.raw[59+i]);assert.equal(xs[2]-xs[0],7);
+ const origin=xs[0],pixels=Array.from({length:16},()=>new Uint8Array(80));
+ for(let i=0;i<n;i++){const x=r.raw[59+i],y=r.raw[59+n+i]-1,t=r.raw[59+2*n+i]-0x80;for(let yy=0;yy<8;yy++)for(let xx=0;xx<8;xx++){let v=0;for(let p=0;p<4;p++)v|=(r.font[t*32+(p>>1)*16+yy*2+(p&1)]>>(7-xx)&1)<<p;if(v&&!pixels[y+yy][x+xx])pixels[y+yy][x+xx]=v;}}
+ assert.ok(pixels.every(row=>row[origin+6]!==10),'outlines may occupy the gap, white letter bodies must remain separate');
+ assert.ok(pixels.some(row=>row[origin+5]===10));assert.ok(pixels.some(row=>row[origin+7]===10));
 });

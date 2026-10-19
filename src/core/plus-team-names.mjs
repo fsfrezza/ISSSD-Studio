@@ -44,15 +44,16 @@ function tokenize(text,pairs){
  const tokens=[];for(let i=text.length;i>0;){const [p,t]=prev[i];tokens.push(t);i=p;}return {count:cost.at(-1),tokens:tokens.reverse()};
 }
 export function renderBigTeamNames(names,baseFont=new Uint8Array(4096)){
- const glyph=c=>c==='I'?['01','01','01','01','01','01','01']:c==='.'?['000','000','000','000','000','000','010']:PLUS_MAIN_MENU_GLYPHS[c]?.slice(0,7).map(v=>Array.from({length:5},(_,x)=>v&(1<<(6-x))?'1':'0').join(''));
+ const glyph=c=>c==='I'?['1','1','1','1','1','1','1']:c==='.'?['000','000','000','000','000','000','010']:PLUS_MAIN_MENU_GLYPHS[c]?.slice(0,7).map(v=>Array.from({length:5},(_,x)=>v&(1<<(6-x))?'1':'0').join(''));
  const sourceGlyph=glyph;
  const scaledGlyph=c=>{const g=sourceGlyph(c);return g?.map(row=>Array.from({length:row.length===5?6:row.length},(_,x)=>row[Math.floor(x*row.length/(row.length===5?6:row.length))]).join(''));};
- const glyphWidth=c=>scaledGlyph(c)?.[0].length??99;
- const advance=s=>[...s].reduce((n,c)=>n+(c===' '?3:glyphWidth(c)),0);
+ // One clear ink column between letters; narrow I keeps paired tokens in eight pixels.
+ const glyphWidth=c=>(scaledGlyph(c)?.[0].length??98)+1;
+ const advance=s=>[...s].reduce((n,c)=>n+(c===' '?2:glyphWidth(c)),0);
  const chars=[...new Set(names.join('').replace(/ /g,''))].sort(),pairs=new Set();
  const reserved=new Set(Array.from({length:32},(_,i)=>0x60+i));
  if(chars.length*2>128-reserved.size)throw Error('Nomes grandes: conjunto de caracteres excede a fonte.');
- const candidates=[...new Set(names.flatMap(n=>Array.from({length:n.length-1},(_,i)=>n.slice(i,i+2)).filter(p=>!p.includes(' ')&&advance(p)<=8)))].sort();
+ const candidates=[...new Set(names.flatMap(n=>Array.from({length:n.length-1},(_,i)=>n.slice(i,i+2)).filter(p=>!p.includes(' ')&&advance(p)-1<=8)))].sort();
  const total=p=>names.reduce((n,s)=>n+tokenize(s,p).count,0);
  while(chars.length+pairs.size<Math.floor((128-reserved.size)/2)){let best=null,score=total(pairs);for(const p of candidates){if(pairs.has(p))continue;const next=total(new Set([...pairs,p]));if(next<score){score=next;best=p;}}if(best===null)break;pairs.add(best);}
  const tokens=names.map(n=>tokenize(n,pairs)),count=tokens.reduce((n,t)=>n+t.count*2,0);
@@ -72,7 +73,7 @@ export function renderBigTeamNames(names,baseFont=new Uint8Array(4096)){
   const copy=pixels.map(r=>r.slice());for(let y=0;y<16;y++)for(let x=0;x<8;x++)if(copy[y][x])for(const [dx,dy]of [[-1,0],[1,0],[0,-1],[0,1]]){const xx=x+dx,yy=y+dy;if(xx>=0&&xx<8&&yy>=0&&yy<16&&!pixels[yy][xx])pixels[yy][xx]=9;}
   for(let y=0;y<16;y++)for(let x=0;x<8;x++){const at=(y<8?tile:bottom)*32+(y%8)*2,bit=7-x,v=pixels[y][x];for(let plane=0;plane<4;plane++)font[at+(plane>>1)*16+(plane&1)]|=((v>>plane)&1)<<bit;}
  }
- const lists=tokens.map(t=>{const width=t.tokens.reduce((n,s)=>n+advance(s),0);if(width>80)throw Error('Nome grande excede 80 px. Abrevie o campo Nome grande.');let x=Math.round(40-width/2);return t.tokens.flatMap(s=>{if(s===' '){x+=3;return [];}const [top,bottom]=tiles.get(s),sprites=[{x:x&255,y:1,tile:top,prop:0x0A},{x:x&255,y:9,tile:bottom,prop:0x0A}];x+=advance(s);return sprites;});});
+ const lists=tokens.map(t=>{const width=t.tokens.reduce((n,s)=>n+advance(s),0)-1;if(width>80)throw Error('Nome grande excede 80 px. Abrevie o campo Nome grande.');let x=Math.round(40-width/2);return t.tokens.flatMap(s=>{if(s===' '){x+=2;return [];}const [top,bottom]=tiles.get(s),sprites=[{x:x&255,y:1,tile:top,prop:0x0A},{x:x&255,y:9,tile:bottom,prop:0x0A}];x+=advance(s);return sprites;});});
  const raw=new Uint8Array(59+count*4),pointers=new Uint8Array(112);raw[0]=56;raw[1]=count&255;raw[2]=count>>8;let offset=0;
  lists.forEach((list,i)=>{raw[3+i]=list.length;pointers.set(word(2*offset),i*2);for(const sp of list){raw[59+offset]=sp.x;raw[59+count+offset]=sp.y;raw[59+count*2+offset]=sp.tile;raw[59+count*3+offset]=sp.prop;offset++;}});
  return {font,raw,pointers,count,dictionary};

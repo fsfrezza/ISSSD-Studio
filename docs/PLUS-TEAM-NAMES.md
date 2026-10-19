@@ -52,3 +52,10 @@ A reserva em 5A00 sobrepõe parte do dataset compartilhado de cursores em 5876..
 A fonte mantém 4096 bytes e reserva os últimos 32 tiles nativos (60..7F), incluindo números e VS. Os pontos de E.U.A. e o I têm margens próprias: o corpo do I fica um pixel depois do início da célula para não ser coberto pelo contorno da letra anterior. Todos os pares de equipes continuam dentro do orçamento de 34 slivers por linha.
 
 Foram conferidos em execução nativa no Snes9x 2005: a foto e o nome do Brasil na seleção, o país do estádio, a formação com alteração de tática, o seletor de treino e a volta para esse seletor após cancelar o estádio. Os testes executam os bytes dos hooks em um interpretador de instruções 65816 para verificar os desvios, cópias e preservação dos registradores, inclusive quando o carregador nativo reaproveita o cache.
+
+Os nomes grandes agora separam os corpos das letras por uma coluna, mantendo
+os corpos de seis pixels e a altura anterior. I usa um traço de um pixel,
+permitindo pares com espaçamento dentro de uma célula OBJ de oito pixels.
+Espaços entre palavras têm dois pixels. Todos os 56 nomes continuam dentro
+dos limites de largura, atlas, objetos por linha e cache; a arte reservada de
+treinamento permanece intacta.

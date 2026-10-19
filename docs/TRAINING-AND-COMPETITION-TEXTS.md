@@ -53,3 +53,10 @@ MODE continuam independentes e nas posições originais.
 ESCANTEIO usa redução de 8 para 6 colunas por célula. A redução cobre todas as
 colunas da origem e prioriza a tinta branca sobre o contorno escuro, preservando
 a diagonal de N sem escurecer as letras. A altura nativa permanece inalterada.
+
+O retorno equivalente na partida normal passa pelo inicializador `86:C7DF`
+(tela Vantagem depois do estádio). Esse caminho também deve manter o cache em
+`5A00`. A navegação estádio → Vantagem → estádio foi conferida repetidamente,
+além do caminho de treino. Os extremos direitos de Vantagem usam coluna 21
+para o início de FORTE e coluna 26 com alinhamento à direita para FRACO:
+assim acompanham respectivamente o início do 5 e o fim do 1.

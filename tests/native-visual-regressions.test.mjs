@@ -30,7 +30,7 @@ test('TEMPO never enters the two cells cleared after both training clocks are dr
 test('BRASIL keeps visible I strokes after native OAM priority composes neighbouring outlines',()=>{
  const r=renderBigTeamNames(['BRASIL']),canvas=Array.from({length:16},()=>new Uint8Array(80)),n=r.count;
  for(let i=0;i<n;i++){const x=r.raw[59+i],y=r.raw[59+n+i]-1,tile=r.raw[59+2*n+i]-0x80;for(let yy=0;yy<8;yy++)for(let xx=0;xx<8;xx++){let v=0;for(let p=0;p<4;p++)v|=(r.font[tile*32+(p>>1)*16+yy*2+(p&1)]>>(7-xx)&1)<<p;if(v&&!canvas[y+yy][x+xx])canvas[y+yy][x+xx]=v;}}
- const iTile=r.dictionary.findIndex((s,k)=>s.includes('I')&&r.raw.slice(59+2*n,59+3*n).includes(0x80+k*2));assert.ok(iTile>=0);const sprite=Array.from({length:n},(_,i)=>i).find(i=>r.raw[59+2*n+i]===0x80+iTile*2);assert.notEqual(sprite,undefined);const origin=r.raw[59+sprite],token=r.dictionary[iTile],ix=origin+(token.length===2&&token[1]==='I'?7:1);assert.ok(canvas.reduce((n,row)=>n+(row[ix]===10),0)>=10,'the I retains its full vertical white stroke');
+ const iTile=r.dictionary.findIndex((s,k)=>s.includes('I')&&r.raw.slice(59+2*n,59+3*n).includes(0x80+k*2));assert.ok(iTile>=0);const sprite=Array.from({length:n},(_,i)=>i).find(i=>r.raw[59+2*n+i]===0x80+iTile*2);assert.notEqual(sprite,undefined);const origin=r.raw[59+sprite],token=r.dictionary[iTile],ix=origin+(token.length===2&&token[1]==='I'?7:0);assert.ok(canvas.reduce((n,row)=>n+(row[ix]===10),0)>=10,'the I retains its full vertical white stroke');
 });
 test('formation keeps native DF and renders literal CANCELA without looking up NUMBER tiles',()=>{
  const base=seedGraphicalLabelFixture(new Uint8Array(0x200000).fill(255)),rom=new Uint8Array(0x400000).fill(255);rom.set(base);const values={'navigation-labels':{cancel:'CANCELA'},'formation-labels':{defenders:'DF',midfielders:'MC',forwards:'AT'}};plusGraphicalLabelsWriter(rom,{additionalScreenTextsV1:{schema:'isssd-additional-screen-texts-v1',values}},base,['formacoes']);
@@ -43,9 +43,9 @@ test('formation keeps native DF and renders literal CANCELA without looking up N
 
 test('cached stadium and team selection keep names away from their country objects; returning menus restore the overwritten cursor planes',()=>{
  const memory=hooks(),name=Uint8Array.from({length:0x5F6},(_,i)=>i*5+1&255),cache=memory.slice(cpu(MENU_OAM_CACHE_SLOT),cpu(MENU_OAM_CACHE_SLOT)+MENU_OAM_PLANE_SIZE*4);
- for(const ret of [0xAC3E,0xAC2F,0x9E8A,0xAD0D,0x8BDC,0xABED]){
+ for(const ret of [0xAC3E,0xAC2F,0x9E8A,0xAD0D,0xC7DF,0x8BDC,0xABED]){
   const m=memory.slice();for(let p=0;p<4;p++)m.set(name,0x7E5A00+p*0x2000);m.set([0,0x5A],0x7E5FF8);m.set([0,0x5A],0x7E5FFA);const sp=0x1E0;m.set([0x59,0xA7,0x85,ret&255,ret>>8,ret===0x9E8A?0xA4:0x85],sp+1);
-  executeHook(m,cpu(TEAM_NAME_HOOK_SLOT+0x80),{s:sp,a:0xFFFF,x:22,y:44},new Set([0x859E82]));const expected=[0xAC3E,0xAC2F,0x9E8A,0xAD0D].includes(ret)?0x5A00:0x5280;assert.equal(word(m,0x7E5FF8),expected);
+  executeHook(m,cpu(TEAM_NAME_HOOK_SLOT+0x80),{s:sp,a:0xFFFF,x:22,y:44},new Set([0x859E82]));const expected=[0xAC3E,0xAC2F,0x9E8A,0xAD0D,0xC7DF].includes(ret)?0x5A00:0x5280;assert.equal(word(m,0x7E5FF8),expected);
   for(let p=0;p<4;p++){assert.deepEqual(m.slice(0x7E0000+expected+p*0x2000,0x7E0000+expected+p*0x2000+name.length),name);if(expected===0x5280)assert.deepEqual(m.slice(0x7E5876+p*0x2000,0x7E5876+p*0x2000+MENU_OAM_PLANE_SIZE),cache.slice(p*MENU_OAM_PLANE_SIZE,(p+1)*MENU_OAM_PLANE_SIZE));}
  }
 });

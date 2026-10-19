@@ -220,7 +220,7 @@ export function plusGraphicalLabelsWriter(rom,state={},base=rom,selectedAreas=nu
    drawGraphicalLabel(raw,values['handicap-labels'].strong??'STRONG',{tile:32,tiles:4,align:'left'});
    drawGraphicalLabel(raw,values['handicap-labels'].weak??'WEAK',{tile:36,tiles:4,align:'right'});
    if(base[0x3AFCA]!==0x15||base[0x3AFCB]!==2||base.slice(0x3FB80,0x3FB88).some(v=>v!==255))throw Error('Vantagem: descritores dos extremos divergentes.');
-   writes.push([0x3AFC8,Uint8Array.of(0x80,0xFB,0x16,2)],[0x3AFD4,Uint8Array.of(0x84,0xFB,0x1B,2)],[0x3FB80,Uint8Array.from([0xB2,0xB3,0xB4,0xB5,0xB6,0xB7,0xB8,0xB9])]);
+   writes.push([0x3AFC8,Uint8Array.of(0x80,0xFB,0x15,2)],[0x3AFD4,Uint8Array.of(0x84,0xFB,0x1A,2)],[0x3FB80,Uint8Array.from([0xB2,0xB3,0xB4,0xB5,0xB6,0xB7,0xB8,0xB9])]);
   }draw('handicapStrength','handicap-labels','weak',4,4);
   draw('playerNumberLabel','navigation-labels','numbers',0,3,{bpp:4,background:12,ink:9,outline:12,x:1,right:23,condense:true,align:'center'});
   const s='navigation-labels';
