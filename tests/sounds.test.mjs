@@ -8,8 +8,16 @@ import {canonicalProjectDocument} from '../src/core/project-serialize.mjs';
 import {buildPlusProjectRom} from '../src/core/project-build.mjs';
 import {buildCumulativeProject} from '../src/core/cumulative-build.mjs';
 import {makePlusTacticalFixture} from './plus-tactics-fixture.mjs';
-const fb=JSON.parse(fs.readFileSync(new URL('../project-data/fb96-sound-references.json',import.meta.url))),legacy=fs.readFileSync(new URL('../.editor-vendor/legacy-ui/ISSSD-Studio.html',import.meta.url),'utf8');
-const galvao=Uint8Array.from(Buffer.from(legacy.match(/REF_GA=b64\(`([^`]+)`\)/)[1],'base64'));
+const fb=JSON.parse(fs.readFileSync(new URL('../project-data/fb96-sound-references.json',import.meta.url)));
+// CI has no private legacy Editor. A procedural bank exercises the identical
+// BRR/project/export contract; local checks additionally use the real reference.
+const legacyPath=new URL('../.editor-vendor/legacy-ui/ISSSD-Studio.html',import.meta.url);
+const galvao=new Uint8Array(0x80000);
+if(fs.existsSync(legacyPath))galvao.set(Buffer.from(fs.readFileSync(legacyPath,'utf8').match(/REF_GA=b64\(`([^`]+)`\)/)[1],'base64'));
+else for(const [index,s]of SOUND_SLOTS.entries()){
+ const blocks=Math.max(1,Math.floor(s.capacity/18)),offset=s.pc-0x180000;
+ for(let block=0;block<blocks;block++){galvao[offset+block*9]=0x80|(block===blocks-1?1:0);for(let n=1;n<9;n++)galvao[offset+block*9+n]=(index*13+block+n)&255;}
+}
 const state=source=>({soundsV1:{schema:SOUND_SCHEMA,values:Object.fromEntries(SOUND_SLOTS.map(s=>[s.id,{source,brrBase64:source==='fb96'?fb.samples[s.id]:Buffer.from(terminatedBrr(galvao.slice(s.pc-0x180000,s.pc-0x180000+s.capacity))).toString('base64')}]))}});
 for(const source of ['galvao','fb96'])test(`${source}: all 74 BRR samples fit, survive project serialization and preserve bytes after their own END blocks`,()=>{
  const semantic=state(source),doc=canonicalProjectDocument({state:{semantic}}),reopened=JSON.parse(JSON.stringify(doc));assert.deepEqual(reopened.state.semantic.soundsV1,semantic.soundsV1);
