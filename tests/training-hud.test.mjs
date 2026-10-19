@@ -17,6 +17,7 @@ const state=values=>({additionalScreenTextsV1:{values:{'training-hud':values}}})
 const portuguese=Object.fromEntries(fields.map(([id,,pt])=>[id,pt]));
 test('training codec matches audited native streams and centers the complete INICIO message',()=>{
  fields.forEach((f,i)=>assert.deepEqual([...encodeTrainingHud(f,f[1],true)],originals[i]));
+ const timeUp=encodeTrainingHud(fields[5],fields[5][2]);assert.equal(timeUp[2],0x29);assert.equal(timeUp[17],0x2B,'F shares the E upper half, not the G upper half');
  assert.deepEqual([...encodeTrainingHud(fields[3],'INÍCIO')],[0x0D,0x59,0x30,0x3A,0x30,0x25,0x30,0x3C,0xFE,0x2D,0x59,0x31,0x3B,0x31,0x26,0x31,0x3D,0xFF]);
 });
 test('training HUD repoints every native occurrence, preserving the base and original strings',()=>{
