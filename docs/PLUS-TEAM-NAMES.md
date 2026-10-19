@@ -66,3 +66,11 @@ ficam em PC 3E6D00; a rotina em PC 3E7500 os recompõe em 5600/7600/9600/B600.
 Isso preserva país, campo e setas mesmo após passar por dois ou mais menus
 que usaram as reservas sobrepostas. Não há uma lista crescente de exceções
 para cada menu intermediário.
+
+### Bola corrompida na cobrança de pênalti dentro da partida
+
+O carregador `$8296AF` converte primeiro os 29 quadros nativos da bola em `$7E557A..$7E55D8`, com quatro planos separados por `$2000`. Depois converte os nomes das equipes, com cursor X=`$96B8` e destino original Y=`$4F02`. Ao chegar do campo, o cache de nomes permanecia em `$5280`; os nomes ampliados invadiam os quadros da bola já carregados. A colisão alterava contagem de objetos, coordenadas e propriedades, produzindo retângulos em alguns quadros do chute alto. Não depende do aviso de gol nem do replay.
+
+Os dois invólucros dos conversores OAM agora selecionam `$5A00` especificamente nessa conversão dos nomes do pênalti. O helper em PC `$3E30C0` mantém os registradores, flags e a pilha, e usa a restauração existente do cache. Os demais carregadores conservam seu destino anterior.
+
+Validação: teste executa ambos os invólucros emitidos e verifica os quatro planos da bola após a escrita dos nomes. No núcleo SNES, a transição controlada campo → cobrança, com o projeto canônico, tinha divergências de 38/63/53/93 bytes nos quatro planos; após a correção todos os 376 bytes ficaram idênticos à conversão dos objetos originais. Essa comparação valida a integridade das animações; não substitui a confirmação visual da cobrança específica no emulador do usuário.

@@ -49,3 +49,19 @@ test('cached stadium and team selection keep names away from their country objec
   for(let p=0;p<4;p++){assert.deepEqual(m.slice(0x7E0000+expected+p*0x2000,0x7E0000+expected+p*0x2000+name.length),memory.slice(cpu(TEAM_NAME_CACHE_SLOT)+p*TEAM_NAME_CACHE_PLANE,cpu(TEAM_NAME_CACHE_SLOT)+(p+1)*TEAM_NAME_CACHE_PLANE));if(expected===0x5A00)assert.deepEqual(m.slice(0x7E5600+p*0x2000,0x7E5600+p*0x2000+STADIUM_OAM_PLANE),memory.slice(cpu(STADIUM_OAM_CACHE_SLOT)+p*STADIUM_OAM_PLANE,cpu(STADIUM_OAM_CACHE_SLOT)+(p+1)*STADIUM_OAM_PLANE));if(expected===0x5280)assert.deepEqual(m.slice(0x7E5876+p*0x2000,0x7E5876+p*0x2000+MENU_OAM_PLANE_SIZE),cache.slice(p*MENU_OAM_PLANE_SIZE,(p+1)*MENU_OAM_PLANE_SIZE));}
  }
 });
+
+test('normal-match penalty names never overwrite any live ball animation plane inherited from the field',()=>{
+ for(const entry of [0,0x40]){
+  const m=hooks();m.set([0x80,0x52],0x7E5FF8);m.set([0x80,0x52],0x7E5FFA);
+  const nativeBall=Uint8Array.from({length:0x5E},(_,i)=>(i*37+11)&255);
+  for(let p=0;p<4;p++)m.set(nativeBall,0x7E557A+p*0x2000);
+  const out=executeHook(m,cpu(TEAM_NAME_HOOK_SLOT+entry),{a:255,x:0x96B8,y:0x4F02,p:0x81},new Set([0x80947E,0x809482]));
+  assert.equal(out.calls.length,1);assert.equal(out.calls[0].y,0x5A00);assert.equal(out.calls[0].x,0x96B8);assert.equal(out.calls[0].a,255);assert.equal(out.r.s,0x1FF);assert.equal(word(m,0x7E5FF8),0x5A00);
+  for(let p=0;p<4;p++){
+   // The native converter writes the same four planes at its requested Y.
+   m.set(m.slice(cpu(TEAM_NAME_CACHE_SLOT)+p*TEAM_NAME_CACHE_PLANE,cpu(TEAM_NAME_CACHE_SLOT)+(p+1)*TEAM_NAME_CACHE_PLANE),0x7E0000+out.calls[0].y+p*0x2000);
+   assert.deepEqual(m.slice(0x7E557A+p*0x2000,0x7E55D8+p*0x2000),nativeBall,'every ball frame and property survives, including the descending high shot');
+  }
+ }
+ const unrelated=hooks();unrelated.set([0x80,0x52],0x7E5FFA);const out=executeHook(unrelated,cpu(TEAM_NAME_HOOK_SLOT),{a:255,x:0x8E4C,y:0x4F02},new Set([0x80947E]));assert.equal(out.calls[0].y,0x5280,'other menu names retain their existing layout');
+});
