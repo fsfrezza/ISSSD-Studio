@@ -4,6 +4,7 @@ export const PREMATCH_GRAPHIC_MAPS=[{pc:0xDBEF7,size:553},{pc:0xDC120,size:474},
 export const PREMATCH_GRAPHIC_LABELS=[
  ['gameStart','GAME START','kickOff'],['selectSquad','SELECT SQUAD','substitution'],['formationChange','FORMATION CHANGE','formation'],['adjustStrategy','ADJUST STRATEGY','teamStrategy'],['manToMan','MAN TO MAN','markChange'],
  ['keyConfiguration','KEY CONFIGURATION'],['changeController','CHANGE CONTROLLER'],['numberPlayers','NUMBER OF PLAYERS'],['editPlayers','EDIT PLAYER SKILLS'],['teamColors','TEAM COLORS'],
+ ['trainingStart','TRAINING START',null,'training-graphics'],['challengeStart','CHALLENGE START',null,'challenge-graphics'],
 ];
 const normalize=s=>String(s??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/\s+/g,' ').trim();
 const read=(a,i)=>a[i*2]|a[i*2+1]<<8;
@@ -22,14 +23,14 @@ function signature(map,y){const row=Array.from({length:32},(_,x)=>read(map,y*32+
 export function plusPrematchGraphicsWriter(rom,state={},base=rom,selectedAreas=null){
  if(selectedAreas&&!selectedAreas.includes('pre-partida'))return rom;
  const screen=state.screenTextsV1?.values?.['match-options']||{},extra=state.additionalScreenTextsV1?.values?.['pre-match-labels']||{};
- const requested=PREMATCH_GRAPHIC_LABELS.map(([id,en,legacy])=>extra[id]??(legacy?screen[legacy]:undefined));
+ const requested=PREMATCH_GRAPHIC_LABELS.map(([id,en,legacy,section])=>section?state.additionalScreenTextsV1?.values?.[section]?.[id]:extra[id]??(legacy?screen[legacy]:undefined));
  if(!requested.some((v,i)=>v!==undefined&&normalize(v)!==PREMATCH_GRAPHIC_LABELS[i][1]))return rom;
  const original=konamiLzDecompress(base,0xF631C).data;if(original.length!==3168)throw Error('Pré-partida: stream nativo não reconhecido.');
  const maps=PREMATCH_GRAPHIC_MAPS.map(m=>{const d=konamiLzDecompress(base,m.pc);if(d.data.length!==2048||d.compressedSize>m.size)throw Error('Pré-partida: mapa nativo divergente.');return d.data.slice();});
  const reference=maps[0].slice();
  const starts=[0x201,0x20F,0x221,0x234,0x28E,0x248,0x256,0x26A,0x27E,0x206];
  for(let i=0;i<starts.length;i++){const first=Array.from({length:32},(_,x)=>read(reference,(4+i*2)*32+x)&1023).find(v=>v>512&&v<710);if(first!==starts[i])throw Error('Pré-partida: ordem dos rótulos diverge da Plus verificada.');}
- const patterns=PREMATCH_GRAPHIC_LABELS.map((_,i)=>signature(reference,4+i*2));
+ const patterns=PREMATCH_GRAPHIC_LABELS.map((_,i)=>i<10?signature(reference,4+i*2):signature(maps[i===10?3:4],i===10?7:9));
  const tiles=Array.from({length:198},(_,i)=>original.slice(i*16,i*16+16));
  for(let i=0;i<requested.length;i++){
   if(requested[i]===undefined||normalize(requested[i])===PREMATCH_GRAPHIC_LABELS[i][1])continue;

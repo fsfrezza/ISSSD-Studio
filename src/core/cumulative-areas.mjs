@@ -1,3 +1,5 @@
+import {EXTRA_MENU_GRAPHIC_REGIONS} from './plus-extra-menu-graphics.mjs';
+import {TRAINING_HUD_REGIONS} from './plus-training-hud.mjs';
 import {MATCH_STATISTICS_REGIONS} from './plus-match-statistics.mjs';
 import {MATCH_ANNOUNCEMENT_REGIONS} from './plus-match-announcements.mjs';
 import {TEAM_NAME_REGIONS} from './plus-team-names.mjs';
@@ -54,6 +56,8 @@ export function areaClassifier(rom,base=null){
  }
  for(let p=1;p<=7;p++)for(const s of knownMirrorSlices(30,p))derived.push([s.mirror,s.mirror+s.length]);
  return off=>{
+  if(contains(off,EXTRA_MENU_GRAPHIC_REGIONS))return 'pre-partida';
+  if(contains(off,TRAINING_HUD_REGIONS))return 'partida';
   if(contains(off,MATCH_STATISTICS_REGIONS))return 'partida';
   if(contains(off,MATCH_ANNOUNCEMENT_REGIONS))return 'partida';
   if(PREMATCH_GRAPHIC_MAPS.some(m=>off>=m.pc&&off<m.pc+m.size))return 'pre-partida';

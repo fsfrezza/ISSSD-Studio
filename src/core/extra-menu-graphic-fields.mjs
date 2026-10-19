@@ -1,0 +1,6 @@
+export const EXTRA_MENU_GRAPHIC_SECTIONS=[
+ {id:'scenario-graphics',page:'texts-scenarios',title:'Legenda auxiliar do tempo (vazia evita sobreposição com a descrição)',area:'pre-partida',fields:[['timeRemaining','TIME REMAINING','',{extraMenuGraphic:true}]]},
+ {id:'challenge-graphics-extra',page:'texts-challenge',title:'Modalidades gráficas do desafio',area:'pre-partida',fields:[['cornerKick','CORNER KICK','ESCANTEIO',{extraMenuGraphic:true}],['freeKick','FREE KICK','FALTA',{extraMenuGraphic:true}],['bestTime','BEST TIME','TEMPO',{extraMenuGraphic:true}],['bestScore','BEST SCORE','PONTOS',{extraMenuGraphic:true}]]},
+ {id:'password-graphics',page:'texts-password',title:'Cabeçalho gráfico da senha',area:'pre-partida',fields:[['enterPassword','ENTER PASSWORD!','DIGITE SENHA',{extraMenuGraphic:true}]]},
+ {id:'competition-graphics',page:'texts-competitions',title:'Apresentações dos campeonatos',area:'pre-partida',fields:[['worldSeries','WORLD SERIES','MEGACOPA',{extraMenuGraphic:true}],['firstSeason','1ST SEASON','1A TEMPORADA',{extraMenuGraphic:true}],['secondSeason','2ND SEASON','2A TEMPORADA',{extraMenuGraphic:true}],['international','INTERNATIONAL','CAMPEONATO',{extraMenuGraphic:true}]]},
+];

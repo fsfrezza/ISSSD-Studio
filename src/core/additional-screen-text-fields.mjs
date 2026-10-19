@@ -1,3 +1,5 @@
+import {EXTRA_MENU_GRAPHIC_SECTIONS} from './extra-menu-graphic-fields.mjs';
+import {TRAINING_HUD_SECTION} from './training-hud-fields.mjs';
 import {MATCH_STATISTICS_SECTION} from './match-statistics-fields.mjs';
 import {MATCH_ANNOUNCEMENT_SECTION} from './match-announcement-fields.mjs';
 import {USER_PORTUGUESE_PRESETS} from './user-portuguese-presets.mjs';
@@ -42,6 +44,10 @@ export const ADDITIONAL_TEXT_SECTIONS=Object.freeze([
  {id:'team-selection-labels',page:'texts-team-selection',title:'Rótulos gráficos da seleção',area:'selecao-equipes',fields:[['formation','FORMATION','FORMACAO'],['statistics','TEAM STATISTICS','VER DADOS'],['keeperAbbr','GK','GO']]},
  {id:'handicap-labels',page:'texts-handicap',title:'Rótulos gráficos de Vantagem',area:'pre-partida',fields:[['condition','CONDITION','CONDIÇÃO'],['keeper','GOALKEEPER','GOLERO'],['skill','SKILL','NÍVEL'],['players','NUMBER OF PLAYERS','NÚMERO DE ATLETAS'],['strong','STRONG','FORTE'],['weak','WEAK','FRACO']]},
  {id:'pre-match-labels',page:'match-options',title:'Outros rótulos da pré-partida',area:'pre-partida',fields:[['keyConfiguration','KEY CONFIGURATION','COMANDOS'],['changeController','CHANGE CONTROLLER','TROCAR CONTROLE'],['numberPlayers','NUMBER OF PLAYERS','NÚMERO DE ATLETAS'],['editPlayers','EDIT PLAYER SKILLS','EDITAR ATLETAS'],['teamColors','TEAM COLORS','UNIFORMES']]},
+ {id:'training-graphics',page:'texts-training',title:'Rótulos gráficos do treino',area:'pre-partida',fields:[['trainingStart','TRAINING START','INICIAR TREINO',{prematchGraphic:true}]]},
+ {id:'challenge-graphics',page:'texts-challenge',title:'Rótulos gráficos do desafio',area:'pre-partida',fields:[['challengeStart','CHALLENGE START','INICIAR DESAFIO',{prematchGraphic:true}]]},
+ ...EXTRA_MENU_GRAPHIC_SECTIONS,
+ TRAINING_HUD_SECTION,
  MATCH_ANNOUNCEMENT_SECTION,
  MATCH_STATISTICS_SECTION,
  ...NATIVE_MENU_TEXT_SECTIONS,
@@ -62,7 +68,7 @@ export function pendingAdditionalTextExports(semantic={},selectedAreas=null){
  for(const section of ADDITIONAL_TEXT_SECTIONS){
   if(selectedAreas&&!selectedAreas.includes(section.area))continue;
   for(const [id,english,,options] of section.fields){
-   if((section.id==='strategy-labels'&&['one','four'].includes(id))||GRAPHICAL_LABEL_FIELDS[section.id]?.includes(id)||options?.pool||options?.native||options?.announcement||options?.matchStatistics||(section.id==='cursor-labels'&&CURSOR_LABEL_IDS.includes(id)))continue;
+   if((section.id==='strategy-labels'&&['one','four'].includes(id))||GRAPHICAL_LABEL_FIELDS[section.id]?.includes(id)||options?.pool||options?.native||options?.announcement||options?.matchStatistics||options?.trainingHud||options?.extraMenuGraphic||options?.prematchGraphic||(section.id==='cursor-labels'&&CURSOR_LABEL_IDS.includes(id)))continue;
    const fields=values[section.id]||{};
    if(Object.hasOwn(fields,id)&&String(fields[id])!==english)pending.push({
     section:section.id,sectionTitle:section.title,field:id,label:english,

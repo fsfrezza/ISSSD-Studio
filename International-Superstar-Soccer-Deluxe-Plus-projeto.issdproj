@@ -10378,7 +10378,8 @@
             "data_87e808": "Use o campo inteiro para\ntreinar dribles, passes\ne chutes.",
             "data_87e880": "Tire a bola dos três\natacantes que tentam\nmarcar um gol.",
             "data_87e8f8": "Treine suas faltas.",
-            "data_87e970": "Defenda o gol controlando\no goleiro. Dois rivais\ntentarão marcar."
+            "data_87e970": "Defenda o gol controlando\no goleiro. Dois rivais\ntentarão marcar.",
+            "data_87df88": "N."
           },
           "challenge-native": {
             "data_87dfbe": "RECORDE",
@@ -10515,6 +10516,40 @@
             "ownGoal": "GOL CONTRA",
             "firstHalf": "1T",
             "secondHalf": "2T"
+          },
+          "training-hud": {
+            "practice": "TREINO",
+            "time": "TEMPO",
+            "bonusTime": "BÔNUS",
+            "start": "INÍCIO",
+            "clear": "ACERTO",
+            "timeUp": "FIM DO TEMPO",
+            "miss": "ERRO",
+            "bonusChance": "BÔNUS"
+          },
+          "training-graphics": {
+            "trainingStart": "INICIAR TREINO"
+          },
+          "challenge-graphics": {
+            "challengeStart": "INICIAR DESAFIO"
+          },
+          "challenge-graphics-extra": {
+            "cornerKick": "ESCANTEIO",
+            "freeKick": "FALTA",
+            "bestTime": "TEMPO",
+            "bestScore": "PONTOS"
+          },
+          "password-graphics": {
+            "enterPassword": "DIGITE SENHA"
+          },
+          "competition-graphics": {
+            "worldSeries": "MEGACOPA",
+            "firstSeason": "1A TEMPORADA",
+            "secondSeason": "2A TEMPORADA",
+            "international": "CAMPEONATO"
+          },
+          "scenario-graphics": {
+            "timeRemaining": ""
           }
         },
         "drafts": {
@@ -10677,7 +10712,8 @@
             "data_87e808": "Use o campo inteiro para\ntreinar dribles, passes\ne chutes.",
             "data_87e880": "Tire a bola dos três\natacantes que tentam\nmarcar um gol.",
             "data_87e8f8": "Treine suas faltas.",
-            "data_87e970": "Defenda o gol controlando\no goleiro. Dois rivais\ntentarão marcar."
+            "data_87e970": "Defenda o gol controlando\no goleiro. Dois rivais\ntentarão marcar.",
+            "data_87df88": "N."
           },
           "challenge-native": {
             "data_87dfbe": "RECORDE",
@@ -10814,6 +10850,40 @@
             "ownGoal": "GOL CONTRA",
             "firstHalf": "1T",
             "secondHalf": "2T"
+          },
+          "training-hud": {
+            "practice": "TREINO",
+            "time": "TEMPO",
+            "bonusTime": "BÔNUS",
+            "start": "INÍCIO",
+            "clear": "ACERTO",
+            "timeUp": "FIM DO TEMPO",
+            "miss": "ERRO",
+            "bonusChance": "BÔNUS"
+          },
+          "training-graphics": {
+            "trainingStart": "INICIAR TREINO"
+          },
+          "challenge-graphics": {
+            "challengeStart": "INICIAR DESAFIO"
+          },
+          "challenge-graphics-extra": {
+            "cornerKick": "ESCANTEIO",
+            "freeKick": "FALTA",
+            "bestTime": "TEMPO",
+            "bestScore": "PONTOS"
+          },
+          "password-graphics": {
+            "enterPassword": "DIGITE SENHA"
+          },
+          "competition-graphics": {
+            "worldSeries": "MEGACOPA",
+            "firstSeason": "1A TEMPORADA",
+            "secondSeason": "2A TEMPORADA",
+            "international": "CAMPEONATO"
+          },
+          "scenario-graphics": {
+            "timeRemaining": ""
           }
         }
       },

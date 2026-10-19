@@ -49,11 +49,11 @@ export function renderBigTeamNames(names,baseFont=new Uint8Array(4096)){
  const glyphWidth=c=>scaledGlyph(c)?.[0].length??99;
  const advance=s=>[...s].reduce((n,c)=>n+(c===' '?3:glyphWidth(c)),0);
  const chars=[...new Set(names.join('').replace(/ /g,''))].sort(),pairs=new Set();
- const reserved=new Set([108,109,110,111,124,125,126,127]);
- if(chars.length>120)throw Error('Nomes grandes: conjunto de caracteres excede a fonte.');
+ const reserved=new Set(Array.from({length:32},(_,i)=>0x60+i));
+ if(chars.length*2>128-reserved.size)throw Error('Nomes grandes: conjunto de caracteres excede a fonte.');
  const candidates=[...new Set(names.flatMap(n=>Array.from({length:n.length-1},(_,i)=>n.slice(i,i+2)).filter(p=>!p.includes(' ')&&advance(p)<=8)))].sort();
  const total=p=>names.reduce((n,s)=>n+tokenize(s,p).count,0);
- while(chars.length+pairs.size<80){let best=null,score=total(pairs);for(const p of candidates){if(pairs.has(p))continue;const next=total(new Set([...pairs,p]));if(next<score){score=next;best=p;}}if(best===null)break;pairs.add(best);}
+ while(chars.length+pairs.size<Math.floor((128-reserved.size)/2)){let best=null,score=total(pairs);for(const p of candidates){if(pairs.has(p))continue;const next=total(new Set([...pairs,p]));if(next<score){score=next;best=p;}}if(best===null)break;pairs.add(best);}
  const tokens=names.map(n=>tokenize(n,pairs)),count=tokens.reduce((n,t)=>n+t.count*2,0);
  if(tokens.some(t=>t.count>12))throw Error('Nome grande exige mais de 12 sprites por linha; abrevie para preservar nomes, bandeiras e VS.');
  if(count>763)throw Error('Nomes grandes exigem '+count+' sprites; limite reservado de 763.');

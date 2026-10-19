@@ -226,6 +226,7 @@ export const USER_PORTUGUESE_PRESETS={
    "data_87df65": "DRIBLE",
    "data_87df6c": "PASSE",
    "data_87df73": "CHUTE",
+   "data_87df88": "N.",
    "data_87dfb7": "SAIR",
    "data_87e808": "Use o campo inteiro para\ntreinar dribles, passes\ne chutes.",
    "data_87e880": "Tire a bola dos três\natacantes que tentam\nmarcar um gol.",

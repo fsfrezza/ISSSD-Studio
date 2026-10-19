@@ -3697,6 +3697,8 @@ const AUDITED_NATIVE_MENU_TEXT_SECTIONS=[
   }
 ];
 
+AUDITED_NATIVE_MENU_TEXT_SECTIONS.find(s=>s.id==='training-native').fields.push(['data_87df88','LV.',null,{label:'LV.',pool:{font:'TallMenuText',segments:[{pc:0x3DF88,original:'LV.'}],symbol:'DATA_87DF88'}}]);
+
 const handicapHelp=AUDITED_NATIVE_MENU_TEXT_SECTIONS.find(s=>s.id==='handicap-native').fields.find(f=>f[0]==='data_87c884');
 handicapHelp[1]='Press the select button to change 1P and CPU controls.';
 handicapHelp[3]={...handicapHelp[3],multiline:true,rows:2,pool:{...handicapHelp[3].pool,segments:[{pc:0x3C884,original:handicapHelp[1].slice(0,27)},{pc:0x3C89F,original:handicapHelp[1].slice(27)}]}};

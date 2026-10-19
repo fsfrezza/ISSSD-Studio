@@ -6,8 +6,8 @@ import {pendingAdditionalTextExports} from '../src/core/additional-screen-text-f
 import {areaClassifier} from '../src/core/cumulative-areas.mjs';
 const state=values=>({additionalScreenTextsV1:{schema:'isssd-additional-screen-texts-v1',values}});
 function fixture(){const base=new Uint8Array(0x200000).fill(0xa5);for(const s of sections)for(const f of s.fields){const bytes=encodeNativeMenuField(f,f[1]);f[3].pool.segments.forEach((seg,i)=>base.set(bytes[i],seg.pc));}return base;}
-test('138 audited fields keep original native bytes and separate screen ownership',()=>{
- assert.equal(sections.reduce((n,s)=>n+s.fields.length,0),138);assert.equal(sections.length,20);
+test('139 audited fields keep original native bytes and separate screen ownership',()=>{
+ assert.equal(sections.reduce((n,s)=>n+s.fields.length,0),139);assert.equal(sections.length,20);
  const controls=sections.find(s=>s.id==='controls-help-native');assert.equal(controls.page,'controls');assert.equal(controls.fields.length,6);
  assert.equal(sections.find(s=>s.id==='scenario-native').page,'texts-scenarios');
  const base=fixture(),rom=base.slice(),values=Object.fromEntries(sections.map(s=>[s.id,Object.fromEntries(s.fields.map(f=>[f[0],f[1]]))]));
@@ -33,7 +33,7 @@ test('native field limits and base mismatch refuse all writes atomically',()=>{
 });
 
 
-test('all 138 Portuguese presets fit native fonts, row limits and ROM export',()=>{
+test('all 139 Portuguese presets fit native fonts, row limits and ROM export',()=>{
  const base=fixture(),before=base.slice(),rom=base.slice(),values={};
  for(const section of sections){values[section.id]={};for(const field of section.fields){assert.equal(typeof field[2],'string',field[0]);assert.ok(field[2].trim(),field[0]);values[section.id][field[0]]=field[2];encodeNativeMenuField(field,field[2]);}}
  plusNativeMenuTextWriter(rom,state(values),base);assert.deepEqual(base,before);assert.deepEqual(pendingAdditionalTextExports(state(values)),[]);

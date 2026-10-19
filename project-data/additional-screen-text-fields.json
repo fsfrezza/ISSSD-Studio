@@ -621,6 +621,222 @@
     ]
   },
   {
+    "id": "training-graphics",
+    "page": "texts-training",
+    "title": "Rótulos gráficos do treino",
+    "area": "pre-partida",
+    "fields": [
+      [
+        "trainingStart",
+        "TRAINING START",
+        "INICIAR TREINO",
+        {
+          "prematchGraphic": true
+        }
+      ]
+    ]
+  },
+  {
+    "id": "challenge-graphics",
+    "page": "texts-challenge",
+    "title": "Rótulos gráficos do desafio",
+    "area": "pre-partida",
+    "fields": [
+      [
+        "challengeStart",
+        "CHALLENGE START",
+        "INICIAR DESAFIO",
+        {
+          "prematchGraphic": true
+        }
+      ]
+    ]
+  },
+  {
+    "id": "scenario-graphics",
+    "page": "texts-scenarios",
+    "title": "Legenda auxiliar do tempo (vazia evita sobreposição com a descrição)",
+    "area": "pre-partida",
+    "fields": [
+      [
+        "timeRemaining",
+        "TIME REMAINING",
+        "",
+        {
+          "extraMenuGraphic": true
+        }
+      ]
+    ]
+  },
+  {
+    "id": "challenge-graphics-extra",
+    "page": "texts-challenge",
+    "title": "Modalidades gráficas do desafio",
+    "area": "pre-partida",
+    "fields": [
+      [
+        "cornerKick",
+        "CORNER KICK",
+        "ESCANTEIO",
+        {
+          "extraMenuGraphic": true
+        }
+      ],
+      [
+        "freeKick",
+        "FREE KICK",
+        "FALTA",
+        {
+          "extraMenuGraphic": true
+        }
+      ],
+      [
+        "bestTime",
+        "BEST TIME",
+        "TEMPO",
+        {
+          "extraMenuGraphic": true
+        }
+      ],
+      [
+        "bestScore",
+        "BEST SCORE",
+        "PONTOS",
+        {
+          "extraMenuGraphic": true
+        }
+      ]
+    ]
+  },
+  {
+    "id": "password-graphics",
+    "page": "texts-password",
+    "title": "Cabeçalho gráfico da senha",
+    "area": "pre-partida",
+    "fields": [
+      [
+        "enterPassword",
+        "ENTER PASSWORD!",
+        "DIGITE SENHA",
+        {
+          "extraMenuGraphic": true
+        }
+      ]
+    ]
+  },
+  {
+    "id": "competition-graphics",
+    "page": "texts-competitions",
+    "title": "Apresentações dos campeonatos",
+    "area": "pre-partida",
+    "fields": [
+      [
+        "worldSeries",
+        "WORLD SERIES",
+        "MEGACOPA",
+        {
+          "extraMenuGraphic": true
+        }
+      ],
+      [
+        "firstSeason",
+        "1ST SEASON",
+        "1A TEMPORADA",
+        {
+          "extraMenuGraphic": true
+        }
+      ],
+      [
+        "secondSeason",
+        "2ND SEASON",
+        "2A TEMPORADA",
+        {
+          "extraMenuGraphic": true
+        }
+      ],
+      [
+        "international",
+        "INTERNATIONAL",
+        "CAMPEONATO",
+        {
+          "extraMenuGraphic": true
+        }
+      ]
+    ]
+  },
+  {
+    "id": "training-hud",
+    "page": "texts-training",
+    "title": "Avisos e relógios do treino/desafio",
+    "area": "partida",
+    "fields": [
+      [
+        "practice",
+        "TRAINING",
+        "TREINO",
+        {
+          "trainingHud": true
+        }
+      ],
+      [
+        "time",
+        "TIME",
+        "TEMPO",
+        {
+          "trainingHud": true
+        }
+      ],
+      [
+        "bonusTime",
+        "BONUS TIME",
+        "BÔNUS",
+        {
+          "trainingHud": true
+        }
+      ],
+      [
+        "start",
+        "START",
+        "INÍCIO",
+        {
+          "trainingHud": true
+        }
+      ],
+      [
+        "clear",
+        "CLEAR",
+        "ACERTO",
+        {
+          "trainingHud": true
+        }
+      ],
+      [
+        "timeUp",
+        "TIME UP",
+        "FIM DO TEMPO",
+        {
+          "trainingHud": true
+        }
+      ],
+      [
+        "miss",
+        "MISS",
+        "ERRO",
+        {
+          "trainingHud": true
+        }
+      ],
+      [
+        "bonusChance",
+        "BONUS CHANCE",
+        "BÔNUS",
+        {
+          "trainingHud": true
+        }
+      ]
+    ]
+  },
+  {
     "id": "match-announcements",
     "page": "texts-match",
     "title": "Avisos durante a partida",
@@ -2910,6 +3126,24 @@
               }
             ],
             "symbol": "DATA_87E970"
+          }
+        }
+      ],
+      [
+        "data_87df88",
+        "LV.",
+        "N.",
+        {
+          "label": "LV.",
+          "pool": {
+            "font": "TallMenuText",
+            "segments": [
+              {
+                "pc": 253832,
+                "original": "LV."
+              }
+            ],
+            "symbol": "DATA_87DF88"
           }
         }
       ]

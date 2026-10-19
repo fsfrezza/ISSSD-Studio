@@ -43,7 +43,7 @@ test('native plans update all names and scoreboard pointers without relocating t
   const cpu=long(rom,0x17CA6+i*6+3);assert.equal(word(rom,0xFEB0+i*2),cpu&65535);
   const data=konamiLzDecompress(rom,pc(cpu)).data;assert.equal(data.length,i===54?128:64);assert.deepEqual(data.slice(0,64),renderSmallTeamName(presets[i].compact).raw);
  }
- const originalFont=konamiLzDecompress(base,0xEE13C).data;const big=renderBigTeamNames(presets.map(r=>normalizeTeamName(r.big)),originalFont);for(const t of [108,109,110,111,124,125,126,127])assert.deepEqual(big.font.slice(t*32,(t+1)*32),originalFont.slice(t*32,(t+1)*32));assert.deepEqual(konamiLzDecompress(rom,0x13E4B6).data,big.raw);assert.deepEqual(konamiLzDecompress(rom,0xEE13C).data,big.font);
+ const originalFont=konamiLzDecompress(base,0xEE13C).data;const big=renderBigTeamNames(presets.map(r=>normalizeTeamName(r.big)),originalFont);for(const t of Array.from({length:32},(_,i)=>0x60+i))assert.deepEqual(big.font.slice(t*32,(t+1)*32),originalFont.slice(t*32,(t+1)*32));assert.deepEqual(konamiLzDecompress(rom,0x13E4B6).data,big.raw);assert.deepEqual(konamiLzDecompress(rom,0xEE13C).data,big.font);
  assert.equal(long(rom,0x10A70),0x9DE13C);assert.equal(long(rom,0x10C21),0xA7E4B6);assert.deepEqual(base,before);
  for(let off=0;off<base.length;off++)if(base[off]!==rom[off])assert.ok(TEAM_NAME_REGIONS.some(([a,b])=>off>=a&&off<b));
 });
@@ -80,4 +80,8 @@ test('E.U.A. keeps visible periods between the tall letters',()=>{
  assert.ok(body.length>0);assert.ok(body.every(([x,y])=>x===1&&y>=10));
  const count=r.raw[3],xs=[...r.raw.slice(59,59+count)].filter((_,i)=>i%2===0);
  assert.deepEqual(xs.slice(0,3).map(x=>x-xs[0]),[0,6,9]);
+});
+test('custom team names respect the smaller token pool while preserving native training glyphs',()=>{
+ const alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-',names=Array.from({length:56},(_,i)=>'I'+alphabet[i%alphabet.length]+alphabet[i*7%alphabet.length]);
+ const r=renderBigTeamNames(names);assert.ok(r.dictionary.length<=48);assert.ok(r.count<=763);
 });

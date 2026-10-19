@@ -19,6 +19,7 @@ test('new text fields have user-approved translations and belong to their actual
  assert.equal(normalizeAdditionalText(pt.shotPower),'CHUTE (POT)');assert.equal(normalizeAdditionalText('CALÇÃO'),'CALCAO');
  assert.equal(sections.find(s=>s.id==='uniform-labels').page,'uniforms');
  assert.equal(sections.find(s=>s.id==='cursor-labels').page,'texts-cursor');
+ for(const [id,page]of [['training-hud','texts-training'],['training-graphics','texts-training'],['challenge-graphics-extra','texts-challenge'],['scenario-graphics','texts-scenarios'],['password-graphics','texts-password'],['competition-graphics','texts-competitions']])assert.equal(sections.find(s=>s.id===id).page,page);
  assert.ok(sections.find(s=>s.id==='navigation-labels').fields.some(([id,en,pt])=>id==='exit'&&en==='EXIT'&&pt==='SAIR'));
 });
 test('language fill is a draft, real confirmation saves full inscriptions, and reload restores them',()=>{
