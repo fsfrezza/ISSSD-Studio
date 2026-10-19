@@ -45,11 +45,11 @@ Os nomes grandes passam a usar corpo 6×12, com duas células OBJ pequenas, em l
 
 A conversão nativa organiza quatro planos de dados OAM separados por 2000h. A reserva original em 4F02 permite somente 411 registros e é insuficiente para duas linhas. Os menus e a formação usam 5280..5876; a seleção de equipe e o estádio usam 5A00..5FF6, evitando seus objetos em 5600..57D2. O limite comum é de 763 registros. Os 56 ponteiros armazenam offsets, e as 21 leituras nativas acrescentam a base efetiva.
 
-Os wrappers dos conversores em PC 3B00/3B59 escolhem a reserva antes de carregar objetos em 5876 ou 5600. O inicializador PC 2A756 reconhece também os retornos AC3E/AC2F da seleção e 9E8A do estádio: esses inicializadores podem rodar depois de um carregamento em cache. Os demais contextos voltam para 5280. Os quatro planos de 05F6 bytes são movidos antes da atualização de 7E5FF8; a base desejada fica em 7E5FFA. Valores não inicializados são descartados. A/P/X/Y e o reset original de 1466/859E82 são preservados conforme o contrato do chamador.
+Os wrappers dos conversores em PC 3B00/3B59 escolhem a reserva antes de carregar objetos em 5876 ou 5600. O inicializador PC 2A756 reconhece também os retornos AC3E/AC2F da seleção e 9E8A do estádio: esses inicializadores podem rodar depois de um carregamento em cache. Os demais contextos voltam para 5280. Os quatro planos de 05F6 bytes são restaurados do cache imutável em PC 3E5500 antes da atualização de 7E5FF8; a base desejada fica em 7E5FFA. Não se reutiliza uma cópia de WRAM potencialmente sobrescrita. A/P/X/Y e o reset original de 1466/859E82 são preservados conforme o contrato do chamador.
 
 A reserva em 5A00 sobrepõe parte do dataset compartilhado de cursores em 5876..5EB2. Ao retornar aos menus, os quatro planos desse dataset são recompostos na posição nativa a partir de uma cópia derivada da ROM-base, em PC 3E3C00..3E54F0. A conversão dos 798 registros, extraídos de 98B0B9, foi comparada com a execução de CODE_80947E: os quatro planos são idênticos. A restauração evita depender de um novo carregamento do dataset ao cancelar uma seleção. Não se aloca um novo buffer persistente em WRAM.
 
-A fonte mantém 4096 bytes e reserva os últimos 32 tiles nativos (60..7F), incluindo números e VS. Os pontos de E.U.A. e o I têm margens próprias: o corpo do I fica um pixel depois do início da célula para não ser coberto pelo contorno da letra anterior. Todos os pares de equipes continuam dentro do orçamento de 34 slivers por linha.
+A fonte mantém 4096 bytes e reserva os últimos 32 tiles nativos (60..7F), incluindo números e VS. Os pontos de E.U.A. e o I têm margens próprias: o corpo do I usa um pixel e há uma coluna separando os corpos das letras. Todos os pares de equipes continuam dentro do orçamento de 34 slivers por linha.
 
 Foram conferidos em execução nativa no Snes9x 2005: a foto e o nome do Brasil na seleção, o país do estádio, a formação com alteração de tática, o seletor de treino e a volta para esse seletor após cancelar o estádio. Os testes executam os bytes dos hooks em um interpretador de instruções 65816 para verificar os desvios, cópias e preservação dos registradores, inclusive quando o carregador nativo reaproveita o cache.
 
@@ -59,3 +59,10 @@ permitindo pares com espaçamento dentro de uma célula OBJ de oito pixels.
 Espaços entre palavras têm dois pixels. Todos os 56 nomes continuam dentro
 dos limites de largura, atlas, objetos por linha e cache; a arte reservada de
 treinamento permanece intacta.
+
+Os objetos originais do estádio (61 quadros, 233 sprites, fonte PC C2817)
+também são restaurados ao voltar à seleção. Seus quatro planos de 01D2 bytes
+ficam em PC 3E6D00; a rotina em PC 3E7500 os recompõe em 5600/7600/9600/B600.
+Isso preserva país, campo e setas mesmo após passar por dois ou mais menus
+que usaram as reservas sobrepostas. Não há uma lista crescente de exceções
+para cada menu intermediário.

@@ -1,8 +1,8 @@
 import {konamiLzCompress,konamiLzDecompress} from './konami-lz.mjs';
-import {transformLabelPlanes} from './plus-graphical-labels.mjs';
+import {drawGraphicalLabel,transformLabelPlanes} from './plus-graphical-labels.mjs';
 import {PLUS_MAIN_MENU_GLYPHS} from './plus-main-menu-renderer.mjs';
 import {NATIVE_MENU_FONTS} from './native-menu-text-fields.mjs';
-export const EXTRA_MENU_GRAPHIC_REGIONS=[[0x525D8,0x525DC],[0x3EE01,0x3EE0B],[0x176500,0x177900],[0x1193D,0x11940],[0x3DF44,0x3DF52],[0x3DF7A,0x3DF88],[0x3DF93,0x3DF9F],[0x3DFA7,0x3DFB3],[0x157469,0x157647],[0x185000,0x187000],...[0x10510,0x10535,0x1055F,0x10567].map(p=>[p,p+3])];
+export const EXTRA_MENU_GRAPHIC_REGIONS=[[0x187000,0x187400],[0x117D1,0x117D4],[0x525D8,0x525DC],[0x3EE01,0x3EE0B],[0x176500,0x177900],[0x1193D,0x11940],[0x3DF44,0x3DF52],[0x3DF7A,0x3DF88],[0x3DF93,0x3DF9F],[0x3DFA7,0x3DFB3],[0x157469,0x157647],[0x185000,0x187000],...[0x10510,0x10535,0x1055F,0x10567].map(p=>[p,p+3])];
 const norm=s=>String(s??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ª/g,'A').toUpperCase().trim();
 const cpu=p=>0x800000|((p>>15)<<16)|0x8000|(p&32767),long=n=>Uint8Array.of(n&255,n>>8&255,n>>16&255);
 const word=(b,p)=>b[p]|b[p+1]<<8,set=(b,p,v)=>{b[p]=v&255;b[p+1]=v>>8;};
@@ -48,6 +48,17 @@ function challenge(rom,base,values,writes){
  }
  reserve(rom,base,0x176500,0x800,konamiLzCompress(raw),writes);writes.push([0x1193D,long(cpu(0x176500))]);
 }
+function passwordExit(rom,base,values,writes){
+ const text=values?.exit;if(text===undefined||norm(text)==='EXIT')return;
+ verifyPointer(base,0x117D1,0x16BAF9);const original=konamiLzDecompress(base,0x16BAF9);
+ if(original.data.length!==528||original.compressedSize!==390)throw Error('Senha: fonte do botão divergente.');
+ const alphabet={A:'010101111101101',B:'110101110101110',C:'011100100100011',D:'110101101101110',E:'111100110100111',F:'111100110100100',G:'011100101101011',H:'101101111101101',I:'111010010010111',J:'001001001101010',K:'101101110101101',L:'100100100100111',M:'101111111101101',N:'101111111111101',O:'010101101101010',P:'110101110100100',Q:'010101101111011',R:'110101110101101',S:'011100010001110',T:'111010010010010',U:'101101101101111',V:'101101101101010',W:'101101111111101',X:'101101010101101',Y:'101101010010010',Z:'111001010100111'};
+ const font=Object.fromEntries(Object.entries(alphabet).map(([c,bits])=>[c,['000','000',...Array.from({length:5},(_,i)=>bits.slice(i*3,i*3+3))]]));
+ const q=norm(text);if(!q||q.length>4)throw Error('Senha: botão SAIR aceita até 4 letras.');
+ const raw=original.data.slice(),strip=new Uint8Array(48),tiles=[3,4,32];tiles.forEach((t,i)=>strip.set(raw.slice(t*16,t*16+16),i*16));
+ drawGraphicalLabel(strip,q,{tiles:3,x:5,right:20,font});tiles.forEach((t,i)=>raw.set(strip.slice(i*16,i*16+16),t*16));
+ reserve(rom,base,0x187000,0x400,konamiLzCompress(raw),writes);writes.push([0x117D1,long(cpu(0x187000))]);
+}
 function splash(rom,base,values,writes){
  const requested=['worldSeries','firstSeason','secondSeason','international'].some(id=>values?.[id]!==undefined&&norm(values[id])!==({worldSeries:'WORLD SERIES',firstSeason:'1ST SEASON',secondSeason:'2ND SEASON',international:'INTERNATIONAL'})[id]);if(!requested)return;
  verifyPointer(base,0x10510,0x13680A);const source=konamiLzDecompress(base,0x13680A);if(source.data.length!==4512||source.compressedSize!==1099)throw Error('Campeonatos: fonte original divergente.');
@@ -86,5 +97,5 @@ export function plusExtraMenuGraphicsWriter(rom,state={},base=rom,selectedAreas=
    if([0x22,0xA4,0x8D,0x85].some((x,i)=>base[0x525D8+i]!==x))throw Error('Cenários: chamada da legenda divergente.');writes.push([0x525D8,Uint8Array.of(0xEA,0xEA,0xEA,0xEA)]);
   }else{const bytes=new Uint8Array(10);[...text].forEach((c,i)=>{if(NATIVE_MENU_FONTS.SmallMenuText[c]===undefined)throw Error('Cenários: caractere indisponível '+c);bytes[i]=NATIVE_MENU_FONTS.SmallMenuText[c];});writes.push([0x3EE01,bytes]);}
  }
- password(base,v['password-graphics'],writes);challenge(rom,base,v['challenge-graphics-extra'],writes);splash(rom,base,v['competition-graphics'],writes);for(const [pc,bytes]of writes)rom.set(bytes,pc);return rom;
+ password(base,v['password-graphics'],writes);passwordExit(rom,base,v['password-graphics'],writes);challenge(rom,base,v['challenge-graphics-extra'],writes);splash(rom,base,v['competition-graphics'],writes);for(const [pc,bytes]of writes)rom.set(bytes,pc);return rom;
 }

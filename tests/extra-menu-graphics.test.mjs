@@ -56,3 +56,13 @@ test('shrinking ESCANTEIO preserves strokes in native source columns skipped by 
  b.set(konamiLzCompress(font),0xD8337);const r=b.slice();plusExtraMenuGraphicsWriter(r,state,b);
  const written=konamiLzDecompress(r,0x176500).data.slice(608,608+7*32);assert.ok(written.some((v,i)=>i%2===0&&(v&~written[i+1])),'white ink in the fourth source column must survive instead of becoming dark outline');
 });
+
+test('password SAIR changes only its three native caption tiles and private loader, preserving OK and the keyboard',()=>{
+ const b=fixture(),raw=new Uint8Array(528);for(let i=0;i<raw.length;i++)raw[i]=i%7===0?0x55:0;
+ b.set(padded(raw,390),0x16BAF9);b.set([0xF9,0xBA,0xAD],0x117D1);const r=b.slice(),s={additionalScreenTextsV1:{values:{'password-graphics':{exit:'SAIR'}}}};
+ plusExtraMenuGraphicsWriter(r,s,b);const next=konamiLzDecompress(r,0x187000).data;
+ for(let t=0;t<33;t++)if(![3,4,32].includes(t))assert.deepEqual(next.slice(t*16,t*16+16),raw.slice(t*16,t*16+16));
+ assert.notDeepEqual(next,raw);assert.deepEqual(r.slice(0x157469,0x157647),b.slice(0x157469,0x157647));assert.deepEqual(r.slice(0x16BAF9,0x16BAF9+390),b.slice(0x16BAF9,0x16BAF9+390));
+ assert.equal(areaClassifier(r,b)(0x187000),'pre-partida');assert.equal(areaClassifier(r,b)(0x117D1),'pre-partida');
+ const bad=b.slice();assert.throws(()=>plusExtraMenuGraphicsWriter(bad,{additionalScreenTextsV1:{values:{'password-graphics':{exit:'SAIRAGORA'}}}},b),/até 4/);assert.deepEqual(bad,b);
+});

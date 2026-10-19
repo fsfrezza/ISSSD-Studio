@@ -48,7 +48,7 @@
      const label=document.createElement('label');label.style.cssText='display:grid;gap:6px';
      const text=document.createElement('strong');text.textContent=options.label||en;label.appendChild(text);
      const input=document.createElement(options.multiline?'textarea':'input');if(options.multiline){input.rows=Math.min(8,options.rows||4);input.wrap='soft';}input.id=id(section.id,field);input.dataset.additionalTextOwner=section.id;input.dataset.additionalTextField=field;input.style.cssText='width:100%;box-sizing:border-box';input.autocomplete='off';input.value=value(section,field);input.addEventListener('input',()=>edit(section,field,input.value));label.appendChild(input);grid.appendChild(label);
-     if(options.pool){const limit=document.createElement('span');limit.className='subtle';limit.textContent='Limite por linha: '+options.pool.segments.map(s=>s.original.length).join(', ')+' células. Os textos sem tradução definida mantêm o original.';label.appendChild(limit);}
+     if(options.pool){const limit=document.createElement('span');limit.className='subtle';limit.textContent='Limite por linha: '+options.pool.segments.map(s=>(options.pool.capacity??s.original.length)).join(', ')+' células. Os textos sem tradução definida mantêm o original.';label.appendChild(limit);}
      if(options.native){const limit=document.createElement('span');limit.className='subtle';limit.textContent='Até '+options.native.rowCount+' linhas de '+options.native.width+' caracteres; aplicação na ROM pela fase Pré-Partida.';label.appendChild(limit);}
     }
     const actions=document.createElement('div');actions.style.cssText='display:flex;gap:8px;flex-wrap:wrap;margin-top:14px';

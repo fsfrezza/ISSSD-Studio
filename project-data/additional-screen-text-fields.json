@@ -711,13 +711,21 @@
   {
     "id": "password-graphics",
     "page": "texts-password",
-    "title": "Cabeçalho gráfico da senha",
+    "title": "Textos gráficos da senha",
     "area": "pre-partida",
     "fields": [
       [
         "enterPassword",
         "ENTER PASSWORD!",
         "DIGITE SENHA",
+        {
+          "extraMenuGraphic": true
+        }
+      ],
+      [
+        "exit",
+        "EXIT",
+        "SAIR",
         {
           "extraMenuGraphic": true
         }
@@ -2840,7 +2848,7 @@
       [
         "data_87df39",
         "FREE",
-        "LIV.",
+        "LIVRE",
         {
           "label": "FREE",
           "multiline": false,
@@ -2853,7 +2861,12 @@
                 "original": "FREE"
               }
             ],
-            "symbol": "DATA_87DF39"
+            "symbol": "DATA_87DF39",
+            "capacity": 8,
+            "relocation": {
+              "pc": 261024,
+              "ref": 245230
+            }
           }
         }
       ],
@@ -2900,7 +2913,7 @@
       [
         "data_87df5b",
         "KEEPER",
-        "GOLE.",
+        "GOLEIRO",
         {
           "label": "KEEPER",
           "multiline": false,
@@ -2913,7 +2926,12 @@
                 "original": "KEEPER"
               }
             ],
-            "symbol": "DATA_87DF5B"
+            "symbol": "DATA_87DF5B",
+            "capacity": 8,
+            "relocation": {
+              "pc": 261032,
+              "ref": 245248
+            }
           }
         }
       ],

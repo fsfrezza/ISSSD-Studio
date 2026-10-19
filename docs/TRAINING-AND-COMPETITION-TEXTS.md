@@ -24,7 +24,7 @@ Os scripts de HUD em 81E511..81E59F usam dois alfabetos nativos de 16 pixels e u
 
 O atlas AEBCA4 recebe retângulos independentes para as modalidades e os recordes, mantendo os 38 tiles originais. O fluxo expandido ocupa a reserva PC 176500; seus descritores deixam de depender de sufixos ingleses compartilhados. FALTA, TEMPO e PONTOS usam os pixels do mesmo alfabeto nativo de DRIBLE e PASSE, extraídos de 9B8337. O TEMPO do relógio mantém a âncora 5B58; começar em 5B57 permitiria que a limpeza nativa de 5B56/5B57 apagasse o T.
 
-Os nomes grandes preservam os últimos 32 tiles do atlas original. Seus caches persistentes passam a 7E5FF8/7E5FFA, fora da página 0F00 usada por objetos dos menus. A cópia de planos só aceita as bases 5280 e 5A00. Valores de RAM não inicializada são descartados.
+Os nomes grandes preservam os últimos 32 tiles do atlas original. Seus caches persistentes passam a 7E5FF8/7E5FFA, fora da página 0F00 usada por objetos dos menus. Os planos dos nomes são recompostos de uma cópia derivada imutável na ROM, nas bases 5280 ou 5A00 conforme a tela.
 
 ## Senha, competições e cenários
 
@@ -40,11 +40,12 @@ Validação local: 521 testes e auditoria do HTML final. No Snes9x 2005 foram co
 
 ### Retorno à seleção de estádio e ordem do seletor
 
-O inicializador de modalidades de treino retorna por `8A:AD0D`. Ele deve manter
-os nomes no intervalo iniciado em `5A00`, como a seleção de estádio. Movê-los
-para `5280` nesse caminho permite que os objetos da tela seguinte destruam o
-cache antes de voltar. O teste dos hooks cobre esse retorno; a navegação nativa
-foi conferida indo ao treino e voltando ao estádio.
+Os menus seguintes ao estádio usam os mesmos intervalos de WRAM. Restaurar
+apenas o nome ou reconhecer mais chamadores não preserva seus objetos. Agora
+os nomes, cursores compartilhados e objetos do estádio têm cópias derivadas
+imutáveis em ROM; cada contexto restaura seu conjunto antes de usá-lo.
+A sequência estádio → Vantagem → menu pré-partida → Vantagem → estádio foi
+conferida duas vezes no mesmo processo do emulador.
 
 Quando o campo MODE contém MODO, somente os quatro posicionamentos do seletor
 são alterados: MODO TREINO e MODO DESAFIO. As outras ocorrências de TRAINING e
@@ -54,9 +55,17 @@ ESCANTEIO usa redução de 8 para 6 colunas por célula. A redução cobre todas
 colunas da origem e prioriza a tinta branca sobre o contorno escuro, preservando
 a diagonal de N sem escurecer as letras. A altura nativa permanece inalterada.
 
-O retorno equivalente na partida normal passa pelo inicializador `86:C7DF`
-(tela Vantagem depois do estádio). Esse caminho também deve manter o cache em
-`5A00`. A navegação estádio → Vantagem → estádio foi conferida repetidamente,
-além do caminho de treino. Os extremos direitos de Vantagem usam coluna 21
-para o início de FORTE e coluna 26 com alinhamento à direita para FRACO:
-assim acompanham respectivamente o início do 5 e o fim do 1.
+Os extremos direitos de Vantagem usam coluna 21 para o início de FORTE e
+coluna 26 com alinhamento à direita para FRACO, acompanhando o 5 e o 1.
+
+### Modalidades sem sufixo e botão da senha
+
+As quatro escolhas são LIVRE, DEFESA, FALTA e GOLEIRO. Os campos FREE e KEEPER
+aceitam até oito células e usam as reservas 87:FBA0/87:FBA8, com ponteiros e
+comprimentos próprios. O script termina antes das quatro chamadas do sufixo
+TRAINING; o seletor MODO TREINO permanece independente.
+
+A aba Textos Senha inclui EXIT/SAIR. Somente o carregador da senha, PC 117D1,
+usa a cópia privada da fonte em PC 187000. As células 3, 4 e 32 do stream
+ADBAF9 formam EXIT; sua substituição mantém OK e os símbolos do teclado
+intactos. Os demais carregadores continuam usando a fonte original.

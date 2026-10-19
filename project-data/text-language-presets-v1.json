@@ -26,12 +26,13 @@
         "tournamentDesc": "Tournament up to eight players."
       },
       "portuguese": {
-        "friendly": "JOGATINA",
+        "friendly": "AMISTOSO",
         "league": "LIGA CURTA",
         "tournament": "TORNEIO CURTO",
         "friendlyDesc": "X1 maroto",
         "leagueDesc": "Max: 6 jogadores",
-        "tournamentDesc": "Max: 8 jogadores"
+        "tournamentDesc": "Max: 8 jogadores",
+        "press": "Toque"
       },
       "evidence": {
         "portugueseSource": "canonical-project",

@@ -3,7 +3,7 @@ export const USER_PORTUGUESE_PRESETS={
  "screen": {
   "game-modes": {
    "press": "Toque",
-   "friendly": "JOGATINA",
+   "friendly": "AMISTOSO",
    "league": "LIGA CURTA",
    "tournament": "TORNEIO CURTO",
    "friendlyDesc": "X1 maroto",
@@ -218,10 +218,10 @@ export const USER_PORTUGUESE_PRESETS={
    "data_87de80": "DESAFIO",
    "data_87de89": "Pratique os movimentos\nbásicos necessários\npara jogar bem\ne vencer as partidas.",
    "data_87dee1": "Tente bater um novo\nrecorde competindo\ncontra o relógio.",
-   "data_87df39": "LIV.",
+   "data_87df39": "LIVRE",
    "data_87df3d": "DEFESA",
    "data_87df52": "FALTA",
-   "data_87df5b": "GOLE.",
+   "data_87df5b": "GOLEIRO",
    "data_87df61": "MODO",
    "data_87df65": "DRIBLE",
    "data_87df6c": "PASSE",

@@ -1,9 +1,17 @@
+import {konamiLzDecompress} from './konami-lz.mjs';
 import {convertedMenuOam,MENU_OAM_CACHE_SLOT,MENU_OAM_PLANE_SIZE} from './plus-menu-oam-cache.mjs';
 // The native OAM converter stores four parallel arrays 0x2000 bytes apart.
 // Tall names use two SMALL objects per token. Menus and formation use
 // 5280..5876; only stadium layouts use 5A00, beyond their 5600..57D2 objects.
 // Cache words live beyond the maximum name plane (5A00..5FF6).
 // Native menu objects also use the 0F00 page; it cannot hold persistent state.
+export const TEAM_NAME_CACHE_SLOT=0x3E5500;
+export const TEAM_NAME_CACHE_PLANE=0x5F6;
+export const TEAM_NAME_CACHE_SIZE=TEAM_NAME_CACHE_PLANE*4;
+export const STADIUM_OAM_CACHE_SLOT=0x3E6D00;
+export const STADIUM_OAM_PLANE=0x1D2;
+export const STADIUM_RESTORE_SLOT=0x3E7500;
+export const STADIUM_RESTORE_SIZE=0x80;
 export const TEAM_NAME_HOOK_SLOT=0x3E3000;
 export const TEAM_NAME_HOOK_SIZE=0x200;
 export const TEAM_NAME_POINTER_READS=Object.freeze([0x1BA5B,0x1BA86,0x2A995,0x2A9CB,0x2C754,0x2D156,0x2D6AF,0x2E99F,0x364A0,0x5668E,0x566B1,0x566D4,0x566F7,0x5671A,0x5673D,0x59908,0x5FFCE,0x5FFD4,0x5FFE0,0x122046,0x1244E0]);
@@ -22,37 +30,49 @@ function wrapper(original){
   0x22,...long(original),0x6B,
  ]);
 }
-export function teamNameHookWrites(base){
+export function convertedTeamNameOam(raw,expectedFrames=56,plane=TEAM_NAME_CACHE_PLANE){
+ const count=raw[1]|raw[2]<<8,frames=raw[0],header=3+frames;
+ if(frames!==expectedFrames||count*2>plane||raw.length!==header+count*4)throw Error('Nomes: cache de objetos divergente.');
+ const out=new Uint8Array(plane*4);let index=0;
+ for(let f=0;f<frames;f++)for(let i=0;i<raw[3+f];i++,index++){
+  const at=index*2,x=raw[header+index],y=raw[header+count+index],tile=raw[header+count*2+index],prop=raw[header+count*3+index];
+  out[at]=i===0?raw[3+f]:0;out[at+1]=prop&16?255:0;
+  out[plane+at]=x;out[plane+at+1]=x&128?255:0;
+  out[plane*2+at]=y;out[plane*2+at+1]=y&128?255:0;
+  out[plane*3+at]=tile;out[plane*3+at+1]=prop&0xEF;
+ }
+ if(index!==count)throw Error('Nomes: quantidade do cache divergente.');return out;
+}
+export function teamNameHookWrites(base,nameRaw){
  const writes=[],slot=new Uint8Array(TEAM_NAME_HOOK_SIZE).fill(255);
  slot.set(wrapper(0x80947E),0);slot.set(wrapper(0x809482),0x40);
  // Team selection and stadium initializers run after their native OAM
  // load; their gap must stay at 5A00 even when the loader is cached.
  const init=[0x08,0xC2,0x30,0x48,0xA3,7];
- for(const ret of [0xAC3E,0xAC2F,0x9E8A,0xAD0D,0xC7DF])init.push(0xC9,ret&255,ret>>8,0xF0,0);
- const jumps=[10,15,20,25,30];init.push(0xA9,0x80,0x52,0x80,3);const stadium=init.length;init.push(0xA9,0,0x5A);for(const at of jumps)init[at]=stadium-at-1;
+ for(const ret of [0xAC3E,0xAC2F,0x9E8A])init.push(0xC9,ret&255,ret>>8,0xF0,0);
+ const jumps=[10,15,20];init.push(0xA9,0x80,0x52,0x80,3);const stadium=init.length;init.push(0xA9,0,0x5A);for(const at of jumps)init[at]=stadium-at-1;
  init.push(0x8F,0xFA,0x5F,0x7E,0x22,...long(cpu(TEAM_NAME_HOOK_SLOT+0x120)),0x68,0x28,0x9C,0x66,0x14,0x22,0x82,0x9E,0x85,0x6B);slot.set(init,0x80);
  if([0x9C,0x66,0x14,0x22,0x82,0x9E,0x85].some((v,i)=>base[0x2A756+i]!==v))throw Error('Nomes altos: inicializador de tela divergente.');
  writes.push([0x2A756,Uint8Array.from([0x22,...long(cpu(TEAM_NAME_HOOK_SLOT+0x80)),0xEA,0xEA,0xEA])]);
- // Cached native graphics do not always reload the names when changing
- // menus. Move the four planes before new menu objects overwrite the old gap.
- const move=[],marks={},branches=[];
- const emit=(...bytes)=>move.push(...bytes),mark=name=>{marks[name]=move.length;},branch=(op,name)=>{emit(op,0);branches.push([move.length-1,name]);};
- emit(0x08,0xC2,0x30,0x8B,0x48,0xDA,0x5A,0xAF,0xF8,0x5F,0x7E,0xC9,0x80,0x52);branch(0xF0,'valid');
- emit(0xC9,0,0x5A);branch(0xF0,'valid');
- // Power-on RAM and buffers used by the match are not valid name caches.
- emit(0xA9,0,0,0x8F,0xF8,0x5F,0x7E);branch(0x80,'finish');
- mark('valid');emit(0xCF,0xFA,0x5F,0x7E);branch(0xF0,'finish');emit(0xAA,0xAF,0xFA,0x5F,0x7E,0xA8);
- for(let plane=0;plane<4;plane++){
-  if(plane)emit(0x8A,0x18,0x69,0x0A,0x1A,0xAA,0x98,0x18,0x69,0x0A,0x1A,0xA8);
-  emit(0xA9,0xF5,0x05,0x54,0x7E,0x7E);
+ // Recreate names from an immutable ROM cache on every transition. Later
+ // menus may overwrite both WRAM gaps; moving stale WRAM copies is unsafe.
+ const move=[0x08,0xC2,0x30,0x8B,0x48,0xDA,0x5A];
+ for(let p=0;p<4;p++){
+  move.push(0xA2,...long(cpu(TEAM_NAME_CACHE_SLOT+p*TEAM_NAME_CACHE_PLANE)).slice(0,2),0xAF,0xFA,0x5F,0x7E);
+  if(p)move.push(0x18,0x69,(p*0x2000)&255,(p*0x2000)>>8);
+  move.push(0xA8,0xA9,0xF5,0x05,0x54,0x7E,cpu(TEAM_NAME_CACHE_SLOT)>>16);
  }
- emit(0xAF,0xFA,0x5F,0x7E,0x8F,0xF8,0x5F,0x7E);
- mark('finish');emit(0xAF,0xFA,0x5F,0x7E,0xC9,0x80,0x52);branch(0xD0,'restoreDone');emit(0x22,...long(cpu(TEAM_NAME_HOOK_SLOT+0x1B0)));mark('restoreDone');emit(0x7A,0xFA,0x68,0xAB,0x28,0x6B);
- for(const [at,name]of branches){const delta=marks[name]-at-1;if(delta>127||delta< -128)throw Error('Nomes: branch fora do alcance.');move[at]=delta&255;}slot.set(move,0x120);
- if(move.length>0x90)throw Error('Nomes: rotina de cópia excede a reserva.');
+ move.push(0xAF,0xFA,0x5F,0x7E,0x8F,0xF8,0x5F,0x7E,0xC9,0x80,0x52,0xD0,6,0x22,...long(cpu(TEAM_NAME_HOOK_SLOT+0x1B0)),0x80,4,0x22,...long(cpu(STADIUM_RESTORE_SLOT)),0x7A,0xFA,0x68,0xAB,0x28,0x6B);
+ if(move.length>0x90)throw Error('Nomes: rotina de restauração excede a reserva.');slot.set(move,0x120);
+ writes.push([TEAM_NAME_CACHE_SLOT,convertedTeamNameOam(nameRaw)]);
  const restore=[0x08,0xC2,0x30,0x8B,0x48,0xDA,0x5A];
  for(let p=0;p<4;p++)restore.push(0xA2,...long(cpu(MENU_OAM_CACHE_SLOT+p*MENU_OAM_PLANE_SIZE)).slice(0,2),0xA0,(0x5876+p*0x2000)&255,(0x5876+p*0x2000)>>8,0xA9,(MENU_OAM_PLANE_SIZE-1)&255,(MENU_OAM_PLANE_SIZE-1)>>8,0x54,0x7E,cpu(MENU_OAM_CACHE_SLOT)>>16);
  restore.push(0x7A,0xFA,0x68,0xAB,0x28,0x6B);slot.set(restore,0x1B0);
+ const stadiumRestore=[0x08,0xC2,0x30,0x8B,0x48,0xDA,0x5A];
+ for(let p=0;p<4;p++)stadiumRestore.push(0xA2,...long(cpu(STADIUM_OAM_CACHE_SLOT+p*STADIUM_OAM_PLANE)).slice(0,2),0xA0,(0x5600+p*0x2000)&255,(0x5600+p*0x2000)>>8,0xA9,0xD1,1,0x54,0x7E,cpu(STADIUM_OAM_CACHE_SLOT)>>16);
+ stadiumRestore.push(0x7A,0xFA,0x68,0xAB,0x28,0x6B);const stadiumCode=new Uint8Array(STADIUM_RESTORE_SIZE).fill(255);stadiumCode.set(stadiumRestore);
+ const stadiumRaw=konamiLzDecompress(base,0xC2817).data;
+ writes.push([STADIUM_OAM_CACHE_SLOT,convertedTeamNameOam(stadiumRaw,61,STADIUM_OAM_PLANE)],[STADIUM_RESTORE_SLOT,stadiumCode]);
  writes.push([MENU_OAM_CACHE_SLOT,convertedMenuOam(base)]);
  slot.set([0x08,0xBF,0xC4,0xFB,0x82,0x18,0x6F,0xF8,0x5F,0x7E,0x28,0x09,0,0,0x6B],0x100);
  for(const [pc,original,offset]of [[0x3B00,0x80947E,0],[0x3B59,0x809482,0x40]]){
