@@ -54,3 +54,11 @@ A tabela privada de fontes fica na reserva PC `17B60..17B77` (banco 82). Somente
 A renderização foi conferida no Snes9x 2005 no handler nativo das estatísticas com registros de gols preparados em WRAM para cobrir gol contra e os dois períodos; isso não equivale a jogar uma partida completa.
 
 A revisão de regressão conferiu CARTÃO AMARELO e GOL! no handler nativo, a volta à partida e a entrada nas estatísticas depois dos avisos. Durante CARTÃO AMARELO, os 90 tiles transferidos foram comparados com a fonte exportada: zero divergências. Os testes também interpretam os descritores DMA reais para verificar que nenhuma transferência toca os tiles de flags ou nomes.
+
+### Correção do autor do gol e da largura de ESCANTEIOS
+
+O leitor dos descritores traduzidos usa DB=$FC. Esse banco não espelha a RAM baixa, ao contrário do banco original $8B. A chamada final a `$80C932` agora passa por um invólucro que restaura DB=$8B durante a rotina nativa e retorna DB=$FC ao leitor. A rotina original continua montando o nome do autor e contando suas ocorrências no histórico da partida; seus gráficos e instruções permanecem intactos. Invólucro em PC `$3E3BE0`; chamada em `$5B72D`.
+
+Nas estatísticas, ESCANTEIOS usa onze células (88 px) e mantém os dez glifos nativos de 8 px, centralizados, sem comprimir suas colunas. Apenas esse descritor passa para PC `$187400`, com invólucro em `$187440` e chamada em `$5A3C6`. O banco $B0 conserva o espelho de RAM exigido pelo decodificador. As posições dos números e as demais linhas permanecem iguais.
+
+Validação no núcleo SNES: painel de estatísticas e aviso GOL! com nome do jogador e contador de dois gols. Testes executam os invólucros emitidos, verificam restauração de DB/pilha e comparam cada coluna dos glifos de ESCANTEIOS com a fonte nativa.

@@ -1,3 +1,4 @@
+import {executeHook} from './65816-hook-harness.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {MATCH_ANNOUNCEMENTS,MATCH_ANNOUNCEMENT_FALLBACKS} from '../src/core/match-announcement-fields.mjs';
@@ -10,7 +11,7 @@ import {makePlusTacticalFixture} from './plus-tactics-fixture.mjs';
 const word=n=>[n&255,n>>8&255],long=n=>[n&255,n>>8&255,n>>16&255];
 const values=Object.fromEntries(MATCH_ANNOUNCEMENTS.map(([id,,pt])=>[id,pt]));
 const state=v=>({additionalScreenTextsV1:{schema:'isssd-additional-screen-texts-v1',values:{'match-announcements':v}}});
-function fixture(){const b=makePlusTacticalFixture();b.fill(255,0x184400,0x184800);b.set([0xF4,0,0x8B,0xAB,0xAB,0xA4,0,0xB9,0xD2,0xE7],0x5B703);
+function fixture(){const b=makePlusTacticalFixture();b.set([0x22,0x32,0xC9,0x80],0x5B72D);b.fill(255,0x184400,0x184800);b.set([0xF4,0,0x8B,0xAB,0xAB,0xA4,0,0xB9,0xD2,0xE7],0x5B703);
  for(const [pc,size,len]of [[0x116D81,151,240],[0x116E18,66,240],[0x116E5A,509,656],[0x117057,267,656]]){const p=konamiLzCompress(new Uint8Array(len)),pad=new Uint8Array(size).fill(128);pad.set(p);pad[0]=size&255;pad[1]=size>>8;b.set(pad,pc);}
  for(let i=0;i<4;i++){const p=[0x116D81,0x116E18,0x116E5A,0x117057][i];b.set(long((0x800000|((p>>15)<<16)|0x8000|(p&32767))^0x400000),0x12038+i*6);}
  for(let i=0;i<4;i++)b.set([128,0,1,24,...word(0x5D00+i*128),...long(0x99FA63+i*256),...word(i===3?192:256),0,0],[0x1271F3,0x127200,0x12720D,0x12721A][i]);
@@ -58,4 +59,12 @@ test('emitted notice DMAs preserve live flag cells and both scoreboard name stri
   assert.ok(start>=0x5C80);assert.ok(start+size/2<=0x5F50,'never DMA over the team names beginning at 5F50');
  }
  const rendered=renderMatchAnnouncements(values);assert.ok(rendered.fontTileCount<=90);
+});
+
+test('goal scorer callback runs with native RAM-mirroring DB and restores expanded descriptor DB',()=>{
+ const b=fixture(),rom=expandPlusTo4MiB(b);plusMatchAnnouncementsWriter(rom,state(values),b,['partida']);
+ const pc=0x5B72D,target=rom[pc+1]|rom[pc+2]<<8|rom[pc+3]<<16,offset=((target>>16)&127)*32768+(target&32767),memory=new Uint8Array(0x1000000);memory.set(rom.slice(offset,offset+12),target);
+ const result=executeHook(memory,target,{db:0xFC,s:0x1FF},new Set([0x80C932]));
+ assert.equal(result.calls.length,1);assert.equal(result.calls[0].db,0x8B);assert.equal(result.r.db,0xFC);assert.equal(result.r.s,0x1FF);
+ assert.deepEqual(rom.slice(0x4932,0x4A7B),b.slice(0x4932,0x4A7B),'native scorer name and per-player goal count remain intact');
 });

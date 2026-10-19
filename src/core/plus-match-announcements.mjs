@@ -4,7 +4,7 @@ import {konamiLzCompress,konamiLzDecompress} from './konami-lz.mjs';
 export const MATCH_FONT_SLOT=0x3E0000;
 export const MATCH_MAP_SLOT=0x184400;
 export const MATCH_DESCRIPTOR_SLOT=0x3E3400;
-export const MATCH_ANNOUNCEMENT_REGIONS=[[MATCH_FONT_SLOT,MATCH_FONT_SLOT+1536],[MATCH_MAP_SLOT,MATCH_MAP_SLOT+1024],[0x12038,0x1204D],[0xCF5C3,0xCFA63],[0x116D81,0x117162],[0x5E7F6,0x5E944],[0x5B703,0x5B70D],[MATCH_DESCRIPTOR_SLOT,MATCH_DESCRIPTOR_SLOT+0x800],...[0x1271F3,0x127200,0x12720D,0x12721A].map(p=>[p,p+13])];
+export const MATCH_ANNOUNCEMENT_REGIONS=[[MATCH_FONT_SLOT,MATCH_FONT_SLOT+1536],[MATCH_MAP_SLOT,MATCH_MAP_SLOT+1024],[0x12038,0x1204D],[0xCF5C3,0xCFA63],[0x116D81,0x117162],[0x5E7F6,0x5E944],[0x5B703,0x5B70D],[0x5B72D,0x5B731],[MATCH_DESCRIPTOR_SLOT,MATCH_DESCRIPTOR_SLOT+0x800],...[0x1271F3,0x127200,0x12720D,0x12721A].map(p=>[p,p+13])];
 const maps=[{pc:0x116D81,size:151,len:240},{pc:0x116E18,size:66,len:240},{pc:0x116E5A,size:509,len:656},{pc:0x117057,size:267,len:656}];
 const mapCaps=[100,32,700,192],mapOffset=i=>mapCaps.slice(0,i).reduce((a,b)=>a+b,0);
 const word=n=>[n&255,n>>8&255],long=n=>[n&255,n>>8&255,n>>16&255];
@@ -58,7 +58,7 @@ function renderExactAnnouncements(values={}){
    }
   }
   const bytes=new Uint8Array(records.length*4+2);records.forEach(([x,source],i)=>bytes.set([...word(0x80+x*2),...word(source)],i*4));bytes.set([255,255],bytes.length-2);
-  if(cursor+bytes.length>MATCH_DESCRIPTOR_SLOT+0x800)throw Error('Avisos: descritores excedem a reserva expandida.');
+  if(cursor+bytes.length>MATCH_DESCRIPTOR_SLOT+0x7E0)throw Error('Avisos: descritores excedem a reserva expandida.');
   descriptors.push([cursor,bytes]);cursor+=bytes.length;
  }
  // Reordering shared blocks can save the last few compressed bytes for mixed
@@ -94,6 +94,11 @@ export function plusMatchAnnouncementsWriter(rom,state,base=rom,selectedAreas=nu
  if(rom.length<MATCH_DESCRIPTOR_SLOT+0x800||rom.slice(MATCH_DESCRIPTOR_SLOT,MATCH_DESCRIPTOR_SLOT+0x800).some(v=>v!==255))throw Error('Avisos: reserva de descritores indisponível.');
  const originalReader=[0xF4,0,0x8B,0xAB,0xAB,0xA4,0,0xB9,0xD2,0xE7];
  if(originalReader.some((v,i)=>base[0x5B703+i]!==v))throw Error('Avisos: leitor de descritores divergente.');
+ // The expanded descriptor bank FC does not mirror low WRAM. The native
+ // scorer routine uses absolute RAM operands, so call it with its original DB.
+ if([0x22,0x32,0xC9,0x80].some((v,i)=>base[0x5B72D+i]!==v))throw Error('Avisos: rotina do autor do gol divergente.');
+ const scorer=MATCH_DESCRIPTOR_SLOT+0x7E0;
+ writes.push([scorer,Uint8Array.from([0x8B,0xF4,0,0x8B,0xAB,0xAB,0x22,0x32,0xC9,0x80,0xAB,0x6B])],[0x5B72D,Uint8Array.from([0x22,...long(cpu(scorer))])]);
  const table=new Uint8Array(36);rendered.descriptors.forEach(([pc],i)=>table.set(word(cpu(pc)&65535),i*2));const last=rendered.descriptors.at(-1);table.set(word(cpu(last[0]+last[1].length-2)&65535),34);
  writes.push([MATCH_DESCRIPTOR_SLOT,table],[0x5B703,Uint8Array.from([0xF4,0,cpu(MATCH_DESCRIPTOR_SLOT)>>16,0xAB,0xAB,0xA4,0,0xB9,...word(cpu(MATCH_DESCRIPTOR_SLOT)&65535)])]);
  for(let i=0;i<MATCH_ANNOUNCEMENTS.length;i++){const ptr=MATCH_ANNOUNCEMENTS[i][3],table=0x5E7D2+i*2;if((base[table]|base[table+1]<<8)!==ptr)throw Error('Avisos: tabela de descritores divergente.');}
