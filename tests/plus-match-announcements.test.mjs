@@ -29,7 +29,7 @@ test('independent English restoration and each approved shorter alternative rema
 test('native four-column transfers compose wider letters without erasing their neighbours',()=>{
  const r=renderMatchAnnouncements(values),map=new Uint16Array(32*10),bytes=r.descriptors[1][1];
  for(let at=0;at<bytes.length-2;at+=4){const dest=(bytes[at]|bytes[at+1]<<8)/2,source=((bytes[at+2]|bytes[at+3]<<8)-0xC200)/2;for(let y=0;y<4;y++)for(let x=0;x<4;x++)map[dest+y*32+x]=r.raw[2][source+y*4+x]|r.raw[3][source+y*4+x]<<8;}
- const ink=[];for(let y=0;y<80;y++)for(let x=0;x<256;x++){const t=(map[(y>>3)*32+(x>>3)]&1023)-0x1A0;if(t<0)continue;const pos=t*16+(y%8)*2,bit=7-x%8,v=(r.font[pos]>>bit&1)|(r.font[pos+1]>>bit&1)<<1;if(v===1)ink.push([x,y]);}
+ const ink=[];for(let y=0;y<80;y++)for(let x=0;x<256;x++){const t=(map[(y>>3)*32+(x>>3)]&1023)-0x190;if(t<0)continue;const pos=t*16+(y%8)*2,bit=7-x%8,v=(r.font[pos]>>bit&1)|(r.font[pos+1]>>bit&1)<<1;if(v===1)ink.push([x,y]);}
  const first=ink.filter(([x])=>x<104);assert.equal(Math.max(...first.map(p=>p[0]))-Math.min(...first.map(p=>p[0]))+1,10);assert.equal(Math.max(...first.map(p=>p[1]))-Math.min(...first.map(p=>p[1]))+1,28);
  for(let i=0;i<5;i++)assert.ok(ink.some(([x])=>x>=88+i*16&&x<104+i*16),'every letter of FALTA survives the overlapping native transfers');
 });
@@ -49,4 +49,13 @@ test('the new match phase exports every mapped byte and is absent when unchecked
  const base=fixture(),shots=[],r=buildCumulativeProject(base,{state:{semantic:state(values)}},{selectedAreas:['infraestrutura','partida'],onRom:(rom,entry)=>shots.push({rom,entry})});
  assert.deepEqual(r.pendingTextChanges,[]);assert.deepEqual(r.unassignedLegacyRanges,[]);assert.equal(r.entries.at(-1).name,'10-partida.sfc');assert.ok(shots[0].rom.slice(MATCH_FONT_SLOT,MATCH_FONT_SLOT+1536).every(v=>v===255));assert.ok(shots[1].rom.slice(MATCH_FONT_SLOT,MATCH_FONT_SLOT+1536).some(v=>v!==255));
  const skipped=[];buildCumulativeProject(base,{state:{semantic:state(values)}},{selectedAreas:['infraestrutura'],onRom:rom=>skipped.push(rom)});assert.ok(skipped[0].slice(MATCH_FONT_SLOT,MATCH_FONT_SLOT+1536).every(v=>v===255));
+});
+
+test('emitted notice DMAs preserve live flag cells and both scoreboard name strips',()=>{
+ const b=fixture(),rom=expandPlusTo4MiB(b);plusMatchAnnouncementsWriter(rom,state(values),b,['partida']);
+ for(const pc of [0x1271F3,0x127200,0x12720D,0x12721A]){
+  const start=rom[pc+4]|rom[pc+5]<<8,size=rom[pc+9]|rom[pc+10]<<8;
+  assert.ok(start>=0x5C80);assert.ok(start+size/2<=0x5F50,'never DMA over the team names beginning at 5F50');
+ }
+ const rendered=renderMatchAnnouncements(values);assert.ok(rendered.fontTileCount<=90);
 });

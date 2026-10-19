@@ -28,6 +28,7 @@ export const GRAPHICAL_LABEL_FIELDS=Object.freeze({
  'navigation-labels':['exit','cancel','numbers'],
 });
 export function graphicalLabelArea(off){
+ if((off>=0x28E80&&off<0x28E85)||(off>=0x3E3200&&off<0x3E3240))return 'formacoes';
  if((off>=0x3ADC8&&off<0x3ADD4)||(off>=0x3FB90&&off<0x3FB98))return 'formacoes';
  if((off>=0x3C7FC&&off<0x3C811)||off===0x3347B||off===0x33486)return 'jogadores';
  if((off>=0x3AFC8&&off<0x3AFCC)||(off>=0x3AFD4&&off<0x3AFD8)||(off>=0x3FB80&&off<0x3FB88))return 'pre-partida';

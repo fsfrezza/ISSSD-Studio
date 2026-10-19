@@ -1,3 +1,4 @@
+import {seedMenuOamCacheFixture} from './menu-oam-cache-fixture.mjs';
 import {TEAM_NAME_POINTER_READS} from '../src/core/plus-team-name-hooks.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -19,7 +20,7 @@ function fixture(){
  for(const p of [0x10A70,0x10E14,0x11719])b.set([0x3C,0xE1,0x9D],p);for(const p of [0x10C21,0x10E49,0x116B5])b.set([0xB6,0xE4,0xA7],p);
  b.set([0x9C,0x66,0x14,0x22,0x82,0x9E,0x85],0x2A756);
  b.set([0x22,0x7E,0x94,0x80],0x3B00);b.set([0x22,0x82,0x94,0x80],0x3B59);for(const at of TEAM_NAME_POINTER_READS)b.set([0xBF,0xC4,0xFB,0x82],at);
- return b;
+ return seedMenuOamCacheFixture(b);
 }
 test('all Portuguese names fit the short-name strip and share an OAM font with Q',()=>{
  for(const r of presets){assert.ok(renderSmallTeamName(r.compact).width<=32);assert.ok(renderSmallTeamName(r.englishShort??r.english).width<=32);}

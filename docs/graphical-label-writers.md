@@ -65,5 +65,7 @@ de posição, legenda de formação, participação no ataque, SAIR e DESFAZ.
 
 - A sugestão portuguesa do cabeçalho passou de GRAFICOS para ESTATÍSTICAS, mantendo a normalização gráfica sem acentos.
 - Os extremos de 2P usam cópias independentes: FORTE começa na célula do 5 (coluna 22) e FRACO termina na célula do 1 (coluna 30). Os quatro tiles de cada cópia ficam após os rótulos de vantagem; as duas sequências em banco 87 ficam em PC 3FB80..3FB88. O cabeçalho de confirmação não é sobrescrito.
-- As posições DF/MC/AT, seus ícones e as faixas de identificação usam o mesmo alfabeto 5×7.
+- DF conserva sua faixa 2bpp e seus quatro tiles de botão originais, byte por byte. MC e AT usam o mesmo atlas nativo 9B81FA da faixa DF; os ícones usam letras brancas de seis pixels e a sombra nativa sobre roxo, sem inverter as cores.
 - O CANCELA da formação dispõe de seis células extras no atlas compartilhado (tiles 80..85). O mapa e os descritores nativos de atualização/realce do rodapé foram ajustados juntos, evitando que o loop de seleção restaure a inscrição antiga sobre a nova. OK passa duas células à esquerda; RESET mantém sua posição. Os descritores adicionais ficam em 3FB90..3FB98, e a capacidade extra é atribuída à fase Formações.
+
+- O atualizador nativo do rodapé converte códigos por DATA_87C016: código 1 significa tile D3, não tile 101. Por isso o desenho literal de CANCELA possui um desvio restrito aos seis bytes FB92..FB97 com atributo 3D00. O hook de PC 28E80 chama a rotina em 3E3200..3E3240; as demais legendas mantêm o lookup nativo. O teste executa os bytes da rotina e comprova que a atualização não restaura NUMERO.

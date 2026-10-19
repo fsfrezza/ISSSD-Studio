@@ -1,3 +1,4 @@
+import {MENU_OAM_CACHE_SLOT,MENU_OAM_CACHE_SIZE} from './plus-menu-oam-cache.mjs';
 import {teamNameHookWrites,TEAM_NAME_HOOK_SLOT,TEAM_NAME_HOOK_SIZE,TEAM_NAME_POINTER_READS} from './plus-team-name-hooks.mjs';
 import {konamiLzCompress,konamiLzDecompress} from './konami-lz.mjs';
 import {transformLabelPlanes} from './plus-graphical-labels.mjs';
@@ -5,7 +6,7 @@ import {COMPACT_MENU_FONT} from './plus-controller-text.mjs';
 import {PLUS_MAIN_MENU_GLYPHS} from './plus-main-menu-renderer.mjs';
 import {TEAM_NAME_LANGUAGE_PRESETS as PRESETS} from './team-name-presets.mjs';
 export const TEAM_NAME_SCHEMA='isssd-team-names-v1';
-export const TEAM_NAME_REGIONS=[[TEAM_NAME_HOOK_SLOT,TEAM_NAME_HOOK_SLOT+TEAM_NAME_HOOK_SIZE],[0x2A756,0x2A75D],[0x3B00,0x3B04],[0x3B59,0x3B5D],...TEAM_NAME_POINTER_READS.map(p=>[p,p+4]),[0xDEA6D,0xDF6CE],[0x17CA6,0x17DF6],[0xFEB0,0xFF20],[0xE6B8,0xE6BB],[0xE6BD,0xE6C0],[0x17BC4,0x17C34],[0xEE13C,0xEE706],[0x13E4B6,0x13EBB0],...[0x10A70,0x10E14,0x11719,0x10C21,0x10E49,0x116B5].map(p=>[p,p+3])];
+export const TEAM_NAME_REGIONS=[[MENU_OAM_CACHE_SLOT,MENU_OAM_CACHE_SLOT+MENU_OAM_CACHE_SIZE],[TEAM_NAME_HOOK_SLOT,TEAM_NAME_HOOK_SLOT+TEAM_NAME_HOOK_SIZE],[0x2A756,0x2A75D],[0x3B00,0x3B04],[0x3B59,0x3B5D],...TEAM_NAME_POINTER_READS.map(p=>[p,p+4]),[0xDEA6D,0xDF6CE],[0x17CA6,0x17DF6],[0xFEB0,0xFF20],[0xE6B8,0xE6BB],[0xE6BD,0xE6C0],[0x17BC4,0x17C34],[0xEE13C,0xEE706],[0x13E4B6,0x13EBB0],...[0x10A70,0x10E14,0x11719,0x10C21,0x10E49,0x116B5].map(p=>[p,p+3])];
 const toPc=c=>((c>>>16)&127)*0x8000+(c&0x7FFF),toCpu=p=>0x800000|((p>>>15)<<16)|0x8000|(p&0x7FFF);
 const u16=(b,p)=>b[p]|b[p+1]<<8,u24=(b,p)=>u16(b,p)|b[p+2]<<16;
 const word=n=>Uint8Array.of(n&255,n>>>8&255),long=n=>Uint8Array.of(n&255,n>>>8&255,n>>>16&255);
@@ -43,7 +44,7 @@ function tokenize(text,pairs){
  const tokens=[];for(let i=text.length;i>0;){const [p,t]=prev[i];tokens.push(t);i=p;}return {count:cost.at(-1),tokens:tokens.reverse()};
 }
 export function renderBigTeamNames(names,baseFont=new Uint8Array(4096)){
- const glyph=c=>c==='I'?['1','1','1','1','1','1','1']:c==='.'?['000','000','000','000','000','000','010']:PLUS_MAIN_MENU_GLYPHS[c]?.slice(0,7).map(v=>Array.from({length:5},(_,x)=>v&(1<<(6-x))?'1':'0').join(''));
+ const glyph=c=>c==='I'?['01','01','01','01','01','01','01']:c==='.'?['000','000','000','000','000','000','010']:PLUS_MAIN_MENU_GLYPHS[c]?.slice(0,7).map(v=>Array.from({length:5},(_,x)=>v&(1<<(6-x))?'1':'0').join(''));
  const sourceGlyph=glyph;
  const scaledGlyph=c=>{const g=sourceGlyph(c);return g?.map(row=>Array.from({length:row.length===5?6:row.length},(_,x)=>row[Math.floor(x*row.length/(row.length===5?6:row.length))]).join(''));};
  const glyphWidth=c=>scaledGlyph(c)?.[0].length??99;
@@ -103,5 +104,5 @@ export function planPlusTeamNames(base,state){
 }
 export function plusTeamNamesWriter(rom,state,base=rom,selectedAreas=null){
  if(selectedAreas&&!selectedAreas.includes('selecao-equipes'))return rom;
- const writes=planPlusTeamNames(base,state);if(writes.length&&(rom.length<TEAM_NAME_HOOK_SLOT+TEAM_NAME_HOOK_SIZE||rom.slice(TEAM_NAME_HOOK_SLOT,TEAM_NAME_HOOK_SLOT+TEAM_NAME_HOOK_SIZE).some(v=>v!==255)))throw Error('Nomes altos: reserva de código indisponível.');for(const [pc,data]of writes)if(pc+data.length>rom.length)throw Error('Nomes: destino fora da ROM.');for(const [pc,data]of writes)rom.set(data,pc);return rom;
+ const writes=planPlusTeamNames(base,state);if(writes.length&&(rom.length<MENU_OAM_CACHE_SLOT+MENU_OAM_CACHE_SIZE||rom.slice(MENU_OAM_CACHE_SLOT,MENU_OAM_CACHE_SLOT+MENU_OAM_CACHE_SIZE).some(v=>v!==255)))throw Error('Nomes: reserva de objetos compartilhados indisponível.');if(writes.length&&(rom.length<TEAM_NAME_HOOK_SLOT+TEAM_NAME_HOOK_SIZE||rom.slice(TEAM_NAME_HOOK_SLOT,TEAM_NAME_HOOK_SLOT+TEAM_NAME_HOOK_SIZE).some(v=>v!==255)))throw Error('Nomes altos: reserva de código indisponível.');for(const [pc,data]of writes)if(pc+data.length>rom.length)throw Error('Nomes: destino fora da ROM.');for(const [pc,data]of writes)rom.set(data,pc);return rom;
 }

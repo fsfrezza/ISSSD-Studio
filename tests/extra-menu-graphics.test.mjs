@@ -1,3 +1,4 @@
+import {seedNativeMenuFontFixture} from './native-menu-font-fixture.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {plusExtraMenuGraphicsWriter,EXTRA_MENU_GRAPHIC_REGIONS} from '../src/core/plus-extra-menu-graphics.mjs';
@@ -10,7 +11,7 @@ function padded(raw,size){const p=konamiLzCompress(raw);assert.ok(p.length<=size
 function fixture(){const b=new Uint8Array(0x200000).fill(255),map=new Uint8Array(2048);for(let i=0;i<15;i++){const a=(2*32+9+i)*2,c=(3*32+9+i)*2;map[a]=top[i]&255;map[a+1]=top[i]>>8;map[c]=bottom[i]&255;map[c+1]=bottom[i]>>8;}b.set(padded(map,478),0x157469);b.set(padded(new Uint8Array(608),459),0x173CA4);b.set([0xA4,0xBC,0xAE],0x1193D);
  b.set([0x72,0x74,0x76,0x78,0x80,0x82,0x84,0x73,0x75,0x77,0x79,0x81,0x83,0x85],0x3DF7A);
  b.set([0x7A,0x7C,0x7E,0x80,0x82,0x84,0,0x7B,0x7D,0x7F,0x81,0x83,0x85,0],0x3DF44);
- b.set([0x86,0x88,0x8A,0x8C,0x8E,0x90,0x87,0x89,0x8B,0x8D,0x8F,0x91],0x3DF93);b.set([0x86,0x88,0x8A,0x92,0x94,0x96,0x87,0x89,0x8B,0x93,0x95,0x97],0x3DFA7);return b;}
+ b.set([0x86,0x88,0x8A,0x8C,0x8E,0x90,0x87,0x89,0x8B,0x8D,0x8F,0x91],0x3DF93);b.set([0x86,0x88,0x8A,0x92,0x94,0x96,0x87,0x89,0x8B,0x93,0x95,0x97],0x3DFA7);return seedNativeMenuFontFixture(b);}
 const state={additionalScreenTextsV1:{values:{'password-graphics':{enterPassword:'DIGITE SENHA'},'challenge-graphics-extra':{cornerKick:'ESCANTEIO',freeKick:'FALTA',bestTime:'TEMPO',bestScore:'PONTOS'}}}};
 test('password keeps its native 16px font and challenge labels receive independent rectangles',()=>{
  const b=fixture(),before=b.slice(),r=b.slice();plusExtraMenuGraphicsWriter(r,state,b);assert.deepEqual(b,before);const map=konamiLzDecompress(r,0x157469).data;
@@ -42,4 +43,10 @@ test('competition titles retain native tiles and create matching vertically refl
  assert.deepEqual(konamiLzDecompress(r,0x185000).data.slice(0,4512),native);
  for(const [pc,rows]of [[0x176D00,[10]],[0x177100,[6,14]],[0x177500,[6,14]]]){const m=konamiLzDecompress(r,pc).data;for(const row of rows)for(let y=0;y<4;y++)for(let x=0;x<32;x++){const a=m[(row+y)*64+x*2]|m[(row+y)*64+x*2+1]<<8,z=m[(row+7-y)*64+x*2]|m[(row+7-y)*64+x*2+1]<<8;assert.equal(a&1023,z&1023);assert.equal(z&0x8000,0x8000);}}
  const classify=areaClassifier(r,b);for(let i=0;i<r.length;i++)if(r[i]!==b[i])assert.equal(classify(i),'pre-partida');
+});
+
+test('PONTOS uses the same native shaded tall glyph cells as DRIBBLE and PASS',()=>{
+ const b=fixture(),r=b.slice();plusExtraMenuGraphicsWriter(r,state,b);
+ const atlas=konamiLzDecompress(r,0x176500).data,native=konamiLzDecompress(b,0xD8337).data;
+ for(const [i,c]of [...'PONTOS'].entries())for(let y=0;y<2;y++){const code=0x68+c.charCodeAt(0)-65,tile=b[0x3BE6A+code*2+y]-0x90;assert.deepEqual(atlas.slice(1216+(y*6+i)*16,1232+(y*6+i)*16),native.slice(tile*16,(tile+1)*16));}
 });

@@ -8,10 +8,20 @@ const cpu=p=>0x800000|((p>>15)<<16)|0x8000|(p&32767),long=n=>Uint8Array.of(n&255
 const word=(b,p)=>b[p]|b[p+1]<<8,set=(b,p,v)=>{b[p]=v&255;b[p+1]=v>>8;};
 function verifyPointer(base,pc,target){if(long(cpu(target)).some((v,i)=>base[pc+i]!==v))throw Error('Texto gráfico: carregador divergente em '+pc.toString(16));}
 function reserve(rom,base,pc,capacity,data,writes){if(data.length>capacity||pc+capacity>rom.length)throw Error('Texto gráfico: capacidade excedida em '+pc.toString(16));if(base.slice(pc,pc+capacity).some(v=>v!==255)||rom.slice(pc,pc+capacity).some(v=>v!==255))throw Error('Texto gráfico: reserva ocupada em '+pc.toString(16));const padded=new Uint8Array(capacity).fill(255);padded.set(data);writes.push([pc,padded]);}
-function tall(text,columns){
- const s=norm(text),width=[...s].reduce((n,c)=>n+(c===' '?3:6),0)-1,w=columns*8;if(width>w)throw Error('Texto gráfico: “'+s+'” excede '+w+' pixels.');
- const out=new Uint8Array(columns*32);let x=Math.floor((w-width)/2);
- for(const c of s){if(c===' '){x+=3;continue;}const rows=PLUS_MAIN_MENU_GLYPHS[c];if(!rows)throw Error('Texto gráfico: caractere indisponível '+c);for(let y=0;y<14;y++)for(let k=0;k<5;k++)if(rows[y>>1]&(1<<(6-k))){const at=((y>>3)*columns+((x+k)>>3))*16+(y%8)*2;out[at]|=1<<(7-(x+k)%8);}x+=6;}return out;
+function tall(base,text,columns){
+ // Match the native DRIBBLE/PASS/SHOOT alphabet, including its shaded edge.
+ const font=konamiLzDecompress(base,0xD8337).data,s=norm(text),w=columns*8;
+ const advance=s.length*8<=w?8:6;if(s.length*advance>w)throw Error('Texto gráfico: “'+s+'” excede '+w+' pixels.');
+ const out=new Uint8Array(columns*32);let left=Math.floor((w-s.length*advance)/2);
+ for(const c of s){
+  if(c!==' '){const code=NATIVE_MENU_FONTS.TallMenuText[c];if(code===undefined)throw Error('Desafio: caractere não suportado '+c);
+   for(let y=0;y<16;y++){const tile=base[0x3BE6A+code*2+(y>>3)]-0x90;if(tile<0||tile*16+15>=font.length)throw Error('Desafio: letra fora da fonte nativa '+c);
+    for(let x=0;x<advance;x++){const source=advance===8?x:Math.floor(x*8/6),at=tile*16+(y%8)*2,bit=7-source,v=(font[at]>>bit&1)|(font[at+1]>>bit&1)<<1;
+     const dest=((y>>3)*columns+((left+x)>>3))*16+(y%8)*2,shift=7-(left+x)%8;out[dest]|=(v&1)<<shift;out[dest+1]|=(v>>1)<<shift;
+    }
+   }
+  }left+=advance;
+ }return out;
 }
 function password(base,values,writes){
  const value=values?.enterPassword;if(value===undefined||norm(value)==='ENTER PASSWORD!')return;
@@ -29,7 +39,7 @@ function challenge(rom,base,values,writes){
  const raw=new Uint8Array(1408);raw.set(d.data);let tile=38;
  for(const [id,en,columns]of requests){
   const text=values?.[id];if(text===undefined||norm(text)===en)continue;
-  const bytes=tall(text,columns),code=0x72+tile;raw.set(bytes,tile*16);tile+=columns*2;
+  const bytes=tall(base,text,columns),code=0x72+tile;raw.set(bytes,tile*16);tile+=columns*2;
   const descriptor=id!=='freeKick'?Uint8Array.from(Array.from({length:columns*2},(_,i)=>code+i)):Uint8Array.from([...Array.from({length:columns},(_,i)=>code+i),0,...Array.from({length:columns},(_,i)=>code+columns+i),0]);
   const originals={cornerKick:[0x3DF7A,[0x72,0x74,0x76,0x78,0x80,0x82,0x84,0x73,0x75,0x77,0x79,0x81,0x83,0x85]],freeKick:[0x3DF44,[0x7A,0x7C,0x7E,0x80,0x82,0x84,0,0x7B,0x7D,0x7F,0x81,0x83,0x85,0]],bestTime:[0x3DF93,[0x86,0x88,0x8A,0x8C,0x8E,0x90,0x87,0x89,0x8B,0x8D,0x8F,0x91]],bestScore:[0x3DFA7,[0x86,0x88,0x8A,0x92,0x94,0x96,0x87,0x89,0x8B,0x93,0x95,0x97]]};
   const [pc,expected]=originals[id];if(expected.some((v,i)=>base[pc+i]!==v))throw Error('Desafio: descritor original divergente '+id);writes.push([pc,descriptor]);

@@ -36,7 +36,7 @@ function renderExactAnnouncements(values={}){
  if(texts.some(s=>!s||/[^A-ZÀ-Ý0-9 !.-]/.test(s)))throw Error('Avisos: informe letras, números, espaços e pontuação suportada.');
  const chars=[...new Set(texts.slice(1).join('').replace(/ /g,''))].sort();
  const font=new Uint8Array(1536),letters=new Map(),fontTiles=new Map();
- for(const c of chars){const bytes=letter(c),tiles=[[],[]];for(let y=0;y<4;y++)for(let x=0;x<2;x++){const tile=bytes.slice((y*2+x)*16,(y*2+x+1)*16),key=tile.join(',');if(!fontTiles.has(key)){if(fontTiles.size>=96)throw Error('Avisos: o alfabeto excede os 96 tiles reservados.');font.set(tile,fontTiles.size*16);fontTiles.set(key,0x1A0+fontTiles.size);}tiles[x].push(fontTiles.get(key));}letters.set(c,tiles);}
+ for(const c of chars){const bytes=letter(c),tiles=[[],[]];for(let y=0;y<4;y++)for(let x=0;x<2;x++){const tile=bytes.slice((y*2+x)*16,(y*2+x+1)*16),key=tile.join(',');if(!fontTiles.has(key)){if(fontTiles.size>=90)throw Error('Avisos: o alfabeto excede os 90 tiles reservados.');font.set(tile,fontTiles.size*16);fontTiles.set(key,0x190+fontTiles.size);}tiles[x].push(fontTiles.get(key));}letters.set(c,tiles);}
  const goalChars=[...new Set(texts[0].replace(/ /g,''))],goalFont=new Uint8Array(1184),goalLetters=new Map();
  if(goalChars.length*256>goalFont.length)throw Error('GOL!: alfabeto excede a reserva gráfica.');
  goalChars.forEach((c,i)=>{goalFont.set(letter(c,true),i*256);goalLetters.set(c,0x1A0+i*16);});
@@ -101,7 +101,7 @@ export function plusMatchAnnouncementsWriter(rom,state,base=rom,selectedAreas=nu
  for(let i=0;i<4;i++){
   const pc=[0x1271F3,0x127200,0x12720D,0x12721A][i],source=0x99FA63+i*256,expected=[128,0,1,24,...word(0x5D00+i*128),...long(source),...word(i===3?192:256),0,0];
   if(expected.some((v,j)=>base[pc+j]!==v))throw Error('Avisos: DMA nativo divergente.');
-  writes.push([pc,Uint8Array.from([128,0,1,24,...word(0x5D00+i*192),...long(cpu(MATCH_FONT_SLOT+i*384)),...word(384),0,0])]);
+  writes.push([pc,Uint8Array.from([128,0,1,24,...word(0x5C80+i*192),...long(cpu(MATCH_FONT_SLOT+i*384)),...word(i===3?288:384),0,0])]);
  }
  if(rom.length<MATCH_FONT_SLOT+1536||rom.slice(MATCH_FONT_SLOT,MATCH_FONT_SLOT+1536).some(v=>v!==255))throw Error('Avisos: reserva do alfabeto indisponível.');
  writes.push([MATCH_FONT_SLOT,rendered.font],[0xCF5C3,rendered.goalFont],...rendered.descriptors);

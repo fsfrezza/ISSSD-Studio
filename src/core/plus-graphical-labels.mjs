@@ -52,13 +52,27 @@ function drawTallLabel(raw,value,tiles){
  for(let t=0;t<tiles.length;t++)for(let y=0;y<8;y++){let b=0;for(let xx=0;xx<8;xx++)b|=pix[(Math.floor(t/(w/8))*8+y)*w+(t%(w/8))*8+xx]<<(7-xx);raw[tiles[t]*16+y*2]=b;raw[tiles[t]*16+y*2+1]=0;}
 }
 // Four non-contiguous 4bpp tiles form each 16x16 role button. Keep its
-// triangular border and replace only the seven-pixel letter band.
+// triangular border and keep the native six-pixel lettering and shadow.
+const NATIVE_ROLE_BUTTON_FONT={
+ D:['11110','11011','11011','11011','11011','11110'],
+ F:['11111','11000','11110','11000','11000','11000'],
+ M:['11011','11111','11111','11011','11011','11011'],
+ C:['01111','11000','11000','11000','11000','01111'],
+ A:['01110','11011','11011','11111','11011','11011'],
+ T:['11111','01100','01100','01100','01100','01100'],
+};
 function paintRoleButton(parts,value){
- const text=normalizeAdditionalText(value),w=[...text].reduce((n,c)=>n+(c===' '?2:(ROLE_FONT[c]?.[0].length??99)+1),0)-1;
- if(w>14)throw Error('Ícone de posição: máximo de 14 px.');
- const set=(x,y,v)=>{const [raw,tile]=parts[(y>>3)*2+(x>>3)];for(let p=0;p<4;p++){const at=tile*32+(p>>1)*16+(y%8)*2+(p&1),bit=1<<(7-x%8);raw[at]=(raw[at]&~bit)|(((v>>p)&1)?bit:0);}};
- for(let y=4;y<11;y++)for(let x=1;x<15;x++)set(x,y,11);
- let x=Math.floor((16-w)/2);for(const c of text){if(c===' '){x+=2;continue;}const g=ROLE_FONT[c];if(!g)throw Error('Ícone: caractere indisponível.');for(let y=0;y<7;y++)for(let xx=0;xx<g[0].length;xx++)if(g[y][xx]==='1')set(x+xx,y+4,12);x+=g[0].length+1;}
+ const text=normalizeAdditionalText(value),w=text.length*7-2;if(w>14)throw Error('Ícone de posição: máximo de 14 px.');
+ const pixels=Array.from({length:7},()=>new Uint8Array(14).fill(14)),strokes=[];
+ let left=Math.floor((16-w)/2)-1;
+ for(const c of text){const glyph=NATIVE_ROLE_BUTTON_FONT[c]??ROLE_FONT[c]?.slice(0,6);if(!glyph)throw Error('Ícone: caractere indisponível.');for(let y=0;y<6;y++)for(let x=0;x<5;x++)if(glyph[y][x]==='1')strokes.push([left+x,y]);left+=7;}
+ // Native DF has six-pixel white strokes and a dark-to-purple lower shadow.
+ for(const [x,y]of strokes)for(let dx=0;dx<3;dx++)if(x+dx<14)pixels[y+1][x+dx]=Math.min(pixels[y+1][x+dx],12+dx);
+ for(const [x,y]of strokes)pixels[y][x]=11;
+ for(let y=0;y<7;y++)for(let x=0;x<14;x++){
+  const px=x+1,py=y+4,[raw,tile]=parts[(py>>3)*2+(px>>3)],v=pixels[y][x];
+  for(let p=0;p<4;p++){const at=tile*32+(p>>1)*16+(py%8)*2+(p&1),bit=1<<(7-px%8);raw[at]=(raw[at]&~bit)|(((v>>p)&1)?bit:0);}
+ }
 }
 // The native participation caption spans eleven top cells and seven bottom
 // cells. Four extra cells complete the second row without touching role icons.
@@ -138,6 +152,13 @@ export function plusGraphicalLabelsWriter(rom,state={},base=rom,selectedAreas=nu
    set(7,0x1C27);set(8,0x1C28);for(let x=0;x<6;x++)set(9+x,0x1D00+x);
    if([0x44,0x03,0xC2,0xA9,2,2,0x44,0x17,0xC2,0xAB,2,4].some((v,i)=>base[0x3ADC8+i]!==v)||base.slice(0x3FB90,0x3FB98).some(v=>v!==255))throw Error('CANCELA: controles do rodapé divergentes.');
    writes.push([0x3ADC8,Uint8Array.from([0x44,0x03,0xC2,0xA7,2,2,0x44,0x90,0xFB,0xA9,2,6])],[0x3FB90,Uint8Array.from([0xFD,0x3D,0,1,2,3,4,5])]);
+   // This table normally translates code 1 to tile D3 (NUMBER), not 101.
+   // Only our six literal cells bypass that lookup; every native string keeps
+   // the original conversion and attributes.
+   if([0xBD,0x16,0xC0,0x05,0x06].some((v,i)=>base[0x28E80+i]!==v)||rom.length<0x3E3240||rom.slice(0x3E3200,0x3E3240).some(v=>v!==255))throw Error('CANCELA: conversor de células divergente.');
+   const literal=Uint8Array.from([0xC0,0x92,0xFB,0x90,21,0xC0,0x98,0xFB,0xB0,16,0xA5,6,0xC9,0,0x3D,0xD0,9,0x8A,0x4A,0x18,0x69,0,1,0x05,6,0x6B,0xBF,0x16,0xC0,0x87,0x05,6,0x6B]);
+   writes.push([0x28E80,Uint8Array.from([0x22,...pointer(cpu(0x3E3200)),0xEA])],[0x3E3200,literal]);
+
   }
   if(changed(s,'formationType')){
    const text=normalizeAdditionalText(values[s].formationType),words=text.split(' ');let line='';
@@ -152,7 +173,7 @@ export function plusGraphicalLabelsWriter(rom,state={},base=rom,selectedAreas=nu
    const map=asset('formationRoleMap');
    for(let x=0;x<11;x++){const at=((25*32)+5+x)*2,word=map[at]|map[at+1]<<8;const tile=0x69+tiles[11+x];map[at]=(word&0xFC00|tile)&255;map[at+1]=(word&0xFC00|tile)>>8;}
   }
-  for(const [id,tile] of [['defenders',6],['midfielders',8],['forwards',10]])if(['defenders','midfielders','forwards'].some(k=>changed(s,k)))drawGraphicalLabel(asset('teamStats'),values[s]?.[id]??original(s,id),{tile,tiles:2,bpp:4,background:8,ink:9,outline:13,x:1,font:ROLE_FONT});
+  for(const [id,tile] of [['defenders',6],['midfielders',8],['forwards',10]])if(changed(s,id))drawGraphicalLabel(asset('teamStats'),values[s]?.[id]??original(s,id),{tile,tiles:2,bpp:4,background:8,ink:9,outline:13,x:1,font:ROLE_FONT});
   const mf=changed(s,'midfielders'),fw=changed(s,'forwards'),df=changed(s,'defenders');
   if(mf||fw||df){
    let raw=asset('attackParticipation');
@@ -171,12 +192,12 @@ export function plusGraphicalLabelsWriter(rom,state={},base=rom,selectedAreas=nu
     if(!matches)throw Error('MF: descritor da formação não encontrado.');
    }
    if(fw)paintRoleButton([[raw,4],[raw,5],[raw,6],[raw,7]],values[s].forwards);
-   {const top=asset('formationRoleButtonTop');paintRoleButton([[top,1],[top,2],[raw,0],[raw,1]],values[s]?.defenders??'DF');}
+   if(df){const top=asset('formationRoleButtonTop');paintRoleButton([[top,1],[top,2],[raw,0],[raw,1]],values[s].defenders);}
   }
   // DATA_9A8BE0: four 32-byte strips FW/MF/DF/GK, selected by
   // DATA_819419 and DMA'd by CODE_80CC8B on the formation screen.
-  for(const [id,offset] of [['forwards',0],['midfielders',32],['defenders',64]])if(['defenders','midfielders','forwards'].some(k=>changed(s,k))){
-   const raw=base.slice(0xD0BE0+offset,0xD0C00+offset);drawGraphicalLabel(raw,values[s]?.[id]??original(s,id),{tiles:2,x:1,font:ROLE_FONT});writes.push([0xD0BE0+offset,raw]);
+  for(const [id,offset] of [['forwards',0],['midfielders',32],['defenders',64]])if(changed(s,id)){
+   const text=normalizeAdditionalText(values[s][id]).padEnd(2),font=konamiLzDecompress(base,0xD81FA).data,raw=new Uint8Array(32);for(let i=0;i<2;i++)if(text[i]!==' '){const tile=text.charCodeAt(i)-65;if(tile<0||tile>=26)throw Error('Posição: use duas letras.');raw.set(font.slice(tile*16,(tile+1)*16),i*16);}writes.push([0xD0BE0+offset,raw]);
   }
  }
  if(active('pre-partida')){

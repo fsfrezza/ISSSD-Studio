@@ -10,7 +10,7 @@ const names={A:[0x35,0x36],E:[0x3D,0x3E],G:[0x40,0x41],I:[0x44,0x45],N:[0x4E,0x4
 export function encodeTrainingHud(field,value,original=false){
  const [,en,,,position,font]=field,text=normalize(value);
  if(!text||text.length>20)throw Error('Treino: texto vazio ou maior que 20 células.');
- const left=original?position:position+Math.floor((en.length-text.length)/2),rows=font==='small'?1:2;
+ const left=original?position:font==='small'?position:position+Math.floor((en.length-text.length)/2),rows=font==='small'?1:2;
  const out=[];
  for(let y=0;y<rows;y++){
   if(y)out.push(0xFE);out.push(...word(left+y*32));
