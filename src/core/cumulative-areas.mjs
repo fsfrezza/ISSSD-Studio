@@ -1,3 +1,4 @@
+import {TRAINING_SELECTOR_POSITIONS} from './plus-native-menu-text.mjs';
 import {EXTRA_MENU_GRAPHIC_REGIONS} from './plus-extra-menu-graphics.mjs';
 import {TRAINING_HUD_REGIONS} from './plus-training-hud.mjs';
 import {MATCH_STATISTICS_REGIONS} from './plus-match-statistics.mjs';
@@ -71,6 +72,7 @@ export function areaClassifier(rom,base=null){
   if((off>=0xF6C78&&off<0xF6F2B)||(off>=0x3FAC8&&off<0x3FB7C)||(off>=0xE7F2&&off<0xE830)||(off>=0x2DDA5&&off<0x2DDA5+56*10))return 'selecao-equipes';
   if((off>=0x483C2&&off<0x483C2+56*2*34)||(off>=0x48D50&&off<0x48D50+56*24))return 'jogadores';
   if((off>=0x3fc00&&off<0x40000)||(off>=0x113a7&&off<0x113aa)||(off>=0x3cafa&&off<0x3caff)||(off>=0x167ade&&off<0x167c34))return 'pre-partida';
+  if(TRAINING_SELECTOR_POSITIONS.some(([pc])=>off>=pc&&off<pc+2))return 'pre-partida';
   for(const section of NATIVE_MENU_TEXT_SECTIONS)if(section.fields.some(f=>f[3].pool.segments.some(s=>off>=s.pc&&off<s.pc+s.original.length)))return section.area;
   if(CURSOR_HELP_FIELDS.some(([, , , {native:n}])=>off>=n.pc&&off<n.pc+n.width*n.rowCount))return 'pre-partida';
   if(CONTROLLER_ACTIONS.some(a=>off>=a.pc&&off<a.pc+a.cells))return 'pre-partida';

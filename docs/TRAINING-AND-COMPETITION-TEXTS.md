@@ -37,3 +37,19 @@ Os escritores validam fontes, mapas, carregadores e reservas antes de aplicar os
 ## Conferência
 
 Validação local: 521 testes e auditoria do HTML final. No Snes9x 2005 foram conferidos os menus de treino e desafio, modalidades e recordes, o cabeçalho da senha, os cenários e a apresentação da primeira temporada. INICIO foi acionado pelo estado nativo do desafio; CARTÃO AMARELO e GOL! pelo estado nativo de avisos de uma partida. Essas provas exercitam os leitores, carregadores e transferências reais, sem substituir o renderizador do jogo. Não equivalem a completar todas as modalidades ou temporadas.
+
+### Retorno à seleção de estádio e ordem do seletor
+
+O inicializador de modalidades de treino retorna por `8A:AD0D`. Ele deve manter
+os nomes no intervalo iniciado em `5A00`, como a seleção de estádio. Movê-los
+para `5280` nesse caminho permite que os objetos da tela seguinte destruam o
+cache antes de voltar. O teste dos hooks cobre esse retorno; a navegação nativa
+foi conferida indo ao treino e voltando ao estádio.
+
+Quando o campo MODE contém MODO, somente os quatro posicionamentos do seletor
+são alterados: MODO TREINO e MODO DESAFIO. As outras ocorrências de TRAINING e
+MODE continuam independentes e nas posições originais.
+
+ESCANTEIO usa redução de 8 para 6 colunas por célula. A redução cobre todas as
+colunas da origem e prioriza a tinta branca sobre o contorno escuro, preservando
+a diagonal de N sem escurecer as letras. A altura nativa permanece inalterada.

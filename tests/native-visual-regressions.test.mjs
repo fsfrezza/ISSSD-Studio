@@ -43,9 +43,9 @@ test('formation keeps native DF and renders literal CANCELA without looking up N
 
 test('cached stadium and team selection keep names away from their country objects; returning menus restore the overwritten cursor planes',()=>{
  const memory=hooks(),name=Uint8Array.from({length:0x5F6},(_,i)=>i*5+1&255),cache=memory.slice(cpu(MENU_OAM_CACHE_SLOT),cpu(MENU_OAM_CACHE_SLOT)+MENU_OAM_PLANE_SIZE*4);
- for(const ret of [0xAC3E,0xAC2F,0x9E8A,0x8BDC,0xABED]){
+ for(const ret of [0xAC3E,0xAC2F,0x9E8A,0xAD0D,0x8BDC,0xABED]){
   const m=memory.slice();for(let p=0;p<4;p++)m.set(name,0x7E5A00+p*0x2000);m.set([0,0x5A],0x7E5FF8);m.set([0,0x5A],0x7E5FFA);const sp=0x1E0;m.set([0x59,0xA7,0x85,ret&255,ret>>8,ret===0x9E8A?0xA4:0x85],sp+1);
-  executeHook(m,cpu(TEAM_NAME_HOOK_SLOT+0x80),{s:sp,a:0xFFFF,x:22,y:44},new Set([0x859E82]));const expected=[0xAC3E,0xAC2F,0x9E8A].includes(ret)?0x5A00:0x5280;assert.equal(word(m,0x7E5FF8),expected);
+  executeHook(m,cpu(TEAM_NAME_HOOK_SLOT+0x80),{s:sp,a:0xFFFF,x:22,y:44},new Set([0x859E82]));const expected=[0xAC3E,0xAC2F,0x9E8A,0xAD0D].includes(ret)?0x5A00:0x5280;assert.equal(word(m,0x7E5FF8),expected);
   for(let p=0;p<4;p++){assert.deepEqual(m.slice(0x7E0000+expected+p*0x2000,0x7E0000+expected+p*0x2000+name.length),name);if(expected===0x5280)assert.deepEqual(m.slice(0x7E5876+p*0x2000,0x7E5876+p*0x2000+MENU_OAM_PLANE_SIZE),cache.slice(p*MENU_OAM_PLANE_SIZE,(p+1)*MENU_OAM_PLANE_SIZE));}
  }
 });

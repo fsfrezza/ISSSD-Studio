@@ -50,3 +50,9 @@ test('PONTOS uses the same native shaded tall glyph cells as DRIBBLE and PASS',(
  const atlas=konamiLzDecompress(r,0x176500).data,native=konamiLzDecompress(b,0xD8337).data;
  for(const [i,c]of [...'PONTOS'].entries())for(let y=0;y<2;y++){const code=0x68+c.charCodeAt(0)-65,tile=b[0x3BE6A+code*2+y]-0x90;assert.deepEqual(atlas.slice(1216+(y*6+i)*16,1232+(y*6+i)*16),native.slice(tile*16,(tile+1)*16));}
 });
+
+test('shrinking ESCANTEIO preserves strokes in native source columns skipped by nearest-neighbour sampling',()=>{
+ const b=fixture(),font=new Uint8Array(768);for(let t=0;t<48;t++)for(let y=0;y<8;y++){font[t*16+y*2]=255;font[t*16+y*2+1]=0xEF;}
+ b.set(konamiLzCompress(font),0xD8337);const r=b.slice();plusExtraMenuGraphicsWriter(r,state,b);
+ const written=konamiLzDecompress(r,0x176500).data.slice(608,608+7*32);assert.ok(written.some((v,i)=>i%2===0&&(v&~written[i+1])),'white ink in the fourth source column must survive instead of becoming dark outline');
+});

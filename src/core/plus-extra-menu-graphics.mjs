@@ -16,7 +16,9 @@ function tall(base,text,columns){
  for(const c of s){
   if(c!==' '){const code=NATIVE_MENU_FONTS.TallMenuText[c];if(code===undefined)throw Error('Desafio: caractere não suportado '+c);
    for(let y=0;y<16;y++){const tile=base[0x3BE6A+code*2+(y>>3)]-0x90;if(tile<0||tile*16+15>=font.length)throw Error('Desafio: letra fora da fonte nativa '+c);
-    for(let x=0;x<advance;x++){const source=advance===8?x:Math.floor(x*8/6),at=tile*16+(y%8)*2,bit=7-source,v=(font[at]>>bit&1)|(font[at+1]>>bit&1)<<1;
+    for(let x=0;x<advance;x++){const at=tile*16+(y%8)*2;let v=0;
+     // Cover every source column: nearest-neighbour shrink drops the N diagonal.
+     for(let source=Math.floor(x*8/advance);source<Math.ceil((x+1)*8/advance);source++){const bit=7-source;const sample=(font[at]>>bit&1)|(font[at+1]>>bit&1)<<1;if(sample)v=v?Math.min(v,sample):sample;}
      const dest=((y>>3)*columns+((left+x)>>3))*16+(y%8)*2,shift=7-(left+x)%8;out[dest]|=(v&1)<<shift;out[dest+1]|=(v>>1)<<shift;
     }
    }
