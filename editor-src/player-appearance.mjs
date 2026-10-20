@@ -34,7 +34,8 @@ function renderAppearancePreview(){
   $('appearanceNativePaletteInfo').textContent=(data.identical?'Nesta equipe, as duas paletas de jogadores de linha possuem as mesmas cores. ':'As duas paletas podem mudar pele, cabelo e calçado em conjunto. ')+(gk?'Goleiro: estas são referências da equipe; a cor do goleiro em campo vem da paleta própria de goleiro.':'A escolha pertence ao jogador; as cores de cada conjunto são compartilhadas pela equipe.');
   const counts=appearancePaletteCounts();$('palette0Count').textContent=counts[0];$('palette1Count').textContent=counts[1];
   renderHairGallery();const frames=$('appearanceNativeFrames');
-  frames.innerHTML=appearanceTempHair?Array.from({length:24},(_,i)=>`<canvas title="Quadro ${i+1}" aria-label="Quadro nativo ${i+1}"></canvas>`).join(''):'<p class="subtle">Tipo 0: o jogo usa a cabeça já desenhada no sprite do corpo. Não há sobreposição de cabelo para exibir.</p>';
+  frames.innerHTML=appearanceTempHair?Array.from({length:24},(_,i)=>`<canvas title="Quadro ${i+1}" aria-label="Quadro nativo ${i+1}"></canvas>`).join(''):'';
+  $('appearanceNativeFrameInfo').textContent=appearanceTempHair?'':'Tipo 0: o jogo usa a cabeça já desenhada no sprite do corpo. Não há sobreposição de cabelo para exibir.';
   frames.querySelectorAll('canvas').forEach((canvas,i)=>nativeAppearanceCanvas(canvas,appearanceTempHair,i,data.palettes[appearanceTempPalette]));
   $('appearanceNativeSkinCatalog').innerHTML=data.presets.map(p=>`<div><strong>${p.label}</strong>${nativeAppearanceSwatches(p.colors.slice(0,4))}</div>`).join('');
   nativeAppearanceNote('Escolha as opções e use Aplicar ao jogador. Salve o projeto para guardar a escolha; Salvar ROM grava a aparência na fase Jogadores.');
