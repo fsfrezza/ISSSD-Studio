@@ -126,6 +126,13 @@ window.__ISSSD_INSTALL_TEAMS_SEMANTIC_V1__=function(){
 
   return !!models;
  };
+ window.__ISSSD_TEAMS_SET_PLAYER_APPEARANCE_V1__=function(team,identity,value){
+  const engine=window.ISSSDPlayerAppearanceCore;if(!engine)throw new Error('Núcleo de aparência indisponível.');
+  const state=window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__||studioTeamsV3Snapshot();
+  const originalPlayer=studioTeamsV3OriginalPlayer(Number(team),Number(identity?.baseSlot));
+  const next=engine.setProjectPlayerAppearance(state,team,identity,value,originalPlayer?.appearance||{});
+  return window.__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__(next);
+ };
  window.__ISSSD_TEAMS_SET_PLAYER_ATTACK_V1__=function(team,identity,enabled){
   if(typeof enabled!=='boolean')throw new Error('ATACAR exige um valor booleano.');
   const state=clone(window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__||studioTeamsV3Snapshot());

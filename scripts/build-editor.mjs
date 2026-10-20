@@ -20,6 +20,19 @@ const generatedMarkers=['ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE','isssd-git-controlle
 if(generatedMarkers.some(m=>fs.readFileSync(source,'utf8').includes(m)))throw new Error('Baseline contém build gerado; .editor-vendor foi preservado.');
 
 let html=fs.readFileSync(source,'utf8');
+// Replace only the generated appearance UI; the private baseline stays immutable.
+const appearanceCore=fs.readFileSync(path.join(root,'src/core/player-appearance.mjs'),'utf8');
+const appearanceExports=[...appearanceCore.matchAll(/^export (?:const|function) (\w+)/gm)].map(m=>m[1]);
+const appearanceEngine='window.ISSSDPlayerAppearanceCore=(()=>{\n'+appearanceCore.replace(/^export /gm,'')+'\nreturn {'+appearanceExports.join(',')+'};})();\n';
+const appearanceRuntime=appearanceEngine+fs.readFileSync(path.join(root,'editor-src/player-appearance.mjs'),'utf8');
+const appearanceStart=html.indexOf('const HAIR_NAMES=['),appearanceEnd=html.indexOf('renderEmbeddedAssetManifest();',appearanceStart);
+if(appearanceStart<0||appearanceEnd<0)throw Error('Aparência: bloco original não encontrado.');
+html=html.slice(0,appearanceStart)+appearanceRuntime+'\n'+html.slice(appearanceEnd);
+const appearanceDialog=/<dialog id="appearanceDialog">[\s\S]*?<\/dialog>/;
+if(!appearanceDialog.test(html))throw Error('Aparência: janela original não encontrada.');
+html=html.replace(appearanceDialog,()=>fs.readFileSync(path.join(root,'editor-src/player-appearance-dialog.html'),'utf8'));
+html=html.replace('</head>',()=>'<style id="isssd-native-player-appearance">'+fs.readFileSync(path.join(root,'editor-src/player-appearance.css'),'utf8')+'</style>\n</head>');
+
 // Keep the protected visual baseline immutable; replace its legacy Portuguese
 // proposals in the generated editor, including an intentionally empty second line.
 html=html.replaceAll('"pc":248272,"original":"DISPLAYS","pilot":"MOSTRA "','"pc":248272,"original":"DISPLAYS","pilot":"SO MOSTRA"').replaceAll('"pc":248272,"original":"DISPLAYS","pilot":"SO MOSTRA","capacity":8','"pc":248272,"original":"DISPLAYS","pilot":"SO MOSTRA","capacity":9').replaceAll('"pc":248283,"original":"ONLY","pilot":"SO"','"pc":248283,"original":"ONLY","pilot":""');
