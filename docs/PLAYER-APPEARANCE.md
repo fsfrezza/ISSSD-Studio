@@ -65,3 +65,37 @@ confere que a injeção gerada substitui a arte antiga sem remover os IDs usados
 pelos handlers legados. O teste local da janela com DOM cobre escolha de
 cabelo/paleta, aplicação e próximo, reabertura e restauração, mantendo a ROM
 inalterada. O baseline privado do Editor e a ROM não são incluídos no Git.
+
+## Copiar e trocar entre jogadores
+
+A janela permite escolher outra equipe e um jogador e executar três operações:
+Copiar deste para o selecionado, Copiar do selecionado para este, ou Trocar
+entre os dois. A lista usa os nomes atuais do projeto, inclusive jogadores
+reordenados. As duas alterações da troca são preparadas antes de hidratar o
+projeto, seguindo `team`, `playerId` e `baseSlot`. Nenhuma operação move o jogador
+ou altera seus outros atributos. Selecionar a mesma identidade desativa os botões.
+
+As operações usam os atributos já confirmados no projeto; rascunhos da janela
+não são incluídos. A operação já é aplicada ao projeto em memória: Cancelar/Fechar
+a janela não desfaz a transferência. Para persistir, salve o projeto; Salvar ROM
+materializa os atributos pela fase Jogadores existente.
+
+O que se copia/troca é **tipo de cabelo e índice de paleta 0/1**. A transferência
+não copia blocos de cores compartilhados, uniformes, retratos ou a paleta própria
+do goleiro. Entre times diferentes, o índice idêntico pode produzir outra cor.
+Isso é mostrado junto aos controles, em vez de prometer uma cópia visual idêntica.
+
+## Individualização das cores
+
+Qualquer jogador já pode usar qualquer um dos códigos nativos de cabelo 0–13,
+independentemente da equipe. As cores de pele/cabelo continuam pertencendo às
+paletas compartilhadas da equipe; o atributo individual reserva só um bit para
+selecionar 0/1. Separar os blocos compartilhados entre equipes permitiria editar
+as cores de cada equipe sem alterar as demais, mas manteria duas combinações
+por equipe no renderizador atual. Essa edição de cores não foi implementada.
+
+Cores arbitrárias independentes para todos os jogadores não se obtêm acrescentando
+campos ao projeto nem apenas expandindo a ROM: exigem novos dados e mudanças no
+carregamento e uso das paletas pelo renderizador, com verificação dos limites de
+paletas simultâneas, goleiros, poses, cenas aproximadas e replays. Isso permanece
+uma investigação estrutural, não uma capacidade já oferecida pelo Editor.

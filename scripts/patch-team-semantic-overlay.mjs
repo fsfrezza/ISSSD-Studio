@@ -133,6 +133,21 @@ window.__ISSSD_INSTALL_TEAMS_SEMANTIC_V1__=function(){
   const next=engine.setProjectPlayerAppearance(state,team,identity,value,originalPlayer?.appearance||{});
   return window.__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__(next);
  };
+ window.__ISSSD_TEAMS_TRANSFER_PLAYER_APPEARANCE_V1__=function(source,target,mode){
+  const engine=window.ISSSDPlayerAppearanceCore;if(!engine)throw new Error('Núcleo de aparência indisponível.');
+  const state=window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__||studioTeamsV3Snapshot();
+  const complete=clone(state),resolved=studioTeamsV3ReadFull();
+  for(const ref of [source,target]){
+   const team=Number(ref?.team),roster=resolved?.teams?.[String(team)];
+   const player=roster?.players?.find(p=>p.playerId===ref?.identity?.playerId&&Number(p.baseSlot)===Number(ref?.identity?.baseSlot));
+   if(!player)throw new Error('Aparência: jogador selecionado não encontrado.');
+   complete.teams[String(team)]||={teamId:team,players:[]};
+   const entries=complete.teams[String(team)].players;
+   if(!entries.some(p=>p.playerId===player.playerId&&Number(p.baseSlot)===Number(player.baseSlot)))entries.push({playerId:player.playerId,baseSlot:player.baseSlot,slot:player.slot});
+  }
+  const next=engine.transferProjectPlayerAppearance(complete,source,target,mode,(team,slot)=>studioTeamsV3OriginalPlayer(team,slot)?.appearance||{});
+  return window.__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__(next);
+ };
  window.__ISSSD_TEAMS_SET_PLAYER_ATTACK_V1__=function(team,identity,enabled){
   if(typeof enabled!=='boolean')throw new Error('ATACAR exige um valor booleano.');
   const state=clone(window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__||studioTeamsV3Snapshot());

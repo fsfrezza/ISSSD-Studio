@@ -67,3 +67,22 @@ export function setProjectPlayerAppearance(state,team,identity,value,original={}
  if(!Object.keys(player.custom).length)delete player.custom;
  return next;
 }
+
+// Resolve both values before writing either side. A failed transfer never changes state.
+export function transferProjectPlayerAppearance(state,source,target,mode,originalFor){
+ if(!['copy','swap'].includes(mode))throw Error('Aparência: operação inválida.');
+ if(typeof originalFor!=='function')throw Error('Aparência: leitor original indisponível.');
+ const read=ref=>{
+  const team=Number(ref?.team),id=ref?.identity;
+  if(!Number.isInteger(team)||team<0||team>=56)throw Error('Aparência: equipe inválida.');
+  const player=state?.teams?.[String(team)]?.players?.find(p=>p.playerId===id?.playerId&&Number(p.baseSlot)===Number(id?.baseSlot));
+  if(!player)throw Error('Aparência: identidade do jogador não encontrada.');
+  const original=originalFor(team,Number(player.baseSlot));
+  return {team,identity:{playerId:player.playerId,baseSlot:player.baseSlot},original,value:validatePlayerAppearance({...original,...player.custom?.appearance})};
+ };
+ const a=read(source),b=read(target);
+ if(a.team===b.team&&a.identity.playerId===b.identity.playerId&&Number(a.identity.baseSlot)===Number(b.identity.baseSlot))throw Error('Escolha dois jogadores diferentes.');
+ let next=setProjectPlayerAppearance(state,b.team,b.identity,a.value,b.original);
+ if(mode==='swap')next=setProjectPlayerAppearance(next,a.team,a.identity,b.value,a.original);
+ return next;
+}

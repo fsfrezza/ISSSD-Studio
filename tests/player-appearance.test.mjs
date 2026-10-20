@@ -63,3 +63,25 @@ test('cumulative Jogadores applies appearance and synchronizes the native Brazil
  const result=buildCumulativeProject(base,project,{selectedAreas:['infraestrutura','jogadores'],onRom:(rom,entry)=>shots.push({rom,entry})});assert.deepEqual(result.unassignedLegacyRanges,[]);assert.equal(shots.at(-1).rom[off+6],0xD1);for(const s of knownMirrorSlices(30,2))assert.equal(shots.at(-1).rom[s.mirror+6-s.mainStart],0xD1);assert.deepEqual(shots.at(-1).rom.slice(off,off+6),base.slice(off,off+6));assert.equal(shots[0].rom[off+6],0x20);
  const excluded=[];buildCumulativeProject(base,project,{selectedAreas:['infraestrutura'],onRom:rom=>excluded.push(rom)});assert.equal(excluded.at(-1)[off+6],0x20);assert.equal(base[off+6],0x20);
 });
+
+test('copy and swap work across teams by identity without moving players or their unrelated fields',()=>{
+ const state=structuredClone(initial);state.teams[55]={teamId:55,custom:{teamName:'Outro'},players:[{playerId:'55:4',baseSlot:4,slot:9,custom:{name:'Destino',number:12,appearance:{hair:11}}}]};
+ const a={team:30,identity:{playerId:'30:8',baseSlot:8}},b={team:55,identity:{playerId:'55:4',baseSlot:4}},original=(t,s)=>t===30?{hair:2,palette:1}:{hair:4,palette:0};
+ const before=JSON.stringify(state),copied=core.transferProjectPlayerAppearance(state,a,b,'copy',original);
+ assert.deepEqual(copied.teams[55].players[0].custom.appearance,{hair:2,palette:1});assert.deepEqual(copied.teams[30],state.teams[30]);assert.equal(copied.teams[55].players[0].slot,9);assert.equal(copied.teams[55].players[0].custom.number,12);
+ const swapped=JSON.parse(JSON.stringify(core.transferProjectPlayerAppearance(state,a,b,'swap',original)));
+ assert.deepEqual(swapped.teams[30].players[0].custom.appearance,{hair:11,palette:0});assert.deepEqual(swapped.teams[55].players[0].custom.appearance,{hair:2,palette:1});assert.equal(swapped.teams[30].players[0].custom.skills.speed,9);assert.equal(swapped.teams[30].players[0].custom.tactical.attack,true);assert.equal(swapped.teams[55].players[0].custom.name,'Destino');
+ const restored=core.transferProjectPlayerAppearance(swapped,a,b,'swap',original);assert.equal(restored.teams[30].players[0].custom.appearance,undefined);assert.deepEqual(restored.teams[55].players[0].custom.appearance,{hair:11});assert.equal(JSON.stringify(state),before);
+ for(const [target,mode]of [[a,'swap'],[{team:56,identity:b.identity},'copy'],[{team:55,identity:{...b.identity,baseSlot:3}},'swap'],[b,'invalid']])assert.throws(()=>core.transferProjectPlayerAppearance(state,a,target,mode,original));assert.equal(JSON.stringify(state),before);
+});
+test('same-team swapping and bidirectional copying preserve sparse originals, and export only both appearance bytes',()=>{
+ const state=structuredClone(initial);state.teams[30].players[0].custom.appearance={hair:13,palette:1};
+ const a={team:30,identity:{playerId:'30:8',baseSlot:8}},b={team:30,identity:{playerId:'30:6',baseSlot:6}},original=()=>({hair:2,palette:0});
+ const swapped=core.transferProjectPlayerAppearance(state,a,b,'swap',original);assert.equal(swapped.teams[30].players[0].custom.appearance,undefined);assert.deepEqual(swapped.teams[30].players[1].custom.appearance,{hair:13,palette:1});
+ const reverse=core.transferProjectPlayerAppearance(state,b,a,'copy',original);assert.equal(reverse.teams[30].players[0].custom.appearance,undefined);
+ // Export an appearance-only cross-team transfer so byte changes cannot be hidden by unrelated edits.
+ const base=new Uint8Array(0x200000),oa=playerOffset(30,0),ob=playerOffset(1,0);base[oa+6]=0x2E;base[ob+6]=0x9F;
+ const clean={schema:'isssd-teams-v1',version:3,teams:{30:{teamId:30,players:[{slot:1,baseSlot:1,playerId:'30:1'}]},1:{teamId:1,players:[{slot:1,baseSlot:1,playerId:'1:1'}]}}};
+ const result=core.transferProjectPlayerAppearance(clean,{team:30,identity:{playerId:'30:1',baseSlot:1}},{team:1,identity:{playerId:'1:1',baseSlot:1}},'swap',t=>t===30?{hair:2,palette:0}:{hair:9,palette:1});
+ const out=base.slice();applySteps(out,teamsV3PlayerSteps(base,{teamsV1:result}));assert.equal(out[oa+6],0x9F);assert.equal(out[ob+6],0x2E);for(let i=0;i<out.length;i++)if(out[i]!==base[i])assert.ok(i===oa+6||i===ob+6);
+});

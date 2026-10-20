@@ -46,12 +46,13 @@ function loadAppearancePlayer(index){
  $('appearancePlayerLabel').textContent=`${p.name||'(sem nome)'} · ${TEAM_NAMES[currentTeam]}`;
  $('appearanceSlotBadge').textContent=`Jogador ${currentPlayer+1}/20`;
  renderAppearancePreview();
+ renderAppearanceTransferPlayers();
 }
 function openAppearanceDialog(){
  const frame=$('appearanceNativeFrame');frame.innerHTML=Array.from({length:24},(_,i)=>`<option value="${i}">Quadro ${i+1}</option>`).join('');frame.value=nativeAppearanceFrame;
  frame.onchange=()=>{nativeAppearanceFrame=Number(frame.value);renderAppearancePreview();};
  $('appearanceRestoreNativeBtn').onclick=()=>{try{const id=nativeAppearanceIdentity,p=studioTeamsV3OriginalPlayer(id.team,id.baseSlot);appearanceTempHair=p.appearance.hair;appearanceTempPalette=p.appearance.palette;renderAppearancePreview();nativeAppearanceNote('Aparência original selecionada. Use Aplicar ao jogador para confirmar.');}catch(e){nativeAppearanceNote(e.message,true);}};
- loadAppearancePlayer(currentPlayer);$('appearanceDialog').showModal();
+ setupAppearanceTransfer();loadAppearancePlayer(currentPlayer);$('appearanceDialog').showModal();
 }
 function closeAppearanceDialog(){$('appearanceDialog').close();}
 function commitAppearance(closeAfter=true){
@@ -66,3 +67,43 @@ function commitAppearance(closeAfter=true){
 }
 function applyAppearance(){commitAppearance(true);}
 function applyAppearanceNext(){commitAppearance(false);}
+
+function nativeAppearanceTransferRoster(team){return studioTeamsV3ReadFull()?.teams?.[String(team)]?.players||[];}
+function nativeAppearanceTransferRef(){
+ const team=Number($('appearanceTransferTeam').value),players=nativeAppearanceTransferRoster(team);
+ const p=players[Number($('appearanceTransferPlayer').value)];
+ if(!p)throw Error('Selecione outro jogador.');
+ return {team,identity:{playerId:p.playerId,baseSlot:p.baseSlot}};
+}
+function renderAppearanceTransferSummary(){
+ try{
+  const ref=nativeAppearanceTransferRef(),p=nativeAppearanceTransferRoster(ref.team).find(p=>p.playerId===ref.identity.playerId&&Number(p.baseSlot)===Number(ref.identity.baseSlot));
+  $('appearanceTransferSummary').textContent=`${p.name||'(sem nome)'} · cabelo ${p.appearance.hair} · paleta ${p.appearance.palette}. `+(ref.team!==currentTeam?'Equipe diferente: copiar o índice da paleta não copia suas cores.':'A equipe compartilha as mesmas cores.');
+  const same=ref.team===currentTeam&&ref.identity.playerId===nativeAppearanceIdentity?.playerId&&Number(ref.identity.baseSlot)===Number(nativeAppearanceIdentity?.baseSlot);
+  for(const id of ['appearanceCopyToBtn','appearanceCopyFromBtn','appearanceSwapBtn'])$(id).disabled=same||!nativeAppearanceSupported();
+ }catch(e){$('appearanceTransferSummary').textContent=e.message;for(const id of ['appearanceCopyToBtn','appearanceCopyFromBtn','appearanceSwapBtn'])$(id).disabled=true;}
+}
+function renderAppearanceTransferPlayers(){
+ const select=$('appearanceTransferPlayer'),old=select.value;select.innerHTML='';
+ nativeAppearanceTransferRoster(Number($('appearanceTransferTeam').value)).forEach((p,i)=>{const option=document.createElement('option');option.value=String(i);option.textContent=`${p.slot}. ${p.name||'(sem nome)'}`;select.appendChild(option);});
+ select.value=old||'0';if(!select.value)select.value='0';renderAppearanceTransferSummary();
+}
+function setupAppearanceTransfer(){
+ const select=$('appearanceTransferTeam'),old=select.value;select.innerHTML='';
+ const state=studioTeamsV3ReadFull();
+ for(const key of Object.keys(state?.teams||{}).sort((a,b)=>Number(a)-Number(b))){const option=document.createElement('option');option.value=key;option.textContent=String(state.teams[key].teamName||TEAM_NAMES[Number(key)]||('Equipe '+key));select.appendChild(option);}
+ select.value=old||String(currentTeam);if(!select.value)select.value=String(currentTeam);
+ select.onchange=renderAppearanceTransferPlayers;$('appearanceTransferPlayer').onchange=renderAppearanceTransferSummary;
+ $('appearanceCopyToBtn').onclick=()=>transferAppearance('to');$('appearanceCopyFromBtn').onclick=()=>transferAppearance('from');$('appearanceSwapBtn').onclick=()=>transferAppearance('swap');
+}
+function transferAppearance(direction){
+ try{
+  if(!nativeAppearanceSupported()||nativeAppearanceIdentity?.team!==currentTeam)throw Error('Reabra a aparência do jogador no projeto Plus.');
+  const current={team:currentTeam,identity:nativeAppearanceIdentity},other=nativeAppearanceTransferRef();
+  const source=direction==='from'?other:current,target=direction==='from'?current:other;
+  const apply=window.__ISSSD_TEAMS_TRANSFER_PLAYER_APPEARANCE_V1__;if(typeof apply!=='function')throw Error('Transferência de aparência indisponível.');
+  if(!apply(source,target,direction==='swap'?'swap':'copy'))throw Error('Não foi possível atualizar os jogadores.');
+  if(typeof studioUpdateBadge==='function')studioUpdateBadge();renderEverything();loadAppearancePlayer(currentPlayer);
+  nativeAppearanceNote((direction==='swap'?'Atributos de aparência trocados.':'Atributos de aparência copiados.')+' Salve o projeto para guardar e Salvar ROM para exportar. As cores continuam vinculadas às paletas de cada equipe.');
+ }catch(e){nativeAppearanceNote('Operação não aplicada: '+e.message,true);}
+}

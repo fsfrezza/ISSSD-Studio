@@ -23,7 +23,7 @@ function session(){
  let teams=[],currentTeam=30;
  function plusTacticalRecordForTeam(t,source=rom){return {raw:new Uint8Array(31),players:Array.from({length:10},()=>({dx:8,dy:-32,className:'DF',attack:false,flag:1}))}}
  function refreshPlusTeamFromRom(t){teams[t]={name:'Brazil',players:Array.from({length:20},(_,i)=>({name:'Original '+(i+1),number:i+1,position:2,speed:i+1,shot:3,hair:i%10,palette:0}))}}
- function buildTeams(){refreshPlusTeamFromRom(30)}
+ function buildTeams(){refreshPlusTeamFromRom(30);refreshPlusTeamFromRom(1)}
  window.__ISSD_CORE__={applyProject(){buildTeams()}};
  function ensureCurrentTeamFresh(){if(activeRomProfile.id==='iss-deluxe-plus')refreshPlusTeamFromRom(currentTeam)}
  function renderPlayer(){ensureCurrentTeamFresh();return teams[30].players}
@@ -39,7 +39,7 @@ function session(){
  function studioTeamsV3BaseSlot(t,p,s){return p.baseSlot||s}
  function studioTeamsV3NativeDx(c,x){return x-(c==='DF'?-39:c==='MC'?0:39)}
  function studioTeamsV3Class(c){return c==='DF'?'DF':c==='MF'||c==='MC'?'MC':'AT'}
- function studioTeamsV3ReadFull(){return {teams:{30:{teamId:30,players:Array.from({length:20},(_,i)=>studioTeamsV3OriginalPlayer(30,i+1))}}}}
+ function studioTeamsV3ReadFull(){return {teams:Object.fromEntries([30,1].map(t=>[t,{teamId:t,players:Array.from({length:20},(_,i)=>studioTeamsV3OriginalPlayer(t,i+1))}]))}}
  </script><script>
  const _photosImport=titleImportPhotosConflictSafe;
  titleImportPhotosConflictSafe=function(img){
@@ -161,4 +161,18 @@ test('appearance setter hydrates moved identities, reopens hair/palette and rest
  const c=session();c.ISSSDPlayerAppearanceCore=appearanceCore;const s=structuredClone(actual),p=s.teams[30].players[7],other=s.teams[30].players[5];p.slot=6;other.slot=8;p.custom={name:'R.Gaucho',skills:{speed:9}};c.__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__(s);const before=Buffer.from(c.probe.rom),id={playerId:'30:8',baseSlot:8};
  c.__ISSSD_TEAMS_SET_PLAYER_APPEARANCE_V1__(30,id,{hair:13,palette:1});const saved=plain(c.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__),again=session();again.ISSSDPlayerAppearanceCore=appearanceCore;again.__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__(JSON.parse(JSON.stringify(saved)));const q=again.probe.renderPlayer()[5];assert.equal(q.name,'R.Gaucho');assert.equal(q.hair,13);assert.equal(q.palette,1);assert.equal(q.speed,9);assert.notEqual(again.probe.renderPlayer()[7].hair,13);
  again.__ISSSD_TEAMS_SET_PLAYER_APPEARANCE_V1__(30,id,{hair:8,palette:0});assert.equal(again.probe.renderPlayer()[5].hair,8);assert.equal(again.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__.teams[30].players.find(p=>p.playerId==='30:8').custom.appearance,undefined);assert.deepEqual(Buffer.from(c.probe.rom),before);assert.deepEqual(Buffer.from(again.probe.rom),before);
+});
+
+
+test('appearance transfers hydrate two teams atomically and persist a previously untouched destination',()=>{
+ const c=session();c.ISSSDPlayerAppearanceCore=appearanceCore;const s=structuredClone(actual);s.teams[30].players[7].custom={name:'R.Gaucho',appearance:{hair:13,palette:1},skills:{speed:9}};c.__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__(s);
+ const a={team:30,identity:{playerId:'30:8',baseSlot:8}},b={team:1,identity:{playerId:'1:2',baseSlot:2}},rom=Buffer.from(c.probe.rom);
+ assert.equal(c.__ISSSD_TEAMS_TRANSFER_PLAYER_APPEARANCE_V1__(a,b,'swap'),true);
+ assert.equal(c.probe.renderPlayer()[7].hair,2);assert.equal(c.probe.renderPlayer()[7].palette,0);assert.equal(c.probe.renderPlayer()[7].speed,9);
+ assert.deepEqual(plain(c.studioTeamsV3ReadFull().teams[1].players[1].appearance),{hair:13,palette:1});
+ const saved=plain(c.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__),again=session();again.ISSSDPlayerAppearanceCore=appearanceCore;again.__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__(JSON.parse(JSON.stringify(saved)));
+ assert.deepEqual(plain(again.studioTeamsV3ReadFull().teams[1].players[1].appearance),{hair:13,palette:1});
+ assert.equal(again.probe.renderPlayer()[7].hair,2);const before=JSON.stringify(again.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__);
+ assert.throws(()=>again.__ISSSD_TEAMS_TRANSFER_PLAYER_APPEARANCE_V1__(a,{team:1,identity:{playerId:'missing',baseSlot:2}},'swap'));assert.equal(JSON.stringify(again.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__),before);
+ again.__ISSSD_TEAMS_TRANSFER_PLAYER_APPEARANCE_V1__(b,a,'copy');assert.equal(again.probe.renderPlayer()[7].hair,13);assert.equal(again.probe.renderPlayer()[7].palette,1);assert.equal(again.probe.renderPlayer()[7].name,'R.Gaucho');assert.deepEqual(Buffer.from(c.probe.rom),rom);assert.deepEqual(Buffer.from(again.probe.rom),rom);
 });
