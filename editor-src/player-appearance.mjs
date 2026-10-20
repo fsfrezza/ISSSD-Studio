@@ -14,17 +14,20 @@ function nativeAppearanceCanvas(canvas,hair,frame,palette){
 function nativeAppearanceSwatches(colors){return '<span class="native-swatches">'+colors.map(c=>`<span style="background:${c}" title="${c.toUpperCase()}"></span>`).join('')+'</span>';}
 function renderHairGallery(){
  const g=$('hairGallery');if(!g)return;
- g.innerHTML=Array.from({length:14},(_,hair)=>`<button type="button" class="native-hair-option" data-hair-index="${hair}" aria-pressed="${hair===appearanceTempHair}" title="${hair===0?'Cabeça original do sprite, sem sobreposição':'Sobreposição nativa '+hair}">${hair===0?'<span class="native-default-head">Original<br>do sprite</span>':'<canvas aria-label="Cabelo '+hair+'"></canvas>'}<span>${hair===0?'0 · Padrão':'Tipo '+hair}</span></button>`).join('');
+ g.innerHTML=Array.from({length:14},(_,hair)=>`<button type="button" class="native-hair-option" data-hair-index="${hair}" aria-pressed="${hair===appearanceTempHair}" title="${hair===0?'Cabeça original do sprite, sem sobreposição':'Sobreposição nativa '+hair}">${hair===0?'<span class="native-default-head">Original<br>do sprite</span>':'<canvas aria-label="Cabelo '+hair+'"></canvas>'}<span>${hair===0?'0 · Padrão':'Tipo '+hair}${hair===appearanceTempHair?' · SELECIONADO':''}</span></button>`).join('');
+ g.querySelectorAll('[data-hair-index]').forEach(button=>{button.onclick=()=>{appearanceTempHair=Number(button.dataset.hairIndex);renderAppearancePreview();};});
  const palettes=nativeAppearanceCore.readNativeAppearancePalettes(rom,currentTeam),palette=palettes.palettes[appearanceTempPalette];
  g.querySelectorAll('[data-hair-index]').forEach(button=>{const hair=Number(button.dataset.hairIndex);if(hair)nativeAppearanceCanvas(button.querySelector('canvas'),hair,nativeAppearanceFrame,palette);button.onclick=()=>{appearanceTempHair=hair;renderAppearancePreview();};});
 }
 function appearancePaletteCounts(){const ps=teams[currentTeam].players;return [ps.filter(p=>p.palette===0).length,ps.filter(p=>p.palette===1).length];}
 function renderAppearanceSharedColors(){} // Palette artwork is shown directly by the new native palette cards.
 function renderAppearancePreview(){
- appearanceTempHair=clamp(appearanceTempHair,0,13);appearanceTempPalette=clamp(appearanceTempPalette,0,1);
- $('appearanceHairRange').value=appearanceTempHair;$('appearanceHairValue').value=appearanceTempHair;$('appearancePalette').value=appearanceTempPalette;
+ appearanceTempHair=Math.max(0,Math.min(13,Number(appearanceTempHair)||0));appearanceTempPalette=Math.max(0,Math.min(1,Number(appearanceTempPalette)||0));
+ $('appearanceHairRange').value=appearanceTempHair;$('appearanceHairValue').value=appearanceTempHair;$('appearancePalette').value=String(appearanceTempPalette);
+ $('appearancePalette').querySelectorAll('option').forEach(o=>{o.selected=Number(o.value)===appearanceTempPalette;});
  $('appearanceSelectedSummary').textContent=`Seleção: cabelo ${appearanceTempHair} · paleta ${appearanceTempPalette}`;
  for(const id of ['applyAppearanceBtn','applyAppearanceNextBtn','appearanceRestoreNativeBtn'])$(id).disabled=!nativeAppearanceSupported();
+ try{renderHairGallery();}catch(e){nativeAppearanceNote('Cabelo selecionado; prévia indisponível: '+e.message,true);}
  if(!nativeAppearanceSupported()){nativeAppearanceNote('Abra um projeto Deluxe Plus para editar a aparência.',true);return;}
  try{
   const data=nativeAppearanceCore.readNativeAppearancePalettes(rom,currentTeam),cards=$('appearanceNativePalettes');
@@ -42,11 +45,11 @@ function renderAppearancePreview(){
  }catch(e){nativeAppearanceNote('Não foi possível ler a prévia nativa: '+e.message,true);}
 }
 function loadAppearancePlayer(index){
- currentPlayer=(index+20)%20;const p=teams[currentTeam].players[currentPlayer];
+ currentPlayer=(Number(index)+20)%20;const p=teams[currentTeam].players[currentPlayer];
  const resolved=studioTeamsV3ReadFull()?.teams?.[String(currentTeam)]?.players?.find(q=>q.playerId===p.playerId&&Number(q.baseSlot)===Number(p.baseSlot))||studioTeamsV3ReadFull()?.teams?.[String(currentTeam)]?.players?.[currentPlayer];
  const value=nativeAppearanceCore.validatePlayerAppearance({hair:Number(resolved?.appearance?.hair??p.appearance?.hair??p.hair),palette:Number(resolved?.appearance?.palette??p.appearance?.palette??p.palette)});
  appearanceTempHair=value.hair;appearanceTempPalette=value.palette;
- $('appearanceCurrentSummary').textContent=`Aplicado ao jogador: cabelo ${value.hair} · paleta ${value.palette}`;
+ $('appearanceCurrentSummary').textContent=`APARÊNCIA ATUAL — Cabelo: Tipo ${value.hair} · Paleta: ${value.palette}`;
  nativeAppearanceIdentity={team:currentTeam,playerId:p.playerId,baseSlot:p.baseSlot};
  $('appearancePlayerLabel').textContent=`${p.name||'(sem nome)'} · ${TEAM_NAMES[currentTeam]}`;
  $('appearanceSlotBadge').textContent=`Jogador ${currentPlayer+1}/20`;
