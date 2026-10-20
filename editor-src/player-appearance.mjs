@@ -23,6 +23,7 @@ function renderAppearanceSharedColors(){} // Palette artwork is shown directly b
 function renderAppearancePreview(){
  appearanceTempHair=clamp(appearanceTempHair,0,13);appearanceTempPalette=clamp(appearanceTempPalette,0,1);
  $('appearanceHairRange').value=appearanceTempHair;$('appearanceHairValue').value=appearanceTempHair;$('appearancePalette').value=appearanceTempPalette;
+ $('appearanceSelectedSummary').textContent=`Seleção: cabelo ${appearanceTempHair} · paleta ${appearanceTempPalette}`;
  for(const id of ['applyAppearanceBtn','applyAppearanceNextBtn','appearanceRestoreNativeBtn'])$(id).disabled=!nativeAppearanceSupported();
  if(!nativeAppearanceSupported()){nativeAppearanceNote('Abra um projeto Deluxe Plus para editar a aparência.',true);return;}
  try{
@@ -41,7 +42,10 @@ function renderAppearancePreview(){
 }
 function loadAppearancePlayer(index){
  currentPlayer=(index+20)%20;const p=teams[currentTeam].players[currentPlayer];
- appearanceTempHair=p.hair;appearanceTempPalette=p.palette;
+ const resolved=studioTeamsV3ReadFull()?.teams?.[String(currentTeam)]?.players?.find(q=>q.playerId===p.playerId&&Number(q.baseSlot)===Number(p.baseSlot))||studioTeamsV3ReadFull()?.teams?.[String(currentTeam)]?.players?.[currentPlayer];
+ const value=nativeAppearanceCore.validatePlayerAppearance({hair:Number(resolved?.appearance?.hair??p.appearance?.hair??p.hair),palette:Number(resolved?.appearance?.palette??p.appearance?.palette??p.palette)});
+ appearanceTempHair=value.hair;appearanceTempPalette=value.palette;
+ $('appearanceCurrentSummary').textContent=`Aplicado ao jogador: cabelo ${value.hair} · paleta ${value.palette}`;
  nativeAppearanceIdentity={team:currentTeam,playerId:p.playerId,baseSlot:p.baseSlot};
  $('appearancePlayerLabel').textContent=`${p.name||'(sem nome)'} · ${TEAM_NAMES[currentTeam]}`;
  $('appearanceSlotBadge').textContent=`Jogador ${currentPlayer+1}/20`;

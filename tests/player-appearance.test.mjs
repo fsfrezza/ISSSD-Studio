@@ -85,3 +85,9 @@ test('same-team swapping and bidirectional copying preserve sparse originals, an
  const result=core.transferProjectPlayerAppearance(clean,{team:30,identity:{playerId:'30:1',baseSlot:1}},{team:1,identity:{playerId:'1:1',baseSlot:1}},'swap',t=>t===30?{hair:2,palette:0}:{hair:9,palette:1});
  const out=base.slice();applySteps(out,teamsV3PlayerSteps(base,{teamsV1:result}));assert.equal(out[oa+6],0x9F);assert.equal(out[ob+6],0x2E);for(let i=0;i<out.length;i++)if(out[i]!==base[i])assert.ok(i===oa+6||i===ob+6);
 });
+
+test('opening appearance selects canonical applied hair and palette instead of stale model defaults',()=>{
+ const source=fs.readFileSync(new URL('../editor-src/player-appearance.mjs',import.meta.url),'utf8'),start=source.indexOf('function loadAppearancePlayer('),end=source.indexOf('function openAppearanceDialog(',start),elements={};
+ const c=vm.createContext({currentPlayer:0,currentTeam:30,appearanceTempHair:0,appearanceTempPalette:0,nativeAppearanceIdentity:null,nativeAppearanceCore:core,teams:{30:{players:[{playerId:'30:8',baseSlot:8,name:'Pele',hair:0,palette:0}]}},TEAM_NAMES:{30:'Brasil'},$:id=>elements[id]||=( {} ),studioTeamsV3ReadFull:()=>({teams:{30:{players:[{playerId:'30:8',baseSlot:8,appearance:{hair:12,palette:1}}]}}}),renderAppearancePreview(){},renderAppearanceTransferPlayers(){}});
+ vm.runInContext(source.slice(start,end)+'loadAppearancePlayer(0);',c);assert.equal(c.appearanceTempHair,12);assert.equal(c.appearanceTempPalette,1);assert.equal(elements.appearanceCurrentSummary.textContent,'Aplicado ao jogador: cabelo 12 · paleta 1');assert.equal(c.nativeAppearanceIdentity.baseSlot,8);
+});
