@@ -1,6 +1,6 @@
 # Aparência dos jogadores — Deluxe Plus
 
-Em Jogadores → Editar aparência, a janela mostra os códigos 0–13 de cabelo,
+Em Jogadores → Editar aparência, a janela mostra os códigos 0–15 de cabelo,
 as duas paletas individuais e as cores que a equipe realmente possui na ROM
 carregada. As miniaturas usam Canvas com pixels sem interpolação, sem a antiga
 imagem fixa de cabelos e sem a silhueta de uniforme que ignorava a escolha.
@@ -58,7 +58,7 @@ Não há nova seção de projeto nem migração obrigatória.
 
 ## Verificações
 
-A suíte verifica todos os 13×24 tiles, as 28 combinações individuais de cabelo
+A suíte verifica todos os 13×24 tiles, as 32 combinações individuais de cabelo
 com paleta, RGB BGR555, ponteiros, cabeçalhos, restauração e reabertura por
 identidade. Também executa o setter do overlay no escopo privado do Editor e
 confere que a injeção gerada substitui a arte antiga sem remover os IDs usados
@@ -99,3 +99,39 @@ campos ao projeto nem apenas expandindo a ROM: exigem novos dados e mudanças no
 carregamento e uso das paletas pelo renderizador, com verificação dos limites de
 paletas simultâneas, goleiros, poses, cenas aproximadas e replays. Isso permanece
 uma investigação estrutural, não uma capacidade já oferecida pelo Editor.
+
+## Tipos adicionais 14 e 15
+
+O Editor oferece **14 · Careca (R. Carlos)** e **15 · Cascão (Ronaldo)**.
+A primeira versão usa a silhueta dos 24 quadros nativos do tipo 13: mantém a
+transparência e o contorno e substitui pixels escuros internos por pele. O
+Cascão difere apenas pelo pequeno tufo no destaque frontal de pele. As cores
+continuam vindo da paleta da equipe. Estes desenhos precisam de conferência
+visual no emulador; não são alterações dos retratos de cenas aproximadas.
+
+A escolha fica no mesmo `custom.appearance.hair`, agora aceitando 0–15. A fase
+Jogadores instala os gráficos apenas quando um código novo é usado. A tabela
+original de 13 ponteiros é copiada para PC `$3E8000` e recebe duas entradas; os
+52 bytes originais permanecem iguais. Os gráficos novos ficam em `$3E8100` e
+`$3E8400`, com 768 bytes cada. Dois helpers em `$3E8040`/`$3E8060` permitem
+ler os ponteiros no banco expandido sem modificar a tabela seguinte em `$81EDA1`.
+Os hooks substituem seis bytes em PC `$C7BC3` e `$C7BE0`, verificando os opcodes
+originais antes de qualquer gravação. O tipo zero e os 13 tipos anteriores são
+preservados. As regiões novas pertencem à fase cumulativa Jogadores.
+
+**Limite nativo descoberto no disassembly:** `CODE_83CAD7` procura os jogadores
+com cabelo especial e para após três por equipe, usando os objetos de
+`DATA_81AF01`/`DATA_81AF07`. A expansão da tabela não aumenta esse espaço em
+VRAM. Quando uma equipe usa um tipo novo, o gravador verifica os onze titulares
+e recusa mais de três atributos de cabelo não zero nessa equipe. Escolhas em
+reservas devem respeitar o mesmo limite quando forem movidas para titulares.
+Aumentar esse limite é outra mudança estrutural e não foi realizado aqui.
+
+Verificações: todos os 24 quadros de cada tipo, diferença restrita ao tufo,
+preservação dos gráficos e ponteiros existentes, preflight atômico, instalação
+idempotente, limite de titulares, execução dos helpers emitidos preservando X/Y,
+exportação cumulativa selecionada e exclusão quando desmarcada. Uma geração
+cumulativa também foi executada com a ROM Plus real de SHA-256
+`ca2d73b226ab252649d4c9c35bb6b81937586d908c1d9dc9d447db7babfaad0a`,
+sem regiões não classificadas e sem alteração da base. Não houve teste de jogo
+em emulador nesta etapa.

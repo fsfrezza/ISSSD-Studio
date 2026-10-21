@@ -1,6 +1,6 @@
 // Deluxe Plus: 13 optional head overlays, 24 native 8x8 tiles per style.
 // Code zero keeps the head already present in the animated body sprite.
-export const NATIVE_HAIR_COUNT=14;
+export const NATIVE_HAIR_COUNT=16;
 export const NATIVE_HAIR_FRAMES=24;
 export const NATIVE_SKIN_PRESETS=Object.freeze([
  {id:'clara',label:'Clara',pointer:0x8342},
@@ -13,7 +13,7 @@ function appearancePc(cpu){return ((cpu>>>16)&127)*0x8000+(cpu&0x7FFF);}
 function appearanceWord(rom,pc){const at=appearanceHeader(rom)+pc;if(at<0||at+2>rom.length)throw Error('Aparência: endereço fora da ROM.');return rom[at]|rom[at+1]<<8;}
 function appearanceLong(rom,pc){return appearanceWord(rom,pc)|(rom[appearanceHeader(rom)+pc+2]<<16);}
 export function validatePlayerAppearance(value){
- if(!value||!Number.isInteger(value.hair)||value.hair<0||value.hair>=NATIVE_HAIR_COUNT)throw Error('Escolha um cabelo de 0 a 13.');
+ if(!value||!Number.isInteger(value.hair)||value.hair<0||value.hair>=NATIVE_HAIR_COUNT)throw Error('Escolha um cabelo de 0 a 15.');
  if(value.palette!==0&&value.palette!==1)throw Error('Escolha a paleta 0 ou 1.');
  return {hair:value.hair,palette:value.palette};
 }
@@ -48,6 +48,7 @@ export function decodeNativeHairTile(rom,hair,frame=0){
  validatePlayerAppearance({hair,palette:0});
  if(!Number.isInteger(frame)||frame<0||frame>=NATIVE_HAIR_FRAMES)throw Error('Aparência: quadro de cabelo inválido.');
  if(hair===0)return null;
+ if(hair>=14)return customHairPixels(rom,hair,frame);
  const source=appearanceLong(rom,0xED6D+(hair-1)*4);
  if(source>>>16!==0x97)throw Error('Aparência: gráficos de cabelo fora do banco nativo.');
  const pc=appearanceHeader(rom)+appearancePc(source)+frame*32;
@@ -86,3 +87,24 @@ export function transferProjectPlayerAppearance(state,source,target,mode,origina
  if(mode==='swap')next=setProjectPlayerAppearance(next,a.team,a.identity,b.value,a.original);
  return next;
 }
+
+// New heads use the native type-13 footprint in every pose. The dark boundary
+// remains an outline; interior dark pixels become skin. Cascao adds only a
+// small frontal tuft on the existing face-facing skin highlight.
+export function customHairPixels(rom,hair,frame=0){
+ if(hair!==14&&hair!==15)throw Error('Cabelo novo inválido.');
+ const original=decodeNativeHairTile(rom,13,frame),out=original.slice();
+ for(let y=1;y<7;y++)for(let x=1;x<7;x++){
+  const at=y*8+x;
+  if(original[at]===1&&[at-1,at+1,at-8,at+8].every(i=>original[i]!==0))out[at]=3;
+ }
+ if(hair===15){
+  // The highlight anchors the tuft to the native face instead of the tile box.
+  const skin=[];for(let i=0;i<64;i++)if(original[i]>=2&&original[i]<=5)skin.push(i);
+  if(skin.length){const row=Math.min(...skin.map(i=>i>>3)),xs=skin.filter(i=>(i>>3)===row).map(i=>i&7),center=Math.round(xs.reduce((a,b)=>a+b,0)/xs.length);
+   for(let x=Math.max(0,center-1);x<=Math.min(7,center+1);x++){const at=row*8+x;if(out[at])out[at]=1;}
+  }
+ }
+ return out;
+}
+export function hairStyleLabel(hair){return hair===14?'Careca · R. Carlos':hair===15?'Cascão · Ronaldo':hair===0?'0 · Original do sprite':'Tipo '+hair;}

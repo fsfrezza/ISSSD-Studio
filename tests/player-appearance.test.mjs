@@ -32,7 +32,7 @@ test('all thirteen optional hair styles decode all 24 native 4bpp frames without
  for(let hair=1;hair<=13;hair++)for(let frame=0;frame<24;frame++){
   const p=core.decodeNativeHairTile(b,hair,frame);assert.equal(p.length,64);for(let y=0;y<8;y++)for(let x=0;x<8;x++){let v=0;for(let bit=0;bit<4;bit++)v|=(((hair-1+frame+bit+y)%2?0xAA:0x55)>>(7-x)&1)<<bit;assert.equal(p[y*8+x],v);}
  }
- for(const pair of [[14,0],[-1,0],[1,24],[1,0.5]])assert.throws(()=>core.decodeNativeHairTile(b,...pair));
+ for(const pair of [[16,0],[-1,0],[1,24],[1,0.5]])assert.throws(()=>core.decodeNativeHairTile(b,...pair));
  const header=new Uint8Array(b.length+512);header.set(b,512);assert.deepEqual(core.decodeNativeHairTile(header,13,23),core.decodeNativeHairTile(b,13,23));
  assert.equal(core.appearanceBgrHex(0x1F),'#ff0000');assert.equal(core.appearanceBgrHex(0x7C00),'#0000ff');
 });
@@ -41,11 +41,11 @@ test('appearance changes and restoration follow player identity across slots and
  const state=core.setProjectPlayerAppearance(initial,30,id,{hair:13,palette:1},{hair:2,palette:0});assert.equal(JSON.stringify(initial),before);
  const reopened=JSON.parse(JSON.stringify(state)),p=reopened.teams[30].players[0];assert.deepEqual(p.custom.appearance,{hair:13,palette:1});assert.equal(p.slot,6);assert.equal(p.custom.skills.speed,9);assert.equal(p.custom.tactical.attack,true);assert.equal(reopened.teams[30].players[1].custom.appearance,undefined);
  const restored=core.setProjectPlayerAppearance(reopened,30,id,{hair:2,palette:0},{hair:2,palette:0});assert.equal(restored.teams[30].players[0].custom.appearance,undefined);assert.equal(restored.teams[30].players[0].custom.name,'R.Gaucho');
- assert.throws(()=>core.setProjectPlayerAppearance(initial,30,{playerId:'30:8',baseSlot:6},{hair:1,palette:0}));for(const value of [{hair:14,palette:0},{hair:0,palette:2}])assert.throws(()=>core.setProjectPlayerAppearance(initial,30,id,value));assert.equal(JSON.stringify(initial),before);
+ assert.throws(()=>core.setProjectPlayerAppearance(initial,30,{playerId:'30:8',baseSlot:6},{hair:1,palette:0}));for(const value of [{hair:16,palette:0},{hair:0,palette:2}])assert.throws(()=>core.setProjectPlayerAppearance(initial,30,id,value));assert.equal(JSON.stringify(initial),before);
 });
 test('every editable appearance combination exports only its attribute byte and preserves reserved bits',()=>{
  const base=new Uint8Array(0x200000),off=playerOffset(1,0);base.set([0x12,0x34,0x56,0x78,0x29,0,0x2E],off);
- for(let hair=0;hair<14;hair++)for(let palette=0;palette<2;palette++){
+ for(let hair=0;hair<16;hair++)for(let palette=0;palette<2;palette++){
   const state={teamsV1:{schema:'isssd-teams-v1',version:3,teams:{1:{teamId:1,players:[{slot:1,baseSlot:1,playerId:'1:1',custom:{appearance:{hair,palette}}}]}}}},rom=base.slice();applySteps(rom,teamsV3PlayerSteps(base,state));assert.equal(rom[off+6],hair<<4|0xE|palette);assert.deepEqual(rom.slice(off,off+6),base.slice(off,off+6));for(let i=0;i<rom.length;i++)if(rom[i]!==base[i])assert.equal(i,off+6);
  }
 });

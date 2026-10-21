@@ -44,7 +44,7 @@ export function teamsV3PlayerSteps(base,state){
     }
     if(c.appearance){
      const off=playerOffset(team,p.slot-1)+6;let b=rom[off];
-     if(Object.hasOwn(c.appearance,'hair')){const v=c.appearance.hair;if(!Number.isInteger(v)||v<0||v>13)throw new Error('Invalid hair');b=(b&15)|(v<<4);}
+     if(Object.hasOwn(c.appearance,'hair')){const v=c.appearance.hair;if(!Number.isInteger(v)||v<0||v>15)throw new Error('Invalid hair');b=(b&15)|(v<<4);}
      if(Object.hasOwn(c.appearance,'palette')){const v=c.appearance.palette;if(v!==0&&v!==1)throw new Error('Invalid palette');b=(b&254)|v;}rom[off]=b;
     }return rom;
    }});

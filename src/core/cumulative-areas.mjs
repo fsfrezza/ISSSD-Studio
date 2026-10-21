@@ -73,6 +73,7 @@ export function areaClassifier(rom,base=null){
   if(contains(off,title))return 'tela-inicial';
   if(contains(off,menu))return 'menu-principal';
   if((off>=0xF6C78&&off<0xF6F2B)||(off>=0x3FAC8&&off<0x3FB7C)||(off>=0xE7F2&&off<0xE830)||(off>=0x2DDA5&&off<0x2DDA5+56*10))return 'selecao-equipes';
+  if((off>=0x3E8000&&off<0x3E8700)||(off>=0xC7BC3&&off<0xC7BC9)||(off>=0xC7BE0&&off<0xC7BE6))return 'jogadores';
   if((off>=0x483C2&&off<0x483C2+56*2*34)||(off>=0x48D50&&off<0x48D50+56*24))return 'jogadores';
   if((off>=0x3fc00&&off<0x40000)||(off>=0x113a7&&off<0x113aa)||(off>=0x3cafa&&off<0x3caff)||(off>=0x167ade&&off<0x167c34))return 'pre-partida';
   if(contains(off,TRAINING_CHOICE_REGIONS))return 'pre-partida';

@@ -34,7 +34,7 @@ function studioTeamsV3Clamp(v,min,max,def=min){v=Number(v);return Number.isFinit
 function studioTeamsV3EncodeAttr(p){
  const s=p?.skills||{},ap=p?.appearance||{},pos=STUDIO_TEAMS_V3_POS_TO_ID[String(p?.position||'NONE').toUpperCase()]??0;
  const n=(k)=>studioTeamsV3Clamp(s[k],1,10,1)-1;
- return new Uint8Array([(n('acceleration')<<4)|n('speed'),(n('shot')<<4)|n('curve'),(n('balance')<<4)|n('intelligence'),(n('dribbling')<<4)|n('jump'),(pos<<4)|n('energy'),studioTeamsV3Clamp(p?.number,1,99,1)-1,(studioTeamsV3Clamp(ap.hair,0,13,0)<<4)|studioTeamsV3Clamp(ap.palette,0,1,0)]);
+ return new Uint8Array([(n('acceleration')<<4)|n('speed'),(n('shot')<<4)|n('curve'),(n('balance')<<4)|n('intelligence'),(n('dribbling')<<4)|n('jump'),(pos<<4)|n('energy'),studioTeamsV3Clamp(p?.number,1,99,1)-1,(studioTeamsV3Clamp(ap.hair,0,15,0)<<4)|studioTeamsV3Clamp(ap.palette,0,1,0)]);
 }
 function studioTeamsV3Class(v){v=String(v||'').toUpperCase();return v==='DF'?'DF':(v==='MC'||v==='MF')?'MC':(v==='AT'||v==='FW')?'AT':'DF'}
 function studioTeamsV3GlobalX(cls,dx){const c=studioTeamsV3Class(cls),base=c==='DF'?-39:c==='MC'?0:39;return studioTeamsV3Clamp(base+(Number(dx)||0),-57,57,base)}

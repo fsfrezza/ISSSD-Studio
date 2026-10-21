@@ -14,7 +14,7 @@ function nativeAppearanceCanvas(canvas,hair,frame,palette){
 function nativeAppearanceSwatches(colors){return '<span class="native-swatches">'+colors.map(c=>`<span style="background:${c}" title="${c.toUpperCase()}"></span>`).join('')+'</span>';}
 function renderHairGallery(){
  const g=$('hairGallery');if(!g)return;
- g.innerHTML=Array.from({length:14},(_,hair)=>`<button type="button" class="native-hair-option" data-hair-index="${hair}" aria-pressed="${hair===appearanceTempHair}" title="${hair===0?'Cabeça original do sprite, sem sobreposição':'Sobreposição nativa '+hair}">${hair===0?'<span class="native-default-head">Original<br>do sprite</span>':'<canvas aria-label="Cabelo '+hair+'"></canvas>'}<span>${hair===0?'0 · Padrão':'Tipo '+hair}${hair===appearanceTempHair?' · SELECIONADO':''}</span></button>`).join('');
+ g.innerHTML=Array.from({length:16},(_,hair)=>`<button type="button" class="native-hair-option" data-hair-index="${hair}" aria-pressed="${hair===appearanceTempHair}" title="${hair===0?'Cabeça original do sprite, sem sobreposição':(hair>=14?nativeAppearanceCore.hairStyleLabel(hair):'Sobreposição nativa '+hair)}">${hair===0?'<span class="native-default-head">Original<br>do sprite</span>':'<canvas aria-label="Cabelo '+hair+'"></canvas>'}<span>${nativeAppearanceCore.hairStyleLabel(hair)}${hair===appearanceTempHair?' · SELECIONADO':''}</span></button>`).join('');
  g.querySelectorAll('[data-hair-index]').forEach(button=>{button.onclick=()=>{appearanceTempHair=Number(button.dataset.hairIndex);renderAppearancePreview();};});
  const palettes=nativeAppearanceCore.readNativeAppearancePalettes(rom,currentTeam),palette=palettes.palettes[appearanceTempPalette];
  g.querySelectorAll('[data-hair-index]').forEach(button=>{const hair=Number(button.dataset.hairIndex);if(hair)nativeAppearanceCanvas(button.querySelector('canvas'),hair,nativeAppearanceFrame,palette);button.onclick=()=>{appearanceTempHair=hair;renderAppearancePreview();};});
@@ -22,7 +22,7 @@ function renderHairGallery(){
 function appearancePaletteCounts(){const ps=teams[currentTeam].players;return [ps.filter(p=>p.palette===0).length,ps.filter(p=>p.palette===1).length];}
 function renderAppearanceSharedColors(){} // Palette artwork is shown directly by the new native palette cards.
 function renderAppearancePreview(){
- appearanceTempHair=Math.max(0,Math.min(13,Number(appearanceTempHair)||0));appearanceTempPalette=Math.max(0,Math.min(1,Number(appearanceTempPalette)||0));
+ appearanceTempHair=Math.max(0,Math.min(15,Number(appearanceTempHair)||0));appearanceTempPalette=Math.max(0,Math.min(1,Number(appearanceTempPalette)||0));
  $('appearanceHairRange').value=appearanceTempHair;$('appearanceHairValue').value=appearanceTempHair;$('appearancePalette').value=String(appearanceTempPalette);
  $('appearancePalette').querySelectorAll('option').forEach(o=>{o.selected=Number(o.value)===appearanceTempPalette;});
  $('appearanceSelectedSummary').textContent=`Seleção: cabelo ${appearanceTempHair} · paleta ${appearanceTempPalette}`;
@@ -57,6 +57,7 @@ function loadAppearancePlayer(index){
  renderAppearanceTransferPlayers();
 }
 function openAppearanceDialog(){
+ for(const id of ['appearanceHairRange','appearanceHairValue']){const input=$(id);if(!input.dataset.extendedHairBound){input.addEventListener('input',event=>{event.stopImmediatePropagation();if(input.value==='')return;appearanceTempHair=Math.max(0,Math.min(15,Number(input.value)||0));renderAppearancePreview();},true);input.dataset.extendedHairBound='1';}}
  const frame=$('appearanceNativeFrame');frame.innerHTML=Array.from({length:24},(_,i)=>`<option value="${i}">Quadro ${i+1}</option>`).join('');frame.value=nativeAppearanceFrame;
  frame.onchange=()=>{nativeAppearanceFrame=Number(frame.value);renderAppearancePreview();};
  $('appearanceRestoreNativeBtn').onclick=()=>{try{const id=nativeAppearanceIdentity,p=studioTeamsV3OriginalPlayer(id.team,id.baseSlot);appearanceTempHair=p.appearance.hair;appearanceTempPalette=p.appearance.palette;renderAppearancePreview();nativeAppearanceNote('Aparência original selecionada. Use Aplicar ao jogador para confirmar.');}catch(e){nativeAppearanceNote(e.message,true);}};
