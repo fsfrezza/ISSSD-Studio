@@ -38,3 +38,6 @@ Thumbs.db
 # Node
 node_modules/
 coverage/
+
+# Opt-in body composition prototype outputs
+scratch/player-body-proof/

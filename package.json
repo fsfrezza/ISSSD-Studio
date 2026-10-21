@@ -27,6 +27,7 @@
     "hair:export": "node scripts/edit-player-hair.mjs export",
     "hair:import": "node scripts/edit-player-hair.mjs import",
     "hair:export:native": "node scripts/edit-player-hair.mjs export-native",
-    "hair:verify": "node scripts/edit-player-hair.mjs verify"
+    "hair:verify": "node scripts/edit-player-hair.mjs verify",
+    "body:proof": "node scripts/player-body-proof.mjs"
   }
 }
