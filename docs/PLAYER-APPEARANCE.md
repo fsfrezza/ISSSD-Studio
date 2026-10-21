@@ -172,3 +172,23 @@ paleta; as cores em jogo continuam dependentes da equipe.
 Os desenhos são recursos locais versionáveis do Editor, não uma nova seção
 persistida no projeto. Um futuro editor de quadros integrado deve armazenar os
 quadros no projeto, com migração, seleção de fase e reabertura verificadas.
+
+## Leitura direta e comprovação da aplicação dos PNGs
+
+A construção da interface lê os PNGs atuais. O servidor local também relê e
+valida ambos a cada exportação (inclusive ZIP cumulativo), atualizando a cópia
+em memória que o writer usa. Isso elimina a dependência de importar/reiniciar
+manualmente apenas para que uma alteração local chegue à ROM exportada.
+A prévia da página é atualizada ao reconstruir/reabrir o Editor.
+
+Antes de entregar a ROM, o servidor compara todos os bytes dos 24 quadros de
+cada tipo novo atribuído aos jogadores com os pixels esperados dos PNGs.
+Qualquer divergência falha explicitamente. O ZIP registra hashes dos arquivos
+e a comprovação em `indice.json.playerHairAssets`. Fora do servidor, o comando
+`npm run hair:verify -- caminho.sfc` faz a mesma comparação. A importação para
+módulo estático permanece disponível para usos independentes do servidor.
+
+Esta verificação prova que os gráficos foram gravados, mas não substitui a
+análise do desenho composto em jogo. Pixels transparentes do cabelo especial
+podem revelar partes do sprite do corpo: uma diferença visual com os PNGs já
+confirmados na ROM requer análise da composição e das posições no emulador.

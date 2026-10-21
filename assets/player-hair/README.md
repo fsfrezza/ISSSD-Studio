@@ -14,11 +14,12 @@ As cores do arquivo representam índices: a cor vista no jogo depende da paleta
 da equipe. Índice 0 é transparente; 1 é cabelo; 2–5 são tons de pele.
 
 1. Edite os PNGs e salve nessa mesma pasta.
-2. No PowerShell, na pasta do Studio: `npm run hair:import`.
+2. Reinicie o Editor: a construção da interface agora lê os PNGs diretamente.
 3. Pare o servidor com Ctrl+C e execute `npm run serve:editor`.
 4. No navegador: Ctrl+F5, reabra o projeto e salve novamente a ROM.
 
-A importação valida os dois PNGs antes de atualizar o código compilado
+A exportação local da ROM relê os dois PNGs a cada pedido e confere seus pixels
+na ROM final. Para uso fora do servidor, `npm run hair:import` atualiza o código compilado
 `src/core/player-hair-manual.mjs`. A prévia e a geração da ROM usam os mesmos
 quadros. Se houver erro de tamanho, cor ou transparência, nada é importado.
 
@@ -51,3 +52,13 @@ A importação atual (`hair:import`) continua lendo somente os tipos 14 e 15.
 Os PNGs nativos são referências editáveis; alterar 01–13 ainda não altera esses
 tipos na ROM. Para testar uma variante com o gravador atual, use-a em uma das
 folhas 14/15, preservando uma cópia anterior.
+
+
+Para conferir uma ROM já exportada contra os PNGs atuais:
+`npm run hair:verify -- "C:\caminho\Minha-ROM.sfc"`
+
+O resultado informa quais tipos novos estão atribuídos a jogadores e quantos
+quadros conferem exatamente. Uma diferença de pixels interrompe a verificação.
+Isso confirma o conteúdo gráfico da ROM, não a composição final do jogo com o
+sprite do corpo. O ZIP cumulativo inclui os hashes dos PNGs e a verificação em
+`indice.json` (`playerHairAssets`).

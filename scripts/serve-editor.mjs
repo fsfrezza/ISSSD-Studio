@@ -1,3 +1,4 @@
+import {installPlayerHairFiles,verifyPlayerHairFiles} from '../src/platform/player-hair-files.mjs';
 import {pendingTextExportReport} from '../src/core/additional-screen-text-fields.mjs';
 import os from 'node:os';
 import {buildCumulativeProject} from '../src/core/cumulative-build.mjs';
@@ -85,13 +86,16 @@ function buildPostedProject(req,res){
    if(!project||typeof project!=='object'||Array.isArray(project))throw new TypeError('Projeto .issdproj inválido ou ausente');
    const diagnostic=payload?.diagnostic===true;
    const base=Uint8Array.from(fs.readFileSync(defaultPlusRomPath));
+   const hairAssets=installPlayerHairFiles(root);
    if(payload.cumulative===true){
     const dir=fs.mkdtempSync(path.join(os.tmpdir(),'isssd-export-'));
     const zipPath=path.join(dir,'ISSSD-ROMs-cumulativas.zip');
     const zip=new ZipFile(zipPath);
     const cleanup=()=>{zip.close();fs.rmSync(dir,{recursive:true,force:true});};
     try{
-     const manifest=buildCumulativeProject(base,project,{selectedAreas:payload.selectedAreas,titleGraphics:payload.titleGraphics,onRom:(rom,entry)=>zip.add(entry.name,rom)});
+     let hairVerification;
+     const manifest=buildCumulativeProject(base,project,{selectedAreas:payload.selectedAreas,titleGraphics:payload.titleGraphics,onRom:(rom,entry)=>{hairVerification=verifyPlayerHairFiles(rom,hairAssets.frames);zip.add(entry.name,rom)}});
+     manifest.playerHairAssets={files:hairAssets.files,verification:hairVerification};
      const pendingReport=pendingTextExportReport(manifest.pendingTextChanges);
      if(pendingReport)zip.add('TEXTOS-PENDENTES.txt',Buffer.from(pendingReport));
      zip.add('indice.json',Buffer.from(JSON.stringify(manifest,null,2)+'\n'));
@@ -102,6 +106,7 @@ function buildPostedProject(req,res){
     }catch(e){cleanup();throw e;}
    }
    const result=buildPlusProjectRom(base,project,{keepCheckpoints:diagnostic,writeChecksum:true});
+   result.playerHairAssets={files:hairAssets.files,verification:verifyPlayerHairFiles(result.rom,hairAssets.frames)};
    if(result.rom.length!==0x400000)throw new Error(`Pipeline Plus produziu tamanho inválido: ${result.rom.length} bytes`);
    if(!validatePlusRuntimeMirrors(result.rom))throw new Error('Pipeline terminou com mirrors de runtime inconsistentes');
    const diagnosticInfo=diagnostic?writeDiagnostics(result):null;
@@ -109,6 +114,7 @@ function buildPostedProject(req,res){
    res.writeHead(200,{
     'Content-Type':'application/octet-stream','Content-Length':body.length,'Cache-Control':'no-store',
     'X-ISSSD-Builder':'plus-build-pipeline-v1',
+    'X-ISSSD-Hair-Verified':JSON.stringify(result.playerHairAssets.verification.styles),
     'X-ISSSD-Stages':String(result.report.length),
     'X-ISSSD-Last-Stage':encodeURIComponent(result.lastSuccessfulStage||''),
     'X-ISSSD-Diagnostics':diagnosticInfo?encodeURIComponent(diagnosticInfo.dir):'off',

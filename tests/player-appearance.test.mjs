@@ -1,3 +1,4 @@
+import {loadPlayerHairFiles} from '../src/platform/player-hair-files.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -51,7 +52,7 @@ test('every editable appearance combination exports only its attribute byte and 
 });
 test('generated build installs native appearance instead of legacy artwork and keeps all bound input IDs',()=>{
  const source=fs.readFileSync(new URL('../scripts/build-editor.mjs',import.meta.url),'utf8'),a=source.indexOf('// Replace only the generated appearance UI;'),z=source.indexOf('// Keep the protected visual baseline',a);assert.ok(a>0&&z>a);
- const context=vm.createContext({fs,path,root:path.resolve(new URL('..',import.meta.url).pathname),html:'<head></head><body><dialog id="appearanceDialog">OLD</dialog><script>const HAIR_NAMES=["fake"];function commitAppearance(){throw Error("old")}\nrenderEmbeddedAssetManifest();</script></body>'});vm.runInContext(source.slice(a,z),context);assert.ok(context.html.includes('appearanceNativePalettes'));assert.ok(context.html.includes('setProjectPlayerAppearance'));assert.ok(!context.html.includes('const HAIR_NAMES='));assert.ok(!context.html.includes('image-001-102023cc5a9.png'));assert.ok(!context.html.includes('function commitAppearance(){throw'));
+ const context=vm.createContext({fs,path,loadPlayerHairFiles,root:path.resolve(new URL('..',import.meta.url).pathname),html:'<head></head><body><dialog id="appearanceDialog">OLD</dialog><script>const HAIR_NAMES=["fake"];function commitAppearance(){throw Error("old")}\nrenderEmbeddedAssetManifest();</script></body>'});vm.runInContext(source.slice(a,z),context);assert.ok(context.html.includes('appearanceNativePalettes'));assert.ok(context.html.includes('setProjectPlayerAppearance'));assert.ok(!context.html.includes('const HAIR_NAMES='));assert.ok(!context.html.includes('image-001-102023cc5a9.png'));assert.ok(!context.html.includes('function commitAppearance(){throw'));
  const script=context.html.match(/<script>([\s\S]*?)<\/script>/)[1];assert.doesNotThrow(()=>new Function(script));
  for(const id of ['appearanceHairRange','appearanceHairValue','appearancePalette','appearancePrevPlayerBtn','appearanceNextPlayerBtn','closeAppearanceDialog','cancelAppearanceBtn','applyAppearanceBtn','applyAppearanceNextBtn','appearanceEditSharedBtn'])assert.ok(context.html.includes('id="'+id+'"'),id);
 });
