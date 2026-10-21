@@ -1,3 +1,4 @@
+import path from 'node:path';import {fileURLToPath} from 'node:url';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 import {PLAYER_BODY_CATALOG,readPlayerSprite,playerSpriteWriter,setPlayerSprite,restorePlayerSprite,effectiveProjectHairFrames} from '../src/core/player-sprite-editor.mjs';
 import {expandPlusTo4MiB} from '../src/core/plus-tactics-infrastructure.mjs';import {plusCustomHairWriter} from '../src/core/plus-custom-hair.mjs';import {playerOffset} from '../src/core/plus-player.mjs';import {encodeHairTile} from '../src/core/plus-custom-hair.mjs';
@@ -43,4 +44,12 @@ test('integrated drawing UI keeps edits across frame switches and applies them t
  const colors=Array.from({length:16},(_,i)=>'#'+String(i).repeat(6));const c=vm.createContext({window,document,rom:fixture(),nativeAppearanceSupported:()=>true,nativeAppearanceCore:{hairStyleLabel:i=>'Tipo '+i,readNativeAppearancePalettes:()=>({colors:[colors,colors]})},appearanceTempHair:14,appearanceTempPalette:0,nativeAppearanceFrame:0,currentTeam:30,renderHairGallery:()=>{}});
  vm.runInContext(fs.readFileSync(new URL('../editor-src/player-sprite-editor.mjs',import.meta.url),'utf8')+'\nsetupPlayerSpriteEditor();',c);elements.spriteOpen.onclick();document.getElementById('spriteTool').value='pencil';elements.spriteCanvas.onpointerdown({clientX:0,clientY:0,pointerId:1});elements.spriteCanvas.onpointerup();assert.equal(window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__.spriteEdits,undefined);
  elements.spriteFrame.value='1';elements.spriteFrame.onchange();elements.spriteCanvas.onpointerdown({clientX:1,clientY:0,pointerId:2});elements.spriteCanvas.onpointerup();elements.spriteApply.onclick();const saved=JSON.parse(JSON.stringify(window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__));assert.equal(saved.spriteEdits.hair['14:0'][0],3);assert.equal(saved.spriteEdits.hair['14:1'][1],3);
+});
+
+test('Windows CRLF source files generate a valid classic Editor script with no module imports',()=>{
+ const build=fs.readFileSync(new URL('../scripts/build-editor.mjs',import.meta.url),'utf8'),a=build.indexOf('// Replace only the generated appearance UI;'),z=build.indexOf('// Keep the protected visual baseline',a);
+ const root=fileURLToPath(new URL('..',import.meta.url));
+ const winFs={...fs,readFileSync:(file,encoding)=>{const data=fs.readFileSync(file,encoding);return typeof data==='string'?data.replace(/\r?\n/g,'\r\n'):data;}};
+ const c=vm.createContext({fs:winFs,path,root,loadPlayerHairFiles:()=>({frames:{14:Array.from({length:24},()=>Array(64).fill(3)),15:Array.from({length:24},()=>Array(64).fill(1))}}),html:'<head></head><body><dialog id="appearanceDialog">OLD</dialog><script>const HAIR_NAMES=[];\r\nrenderEmbeddedAssetManifest();</script></body>'});
+ vm.runInContext(build.slice(a,z),c);const script=c.html.match(/<script>([\s\S]*?)<\/script>/)[1];assert.doesNotThrow(()=>new vm.Script(script));assert.doesNotMatch(script,/^\s*(import|export)\s/m);assert.ok(c.html.includes('id="spriteWorkspace"'));
 });
