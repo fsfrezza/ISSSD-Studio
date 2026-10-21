@@ -12,7 +12,7 @@ if(path.resolve(romPath)===path.join(out,'prova-corpo.sfc'))throw Error('A saíd
 const base=new Uint8Array(fs.readFileSync(romPath)),hash=crypto.createHash('sha256').update(base).digest('hex');
 if(hash!=='ca2d73b226ab252649d4c9c35bb6b81937586d908c1d9dc9d447db7babfaad0a')throw Error('Use a ROM Plus original canônica de 2 MB.');
 const root=path.resolve(import.meta.dirname,'..'),input=get('--heads'),loaded=input?null:loadPlayerHairFiles(root);let heads;
-if(input){const doc=JSON.parse(fs.readFileSync(input));if(doc.schema!=='isssd-body-proof-v1'||doc.pose!==BODY_PROOF_POSE.cpu)throw Error('Arquivo de cabeças da prova incompatível.');heads=doc.heads;}else heads={14:Array.from(alignProofHead(loaded.frames[14][0])),15:Array.from(alignProofHead(loaded.frames[15][0]))};
+if(input){const doc=JSON.parse(fs.readFileSync(input));if(doc.schema!=='isssd-body-proof-v1'||doc.pose!==BODY_PROOF_POSE.cpu)throw Error('Arquivo de cabeças da prova incompatível.');heads=doc.heads;}else heads={14:Array.from(alignProofHead(loaded.frames[14][0],base)),15:Array.from(alignProofHead(loaded.frames[15][0],base))};
 const original=readProofBody(base);for(const h of [14,15])composeProofBody(base,heads[h]); // validate before writing any output
 const rom=expandPlusTo4MiB(base);installBodyCompositionProof(rom,base,{heads});
 // Ten outfield players, alternating 14/15: deliberately more than three.

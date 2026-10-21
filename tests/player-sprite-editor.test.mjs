@@ -43,7 +43,7 @@ test('integrated drawing UI keeps edits across frame switches and applies them t
  const document={getElementById:id=>elements[id]||=(new Element()),createElement:tag=>Object.assign(new Element(),{tag})};const window={ISSSDPlayerSpriteCore:{PLAYER_BODY_CATALOG,readPlayerSprite,setPlayerSprite,restorePlayerSprite,playerReferencePose,playerReferenceSequence,renderPlayerReference,spriteFrameKey:ref=>ref.style+':'+ref.frame,validateSpritePixels:()=>{}},__ISSSD_TEAMS_PROJECT_OVERLAY_V1__:{schema:'isssd-teams-v1',version:3,teams:{}}};window.__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__=state=>{window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__=state;return true;};
  const colors=Array.from({length:16},(_,i)=>'#'+String(i).repeat(6));let tick=null,stopped=false;const c=vm.createContext({setInterval:fn=>{tick=fn;return 1;},clearInterval:()=>{stopped=true;},window,document,rom:fixture(),nativeAppearanceSupported:()=>true,nativeAppearanceCore:{hairStyleLabel:i=>'Tipo '+i,readNativeAppearancePalettes:()=>({colors:[colors,colors]})},appearanceTempHair:14,appearanceTempPalette:0,nativeAppearanceFrame:0,currentTeam:30,renderHairGallery:()=>{}});
  vm.runInContext(fs.readFileSync(new URL('../editor-src/player-sprite-editor.mjs',import.meta.url),'utf8')+'\nsetupPlayerSpriteEditor();',c);elements.spriteOpen.onclick();document.getElementById('spriteTool').value='pencil';elements.spriteCanvas.onpointerdown({clientX:0,clientY:0,pointerId:1});elements.spriteCanvas.onpointerup();assert.equal(window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__.spriteEdits,undefined);assert.ok(elements.spriteReference.height>=48);assert.ok(elements.spriteReference.width>=16);
- elements.spriteFrame.value='1';elements.spriteFrame.onchange();elements.spriteCanvas.onpointerdown({clientX:1,clientY:0,pointerId:2});elements.spriteCanvas.onpointerup();elements.spriteApply.onclick();const saved=JSON.parse(JSON.stringify(window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__));assert.equal(saved.spriteEdits.hair['14:0'][0],3);assert.equal(saved.spriteEdits.hair['14:1'][1],3);document.getElementById('appearanceDialog').open=true;elements.spritePlay.onclick();assert.equal(typeof tick,'function');const selected=elements.spriteFrame.value;tick();assert.equal(elements.spriteFrame.value,selected);assert.ok(elements.spriteReferenceInfo.textContent.includes('animando'));elements.spritePlay.onclick();assert.equal(stopped,true);
+ elements.spriteFrame.value='1';elements.spriteFrame.onchange();elements.spriteCanvas.onpointerdown({clientX:1,clientY:0,pointerId:2});elements.spriteCanvas.onpointerup();elements.spriteApply.onclick();const saved=JSON.parse(JSON.stringify(window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__));assert.equal(saved.spriteEdits.hair['14:0'][0],3);assert.equal(saved.spriteEdits.hair['14:1'][1],3);document.getElementById('appearanceDialog').open=true;elements.spritePlay.onclick();assert.equal(typeof tick,'function');const selected=elements.spriteFrame.value;tick();assert.equal(elements.spriteFrame.value,selected);assert.ok(elements.spriteReferenceInfo.textContent.includes('animando'));elements.spritePlay.onclick();assert.equal(stopped,true);const state=window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__;state.spriteEdits.hair['1:0']=Array(64).fill(4);elements.spriteRestoreCustom.onclick();assert.equal(window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__.spriteEdits.hair['14:0'],undefined);assert.equal(window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__.spriteEdits.hair['14:1'],undefined);assert.equal(window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__.spriteEdits.hair['1:0'][0],4);
 });
 
 test('Windows CRLF source files generate a valid classic Editor script with no module imports',()=>{
@@ -66,4 +66,25 @@ test('reference uses native centered OAM coordinates, flip flags and transparent
 
 test('every mapped reference layout contains body tiles instead of a reused scene layout',()=>{
  const base=fixture();for(const pose of PLAYER_POSE_CATALOG){const view=renderPlayerReference(base,{kind:'body',id:pose.body},undefined,{pose});assert.ok(view,'Missing body for OAM '+pose.id);assert.ok(view.width<=128&&view.height<=128);assert.equal(view.pixels.length,view.width*view.height);}
+});
+
+test('direct-ROM OAM layouts normalize Y/X before assembling special poses',()=>{
+ // DATA_8880A7 / descriptor DATA_82A9B6: ROM bytes F2,05,00,10.
+ const pose=PLAYER_POSE_CATALOG.find(p=>p.id==='82A9B6');
+ assert.deepEqual(pose.objects.at(-1),[5,242,0,16]);
+ assert.deepEqual(pose.head,[12,232,165,1]);
+});
+
+test('shipped bald and Cascao sheets cover all poses and retain only a forehead tuft',async()=>{
+ const {decodeHairSheet}=await import('../scripts/player-hair-png.mjs');
+ const {CUSTOM_HAIR_MANUAL_FRAMES}=await import('../src/core/player-hair-manual.mjs');
+ const a=decodeHairSheet(fs.readFileSync(new URL('../assets/player-hair/14-careca.png',import.meta.url))),b=decodeHairSheet(fs.readFileSync(new URL('../assets/player-hair/15-cascao.png',import.meta.url)));
+ assert.deepEqual(a,CUSTOM_HAIR_MANUAL_FRAMES[14]);assert.deepEqual(b,CUSTOM_HAIR_MANUAL_FRAMES[15]);
+ for(let frame=0;frame<24;frame++){
+  assert.ok(a[frame].some(v=>v>=3&&v<=5));assert.ok(a[frame].every(v=>v===0||v>=3&&v<=5));
+  const changed=a[frame].flatMap((v,i)=>v!==b[frame][i]?[i]:[]);
+  assert.ok([0,5,10].includes(frame)?changed.length===0:changed.length>=2);
+  assert.ok(changed.length<=3);for(const i of changed)assert.equal(b[frame][i],1);
+  assert.ok(playerReferencePose({kind:'hair',style:14,frame}));
+ }
 });

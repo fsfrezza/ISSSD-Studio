@@ -3,6 +3,7 @@ import {PLAYER_BODY_CATALOG} from './player-body-catalog.mjs';
 import {decodeNativeHairTile} from './player-appearance.mjs';
 import {encodeHairTile} from './plus-custom-hair.mjs';
 export {PLAYER_BODY_CATALOG,PLAYER_POSE_CATALOG};
+export const PLAYER_HAIR_POSE_LABELS=["Costas · corrida 1", "Diagonal de costas · corrida 1", "Perfil · corrida 1", "Diagonal de frente · corrida 1", "Frente · corrida 1", "Costas · corrida 3", "Diagonal de costas · corrida 3", "Perfil · corrida 3", "Diagonal de frente · corrida 3", "Frente · corrida 3", "Costas · corrida 5", "Diagonal de costas · corrida 5", "Perfil · corrida 5", "Diagonal de frente · corrida 5", "Frente · corrida 5", "Diagonal de costas · lançamento 5", "Diagonal · chute com giro 4", "Diagonal de frente · lançamento 4", "Caído de costas · quadro 1", "Caído de costas · quadro 2", "Caído de costas · quadro 3", "Caído de frente · quadro 1", "Caído de frente · quadro 2", "Caído de costas · quadro 4"];
 const records=new Map(PLAYER_BODY_CATALOG.map(r=>[r.id,r]));
 export function spriteFrameKey(ref){
  if(ref?.kind==='hair'&&Number.isInteger(ref.style)&&ref.style>=1&&ref.style<=15&&Number.isInteger(ref.frame)&&ref.frame>=0&&ref.frame<24)return ref.style+':'+ref.frame;

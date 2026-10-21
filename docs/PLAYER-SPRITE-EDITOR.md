@@ -61,3 +61,15 @@ exportação cumulativa real com desenhos alterados.
 O build privado completo da interface e o teste visual no emulador não puderam
 ser executados neste ambiente. Os testes de geração e de comportamento usam
 fixtures; o teste binário real usa a ROM Plus canônica fornecida.
+
+### Revisão de Careca e Cascão
+
+Os 24 desenhos dos tipos 14/15 usam o corpo original como referência.
+O seletor identifica direção, movimento e quadro de cada pose.
+O botão “Restaurar Careca e Cascão (24 quadros)” remove somente os desenhos
+desses tipos no projeto, recuperando os PNGs atuais; não muda jogadores nem
+outros desenhos. Salve o projeto e exporte a ROM para persistir a restauração.
+
+OAM direto da ROM armazena Y antes de X, enquanto os planos descomprimidos
+armazenam X antes de Y. A extração foi corrigida para poses especiais,
+incluindo lançamentos, giro e quedas.

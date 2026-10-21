@@ -23,9 +23,13 @@ export function encodeProofBody(pixels){
   block.set(encodeHairTile(a),(half?196:2)+(t%6)*32);
  }return block;
 }
-export function alignProofHead(source){
- if(source.length!==64||Array.from(source).some(v=>!Number.isInteger(v)||v<0||v>15)||Array.from(source.slice(40)).some(Boolean))throw Error("Cabeça desta prova precisa caber nas cinco primeiras linhas do tile.");
- const out=new Uint8Array(64);out.set(source.slice(0,40),16);return out;
+export function alignProofHead(source,base){
+ if(source.length!==64||Array.from(source).some(v=>!Number.isInteger(v)||v<0||v>15)||Array.from(source.slice(48)).some(Boolean)||Array.from(source).some((v,i)=>v&&(i&7)===7))throw Error('Sobreposição desta prova excede a área da cabeça.');
+ // Native Up_Running1 overlay starts at body (5,1), inside proof rectangle (4,0).
+ const out=new Uint8Array(64),body=base?readProofBody(base):null;
+ if(body)for(let y=0;y<7;y++)for(let x=0;x<8;x++)out[y*8+x]=body[y*16+x+4];
+ for(let y=0;y<6;y++)for(let x=0;x<7;x++)if(source[y*8+x])out[(y+1)*8+x+1]=source[y*8+x];
+ return out;
 }
 export function composeProofBody(base,head){
  if(head.length!==64||Array.from(head).some(v=>!Number.isInteger(v)||v<0||v>15))throw Error('Cabeça de prova inválida.');
@@ -69,7 +73,7 @@ function skipCustomOverlayHelper(){
 }
 export function proofBodyWrites(base,{heads={}}={}){
  readProofBody(base);
- const data=[];for(const h of [14,15])data.push({pc:BODY_PROOF_VARIANTS[h],data:encodeProofBody(composeProofBody(base,heads[h]??alignProofHead(customHairPixels(base,h,0))))});
+ const data=[];for(const h of [14,15])data.push({pc:BODY_PROOF_VARIANTS[h],data:encodeProofBody(composeProofBody(base,heads[h]??alignProofHead(customHairPixels(base,h,0),base)))});
  for(const [pc,bytes]of [[BODY_PROOF_SLOT,bodyPointerHelper()],[BODY_PROOF_SLOT+0x200,bodyPointerHelper(true)],[BODY_PROOF_SLOT+0x400,skipCustomOverlayHelper()]])data.push({pc,data:bytes});
  const hooks=[{pc:0x266FB,original:[0xBF,2,0,0x82],target:BODY_PROOF_SLOT},{pc:0x26706,original:[0xBF,4,0,0x82],target:BODY_PROOF_SLOT+0x200},... [0x1C930,0x1CAFE].map(pc=>({pc,original:[0xBD,6,0,0x29,15,0],target:BODY_PROOF_SLOT+0x400}))];
  for(const h of hooks){if(!h.original.every((v,i)=>base[h.pc+i]===v))throw Error('Corpo de prova: leitor nativo divergente em '+h.pc.toString(16));data.push({pc:h.pc,data:Uint8Array.from([0x22,...long(cpu(h.target)),...Array(h.original.length-4).fill(0xEA)])});}

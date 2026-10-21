@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {readProofBody,encodeProofBody,composeProofBody,installBodyCompositionProof,proofBodyWrites,BODY_PROOF_SLOT,BODY_PROOF_VARIANTS} from '../src/core/player-body-proof.mjs';
+import {readProofBody,alignProofHead,encodeProofBody,composeProofBody,installBodyCompositionProof,proofBodyWrites,BODY_PROOF_SLOT,BODY_PROOF_VARIANTS} from '../src/core/player-body-proof.mjs';
 import {expandPlusTo4MiB} from '../src/core/plus-tactics-infrastructure.mjs';
 const pc=v=>((v>>>16)&127)*32768+(v&32767),cpu=v=>((128+(v>>>15))<<16)|32768|(v&32767);
 function fixture(){const b=new Uint8Array(0x200000),pixels=Uint8Array.from({length:768},(_,i)=>i%16);b.set(encodeProofBody(pixels),0xB0000);b.set([0xD4,0x42,0,0x80,0x96,2,0x68,0x4E,1],0x123D7);for(const [p,v]of [[0x266FB,[0xBF,2,0,0x82]],[0x26706,[0xBF,4,0,0x82]],[0x1C930,[0xBD,6,0,0x29,15,0]],[0x1CAFE,[0xBD,6,0,0x29,15,0]]])b.set(v,p);return b;}
@@ -49,4 +49,11 @@ test('pointer helper falls back for other poses, nonplayers and corrupt roster i
  for(const d of [0,0x400,0x6A0,0x1B00])assert.equal(execute(r,BODY_PROOF_SLOT,{d,wram}),0x8000);
  assert.equal(execute(r,BODY_PROOF_SLOT,{x:0xA3E0,wram}),0x9234);
  wram[0x568]=11;assert.equal(execute(r,BODY_PROOF_SLOT,{wram}),0x8000);wram[0x568]=0;wram[0x3F90]=20;assert.equal(execute(r,BODY_PROOF_SLOT,{wram}),0x8000);
+});
+
+test('proof aligns current native overlay at body (5,1) and preserves transparent face pixels',()=>{
+ const base=fixture(),source=new Uint8Array(64);source[5*8+6]=4;
+ const head=alignProofHead(source,base),before=readProofBody(base),after=composeProofBody(base,head);
+ for(let y=0;y<48;y++)for(let x=0;x<16;x++)assert.equal(after[y*16+x],x===11&&y===6?4:before[y*16+x]);
+ source[6*8]=3;assert.throws(()=>alignProofHead(source,base));
 });

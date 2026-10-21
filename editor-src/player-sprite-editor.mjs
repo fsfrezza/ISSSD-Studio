@@ -4,7 +4,7 @@ function setupPlayerSpriteEditor(){
  stopPlayerSpriteAnimation();
  const engine=window.ISSSDPlayerSpriteCore,by=id=>document.getElementById(id);if(!engine||!by('spriteOpen'))return;
  const session={drafts:new Map(),undo:[],redo:[],ref:null,frame:null,color:3,drag:false,sequence:[],tick:0};playerSpriteSession=session;
- by('spriteOpen').disabled=!nativeAppearanceSupported();by('spriteWorkspace').hidden=true;by('spriteStyle').innerHTML=Array.from({length:15},(_,i)=>`<option value="${i+1}">${nativeAppearanceCore.hairStyleLabel(i+1)}</option>`).join('');by('spriteFrame').innerHTML=Array.from({length:24},(_,i)=>`<option value="${i}">Quadro ${i+1}</option>`).join('');
+ by('spriteOpen').disabled=!nativeAppearanceSupported();by('spriteWorkspace').hidden=true;by('spriteStyle').innerHTML=Array.from({length:15},(_,i)=>`<option value="${i+1}">${nativeAppearanceCore.hairStyleLabel(i+1)}</option>`).join('');by('spriteFrame').innerHTML=Array.from({length:24},(_,i)=>`<option value="${i}">${i+1} · ${engine.PLAYER_HAIR_POSE_LABELS?.[i]||'Quadro'}</option>`).join('');
  by('spriteStyle').value=String(appearanceTempHair||1);by('spriteFrame').value=String(nativeAppearanceFrame);by('spriteKind').value=appearanceTempHair?'hair':'body';
  const edits=()=>window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__?.spriteEdits;
  const ref=()=>by('spriteKind').value==='hair'?{kind:'hair',style:Number(by('spriteStyle').value),frame:Number(by('spriteFrame').value)}:{kind:'body',id:by('spriteBody').value};
@@ -45,5 +45,14 @@ function setupPlayerSpriteEditor(){
  by('spriteFlip').onclick=()=>{if(!session.frame)return;const f=session.frame,a=f.pixels.slice();for(let y=0;y<f.height;y++)for(let x=0;x<f.width;x++)a[y*f.width+x]=f.pixels[y*f.width+f.width-1-x];try{engine.validateSpritePixels(session.ref,a);remember();f.pixels=a;stash();draw();}catch(e){status(e.message);}};
  by('spriteCopy').onclick=()=>{playerSpriteClipboard={width:session.frame.width,height:session.frame.height,pixels:session.frame.pixels.slice()};status('Quadro copiado.');};by('spritePaste').onclick=()=>{try{if(!playerSpriteClipboard||playerSpriteClipboard.width!==session.frame.width||playerSpriteClipboard.height!==session.frame.height)throw Error('Copie um quadro com as mesmas dimensões.');engine.validateSpritePixels(session.ref,playerSpriteClipboard.pixels);remember();session.frame.pixels=playerSpriteClipboard.pixels.slice();stash();draw();}catch(e){status(e.message);}};
  by('spriteApply').onclick=()=>{try{stash();const state=JSON.parse(JSON.stringify(window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__||studioTeamsV3Snapshot()));for(const entry of session.drafts.values())engine.validateSpritePixels(entry.ref,entry.pixels);state.spriteEdits=JSON.parse(JSON.stringify(previewEdits()));if(!window.__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__(state))throw Error('Projeto não aceitou os desenhos.');if(typeof studioUpdateBadge==='function')studioUpdateBadge();status('Desenhos aplicados. Salve o projeto para guardar no arquivo; Salvar ROM grava na fase Jogadores.');renderHairGallery();}catch(e){status(e.message);}};
+ by('spriteRestoreCustom').onclick=()=>{try{
+  const state=JSON.parse(JSON.stringify(window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__||studioTeamsV3Snapshot()));
+  for(const style of [14,15])for(let frame=0;frame<24;frame++){
+   const r={kind:'hair',style,frame};state.spriteEdits=engine.restorePlayerSprite(state.spriteEdits,r);session.drafts.delete(key(r));
+  }
+  if(!window.__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__(state))throw Error('Não foi possível restaurar.');
+  session.frame=null;load();if(typeof studioUpdateBadge==='function')studioUpdateBadge();renderHairGallery();
+  status('Os 24 quadros de Careca e Cascão foram restaurados para os PNGs atuais. Salve o projeto e gere novamente a ROM.');
+ }catch(e){status(e.message);}};
  by('spriteRestore').onclick=()=>{try{const state=JSON.parse(JSON.stringify(window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__||studioTeamsV3Snapshot()));state.spriteEdits=engine.restorePlayerSprite(state.spriteEdits,session.ref);if(!window.__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__(state))throw Error('Não foi possível restaurar.');session.drafts.delete(key(session.ref));session.frame=null;load();if(typeof studioUpdateBadge==='function')studioUpdateBadge();status('Quadro restaurado no projeto. Salve para guardar.');renderHairGallery();}catch(e){status(e.message);}};
 }

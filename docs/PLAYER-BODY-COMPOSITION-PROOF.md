@@ -46,8 +46,10 @@ A importação de corpo/cabeça no Editor principal será uma etapa posterior.
 - Substituição completa da região da cabeça, incluindo transparência: o
   cabelo embutido deixa de aparecer por baixo da nova cabeça.
 - Retângulo da cabeça x=4..11, y=0..6. A nuca na linha 7 fica preservada.
-  O tile dos PNGs 14/15 é deslocado duas linhas para alinhar esta pose;
-  para esta conversão, ele deve caber nas cinco primeiras linhas do tile.
+  O tile dos PNGs 14/15 começa em (5,1) no corpo desta pose. A conversão
+  o desloca uma coluna e uma linha dentro do retângulo da prova em (4,0),
+  preservando os pixels originais onde a sobreposição é transparente.
+  Ele deve caber nas seis primeiras linhas e sete primeiras colunas.
   Esta calibração não deve ser generalizada automaticamente para outras poses.
 - Variantes pré-compostas na expansão: PC `0x3F1000` e `0x3F1200`.
 - Seleção da origem dos dados no momento em que o motor enfileira o DMA,
