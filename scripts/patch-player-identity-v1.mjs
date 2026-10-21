@@ -98,6 +98,7 @@ replaceFunction('studioTeamsV3Snapshot','studioTeamsV3LegacyPlayerCustom',String
   }
   out.teams[id]=entry;
  }
+ if(window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__?.spriteEdits)out.spriteEdits=studioTeamsV3Clone(window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__.spriteEdits);
  window.__ISSSD_TEAMS_V1__=studioTeamsV3Clone(out);return out;
 }`);
 

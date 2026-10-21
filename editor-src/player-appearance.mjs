@@ -4,7 +4,7 @@ const nativeAppearanceCore=window.ISSSDPlayerAppearanceCore;
 function nativeAppearanceSupported(){return !!rom&&activeRomProfile?.id==='iss-deluxe-plus';}
 function nativeAppearanceNote(message,error=false){const n=$('appearanceNativeStatus');if(n){n.textContent=message;n.className='note '+(error?'error':'info');}}
 function nativeAppearanceCanvas(canvas,hair,frame,palette){
- const pixels=nativeAppearanceCore.decodeNativeHairTile(rom,hair,frame);canvas.width=8;canvas.height=8;
+ const pixels=hair?window.ISSSDPlayerSpriteCore.readPlayerSprite(rom,{kind:'hair',style:hair,frame},window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__?.spriteEdits).pixels:null;canvas.width=8;canvas.height=8;
  const ctx=canvas.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,8,8);
  if(!pixels)return;
  const img=ctx.createImageData(8,8);
@@ -61,7 +61,7 @@ function openAppearanceDialog(){
  const frame=$('appearanceNativeFrame');frame.innerHTML=Array.from({length:24},(_,i)=>`<option value="${i}">Quadro ${i+1}</option>`).join('');frame.value=nativeAppearanceFrame;
  frame.onchange=()=>{nativeAppearanceFrame=Number(frame.value);renderAppearancePreview();};
  $('appearanceRestoreNativeBtn').onclick=()=>{try{const id=nativeAppearanceIdentity,p=studioTeamsV3OriginalPlayer(id.team,id.baseSlot);appearanceTempHair=p.appearance.hair;appearanceTempPalette=p.appearance.palette;renderAppearancePreview();nativeAppearanceNote('Aparência original selecionada. Use Aplicar ao jogador para confirmar.');}catch(e){nativeAppearanceNote(e.message,true);}};
- setupAppearanceTransfer();loadAppearancePlayer(currentPlayer);$('appearanceDialog').showModal();
+ setupAppearanceTransfer();loadAppearancePlayer(currentPlayer);setupPlayerSpriteEditor();$('appearanceDialog').showModal();
 }
 function closeAppearanceDialog(){$('appearanceDialog').close();}
 function commitAppearance(closeAfter=true){

@@ -1,3 +1,4 @@
+import {playerSpriteWriter} from './player-sprite-editor.mjs';
 import {plusCustomHairWriter} from './plus-custom-hair.mjs';
 import {plusSoundsWriter} from './plus-sounds.mjs';
 import {plusExtraMenuGraphicsWriter} from './plus-extra-menu-graphics.mjs';
@@ -72,6 +73,7 @@ export function createPlusBuildStages({baseRom,patches=[],extraWriters=[],writeC
       id:'04b-teams-v3-players',kind:'semantic',when:!selectedAreas||selectedAreas.includes('jogadores'),
       run:(work,state)=>applySteps(work,teamsV3PlayerSteps(baseRom,state)),
     },
+    {id:'04b-player-sprites',kind:'semantic',run:(work,state)=>playerSpriteWriter(work,state,baseRom,selectedAreas)},
     {id:'04c-custom-hair',kind:'semantic',run:(work,state)=>plusCustomHairWriter(work,state,baseRom,selectedAreas)},
     {
       id:'05-tactical-infrastructure',kind:'derived',

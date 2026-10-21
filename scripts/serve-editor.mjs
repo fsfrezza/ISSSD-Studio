@@ -1,3 +1,5 @@
+import {canonicalProjectSemantic} from '../src/core/project-semantic.mjs';
+import {effectiveProjectHairFrames} from '../src/core/player-sprite-editor.mjs';
 import {installPlayerHairFiles,verifyPlayerHairFiles} from '../src/platform/player-hair-files.mjs';
 import {pendingTextExportReport} from '../src/core/additional-screen-text-fields.mjs';
 import os from 'node:os';
@@ -87,6 +89,7 @@ function buildPostedProject(req,res){
    const diagnostic=payload?.diagnostic===true;
    const base=Uint8Array.from(fs.readFileSync(defaultPlusRomPath));
    const hairAssets=installPlayerHairFiles(root);
+   hairAssets.frames=effectiveProjectHairFrames(hairAssets.frames,canonicalProjectSemantic(project)?.teamsV1?.spriteEdits);
    if(payload.cumulative===true){
     const dir=fs.mkdtempSync(path.join(os.tmpdir(),'isssd-export-'));
     const zipPath=path.join(dir,'ISSSD-ROMs-cumulativas.zip');

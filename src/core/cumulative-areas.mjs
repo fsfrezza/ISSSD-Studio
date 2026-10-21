@@ -1,3 +1,4 @@
+import {PLAYER_BODY_CATALOG} from './player-body-catalog.mjs';
 import {SOUND_REGIONS} from './plus-sounds.mjs';
 import {TRAINING_SELECTOR_POSITIONS,TRAINING_CHOICE_REGIONS} from './plus-native-menu-text.mjs';
 import {EXTRA_MENU_GRAPHIC_REGIONS} from './plus-extra-menu-graphics.mjs';
@@ -41,6 +42,9 @@ export function selectedCumulativeAreas(selection){
  return CUMULATIVE_AREAS.filter(a=>selection.includes(a.id)).map(a=>a.id);
 }
 const contains=(off,ranges)=>ranges.some(([a,b])=>off>=a&&off<b);
+const bodySpriteRegions=PLAYER_BODY_CATALOG.flatMap(r=>[[r.pc+2,r.pc+2+r.top],[r.pc+4+r.top,r.pc+4+r.top+r.bottom]]).sort((a,b)=>a[0]-b[0]);
+function isBodySpriteByte(off){let low=0,high=bodySpriteRegions.length-1;while(low<=high){const mid=(low+high)>>1,[start,end]=bodySpriteRegions[mid];if(off<start)high=mid-1;else if(off>=end)low=mid+1;else return true;}return false;}
+
 export function areaClassifier(rom,base=null){
  const title=[[0x11971,0x11981],[0x1198B,0x11993],[0x1199A,0x119A2],
   [0x1764EA,0x178000],[0x1842DE,0x188000],[0xDEA6D,0xE0000],[0x12617F,0x126C00],
@@ -59,6 +63,7 @@ export function areaClassifier(rom,base=null){
  }
  for(let p=1;p<=7;p++)for(const s of knownMirrorSlices(30,p))derived.push([s.mirror,s.mirror+s.length]);
  return off=>{
+  if(isBodySpriteByte(off)||(off>=0xBCD58&&off<0xBF458))return 'jogadores';
   if(contains(off,SOUND_REGIONS))return 'sons';
   if(contains(off,EXTRA_MENU_GRAPHIC_REGIONS))return 'pre-partida';
   if(contains(off,TRAINING_HUD_REGIONS))return 'partida';

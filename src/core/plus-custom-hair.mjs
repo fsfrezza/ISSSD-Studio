@@ -21,7 +21,11 @@ export function plusCustomHairWriter(rom,state,base,selectedAreas=null){
  const writes=[],add=(pc,data)=>writes.push({pc,data:Uint8Array.from(data)}),table=new Uint8Array(60);table.set(base.slice(0xED6D,0xEDA1));
  for(let h=14;h<=15;h++){
   const pc=CUSTOM_HAIR_SLOT+0x100+(h-14)*0x300;table.set(bytes(cpu(pc),4),(h-1)*4);
-  const data=new Uint8Array(0x300);for(let f=0;f<24;f++)data.set(encodeHairTile(customHairPixels(base,h,f)),f*32);add(pc,data);
+  const data=new Uint8Array(0x300);for(let f=0;f<24;f++){
+   const saved=state?.teamsV1?.spriteEdits?.hair?.[h+':'+f];
+   if(saved!==undefined&&(!Array.isArray(saved)||saved.length!==64||saved.some(v=>!Number.isInteger(v)||v<0||v>15)))throw Error('Quadro personalizado inválido.');
+   data.set(encodeHairTile(saved??customHairPixels(base,h,f)),f*32);
+  }add(pc,data);
  }
  add(CUSTOM_HAIR_SLOT,table);
  // Preserve the native X index, Y, D, DB and widths. The first helper also

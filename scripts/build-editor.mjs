@@ -25,13 +25,17 @@ let html=fs.readFileSync(source,'utf8');
 const appearanceCore='const CUSTOM_HAIR_MANUAL_FRAMES='+JSON.stringify(loadPlayerHairFiles(root).frames)+';\n'+fs.readFileSync(path.join(root,'src/core/player-appearance.mjs'),'utf8').replace("import {CUSTOM_HAIR_MANUAL_FRAMES} from './player-hair-manual.mjs';",'');
 const appearanceExports=[...appearanceCore.matchAll(/^export (?:const|function) (\w+)/gm)].map(m=>m[1]);
 const appearanceEngine='window.ISSSDPlayerAppearanceCore=(()=>{\n'+appearanceCore.replace(/^export /gm,'')+'\nreturn {'+appearanceExports.join(',')+'};})();\n';
-const appearanceRuntime=appearanceEngine+fs.readFileSync(path.join(root,'editor-src/player-appearance.mjs'),'utf8');
+const spriteCatalog=fs.readFileSync(path.join(root,'src/core/player-body-catalog.mjs'),'utf8').replace(/^export /gm,'');
+const spriteSource=fs.readFileSync(path.join(root,'src/core/player-sprite-editor.mjs'),'utf8').split('export function playerSpriteWriter')[0].replace(/^import .*;\n/gm,'').replace(/^export \{[^}]+\};\n/gm,'');
+const spriteExports=[...spriteSource.matchAll(/^export (?:const|function) (\w+)/gm)].map(m=>m[1]);
+const spriteEngine='window.ISSSDPlayerSpriteCore=(()=>{\n'+spriteCatalog+'\nconst decodeNativeHairTile=(...a)=>window.ISSSDPlayerAppearanceCore.decodeNativeHairTile(...a);\n'+spriteSource.replace(/^export /gm,'')+'\nreturn {PLAYER_BODY_CATALOG,'+spriteExports.join(',')+'};})();\n';
+const appearanceRuntime=appearanceEngine+spriteEngine+fs.readFileSync(path.join(root,'editor-src/player-appearance.mjs'),'utf8')+'\n'+fs.readFileSync(path.join(root,'editor-src/player-sprite-editor.mjs'),'utf8');
 const appearanceStart=html.indexOf('const HAIR_NAMES=['),appearanceEnd=html.indexOf('renderEmbeddedAssetManifest();',appearanceStart);
 if(appearanceStart<0||appearanceEnd<0)throw Error('Aparência: bloco original não encontrado.');
 html=html.slice(0,appearanceStart)+appearanceRuntime+'\n'+html.slice(appearanceEnd);
 const appearanceDialog=/<dialog id="appearanceDialog">[\s\S]*?<\/dialog>/;
 if(!appearanceDialog.test(html))throw Error('Aparência: janela original não encontrada.');
-html=html.replace(appearanceDialog,()=>fs.readFileSync(path.join(root,'editor-src/player-appearance-dialog.html'),'utf8'));
+html=html.replace(appearanceDialog,()=>fs.readFileSync(path.join(root,'editor-src/player-appearance-dialog.html'),'utf8').replace('</div><div class="modalfoot">',fs.readFileSync(path.join(root,'editor-src/player-sprite-editor.html'),'utf8')+'</div><div class="modalfoot">'));
 html=html.replace('</head>',()=>'<style id="isssd-native-player-appearance">'+fs.readFileSync(path.join(root,'editor-src/player-appearance.css'),'utf8')+'</style>\n</head>');
 
 // Keep the protected visual baseline immutable; replace its legacy Portuguese

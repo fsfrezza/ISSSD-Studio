@@ -71,6 +71,7 @@ window.__ISSSD_INSTALL_TEAMS_SEMANTIC_V1__=function(){
   try{rawBase=baseRead()}finally{window.__ISSSD_TEAMS_RESOLVED_OVERLAY_V1__=previousResolved||null}
   if(!window.__ISSSD_TEAMS_BASELINE_V1__)window.__ISSSD_TEAMS_BASELINE_V1__=clone(rawBase);
   const out=clone(rawBase)||{schema:'isssd-teams-v1',version:3,teams:{}};
+  if(state?.spriteEdits)out.spriteEdits=clone(state.spriteEdits);
   for(const [key,ts] of Object.entries(state?.teams||{})){
    const team=Number(ts?.teamId??key);if(!Number.isInteger(team)||team<0||team>=56)continue;
    const dst=out.teams?.[String(team)];if(!dst)continue;
