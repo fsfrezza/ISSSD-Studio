@@ -8,19 +8,35 @@ if(!fs.existsSync(htmlPath))throw new Error('Editor gerado não encontrado: '+ht
 let html=fs.readFileSync(htmlPath,'utf8');
 
 const MARKER='isssd-player-skill-restore-v2';
-html=html.replace(/<div[^>]*id=["']isssd-player-skill-restore-v[12]["'][^>]*>[\s\S]*?<\/div>\s*/g,'');
+html=html.replace(/<div[^>]*id=["']isssd-player-skill-restore-v[12]["'][^>]*>[\s\S]*?<\/div>\s*/g,block=>block.match(/<button\b(?=[^>]*\bid=["']restorePlayerBtn["'])[^>]*>[\s\S]*?<\/button>/i)?.[0]||'');
+html=html.replace(/<style\b[^>]*id=["']isssd-player-actions-layout["'][^>]*>[\s\S]*?<\/style>/g,'');
 
 // Localiza o controle pelo ID estável; não depende do texto, indentação ou CRLF do HTML legado.
 const restoreButtonRe=/<button\b(?=[^>]*\bid=["']restorePlayerBtn["'])[^>]*>[\s\S]*?<\/button>/i;
 const restoreMatch=html.match(restoreButtonRe);
 if(!restoreMatch)throw new Error('Não encontrei o controle #restorePlayerBtn no HTML final para posicionar os botões de skills.');
-const newActions=`<div id="${MARKER}" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px">\n<button class="btn" id="restoreSkillsProjectBtn" type="button">Restaurar skills do projeto</button>\n<button class="btn" id="restoreSkillsOriginalBtn" type="button">Restaurar skills originais</button>\n</div>\n${restoreMatch[0].replace(/>\s*[\s\S]*?\s*<\/button>$/i,'>Restaurar jogador original</button>')}`;
+const newActions=`<div id="${MARKER}" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">\n<button class="btn" id="restoreSkillsProjectBtn" type="button">Restaurar skills do projeto</button>\n<button class="btn" id="restoreSkillsOriginalBtn" type="button">Restaurar skills originais</button>\n${restoreMatch[0].replace(/>\s*[\s\S]*?\s*<\/button>$/i,'>Restaurar jogador original</button>')}\n</div>`;
 html=html.replace(restoreButtonRe,newActions);
+html=html.replace('</head>',`<style id="isssd-player-actions-layout">
+#${MARKER}{width:100%;margin:0!important;justify-content:flex-start}
+#${MARKER} .btn{flex:0 0 auto;white-space:nowrap;font-size:13px;padding:8px 10px}
+</style></head>`);
 
 const hook='$("restorePlayerBtn").onclick=restorePlayer;';
 if(!html.includes(hook))throw new Error('Não encontrei o binding estável #restorePlayerBtn no runtime final.');
 
 const runtime=String.raw`
+// Keep the four player actions together across the full width of their grid.
+(function(){
+ const row=document.getElementById('isssd-player-skill-restore-v2');
+ if(!row)return;
+ const appearance=Array.from(document.querySelectorAll('button')).find(b=>b.textContent.trim()==='Editar aparência');
+ if(appearance){
+  const old=appearance.parentElement;row.prepend(appearance);
+  if(old!==row.parentElement&&!old.querySelector('button,input,select,textarea')&&/^Aparência\s*cabelo\s*\+\s*paleta$/i.test(old.textContent.trim()))old.hidden=true;
+ }
+ row.parentElement.style.gridColumn='1 / -1';
+})();
 // ISSSD_PLAYER_SKILL_RESTORE_RUNTIME_V2
 function studioSparsePlayerEntry(state,team,player){
  const ts=state?.teams?.[String(team)];
