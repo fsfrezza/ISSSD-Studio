@@ -158,3 +158,17 @@ Editor gerado com esses valores e verificam a seleção OAM resultante.
 
 A correção do Careca remove o índice de cor de cabelo (1) em todos os 24
 quadros. Só o Cascão reintroduz até três pixels dessa cor como tufo frontal.
+
+## Edição manual por PNG
+
+Os quadros dos tipos 14/15 agora estão em `assets/player-hair/14-careca.png`
+e `15-cascao.png`, com instruções no README dessa pasta. A folha tem 64x24
+pixels (8 colunas por 3 linhas de quadros 8x8). `npm run hair:import` valida os
+dois arquivos e compila os índices para `src/core/player-hair-manual.mjs`, usado
+igualmente pela prévia e pelo writer da ROM. Reinicie o servidor e reexporte a
+ROM depois de importar. Os PNGs usam cores de trabalho fixas para índices de
+paleta; as cores em jogo continuam dependentes da equipe.
+
+Os desenhos são recursos locais versionáveis do Editor, não uma nova seção
+persistida no projeto. Um futuro editor de quadros integrado deve armazenar os
+quadros no projeto, com migração, seleção de fase e reabertura verificadas.

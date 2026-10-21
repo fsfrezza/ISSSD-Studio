@@ -1,0 +1,20 @@
+GIMP Palette
+Name: ISSSD Hair indices
+Columns: 4
+#
+0 0 0 Index-0
+32 32 32 Index-1
+112 64 32 Index-2
+184 120 80 Index-3
+232 173 120 Index-4
+255 208 160 Index-5
+112 80 56 Index-6
+32 48 160 Index-7
+48 80 208 Index-8
+240 224 64 Index-9
+176 176 176 Index-10
+255 255 255 Index-11
+255 0 255 Index-12
+0 255 255 Index-13
+0 255 0 Index-14
+255 128 0 Index-15

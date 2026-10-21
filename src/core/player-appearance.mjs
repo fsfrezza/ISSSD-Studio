@@ -1,3 +1,4 @@
+import {CUSTOM_HAIR_MANUAL_FRAMES} from './player-hair-manual.mjs';
 // Deluxe Plus: 13 optional head overlays, 24 native 8x8 tiles per style.
 // Code zero keeps the head already present in the animated body sprite.
 export const NATIVE_HAIR_COUNT=16;
@@ -90,8 +91,11 @@ export function transferProjectPlayerAppearance(state,source,target,mode,origina
 
 // Use the native head footprint, replacing every hair-color pixel with skin.
 // A dark boundary is still hair in this palette; none remains on the bald head.
-export function customHairPixels(rom,hair,frame=0){
+export function customHairPixels(rom,hair,frame=0,{useManual=true}={}){
  if(hair!==14&&hair!==15)throw Error('Cabelo novo inválido.');
+ if(!Number.isInteger(frame)||frame<0||frame>=24)throw Error('Quadro inválido.');
+ const manual=useManual?CUSTOM_HAIR_MANUAL_FRAMES[hair]:null;
+ if(manual){if(manual.length!==24||manual.some(f=>f.length!==64||f.some(v=>!Number.isInteger(v)||v<0||v>15)))throw Error('Quadros manuais inválidos.');return Uint8Array.from(manual[frame]);}
  const original=decodeNativeHairTile(rom,13,frame),out=original.slice();
  for(let i=0;i<64;i++)if(out[i]===1)out[i]=3;
  if(hair===15){

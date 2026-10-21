@@ -21,7 +21,7 @@ if(generatedMarkers.some(m=>fs.readFileSync(source,'utf8').includes(m)))throw ne
 
 let html=fs.readFileSync(source,'utf8');
 // Replace only the generated appearance UI; the private baseline stays immutable.
-const appearanceCore=fs.readFileSync(path.join(root,'src/core/player-appearance.mjs'),'utf8');
+const appearanceCore=fs.readFileSync(path.join(root,'src/core/player-hair-manual.mjs'),'utf8')+'\n'+fs.readFileSync(path.join(root,'src/core/player-appearance.mjs'),'utf8').replace("import {CUSTOM_HAIR_MANUAL_FRAMES} from './player-hair-manual.mjs';",'');
 const appearanceExports=[...appearanceCore.matchAll(/^export (?:const|function) (\w+)/gm)].map(m=>m[1]);
 const appearanceEngine='window.ISSSDPlayerAppearanceCore=(()=>{\n'+appearanceCore.replace(/^export /gm,'')+'\nreturn {'+appearanceExports.join(',')+'};})();\n';
 const appearanceRuntime=appearanceEngine+fs.readFileSync(path.join(root,'editor-src/player-appearance.mjs'),'utf8');
