@@ -25,6 +25,7 @@
     "discover:emulator:windows": "powershell -ExecutionPolicy Bypass -File scripts/discover-mesen-state-windows.ps1",
     "discover:emulator:cross-rom:windows": "powershell -ExecutionPolicy Bypass -File scripts/discover-mesen-cross-rom-windows.ps1",
     "hair:export": "node scripts/edit-player-hair.mjs export",
-    "hair:import": "node scripts/edit-player-hair.mjs import"
+    "hair:import": "node scripts/edit-player-hair.mjs import",
+    "hair:export:native": "node scripts/edit-player-hair.mjs export-native"
   }
 }

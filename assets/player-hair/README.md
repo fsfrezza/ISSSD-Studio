@@ -1,5 +1,6 @@
 # Cabelos editáveis
 
+- `01-nativo.png` até `13-nativo.png`: as treze sobreposições originais da ROM Plus.
 - `14-careca.png`: Careca (R. Carlos).
 - `15-cascao.png`: Cascão (Ronaldo).
 - `paleta.gpl`: cores de edição por índice.
@@ -33,3 +34,20 @@ somente se quiser substituí-los. Preserve uma cópia das suas edições antes.
 
 O limite nativo de três titulares com cabelo especial por equipe continua valendo.
 Não há prévia do corpo completo nem alteração de retratos em cenas aproximadas.
+
+
+## Tipos nativos
+
+Os arquivos 01–13 foram extraídos sem alterar os índices dos pixels da ROM-base
+Plus. Cada arquivo contém os 24 quadros na mesma disposição 64x24.
+O Tipo 0 não possui uma sobreposição independente: ele é parte do sprite do corpo
+e não está representado por uma folha vazia ou por um cabelo inventado.
+
+Para extrair novamente apenas os tipos nativos, preservando 14/15:
+`npm run hair:export:native -- "C:\caminho\International Superstar Soccer Deluxe Plus.sfc"`
+
+A exportação recusa sobrescrever folhas existentes, a menos que receba `--force`.
+A importação atual (`hair:import`) continua lendo somente os tipos 14 e 15.
+Os PNGs nativos são referências editáveis; alterar 01–13 ainda não altera esses
+tipos na ROM. Para testar uma variante com o gravador atual, use-a em uma das
+folhas 14/15, preservando uma cópia anterior.
