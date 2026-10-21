@@ -11,11 +11,11 @@ export function encodeHairTile(pixels){
 }
 export function plusCustomHairWriter(rom,state,base,selectedAreas=null){
  if(selectedAreas&&!selectedAreas.includes('jogadores'))return rom;
- let used=false;for(let t=0;t<56;t++)for(let p=0;p<20;p++)if(rom[playerOffset(t,p)+6]>>4>=14)used=true;
+ let used=false;for(let t=0;t<56;t++)for(let p=0;p<20;p++)if((rom[playerOffset(t,p)+6]&15)>=14)used=true;
  if(!used)return rom;
  if(rom.length!==0x400000)throw Error('Cabelos novos exigem ROM de 4 MB.');
  for(let t=0;t<56;t++){
-  const hair=Array.from({length:11},(_,p)=>rom[playerOffset(t,p)+6]>>4);
+  const hair=Array.from({length:11},(_,p)=>rom[playerOffset(t,p)+6]&15);
   if(hair.some(h=>h>=14)&&hair.filter(Boolean).length>3)throw Error('Equipe '+t+': o motor nativo suporta até três titulares com cabelo especial; reduza a seleção antes de exportar.');
  }
  const writes=[],add=(pc,data)=>writes.push({pc,data:Uint8Array.from(data)}),table=new Uint8Array(60);table.set(base.slice(0xED6D,0xEDA1));

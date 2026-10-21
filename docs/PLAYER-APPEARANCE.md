@@ -52,8 +52,8 @@ Aplicar guarda `teamsV1.teams[team].players[].custom.appearance` (`hair` e
 camisa, posição e tática não são regravados pela confirmação da janela.
 
 O writer canônico existente materializa a aparência na fase Jogadores:
-`hair` ocupa o nibble superior do sétimo byte de atributos; `palette` altera
-somente o bit zero. Os demais bits e os outros seis bytes são preservados.
+`hair` ocupa o nibble inferior do sétimo byte de atributos; `palette` altera
+somente o bit 4. Os demais bits e os outros seis bytes são preservados.
 Não há nova seção de projeto nem migração obrigatória.
 
 ## Verificações
@@ -135,3 +135,22 @@ cumulativa também foi executada com a ROM Plus real de SHA-256
 `ca2d73b226ab252649d4c9c35bb6b81937586d908c1d9dc9d447db7babfaad0a`,
 sem regiões não classificadas e sem alteração da base. Não houve teste de jogo
 em emulador nesta etapa.
+
+
+## Correção da separação entre cabelo e paleta
+
+O byte final é `RRRPHHHH`: H é cabelo (bits 0–3), P é paleta (bit 4),
+e os três bits superiores são preservados. A implementação anterior havia
+invertido esses campos; isso fazia um cabelo 14 virar seletor de paleta 14,
+usando outras paletas de sprites, como a do juiz. Os readers e writers foram
+corrigidos, inclusive a detecção e instalação dos cabelos novos.
+A semântica dos campos `hair`/`palette` nos projetos é mantida: ao reabrir o
+projeto e gerar novamente a ROM, o gravador usa a disposição correta. ROMs
+exportadas anteriormente devem ser geradas novamente da base limpa.
+
+A evidência independente vem de `CODE_83CAD7` (`AND #$000F` para selecionar o
+cabelo) e `CODE_83C903`/`CODE_83C9D7` (nibble superior somado às propriedades
+OAM, selecionando paletas). Na Plus original, exemplos de bytes são `$01`
+(cabelo 1, paleta 0), `$10` (cabelo 0, paleta 1), `$11` (cabelo 1, paleta 1)
+e `$1D` (cabelo 13, paleta 1). Testes executam a leitura e a codificação do
+Editor gerado com esses valores e verificam a seleção OAM resultante.

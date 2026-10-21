@@ -28,13 +28,13 @@ function studioTeamsV3DecodeAttr(bytes){
  const b=Array.from(bytes||[]);if(b.length!==7)return null;
  return {number:(b[5]&255)+1,position:STUDIO_TEAMS_V3_ID_TO_POS[(b[4]>>4)&15]||'NONE',
   skills:{acceleration:(b[0]>>4)+1,speed:(b[0]&15)+1,shot:(b[1]>>4)+1,curve:(b[1]&15)+1,balance:(b[2]>>4)+1,intelligence:(b[2]&15)+1,dribbling:(b[3]>>4)+1,jump:(b[3]&15)+1,energy:(b[4]&15)+1},
-  appearance:{hair:(b[6]>>4)&15,palette:b[6]&1}};
+  appearance:{hair:b[6]&15,palette:(b[6]>>4)&1}};
 }
 function studioTeamsV3Clamp(v,min,max,def=min){v=Number(v);return Number.isFinite(v)?Math.max(min,Math.min(max,Math.round(v))):def}
 function studioTeamsV3EncodeAttr(p){
  const s=p?.skills||{},ap=p?.appearance||{},pos=STUDIO_TEAMS_V3_POS_TO_ID[String(p?.position||'NONE').toUpperCase()]??0;
  const n=(k)=>studioTeamsV3Clamp(s[k],1,10,1)-1;
- return new Uint8Array([(n('acceleration')<<4)|n('speed'),(n('shot')<<4)|n('curve'),(n('balance')<<4)|n('intelligence'),(n('dribbling')<<4)|n('jump'),(pos<<4)|n('energy'),studioTeamsV3Clamp(p?.number,1,99,1)-1,(studioTeamsV3Clamp(ap.hair,0,15,0)<<4)|studioTeamsV3Clamp(ap.palette,0,1,0)]);
+ return new Uint8Array([(n('acceleration')<<4)|n('speed'),(n('shot')<<4)|n('curve'),(n('balance')<<4)|n('intelligence'),(n('dribbling')<<4)|n('jump'),(pos<<4)|n('energy'),studioTeamsV3Clamp(p?.number,1,99,1)-1,studioTeamsV3Clamp(ap.hair,0,15,0)|(studioTeamsV3Clamp(ap.palette,0,1,0)<<4)]);
 }
 function studioTeamsV3Class(v){v=String(v||'').toUpperCase();return v==='DF'?'DF':(v==='MC'||v==='MF')?'MC':(v==='AT'||v==='FW')?'AT':'DF'}
 function studioTeamsV3GlobalX(cls,dx){const c=studioTeamsV3Class(cls),base=c==='DF'?-39:c==='MC'?0:39;return studioTeamsV3Clamp(base+(Number(dx)||0),-57,57,base)}

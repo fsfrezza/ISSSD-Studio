@@ -46,7 +46,7 @@ test('appearance changes and restoration follow player identity across slots and
 test('every editable appearance combination exports only its attribute byte and preserves reserved bits',()=>{
  const base=new Uint8Array(0x200000),off=playerOffset(1,0);base.set([0x12,0x34,0x56,0x78,0x29,0,0x2E],off);
  for(let hair=0;hair<16;hair++)for(let palette=0;palette<2;palette++){
-  const state={teamsV1:{schema:'isssd-teams-v1',version:3,teams:{1:{teamId:1,players:[{slot:1,baseSlot:1,playerId:'1:1',custom:{appearance:{hair,palette}}}]}}}},rom=base.slice();applySteps(rom,teamsV3PlayerSteps(base,state));assert.equal(rom[off+6],hair<<4|0xE|palette);assert.deepEqual(rom.slice(off,off+6),base.slice(off,off+6));for(let i=0;i<rom.length;i++)if(rom[i]!==base[i])assert.equal(i,off+6);
+  const state={teamsV1:{schema:'isssd-teams-v1',version:3,teams:{1:{teamId:1,players:[{slot:1,baseSlot:1,playerId:'1:1',custom:{appearance:{hair,palette}}}]}}}},rom=base.slice();applySteps(rom,teamsV3PlayerSteps(base,state));assert.equal(rom[off+6],0x20|hair|(palette<<4));assert.deepEqual(rom.slice(off,off+6),base.slice(off,off+6));for(let i=0;i<rom.length;i++)if(rom[i]!==base[i])assert.equal(i,off+6);
  }
 });
 test('generated build installs native appearance instead of legacy artwork and keeps all bound input IDs',()=>{
@@ -60,7 +60,7 @@ test('cumulative Jogadores applies appearance and synchronizes the native Brazil
  const {makePlusTacticalFixture}=await import('./plus-tactics-fixture.mjs'),{buildCumulativeProject}=await import('../src/core/cumulative-build.mjs'),{knownMirrorSlices}=await import('../src/core/plus-player.mjs');
  const base=makePlusTacticalFixture(),off=playerOffset(30,2);base.set([0x12,0x34,0x56,0x78,0x29,2,0x20],off);
  const project={state:{semantic:{teamsV1:{schema:'isssd-teams-v1',version:3,teams:{30:{teamId:30,players:[{slot:3,baseSlot:3,playerId:'30:3',custom:{appearance:{hair:13,palette:1}}}]}}}}}},shots=[];
- const result=buildCumulativeProject(base,project,{selectedAreas:['infraestrutura','jogadores'],onRom:(rom,entry)=>shots.push({rom,entry})});assert.deepEqual(result.unassignedLegacyRanges,[]);assert.equal(shots.at(-1).rom[off+6],0xD1);for(const s of knownMirrorSlices(30,2))assert.equal(shots.at(-1).rom[s.mirror+6-s.mainStart],0xD1);assert.deepEqual(shots.at(-1).rom.slice(off,off+6),base.slice(off,off+6));assert.equal(shots[0].rom[off+6],0x20);
+ const result=buildCumulativeProject(base,project,{selectedAreas:['infraestrutura','jogadores'],onRom:(rom,entry)=>shots.push({rom,entry})});assert.deepEqual(result.unassignedLegacyRanges,[]);assert.equal(shots.at(-1).rom[off+6],0x3D);for(const s of knownMirrorSlices(30,2))assert.equal(shots.at(-1).rom[s.mirror+6-s.mainStart],0x3D);assert.deepEqual(shots.at(-1).rom.slice(off,off+6),base.slice(off,off+6));assert.equal(shots[0].rom[off+6],0x20);
  const excluded=[];buildCumulativeProject(base,project,{selectedAreas:['infraestrutura'],onRom:rom=>excluded.push(rom)});assert.equal(excluded.at(-1)[off+6],0x20);assert.equal(base[off+6],0x20);
 });
 
@@ -80,10 +80,10 @@ test('same-team swapping and bidirectional copying preserve sparse originals, an
  const swapped=core.transferProjectPlayerAppearance(state,a,b,'swap',original);assert.equal(swapped.teams[30].players[0].custom.appearance,undefined);assert.deepEqual(swapped.teams[30].players[1].custom.appearance,{hair:13,palette:1});
  const reverse=core.transferProjectPlayerAppearance(state,b,a,'copy',original);assert.equal(reverse.teams[30].players[0].custom.appearance,undefined);
  // Export an appearance-only cross-team transfer so byte changes cannot be hidden by unrelated edits.
- const base=new Uint8Array(0x200000),oa=playerOffset(30,0),ob=playerOffset(1,0);base[oa+6]=0x2E;base[ob+6]=0x9F;
+ const base=new Uint8Array(0x200000),oa=playerOffset(30,0),ob=playerOffset(1,0);base[oa+6]=0xE2;base[ob+6]=0xF9;
  const clean={schema:'isssd-teams-v1',version:3,teams:{30:{teamId:30,players:[{slot:1,baseSlot:1,playerId:'30:1'}]},1:{teamId:1,players:[{slot:1,baseSlot:1,playerId:'1:1'}]}}};
  const result=core.transferProjectPlayerAppearance(clean,{team:30,identity:{playerId:'30:1',baseSlot:1}},{team:1,identity:{playerId:'1:1',baseSlot:1}},'swap',t=>t===30?{hair:2,palette:0}:{hair:9,palette:1});
- const out=base.slice();applySteps(out,teamsV3PlayerSteps(base,{teamsV1:result}));assert.equal(out[oa+6],0x9F);assert.equal(out[ob+6],0x2E);for(let i=0;i<out.length;i++)if(out[i]!==base[i])assert.ok(i===oa+6||i===ob+6);
+ const out=base.slice();applySteps(out,teamsV3PlayerSteps(base,{teamsV1:result}));assert.equal(out[oa+6],0xF9);assert.equal(out[ob+6],0xE2);for(let i=0;i<out.length;i++)if(out[i]!==base[i])assert.ok(i===oa+6||i===ob+6);
 });
 
 test('opening appearance selects canonical applied hair and palette instead of stale model defaults',()=>{
@@ -96,4 +96,25 @@ test('appearance controls retain the applied selection independently of legacy c
  const source=fs.readFileSync(new URL('../editor-src/player-appearance.mjs',import.meta.url),'utf8'),start=source.indexOf('function renderAppearancePreview('),end=source.indexOf('function loadAppearancePlayer(',start),elements={},options=[{value:'0'},{value:'1'}];let gallery=false;
  const c=vm.createContext({appearanceTempHair:12,appearanceTempPalette:1,currentTeam:30,rom:new Uint8Array(),$:id=>elements[id]||=({querySelectorAll:()=>options}),clamp(){throw Error('Legacy clamp must not run');},nativeAppearanceSupported:()=>true,renderHairGallery(){gallery=true;},nativeAppearanceCore:{readNativeAppearancePalettes(){throw Error('preview unavailable');}},nativeAppearanceNote(){}});
  vm.runInContext(source.slice(start,end)+'renderAppearancePreview();',c);assert.equal(elements.appearanceHairValue.value,12);assert.equal(elements.appearancePalette.value,'1');assert.equal(options[1].selected,true);assert.equal(options[0].selected,false);assert.equal(gallery,true);assert.match(elements.appearanceSelectedSummary.textContent,/12.*1/);
+});
+
+test('Editor byte codecs match independently identified native Plus hair and OAM palette fields',()=>{
+ const source=fs.readFileSync(new URL('../scripts/patch-canonical-teams-v3.mjs',import.meta.url),'utf8'),start=source.indexOf('const STUDIO_TEAMS_V3_POS_TO_ID='),end=source.indexOf('function studioTeamsV3GlobalX(',start),c=vm.createContext({Uint8Array});vm.runInContext(source.slice(start,end),c);
+ // Plus bytes observed in the original roster, not generated by our encoder.
+ for(const [byte,hair,palette]of [[0,0,0],[0x01,1,0],[0x10,0,1],[0x11,1,1],[0x1D,13,1],[0x0E,14,0],[0x0F,15,0],[0x1F,15,1]]){
+  const p=c.studioTeamsV3DecodeAttr([0,0,0,0,0,0,byte]);assert.equal(p.appearance.hair,hair);assert.equal(p.appearance.palette,palette);assert.equal(c.studioTeamsV3EncodeAttr(p)[6],byte);
+ }
+ const base=new Uint8Array(0x200000),off=playerOffset(30,0)+6;base[off]=0x11;
+ for(let hair=0;hair<=15;hair++){
+  const state={teamsV1:{schema:'isssd-teams-v1',version:3,teams:{30:{teamId:30,players:[{slot:1,baseSlot:1,playerId:'30:1',custom:{appearance:{hair}}}]}}}},out=base.slice();applySteps(out,teamsV3PlayerSteps(base,state));
+  // CODE_83C9D7: AND #F0, LSR, LSR, ADC sprite property.
+  assert.equal((out[off]&0xF0)>>2,(base[off]&0xF0)>>2);assert.equal(out[off]&15,hair);
+ }
+});
+
+
+test('semantic hair overrides rebuild palette from clean identity despite stale malformed binary mirrors',()=>{
+ const base=new Uint8Array(0x200000),off=playerOffset(30,2)+6;base[off]=0x10;const work=base.slice();work[off]=0xE0;
+ const state={teamsV1:{schema:'isssd-teams-v1',version:3,teams:{30:{teamId:30,players:[{slot:3,baseSlot:3,playerId:'30:3',custom:{appearance:{hair:14}}}]}}}};
+ applySteps(work,teamsV3PlayerSteps(base,state));assert.equal(work[off],0x1E);assert.equal(base[off],0x10);
 });
