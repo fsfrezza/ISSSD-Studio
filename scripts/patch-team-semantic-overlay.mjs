@@ -71,6 +71,7 @@ window.__ISSSD_INSTALL_TEAMS_SEMANTIC_V1__=function(){
   try{rawBase=baseRead()}finally{window.__ISSSD_TEAMS_RESOLVED_OVERLAY_V1__=previousResolved||null}
   if(!window.__ISSSD_TEAMS_BASELINE_V1__)window.__ISSSD_TEAMS_BASELINE_V1__=clone(rawBase);
   const out=clone(rawBase)||{schema:'isssd-teams-v1',version:3,teams:{}};
+  if(state?.appearanceModel)out.appearanceModel=state.appearanceModel;
   if(state?.spriteEdits)out.spriteEdits=clone(state.spriteEdits);
   for(const [key,ts] of Object.entries(state?.teams||{})){
    const team=Number(ts?.teamId??key);if(!Number.isInteger(team)||team<0||team>=56)continue;
@@ -119,6 +120,7 @@ window.__ISSSD_INSTALL_TEAMS_SEMANTIC_V1__=function(){
  window.__ISSSD_TEAMS_SEMANTIC_APPLY_MODELS_V1__=applyModels;
  window.__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__=function(state){
   if(!state||state.schema!=='isssd-teams-v1'||Number(state.version)!==3)return false;
+  if(window.ISSSDPlayerAppearanceCore?.migrateBaldAppearanceTeams)state=window.ISSSDPlayerAppearanceCore.migrateBaldAppearanceTeams(state);
   if(typeof studioTeamsV3IdentityMapFromProject==='function')studioTeamsV3IdentityMapFromProject(state);
   window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__=clone(state);
   window.__ISSSD_TEAMS_V1__=clone(state);

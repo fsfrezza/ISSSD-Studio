@@ -53,6 +53,7 @@ function studioTeamsV3OriginalTactical(t,baseSlot){
 }
 function studioTeamsV3OriginalPlayer(t,baseSlot){
  const i=baseSlot-1,nr=studioTeamsV3OriginalNameRecord(t,i),off=studioTeamsV3AttrOffset(t,i),attrs=studioTeamsV3DecodeAttr(original.slice(off,off+7))||{};
+ if(typeof window!=='undefined'&&window.ISSSDPlayerAppearanceCore?.originalHairInBaldModel&&attrs.appearance)attrs.appearance.hair=window.ISSSDPlayerAppearanceCore.originalHairInBaldModel(attrs.appearance.hair);
  return {playerId:studioTeamsV3PlayerId(t,baseSlot),baseSlot,slot:baseSlot,name:String(nr?.name||nr?.fixed?.trim()||('Jogador '+baseSlot)),nameHex:nr?.no!=null?studioTeamsV3Hex(original.slice(nr.no,nr.no+8)):null,number:attrs.number||baseSlot,position:attrs.position||'NONE',skills:attrs.skills||{},appearance:attrs.appearance||{},tactical:studioTeamsV3OriginalTactical(t,baseSlot)};
 }
 function studioTeamsV3OriginalNameBytes(t,baseSlot){const nr=studioTeamsV3OriginalNameRecord(t,baseSlot-1);return nr?.no!=null?new Uint8Array(original.slice(nr.no,nr.no+8)):null}
@@ -74,6 +75,7 @@ replaceFunction('studioTeamsV3ReadFull','studioTeamsV3PlayerOverride',String.raw
   for(let i=0;i<20;i++){
    const slot=i+1,baseSlot=Number(map[i])||slot,nr=studioTeamsV3NameRecord(t,i),nameHex=nr?.no!=null?studioTeamsV3Hex(rom.slice(nr.no,nr.no+8)):null;
    const attrs=studioTeamsV3DecodeAttr(rom.slice(studioTeamsV3AttrOffset(t,i),studioTeamsV3AttrOffset(t,i)+7))||{};
+   if(typeof window!=='undefined'&&window.ISSSDPlayerAppearanceCore?.originalHairInBaldModel&&attrs.appearance)attrs.appearance.hair=window.ISSSDPlayerAppearanceCore.originalHairInBaldModel(attrs.appearance.hair);
    const p={playerId:studioTeamsV3PlayerId(t,baseSlot),baseSlot,slot,name:String(nr?.name||nr?.fixed?.trim()||('Jogador '+slot)),nameHex,number:attrs.number||slot,position:attrs.position||'NONE',skills:attrs.skills||{},appearance:attrs.appearance||{},tactical:null};
    if(i===0)p.tactical={x:-57,y:0,className:'GO',attack:false,fixed:true};else if(i<=10)p.tactical=tacBySlot.get(slot)||null;
    players.push(p);
@@ -98,6 +100,8 @@ replaceFunction('studioTeamsV3Snapshot','studioTeamsV3LegacyPlayerCustom',String
   }
   out.teams[id]=entry;
  }
+ if(window.ISSSDPlayerAppearanceCore?.BALD_APPEARANCE_MODEL)out.appearanceModel=window.ISSSDPlayerAppearanceCore.BALD_APPEARANCE_MODEL;
+ if(window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__?.legacyBaldHeadDrawings)out.legacyBaldHeadDrawings=studioTeamsV3Clone(window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__.legacyBaldHeadDrawings);
  if(window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__?.spriteEdits)out.spriteEdits=studioTeamsV3Clone(window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__.spriteEdits);
  window.__ISSSD_TEAMS_V1__=studioTeamsV3Clone(out);return out;
 }`);

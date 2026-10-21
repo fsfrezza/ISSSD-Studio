@@ -27,7 +27,7 @@ function setupPlayerSpriteEditor(){
   by('spriteColors').innerHTML='';palette.forEach((color,i)=>{const b=document.createElement('button');b.type='button';b.style.background=i?color:'transparent';b.textContent=i;b.title=i?'Índice '+i:'Transparente';b.setAttribute('aria-pressed',session.color===i);b.onclick=()=>{session.color=i;draw();};by('spriteColors').append(b);});
   drawReference();
  }
- function load(){try{stopPlayerSpriteAnimation();by('spritePlay').textContent='Animar movimento';stash();session.ref=ref();const pending=session.drafts.get(key(session.ref));session.frame=engine.readPlayerSprite(rom,session.ref,pending?engine.setPlayerSprite(edits(),session.ref,pending.pixels):edits());session.undo=[];session.redo=[];session.sequence=engine.playerReferenceSequence(engine.playerReferencePose(session.ref));session.tick=0;
+ function load(){try{stopPlayerSpriteAnimation();by('spritePlay').textContent='Animar movimento';stash();session.ref=ref();const pending=session.drafts.get(key(session.ref));session.frame=engine.readPlayerSprite(rom,session.ref,pending?engine.setPlayerSprite(edits(),session.ref,pending.pixels):edits(),{baldBase:true});session.undo=[];session.redo=[];session.sequence=engine.playerReferenceSequence(engine.playerReferencePose(session.ref));session.tick=0;
  const body=session.ref.kind==='body';by('spriteStyle').disabled=body;by('spriteFrame').disabled=body;by('spriteBody').disabled=!body;by('spriteSearch').disabled=!body;
  by('spriteDescription').textContent=body?session.frame.record.name+' · '+(session.frame.record.mounted?'Corpo montado':'Tiles em ordem nativa')+' · '+session.frame.width+' × '+session.frame.height:'Cabelo '+session.ref.style+' · quadro '+(session.ref.frame+1)+' de 24';draw();status('As alterações pendentes são mantidas ao trocar de quadro. Aplique antes de fechar esta janela.');}catch(e){status(e.message);}}
  function filter(){const previous=by('spriteBody').value,q=by('spriteSearch').value.toLowerCase();by('spriteBody').innerHTML='';for(const r of engine.PLAYER_BODY_CATALOG)if((r.name+' '+r.id).toLowerCase().includes(q)){const o=document.createElement('option');o.value=r.id;o.textContent=r.name+' · '+r.id+(r.mounted?' · montado':'');by('spriteBody').append(o);}if([...by('spriteBody').options].some(o=>o.value===previous))by('spriteBody').value=previous;}
@@ -52,7 +52,7 @@ function setupPlayerSpriteEditor(){
   }
   if(!window.__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__(state))throw Error('Não foi possível restaurar.');
   session.frame=null;load();if(typeof studioUpdateBadge==='function')studioUpdateBadge();renderHairGallery();
-  status('Os 24 quadros de Careca e Cascão foram restaurados para os PNGs atuais. Salve o projeto e gere novamente a ROM.');
+  status('Os 24 quadros de Original e Cascão foram restaurados para os PNGs atuais. Salve o projeto e gere novamente a ROM.');
  }catch(e){status(e.message);}};
  by('spriteRestore').onclick=()=>{try{const state=JSON.parse(JSON.stringify(window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__||studioTeamsV3Snapshot()));state.spriteEdits=engine.restorePlayerSprite(state.spriteEdits,session.ref);if(!window.__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__(state))throw Error('Não foi possível restaurar.');session.drafts.delete(key(session.ref));session.frame=null;load();if(typeof studioUpdateBadge==='function')studioUpdateBadge();status('Quadro restaurado no projeto. Salve para guardar.');renderHairGallery();}catch(e){status(e.message);}};
 }

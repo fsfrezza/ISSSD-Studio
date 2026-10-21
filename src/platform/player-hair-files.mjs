@@ -4,7 +4,7 @@ import {CUSTOM_HAIR_MANUAL_FRAMES} from '../core/player-hair-manual.mjs';
 import {CUSTOM_HAIR_SLOT,encodeHairTile} from '../core/plus-custom-hair.mjs';
 import {playerOffset} from '../core/plus-player.mjs';
 export function loadPlayerHairFiles(root){
- const frames={},files={};for(const [h,name]of [[14,'14-careca.png'],[15,'15-cascao.png']]){const bytes=fs.readFileSync(path.join(root,'assets/player-hair',name));frames[h]=decodeHairSheet(bytes);files[name]=createHash('sha256').update(bytes).digest('hex');}return{frames,files};
+ const frames={},files={};for(const [h,name]of [[14,'14-original.png'],[15,'15-cascao.png']]){const bytes=fs.readFileSync(path.join(root,'assets/player-hair',name));frames[h]=decodeHairSheet(bytes);files[name]=createHash('sha256').update(bytes).digest('hex');}return{frames,files};
 }
 export function installPlayerHairFiles(root){const loaded=loadPlayerHairFiles(root);Object.assign(CUSTOM_HAIR_MANUAL_FRAMES,loaded.frames);return loaded;}
 export function verifyPlayerHairFiles(rom,frames){

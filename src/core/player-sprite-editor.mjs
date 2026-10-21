@@ -1,3 +1,5 @@
+import {ORIGINAL_HAIR_FRAMES} from './player-original-hair.mjs';
+import {BALD_BODY_PIXEL_INDICES} from './player-bald-base-data.mjs';
 import {PLAYER_POSE_CATALOG} from './player-pose-catalog.mjs';
 import {PLAYER_BODY_CATALOG} from './player-body-catalog.mjs';
 import {decodeNativeHairTile} from './player-appearance.mjs';
@@ -22,14 +24,19 @@ export function validateSpritePixels(ref,pixels){
  if(g.record&&!g.record.mounted){for(let t=g.tiles;t<g.width*g.height/64;t++)for(let y=0;y<8;y++)for(let x=0;x<8;x++)if(pixels[(Math.floor(t/8)*8+y)*g.width+t%8*8+x])throw Error('Não desenhe fora dos tiles existentes.');}
  return g;
 }
-export function readPlayerSprite(rom,ref,edits){
+export function baldBodyPixels(id,pixels){const out=Array.from(pixels),width=records.get(id)?.mounted?16:64;for(const i of BALD_BODY_PIXEL_INDICES[id]||[])if(out[i]===1)out[i]=i%width&&pixels[i-1]===0?3:i>=width&&pixels[i-width]===0?5:4;return out;}
+export function readPlayerSprite(rom,ref,edits,{baldBase=false}={}){
  const key=spriteFrameKey(ref),g=geometry(ref),saved=edits?.[ref.kind]?.[key];
  if(saved!==undefined){validateSpritePixels(ref,saved);return{...g,pixels:Array.from(saved)};}
  if(ref.kind==='hair')return{...g,pixels:Array.from(decodeNativeHairTile(rom,ref.style,ref.frame))};
  const r=g.record,p=r.pc,q=p+2+r.top;if(rom[p]!== (r.top&255)||rom[p+1]!==r.top>>8||rom[q]!== (r.bottom&255)||rom[q+1]!==r.bottom>>8)throw Error('Bloco do corpo divergente da Plus: '+ref.id);
  const raw=new Uint8Array(r.top+r.bottom);raw.set(rom.slice(p+2,q));raw.set(rom.slice(q+2,q+2+r.bottom),r.top);const pixels=Array(g.width*g.height).fill(0);
  for(let t=0;t<g.tiles;t++){const a=tilePixels(raw,t);for(let y=0;y<8;y++)for(let x=0;x<8;x++){const [dy,dx]=coord(g,t,x,y);pixels[dy*g.width+dx]=a[y*8+x];}}
- return{...g,pixels};
+ return{...g,pixels:baldBase?baldBodyPixels(ref.id,pixels):pixels};
+}
+export function originalBodyWithEdits(rom,id,edits){
+ const native=readPlayerSprite(rom,{kind:'body',id}).pixels,saved=edits?.body?.[id];if(!saved)return native;
+ const bald=baldBodyPixels(id,native);return native.map((v,i)=>saved[i]!==bald[i]?saved[i]:v);
 }
 export function setPlayerSprite(edits,ref,pixels){validateSpritePixels(ref,pixels);const next=JSON.parse(JSON.stringify(edits||{version:1,hair:{},body:{}}));next.version=1;next[ref.kind]||={};next[ref.kind][spriteFrameKey(ref)]=Array.from(pixels);return next;}
 export function restorePlayerSprite(edits,ref){const next=JSON.parse(JSON.stringify(edits||{version:1,hair:{},body:{}}));delete next[ref.kind]?.[spriteFrameKey(ref)];return next;}
@@ -45,7 +52,8 @@ export function playerReferenceSequence(pose){
  return [...found.values()].sort((a,b)=>a.order-b.order).map(p=>p.pose);
 }
 export function renderPlayerReference(rom,ref,edits,{pose=playerReferencePose(ref),style=ref.kind==='hair'?ref.style:0}={}){
- if(!pose)return null;const body=readPlayerSprite(rom,{kind:'body',id:pose.body},edits),g=geometry({kind:'body',id:pose.body}),signed=v=>v>=128?v-256:v;
+ if(!pose)return null;const originalStyle14=style===14&&pose.frame>=0&&readPlayerSprite(rom,{kind:'hair',style:14,frame:pose.frame},edits).pixels.every((v,i)=>v===ORIGINAL_HAIR_FRAMES[pose.frame][i]);
+ const body=readPlayerSprite(rom,{kind:'body',id:pose.body},edits,{baldBase:!originalStyle14});if(originalStyle14)body.pixels=originalBodyWithEdits(rom,pose.body,edits);const g=geometry({kind:'body',id:pose.body}),signed=v=>v>=128?v-256:v;
  const tileAt=(index,x,y)=>{const top=g.record.top/32,bottom=g.record.bottom/32,t=index<top?index:index>=16&&index<16+bottom?top+index-16:-1;if(t<0)return 0;const [dy,dx]=coord(g,t,x,y);return body.pixels[dy*g.width+dx];};
  const supported=o=>{const size=o[3]&16?16:8;for(let y=0;y<size;y+=8)for(let x=0;x<size;x+=8){const t=o[2]+(y>>3)*16+(x>>3);if(t<g.record.top/32||(t>=16&&t<16+g.record.bottom/32))return true;}return false;};
  const ox=o=>signed(o[0])-((o[3]&16)?8:4),oy=o=>signed(o[1])-((o[3]&16)?8:4);
@@ -54,8 +62,14 @@ export function renderPlayerReference(rom,ref,edits,{pose=playerReferencePose(re
  const minX=Math.min(...bounds.map(b=>b[0])),minY=Math.min(...bounds.map(b=>b[1])),width=Math.max(...bounds.map(b=>b[0]+b[2]))-minX,height=Math.max(...bounds.map(b=>b[1]+b[2]))-minY,pixels=Array(width*height).fill(0);
  // OAM entries earlier in the list have priority over later body entries.
  for(const o of objects.slice().reverse()){const size=o[3]&16?16:8;for(let y=0;y<size;y++)for(let x=0;x<size;x++){const sx=o[3]&64?size-1-x:x,sy=o[3]&128?size-1-y:y,v=tileAt(o[2]+(sy>>3)*16+(sx>>3),sx&7,sy&7);if(v)pixels[(oy(o)-minY+y)*width+ox(o)-minX+x]=v;}}
- if(style&&pose.head){const head=readPlayerSprite(rom,{kind:'hair',style,frame:pose.frame},edits).pixels,o=pose.head;for(let y=0;y<8;y++)for(let x=0;x<8;x++){const v=head[(o[3]&128?7-y:y)*8+(o[3]&64?7-x:x)];if(v)pixels[(signed(o[1])-4-minY+y)*width+signed(o[0])-4-minX+x]=v;}}
+ if(style&&pose.head&&!originalStyle14){const head=readPlayerSprite(rom,{kind:'hair',style,frame:pose.frame},edits).pixels,o=pose.head;for(let y=0;y<8;y++)for(let x=0;x<8;x++){const v=head[(o[3]&128?7-y:y)*8+(o[3]&64?7-x:x)];if(v)pixels[(signed(o[1])-4-minY+y)*width+signed(o[0])-4-minX+x]=v;}}
  return{width,height,pixels,pose,name:records.get(pose.body).name};
+}
+export function readBaldHeadTile(rom,frame,edits){
+ const ref={kind:'hair',style:15,frame},pose=playerReferencePose(ref);
+ const draw=v=>renderPlayerReference(rom,ref,{...edits,hair:{...edits?.hair,['15:'+frame]:Array(64).fill(v)}},{pose,style:15});
+ const a=draw(14),b=draw(15),base=draw(0),changed=a.pixels.flatMap((v,i)=>v!==b.pixels[i]?[i]:[]),x=Math.min(...changed.map(i=>i%a.width)),y=Math.min(...changed.map(i=>Math.floor(i/a.width)));
+ return Array.from({length:64},(_,i)=>base.pixels[(y+(i>>3))*a.width+x+(i&7)]);
 }
 export function playerSpriteWriter(rom,state,base,selectedAreas=null){
  if(selectedAreas&&!selectedAreas.includes('jogadores'))return rom;const edits=state?.teamsV1?.spriteEdits;if(!edits)return rom;

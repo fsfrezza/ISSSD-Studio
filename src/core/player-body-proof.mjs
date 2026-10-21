@@ -1,3 +1,4 @@
+import {baldBodyPixels} from './player-sprite-editor.mjs';
 // Experimental, opt-in, one-pose proof. Never installed by the production pipeline.
 import {customHairPixels} from './player-appearance.mjs';
 import {encodeHairTile} from './plus-custom-hair.mjs';
@@ -26,7 +27,7 @@ export function encodeProofBody(pixels){
 export function alignProofHead(source,base){
  if(source.length!==64||Array.from(source).some(v=>!Number.isInteger(v)||v<0||v>15)||Array.from(source.slice(48)).some(Boolean)||Array.from(source).some((v,i)=>v&&(i&7)===7))throw Error('Sobreposição desta prova excede a área da cabeça.');
  // Native Up_Running1 overlay starts at body (5,1), inside proof rectangle (4,0).
- const out=new Uint8Array(64),body=base?readProofBody(base):null;
+ const out=new Uint8Array(64),body=base?baldBodyPixels('968000',readProofBody(base)):null;
  if(body)for(let y=0;y<7;y++)for(let x=0;x<8;x++)out[y*8+x]=body[y*16+x+4];
  for(let y=0;y<6;y++)for(let x=0;x<7;x++)if(source[y*8+x])out[(y+1)*8+x+1]=source[y*8+x];
  return out;

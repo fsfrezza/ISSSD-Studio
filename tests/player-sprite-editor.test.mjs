@@ -75,16 +75,15 @@ test('direct-ROM OAM layouts normalize Y/X before assembling special poses',()=>
  assert.deepEqual(pose.head,[12,232,165,1]);
 });
 
-test('shipped bald and Cascao sheets cover all poses and retain only a forehead tuft',async()=>{
+test('shipped original and Cascao overlays contain hair only; skin belongs to the bald body',async()=>{
  const {decodeHairSheet}=await import('../scripts/player-hair-png.mjs');
  const {CUSTOM_HAIR_MANUAL_FRAMES}=await import('../src/core/player-hair-manual.mjs');
- const a=decodeHairSheet(fs.readFileSync(new URL('../assets/player-hair/14-careca.png',import.meta.url))),b=decodeHairSheet(fs.readFileSync(new URL('../assets/player-hair/15-cascao.png',import.meta.url)));
+ const a=decodeHairSheet(fs.readFileSync(new URL('../assets/player-hair/14-original.png',import.meta.url))),b=decodeHairSheet(fs.readFileSync(new URL('../assets/player-hair/15-cascao.png',import.meta.url)));
  assert.deepEqual(a,CUSTOM_HAIR_MANUAL_FRAMES[14]);assert.deepEqual(b,CUSTOM_HAIR_MANUAL_FRAMES[15]);
  for(let frame=0;frame<24;frame++){
-  assert.ok(a[frame].some(v=>v>=3&&v<=5));assert.ok(a[frame].every(v=>v===0||v>=3&&v<=5));
-  const changed=a[frame].flatMap((v,i)=>v!==b[frame][i]?[i]:[]);
-  assert.ok([0,5,10].includes(frame)?changed.length===0:changed.length>=2);
-  assert.ok(changed.length<=3);for(const i of changed)assert.equal(b[frame][i],1);
+  assert.ok(a[frame].includes(1));assert.ok(a[frame].every(v=>v===0||v===1));
+  assert.ok(b[frame].every(v=>v===0||v===1));const tuft=b[frame].filter(Boolean).length;
+  assert.ok([0,5,10].includes(frame)?tuft===0:tuft>=2&&tuft<=3);
   assert.ok(playerReferencePose({kind:'hair',style:14,frame}));
  }
 });

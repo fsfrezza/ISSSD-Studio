@@ -2,7 +2,7 @@ import {loadPlayerHairFiles,verifyPlayerHairFiles} from '../src/platform/player-
 import fs from 'node:fs';import path from 'node:path';import {fileURLToPath} from 'node:url';
 import {customHairPixels,decodeNativeHairTile} from '../src/core/player-appearance.mjs';
 import {encodeHairSheet,decodeHairSheet,HAIR_EDIT_COLORS} from './player-hair-png.mjs';
-const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),folder=path.join(root,'assets/player-hair'),mode=process.argv[2],files={14:'14-careca.png',15:'15-cascao.png'};
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),folder=path.join(root,'assets/player-hair'),mode=process.argv[2],files={14:'14-original.png',15:'15-cascao.png'};
 if(mode==='export'||mode==='export-native'){
  const romPath=process.argv[3]||process.env.ISSSD_PLUS_ROM_PATH||path.join(root,'roms/International Superstar Soccer Deluxe Plus.sfc'),rom=new Uint8Array(fs.readFileSync(romPath));
  const selected=mode==='export-native'?Object.fromEntries(Array.from({length:13},(_,i)=>[i+1,String(i+1).padStart(2,'0')+'-nativo.png'])):files;

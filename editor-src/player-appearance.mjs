@@ -4,7 +4,7 @@ const nativeAppearanceCore=window.ISSSDPlayerAppearanceCore;
 function nativeAppearanceSupported(){return !!rom&&activeRomProfile?.id==='iss-deluxe-plus';}
 function nativeAppearanceNote(message,error=false){const n=$('appearanceNativeStatus');if(n){n.textContent=message;n.className='note '+(error?'error':'info');}}
 function nativeAppearanceCanvas(canvas,hair,frame,palette){
- const pixels=hair?window.ISSSDPlayerSpriteCore.readPlayerSprite(rom,{kind:'hair',style:hair,frame},window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__?.spriteEdits).pixels:null;canvas.width=8;canvas.height=8;
+ const pixels=hair?window.ISSSDPlayerSpriteCore.readPlayerSprite(rom,{kind:'hair',style:hair,frame},window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__?.spriteEdits).pixels:window.ISSSDPlayerSpriteCore.readBaldHeadTile(rom,frame,window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__?.spriteEdits);canvas.width=8;canvas.height=8;
  const ctx=canvas.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,8,8);
  if(!pixels)return;
  const img=ctx.createImageData(8,8);
@@ -14,10 +14,10 @@ function nativeAppearanceCanvas(canvas,hair,frame,palette){
 function nativeAppearanceSwatches(colors){return '<span class="native-swatches">'+colors.map(c=>`<span style="background:${c}" title="${c.toUpperCase()}"></span>`).join('')+'</span>';}
 function renderHairGallery(){
  const g=$('hairGallery');if(!g)return;
- g.innerHTML=Array.from({length:16},(_,hair)=>`<button type="button" class="native-hair-option" data-hair-index="${hair}" aria-pressed="${hair===appearanceTempHair}" title="${hair===0?'Cabeça original do sprite, sem sobreposição':(hair>=14?nativeAppearanceCore.hairStyleLabel(hair):'Sobreposição nativa '+hair)}">${hair===0?'<span class="native-default-head">Original<br>do sprite</span>':'<canvas aria-label="Cabelo '+hair+'"></canvas>'}<span>${nativeAppearanceCore.hairStyleLabel(hair)}${hair===appearanceTempHair?' · SELECIONADO':''}</span></button>`).join('');
+ g.innerHTML=Array.from({length:16},(_,hair)=>`<button type="button" class="native-hair-option" data-hair-index="${hair}" aria-pressed="${hair===appearanceTempHair}" title="${hair===0?'Base careca, sem cabelo embutido':(hair>=14?nativeAppearanceCore.hairStyleLabel(hair):'Sobreposição nativa '+hair)}">${'<canvas aria-label="Cabelo '+hair+'"></canvas>'}<span>${nativeAppearanceCore.hairStyleLabel(hair)}${hair===appearanceTempHair?' · SELECIONADO':''}</span></button>`).join('');
  g.querySelectorAll('[data-hair-index]').forEach(button=>{button.onclick=()=>{appearanceTempHair=Number(button.dataset.hairIndex);renderAppearancePreview();};});
  const palettes=nativeAppearanceCore.readNativeAppearancePalettes(rom,currentTeam),palette=palettes.palettes[appearanceTempPalette];
- g.querySelectorAll('[data-hair-index]').forEach(button=>{const hair=Number(button.dataset.hairIndex);if(hair)nativeAppearanceCanvas(button.querySelector('canvas'),hair,nativeAppearanceFrame,palette);button.onclick=()=>{appearanceTempHair=hair;renderAppearancePreview();};});
+ g.querySelectorAll('[data-hair-index]').forEach(button=>{const hair=Number(button.dataset.hairIndex);nativeAppearanceCanvas(button.querySelector('canvas'),hair,nativeAppearanceFrame,palette);button.onclick=()=>{appearanceTempHair=hair;renderAppearancePreview();};});
 }
 function appearancePaletteCounts(){const ps=teams[currentTeam].players;return [ps.filter(p=>p.palette===0).length,ps.filter(p=>p.palette===1).length];}
 function renderAppearanceSharedColors(){} // Palette artwork is shown directly by the new native palette cards.
@@ -37,8 +37,8 @@ function renderAppearancePreview(){
   $('appearanceNativePaletteInfo').textContent=(data.identical?'Nesta equipe, as duas paletas de jogadores de linha possuem as mesmas cores. ':'As duas paletas podem mudar pele, cabelo e calçado em conjunto. ')+(gk?'Goleiro: estas são referências da equipe; a cor do goleiro em campo vem da paleta própria de goleiro.':'A escolha pertence ao jogador; as cores de cada conjunto são compartilhadas pela equipe.');
   const counts=appearancePaletteCounts();$('palette0Count').textContent=counts[0];$('palette1Count').textContent=counts[1];
   renderHairGallery();const frames=$('appearanceNativeFrames');
-  frames.innerHTML=appearanceTempHair?Array.from({length:24},(_,i)=>`<canvas title="Quadro ${i+1}" aria-label="Quadro nativo ${i+1}"></canvas>`).join(''):'';
-  $('appearanceNativeFrameInfo').textContent=appearanceTempHair?'':'Tipo 0: o jogo usa a cabeça já desenhada no sprite do corpo. Não há sobreposição de cabelo para exibir.';
+  frames.innerHTML=Array.from({length:24},(_,i)=>`<canvas title="Quadro ${i+1}" aria-label="Quadro nativo ${i+1}"></canvas>`).join('');
+  $('appearanceNativeFrameInfo').textContent=appearanceTempHair?'':'Tipo 0: corpo careca. O antigo cabelo do corpo está disponível no tipo 14.';
   frames.querySelectorAll('canvas').forEach((canvas,i)=>nativeAppearanceCanvas(canvas,appearanceTempHair,i,data.palettes[appearanceTempPalette]));
   $('appearanceNativeSkinCatalog').innerHTML=data.presets.map(p=>`<div><strong>${p.label}</strong>${nativeAppearanceSwatches(p.colors.slice(0,4))}</div>`).join('');
   nativeAppearanceNote('Escolha as opções e use Aplicar ao jogador. Salve o projeto para guardar a escolha; Salvar ROM grava a aparência na fase Jogadores.');

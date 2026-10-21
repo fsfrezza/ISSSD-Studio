@@ -1,75 +1,54 @@
-# Cabelos editáveis
+# Aparência: base careca e cabelos
 
-- `01-nativo.png` até `13-nativo.png`: as treze sobreposições originais da ROM Plus.
-- `14-careca.png`: Careca (R. Carlos).
-- `15-cascao.png`: Cascão (Ronaldo).
-- `paleta.gpl`: cores de edição por índice.
+- **0 · Careca:** a cabeça está no corpo regenerado, sem sobreposição de pele.
+- **1–13:** cabelos nativos.
+- **14 · Cabelo original:** o cabelo que antes fazia parte do tipo 0.
+- **15 · Cascão:** somente a pequena mecha na testa, sobre a base careca.
 
-Cada PNG tem **64 × 24 pixels**, formando **8 colunas × 3 linhas** de quadros
-8 × 8. A ordem é da esquerda para a direita, de cima para baixo (1 a 24).
-Amplie a visualização no seu programa, mas mantenha o tamanho real do arquivo.
-Use lápis sem suavização; mantenha transparência e apenas as cores fornecidas.
+`14-original.png` e `15-cascao.png` têm 64 × 24 pixels: 8 colunas × 3 linhas,
+com 24 quadros 8 × 8. Transparência deixa aparecer o corpo careca.
+Os arquivos padrão 14/15 contêm apenas cabelo (índice 1); não pintam pele.
+As cores no jogo seguem a paleta do jogador. Use lápis sem suavização e as cores
+de `paleta.gpl`; índice 0 é transparente. Preserve dimensões e transparência.
 
-As cores do arquivo representam índices: a cor vista no jogo depende da paleta
-da equipe. Índice 0 é transparente; 1 é cabelo; 2–6 são tons de pele.
+`14-careca.png` é uma referência antiga, mantida para preservar edições locais.
+**Esse arquivo não é mais importado.** Para editar o tipo 14 atual, use
+`14-original.png`. Para editar a base careca, use os corpos no Editor de quadros.
 
-1. Edite os PNGs e salve nessa mesma pasta.
-2. Reinicie o Editor: a construção da interface agora lê os PNGs diretamente.
-3. Pare o servidor com Ctrl+C e execute `npm run serve:editor`.
-4. No navegador: Ctrl+F5, reabra o projeto e salve novamente a ROM.
+## Editor
 
-A exportação local da ROM relê os dois PNGs a cada pedido e confere seus pixels
-na ROM final. Para uso fora do servidor, `npm run hair:import` atualiza o código compilado
-`src/core/player-hair-manual.mjs`. A prévia e a geração da ROM usam os mesmos
-quadros. Se houver erro de tamanho, cor ou transparência, nada é importado.
+Jogadores → Editar aparência → Editor de quadros → Editar cabelos e corpo.
+O corpo completo aparece ao lado do quadro editável. Os corpos são carregados
+com a base careca. A borracha no cabelo revela essa base, sem revelar o cabelo
+embutido antigo. Os 24 quadros têm nomes de direção e movimento.
 
-Os PNGs são os padrões locais do Editor. Desenhos feitos no editor de quadros
-são guardados no projeto `.issdproj` e têm prioridade sobre esses padrões.
-Use **Restaurar Careca e Cascão (24 quadros)** para retirar os desenhos antigos
-do projeto e voltar aos PNGs atuais. As seleções de cabelo dos jogadores continuam.
+Desenhos feitos no Editor são guardados no projeto e têm prioridade sobre os
+PNGs locais. **Restaurar Original e Cascão (24 quadros)** remove os desenhos
+salvos desses dois tipos e volta aos PNGs atuais; mantém as escolhas dos jogadores.
+Salve o projeto e gere novamente a ROM.
 
-Para reexportar as opções atuais, caso necessário:
-`npm run hair:export -- "C:\caminho\International Superstar Soccer Deluxe Plus.sfc"`
+Ao abrir um projeto antigo, a migração acontece uma única vez:
+antigo 0 → 14; antigo Careca 14 → 0; Cascão 15 continua 15.
+Desenhos antigos de pele do tipo 14 ficam preservados em um registro de migração,
+sem serem reutilizados como cabelo. No tipo 15, a migração retém a mecha.
 
-A exportação recusa sobrescrever PNGs existentes. Use `--force` após o caminho
-somente se quiser substituí-los. Preserve uma cópia das suas edições antes.
+O tipo 14 recupera o corpo original sem usar objetos adicionais de cabelo.
+Por isso todos os antigos jogadores do tipo 0 podem usá-lo. O limite de três
+sobreposições por equipe continua para os tipos 1–13 e 15.
 
-O limite nativo de três titulares com cabelo especial por equipe continua valendo.
-Há referência do corpo completo no editor de quadros. Retratos em cenas
-aproximadas continuam independentes.
+## Arquivos locais
 
+A construção do Editor e cada exportação local da ROM leem os PNGs atuais.
+Pare o servidor, execute `npm run serve:editor` e atualize com Ctrl+F5.
+`npm run hair:import` atualiza `src/core/player-hair-manual.mjs` para usos fora
+ desse servidor. A exportação confere os 24 quadros de cada tipo usado na ROM.
 
-## Tipos nativos
+Os arquivos 01–13 são referências extraídas da Plus. Alterá-los no disco não os
+importa automaticamente; edite esses tipos pelo Editor de quadros.
+`npm run hair:export:native -- "caminho/Plus.sfc"` extrai os nativos.
+`npm run hair:verify -- "caminho/ROM-exportada.sfc"` confere os tipos 14/15.
 
-Os arquivos 01–13 foram extraídos sem alterar os índices dos pixels da ROM-base
-Plus. Cada arquivo contém os 24 quadros na mesma disposição 64x24.
-O Tipo 0 não possui uma sobreposição independente: ele é parte do sprite do corpo
-e não está representado por uma folha vazia ou por um cabelo inventado.
-
-Para extrair novamente apenas os tipos nativos, preservando 14/15:
-`npm run hair:export:native -- "C:\caminho\International Superstar Soccer Deluxe Plus.sfc"`
-
-A exportação recusa sobrescrever folhas existentes, a menos que receba `--force`.
-A importação atual (`hair:import`) continua lendo somente os tipos 14 e 15.
-Alterar os arquivos PNG 01–13 não importa esses desenhos automaticamente.
-A edição dos tipos nativos no editor de quadros é salva no projeto e na ROM.
-
-
-Para conferir uma ROM já exportada contra os PNGs atuais:
-`npm run hair:verify -- "C:\caminho\Minha-ROM.sfc"`
-
-O resultado informa quais tipos novos estão atribuídos a jogadores e quantos
-quadros conferem exatamente. Uma diferença de pixels interrompe a verificação.
-Isso confirma o conteúdo gráfico da ROM, não a composição final do jogo com o
-sprite do corpo. O ZIP cumulativo inclui os hashes dos PNGs e a verificação em
-`indice.json` (`playerHairAssets`).
-
-## Careca e Cascão por pose
-
-`poses-careca-cascao.json` registra as 24 poses e os desenhos desta revisão.
-As máscaras usam a cabeça do corpo original como referência; não são uma
-recoloração do cabelo 13. Os pontos preservam o corpo por transparência.
-Careca substitui apenas os pixels do cabelo por pele, preservando olhos e rosto.
-Cascão acrescenta dois ou três pixels na testa; em vistas de costas a mecha
-fica oculta. A inversão vertical do quadro 24 é aplicada pelo jogo.
-Os nomes das poses aparecem no seletor do Editor.
+A geração offline `scripts/generate-bald-player-base.mjs` usa a Plus imutável
+para registrar os pixels de cabelo dos 857 blocos de corpo. A ROM-base em disco
+é preservada. No build, os corpos carecas e o seletor de corpos originais são
+aplicados na fase Jogadores. Cenas aproximadas e retratos usam outros gráficos.

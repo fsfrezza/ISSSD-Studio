@@ -73,3 +73,11 @@ outros desenhos. Salve o projeto e exporte a ROM para persistir a restauração.
 OAM direto da ROM armazena Y antes de X, enquanto os planos descomprimidos
 armazenam X antes de Y. A extração foi corrigida para poses especiais,
 incluindo lançamentos, giro e quedas.
+
+### Modelo de aparência atual
+
+A revisão anterior Careca=14 foi substituída pela [base careca v1](BALD-PLAYER-BASE.md).
+0 agora é o corpo careca; 14 recupera o cabelo original; 15 é apenas a mecha
+Cascão. O projeto antigo é migrado uma vez. A edição de corpo parte da versão
+careca e a borracha dos cabelos revela essa base. O botão atual chama-se
+“Restaurar Original e Cascão (24 quadros)”.

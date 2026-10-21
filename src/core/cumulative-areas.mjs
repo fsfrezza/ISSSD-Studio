@@ -63,6 +63,7 @@ export function areaClassifier(rom,base=null){
  }
  for(let p=1;p<=7;p++)for(const s of knownMirrorSlices(30,p))derived.push([s.mirror,s.mirror+s.length]);
  return off=>{
+  if((off>=0x300000&&off<0x3DC000)||(off>=0x266FB&&off<0x266FF)||(off>=0x26706&&off<0x2670A)||(off>=0x1C930&&off<0x1C936)||(off>=0x1CAFE&&off<0x1CB04))return 'jogadores';
   if(isBodySpriteByte(off)||(off>=0xBCD58&&off<0xBF458))return 'jogadores';
   if(contains(off,SOUND_REGIONS))return 'sons';
   if(contains(off,EXTRA_MENU_GRAPHIC_REGIONS))return 'pre-partida';

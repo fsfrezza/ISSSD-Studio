@@ -21,7 +21,7 @@ Saída em `scratch/player-body-proof/`:
 
 No emulador, escolha Brasil (ID 30) e observe os jogadores de linha correndo
 **de costas, no primeiro quadro da animação**. Pause e avance quadro a quadro.
-Os dez jogadores de linha alternam Careca/14 e Cascão/15: a prova não depende
+Os dez jogadores de linha alternam Original/14 e Cascão/15: a prova não depende
 somente dos três objetos nativos de cabelo especial. Goleiro e adversário
 mantêm seus atributos. `--team 0` permite escolher outra equipe pelo ID nativo.
 
@@ -82,3 +82,5 @@ transições, substituições e ausência de artefatos. Depois dessa confirmaç�
 mapear âncoras OAM por pose, ampliar para uma animação completa, definir a
 nova tabela de aparências, preservar o antigo tipo 0 em um identificador
 semântico próprio e integrar desenhos e escolhas ao `.issdproj` e ao Editor.
+
+Esta prova é histórica e isolada. O produto agora usa a [base careca v1](BALD-PLAYER-BASE.md) em todos os corpos mapeados; no produto, 0 é Careca e 14 é o cabelo original.

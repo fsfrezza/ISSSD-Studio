@@ -1,3 +1,4 @@
+import {baldBaseSupported,prepareBaldAppearanceState} from '../src/core/plus-bald-player-base.mjs';
 import {canonicalProjectSemantic} from '../src/core/project-semantic.mjs';
 import {effectiveProjectHairFrames} from '../src/core/player-sprite-editor.mjs';
 import {installPlayerHairFiles,verifyPlayerHairFiles} from '../src/platform/player-hair-files.mjs';
@@ -89,7 +90,8 @@ function buildPostedProject(req,res){
    const diagnostic=payload?.diagnostic===true;
    const base=Uint8Array.from(fs.readFileSync(defaultPlusRomPath));
    const hairAssets=installPlayerHairFiles(root);
-   hairAssets.frames=effectiveProjectHairFrames(hairAssets.frames,canonicalProjectSemantic(project)?.teamsV1?.spriteEdits);
+   const originalSemantic=canonicalProjectSemantic(project),hairSemantic=baldBaseSupported(base)?prepareBaldAppearanceState(originalSemantic):originalSemantic;
+   hairAssets.frames=effectiveProjectHairFrames(hairAssets.frames,hairSemantic?.teamsV1?.spriteEdits);
    if(payload.cumulative===true){
     const dir=fs.mkdtempSync(path.join(os.tmpdir(),'isssd-export-'));
     const zipPath=path.join(dir,'ISSSD-ROMs-cumulativas.zip');

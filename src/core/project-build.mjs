@@ -1,3 +1,4 @@
+import {baldBaseSupported,prepareBaldAppearanceState} from './plus-bald-player-base.mjs';
 import {pendingAdditionalTextExports} from './additional-screen-text-fields.mjs';
 import {buildPlusWithPipeline,createPlusBuildStages} from './plus-build-pipeline.mjs';
 import {runBuildPipeline} from './build-pipeline.mjs';
@@ -9,7 +10,7 @@ import {withoutLegacyTeamSnapshots} from './semantic-team-patches.mjs';
 export function buildPlusProjectRom(baseRom,project,options={}){
   const canonical=canonicalProjectState(project,{baseSize:baseRom?.length});
   const ignorePersistedPatches=options.ignorePersistedPatches===true;
-  const semanticState=canonicalProjectSemantic(project);
+  const originalSemantic=canonicalProjectSemantic(project),semanticState=baldBaseSupported(baseRom)?prepareBaldAppearanceState(originalSemantic):originalSemantic;
   const pendingTextChanges=pendingAdditionalTextExports(semanticState,options.selectedAreas??null);
   const userWriters=options.writers??[];
   if(!Array.isArray(userWriters)||userWriters.some(writer=>typeof writer!=='function'))throw new TypeError('writers must be functions');

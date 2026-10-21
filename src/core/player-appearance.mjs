@@ -1,6 +1,6 @@
 import {CUSTOM_HAIR_MANUAL_FRAMES} from './player-hair-manual.mjs';
 // Deluxe Plus: 13 optional head overlays, 24 native 8x8 tiles per style.
-// Code zero keeps the head already present in the animated body sprite.
+// Code zero selects the regenerated bald body; 14 restores the original hair.
 export const NATIVE_HAIR_COUNT=16;
 export const NATIVE_HAIR_FRAMES=24;
 export const NATIVE_SKIN_PRESETS=Object.freeze([
@@ -89,22 +89,29 @@ export function transferProjectPlayerAppearance(state,source,target,mode,origina
  return next;
 }
 
-// Use the native head footprint, replacing every hair-color pixel with skin.
-// A dark boundary is still hair in this palette; none remains on the bald head.
-export function customHairPixels(rom,hair,frame=0,{useManual=true}={}){
+// Hair overlays contain no replacement skin in the bald-base model.
+export function customHairPixels(rom,hair,frame=0){
  if(hair!==14&&hair!==15)throw Error('Cabelo novo inválido.');
  if(!Number.isInteger(frame)||frame<0||frame>=24)throw Error('Quadro inválido.');
- const manual=useManual?CUSTOM_HAIR_MANUAL_FRAMES[hair]:null;
- if(manual){if(manual.length!==24||manual.some(f=>f.length!==64||f.some(v=>!Number.isInteger(v)||v<0||v>15)))throw Error('Quadros manuais inválidos.');return Uint8Array.from(manual[frame]);}
- const original=decodeNativeHairTile(rom,13,frame),out=original.slice();
- for(let i=0;i<64;i++)if(out[i]===1)out[i]=3;
- if(hair===15){
-  // The highlight anchors the tuft to the native face instead of the tile box.
-  const skin=[];for(let i=0;i<64;i++)if(original[i]>=2&&original[i]<=5)skin.push(i);
-  if(skin.length){const row=Math.min(...skin.map(i=>i>>3)),xs=skin.filter(i=>(i>>3)===row).map(i=>i&7),center=Math.round(xs.reduce((a,b)=>a+b,0)/xs.length);
-   for(let x=Math.max(0,center-1);x<=Math.min(7,center+1);x++){const at=row*8+x;if(out[at])out[at]=1;}
+ const frames=CUSTOM_HAIR_MANUAL_FRAMES[hair];
+ if(!frames||frames.length!==24||frames.some(f=>f.length!==64||f.some(v=>!Number.isInteger(v)||v<0||v>15)))throw Error('Quadros manuais inválidos.');
+ return Uint8Array.from(frames[frame]);
+}
+export function hairStyleLabel(hair){return hair===14?'14 · Cabelo original':hair===15?'Cascão · Ronaldo':hair===0?'0 · Careca (base)':'Tipo '+hair;}
+
+export const BALD_APPEARANCE_MODEL='bald-base-v1';
+export function originalHairInBaldModel(hair){return hair===0?14:hair;}
+export function migrateBaldAppearanceTeams(state){
+ if(!state||state.appearanceModel===BALD_APPEARANCE_MODEL)return state;
+ const out=JSON.parse(JSON.stringify(state));out.appearanceModel=BALD_APPEARANCE_MODEL;
+ for(const team of Object.values(out.teams||{}))for(const p of team.players||[]){
+  for(const a of [p.custom?.appearance,p.appearance])if(a&&Object.hasOwn(a,'hair'))a.hair=a.hair===0?14:a.hair===14?0:a.hair;
+ }
+ const drawings=out.spriteEdits?.hair;if(drawings){
+  for(const [key,pixels]of Object.entries(drawings)){
+   if(key.startsWith('14:')){(out.legacyBaldHeadDrawings||={})[key]=pixels;delete drawings[key];}
+   if(key.startsWith('15:'))drawings[key]=pixels.map(v=>v===1?1:0);
   }
  }
  return out;
 }
-export function hairStyleLabel(hair){return hair===14?'Careca · R. Carlos':hair===15?'Cascão · Ronaldo':hair===0?'0 · Original do sprite':'Tipo '+hair;}

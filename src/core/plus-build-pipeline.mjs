@@ -1,3 +1,4 @@
+import {plusBaldPlayerBaseWriter,baldBaseSupported,prepareBaldAppearanceState} from './plus-bald-player-base.mjs';
 import {playerSpriteWriter} from './player-sprite-editor.mjs';
 import {plusCustomHairWriter} from './plus-custom-hair.mjs';
 import {plusSoundsWriter} from './plus-sounds.mjs';
@@ -74,6 +75,7 @@ export function createPlusBuildStages({baseRom,patches=[],extraWriters=[],writeC
       run:(work,state)=>applySteps(work,teamsV3PlayerSteps(baseRom,state)),
     },
     {id:'04b-player-sprites',kind:'semantic',run:(work,state)=>playerSpriteWriter(work,state,baseRom,selectedAreas)},
+    {id:'04c-bald-player-base',kind:'semantic',run:(work,state)=>plusBaldPlayerBaseWriter(work,state,baseRom,selectedAreas)},
     {id:'04c-custom-hair',kind:'semantic',run:(work,state)=>plusCustomHairWriter(work,state,baseRom,selectedAreas)},
     {
       id:'05-tactical-infrastructure',kind:'derived',
@@ -155,7 +157,7 @@ export function createPlusBuildStages({baseRom,patches=[],extraWriters=[],writeC
 
 export function buildPlusWithPipeline(baseRom,{semanticState={},patches=[],extraWriters=[],writeChecksum=true,keepCheckpoints=false,forceTacticalInfrastructure=false,selectedAreas=null}={}){
   const stages=createPlusBuildStages({baseRom,patches,extraWriters,writeChecksum,forceTacticalInfrastructure,selectedAreas});
-  const result=runBuildPipeline(baseRom,{state:semanticState,stages,keepCheckpoints});
+  const result=runBuildPipeline(baseRom,{state:baldBaseSupported(baseRom)?prepareBaldAppearanceState(semanticState):semanticState,stages,keepCheckpoints});
   if(result.rom.length!==0x400000)throw new Error(`Plus pipeline must finish at 4 MiB; got ${result.rom.length} bytes`);
   if(!validatePlusRuntimeMirrors(result.rom))throw new Error('Plus pipeline finished with invalid runtime mirrors');
   return result;
