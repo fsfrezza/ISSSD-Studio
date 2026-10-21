@@ -1,7 +1,8 @@
+import {PLAYER_POSE_CATALOG} from './player-pose-catalog.mjs';
 import {PLAYER_BODY_CATALOG} from './player-body-catalog.mjs';
 import {decodeNativeHairTile} from './player-appearance.mjs';
 import {encodeHairTile} from './plus-custom-hair.mjs';
-export {PLAYER_BODY_CATALOG};
+export {PLAYER_BODY_CATALOG,PLAYER_POSE_CATALOG};
 const records=new Map(PLAYER_BODY_CATALOG.map(r=>[r.id,r]));
 export function spriteFrameKey(ref){
  if(ref?.kind==='hair'&&Number.isInteger(ref.style)&&ref.style>=1&&ref.style<=15&&Number.isInteger(ref.frame)&&ref.frame>=0&&ref.frame<24)return ref.style+':'+ref.frame;
@@ -32,6 +33,29 @@ export function readPlayerSprite(rom,ref,edits){
 export function setPlayerSprite(edits,ref,pixels){validateSpritePixels(ref,pixels);const next=JSON.parse(JSON.stringify(edits||{version:1,hair:{},body:{}}));next.version=1;next[ref.kind]||={};next[ref.kind][spriteFrameKey(ref)]=Array.from(pixels);return next;}
 export function restorePlayerSprite(edits,ref){const next=JSON.parse(JSON.stringify(edits||{version:1,hair:{},body:{}}));delete next[ref.kind]?.[spriteFrameKey(ref)];return next;}
 export function effectiveProjectHairFrames(frames,edits){const out={14:frames[14].map(a=>Array.from(a)),15:frames[15].map(a=>Array.from(a))};for(const [key,pixels]of Object.entries(edits?.hair||{})){const [style,frame]=key.split(':').map(Number),ref={kind:'hair',style,frame};validateSpritePixels(ref,pixels);if(style>=14)out[style][frame]=Array.from(pixels);}return out;}
+export function playerReferencePose(ref){
+ spriteFrameKey(ref);
+ const matches=PLAYER_POSE_CATALOG.filter(p=>ref.kind==='hair'?p.frame===ref.frame:p.body===ref.id);
+ return matches.find(p=>records.get(p.body)?.name.includes('_Running'))||matches[0]||null;
+}
+export function playerReferenceSequence(pose){
+ const name=records.get(pose?.body)?.name||'',match=name.match(/^(.*?)(\d+)$/);if(!match)return pose?[pose]:[];
+ const found=new Map();for(const p of PLAYER_POSE_CATALOG){const n=records.get(p.body)?.name||'',m=n.match(/^(.*?)(\d+)$/);if(m&&m[1]===match[1]&&!found.has(p.body))found.set(p.body,{pose:p,order:Number(m[2])});}
+ return [...found.values()].sort((a,b)=>a.order-b.order).map(p=>p.pose);
+}
+export function renderPlayerReference(rom,ref,edits,{pose=playerReferencePose(ref),style=ref.kind==='hair'?ref.style:0}={}){
+ if(!pose)return null;const body=readPlayerSprite(rom,{kind:'body',id:pose.body},edits),g=geometry({kind:'body',id:pose.body}),signed=v=>v>=128?v-256:v;
+ const tileAt=(index,x,y)=>{const top=g.record.top/32,bottom=g.record.bottom/32,t=index<top?index:index>=16&&index<16+bottom?top+index-16:-1;if(t<0)return 0;const [dy,dx]=coord(g,t,x,y);return body.pixels[dy*g.width+dx];};
+ const supported=o=>{const size=o[3]&16?16:8;for(let y=0;y<size;y+=8)for(let x=0;x<size;x+=8){const t=o[2]+(y>>3)*16+(x>>3);if(t<g.record.top/32||(t>=16&&t<16+g.record.bottom/32))return true;}return false;};
+ const ox=o=>signed(o[0])-((o[3]&16)?8:4),oy=o=>signed(o[1])-((o[3]&16)?8:4);
+ const objects=pose.objects.filter(supported),bounds=objects.map(o=>[ox(o),oy(o),o[3]&16?16:8]);
+ if(style&&pose.head)bounds.push([signed(pose.head[0])-4,signed(pose.head[1])-4,8]);if(!bounds.length)return null;
+ const minX=Math.min(...bounds.map(b=>b[0])),minY=Math.min(...bounds.map(b=>b[1])),width=Math.max(...bounds.map(b=>b[0]+b[2]))-minX,height=Math.max(...bounds.map(b=>b[1]+b[2]))-minY,pixels=Array(width*height).fill(0);
+ // OAM entries earlier in the list have priority over later body entries.
+ for(const o of objects.slice().reverse()){const size=o[3]&16?16:8;for(let y=0;y<size;y++)for(let x=0;x<size;x++){const sx=o[3]&64?size-1-x:x,sy=o[3]&128?size-1-y:y,v=tileAt(o[2]+(sy>>3)*16+(sx>>3),sx&7,sy&7);if(v)pixels[(oy(o)-minY+y)*width+ox(o)-minX+x]=v;}}
+ if(style&&pose.head){const head=readPlayerSprite(rom,{kind:'hair',style,frame:pose.frame},edits).pixels,o=pose.head;for(let y=0;y<8;y++)for(let x=0;x<8;x++){const v=head[(o[3]&128?7-y:y)*8+(o[3]&64?7-x:x)];if(v)pixels[(signed(o[1])-4-minY+y)*width+signed(o[0])-4-minX+x]=v;}}
+ return{width,height,pixels,pose,name:records.get(pose.body).name};
+}
 export function playerSpriteWriter(rom,state,base,selectedAreas=null){
  if(selectedAreas&&!selectedAreas.includes('jogadores'))return rom;const edits=state?.teamsV1?.spriteEdits;if(!edits)return rom;
  if(edits.version!==1)throw Error('Versão dos desenhos de jogador incompatível.');const writes=[];

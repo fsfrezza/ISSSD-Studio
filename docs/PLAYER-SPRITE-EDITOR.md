@@ -10,6 +10,15 @@ Na aba Jogadores, abra **Editar aparência → Editor de quadros → Editar cabe
   A montagem OAM completa dessas poses ainda não foi integrada.
 - Lápis, borracha, preenchimento, conta-gotas, desfazer/refazer, espelhamento
   horizontal e copiar/colar quadros com as mesmas dimensões estão disponíveis.
+- Uma referência do jogador inteiro acompanha a área de desenho. Alterar um
+  pixel atualiza o cabelo sobre o corpo correspondente. **Animar movimento**
+  percorre a sequência sem mudar o quadro selecionado para edição.
+- As 24 poses de cabelo possuem referências; 850 dos 857 blocos de corpo têm
+  montagem OAM mapeada para a referência. Os sete restantes mostram uma
+  indicação de montagem indisponível e continuam editáveis como tiles.
+- A referência usa as posições centrais, tamanhos e espelhamento dos objetos
+  OAM nativos. Numeração, sombra e outros objetos carregados por transferências
+  separadas não entram nesta referência de corpo/cabelo.
 - A paleta mostra as cores da equipe e da paleta selecionadas; os desenhos
   guardam índices de cor, de 0 a 15. Zero é transparente.
 - Os desenhos são compartilhados: editar um tipo ou bloco altera todos os

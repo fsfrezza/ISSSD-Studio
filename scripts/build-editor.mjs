@@ -26,9 +26,10 @@ const appearanceCore='const CUSTOM_HAIR_MANUAL_FRAMES='+JSON.stringify(loadPlaye
 const appearanceExports=[...appearanceCore.matchAll(/^export (?:const|function) (\w+)/gm)].map(m=>m[1]);
 const appearanceEngine='window.ISSSDPlayerAppearanceCore=(()=>{\n'+appearanceCore.replace(/^export /gm,'')+'\nreturn {'+appearanceExports.join(',')+'};})();\n';
 const spriteCatalog=fs.readFileSync(path.join(root,'src/core/player-body-catalog.mjs'),'utf8').replace(/^export /gm,'');
+const poseCatalog=fs.readFileSync(path.join(root,'src/core/player-pose-catalog.mjs'),'utf8').replace(/^export /gm,'');
 const spriteSource=fs.readFileSync(path.join(root,'src/core/player-sprite-editor.mjs'),'utf8').replace(/\r\n?/g,'\n').split('export function playerSpriteWriter')[0].replace(/^import .*;\n/gm,'').replace(/^export \{[^}]+\};\n/gm,'');
 const spriteExports=[...spriteSource.matchAll(/^export (?:const|function) (\w+)/gm)].map(m=>m[1]);
-const spriteEngine='window.ISSSDPlayerSpriteCore=(()=>{\n'+spriteCatalog+'\nconst decodeNativeHairTile=(...a)=>window.ISSSDPlayerAppearanceCore.decodeNativeHairTile(...a);\n'+spriteSource.replace(/^export /gm,'')+'\nreturn {PLAYER_BODY_CATALOG,'+spriteExports.join(',')+'};})();\n';
+const spriteEngine='window.ISSSDPlayerSpriteCore=(()=>{\n'+spriteCatalog+'\n'+poseCatalog+'\nconst decodeNativeHairTile=(...a)=>window.ISSSDPlayerAppearanceCore.decodeNativeHairTile(...a);\n'+spriteSource.replace(/^export /gm,'')+'\nreturn {PLAYER_BODY_CATALOG,PLAYER_POSE_CATALOG,'+spriteExports.join(',')+'};})();\n';
 const appearanceRuntime=appearanceEngine+spriteEngine+fs.readFileSync(path.join(root,'editor-src/player-appearance.mjs'),'utf8')+'\n'+fs.readFileSync(path.join(root,'editor-src/player-sprite-editor.mjs'),'utf8');
 const appearanceStart=html.indexOf('const HAIR_NAMES=['),appearanceEnd=html.indexOf('renderEmbeddedAssetManifest();',appearanceStart);
 if(appearanceStart<0||appearanceEnd<0)throw Error('Aparência: bloco original não encontrado.');
