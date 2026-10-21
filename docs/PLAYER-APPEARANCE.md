@@ -104,7 +104,8 @@ uma investigação estrutural, não uma capacidade já oferecida pelo Editor.
 
 O Editor oferece **14 · Careca (R. Carlos)** e **15 · Cascão (Ronaldo)**.
 A primeira versão usa a silhueta dos 24 quadros nativos do tipo 13: mantém a
-transparência e o contorno e substitui pixels escuros internos por pele. O
+transparência e substitui TODOS os pixels da cor de cabelo por pele, inclusive
+a borda que a primeira versão preservava incorretamente como contorno. O
 Cascão difere apenas pelo pequeno tufo no destaque frontal de pele. As cores
 continuam vindo da paleta da equipe. Estes desenhos precisam de conferência
 visual no emulador; não são alterações dos retratos de cenas aproximadas.
@@ -154,3 +155,6 @@ OAM, selecionando paletas). Na Plus original, exemplos de bytes são `$01`
 (cabelo 1, paleta 0), `$10` (cabelo 0, paleta 1), `$11` (cabelo 1, paleta 1)
 e `$1D` (cabelo 13, paleta 1). Testes executam a leitura e a codificação do
 Editor gerado com esses valores e verificam a seleção OAM resultante.
+
+A correção do Careca remove o índice de cor de cabelo (1) em todos os 24
+quadros. Só o Cascão reintroduz até três pixels dessa cor como tufo frontal.

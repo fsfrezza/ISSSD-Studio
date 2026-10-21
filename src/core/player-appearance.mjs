@@ -88,16 +88,12 @@ export function transferProjectPlayerAppearance(state,source,target,mode,origina
  return next;
 }
 
-// New heads use the native type-13 footprint in every pose. The dark boundary
-// remains an outline; interior dark pixels become skin. Cascao adds only a
-// small frontal tuft on the existing face-facing skin highlight.
+// Use the native head footprint, replacing every hair-color pixel with skin.
+// A dark boundary is still hair in this palette; none remains on the bald head.
 export function customHairPixels(rom,hair,frame=0){
  if(hair!==14&&hair!==15)throw Error('Cabelo novo inválido.');
  const original=decodeNativeHairTile(rom,13,frame),out=original.slice();
- for(let y=1;y<7;y++)for(let x=1;x<7;x++){
-  const at=y*8+x;
-  if(original[at]===1&&[at-1,at+1,at-8,at+8].every(i=>original[i]!==0))out[at]=3;
- }
+ for(let i=0;i<64;i++)if(out[i]===1)out[i]=3;
  if(hair===15){
   // The highlight anchors the tuft to the native face instead of the tile box.
   const skin=[];for(let i=0;i<64;i++)if(original[i]>=2&&original[i]<=5)skin.push(i);
