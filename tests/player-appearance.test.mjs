@@ -90,7 +90,7 @@ test('same-team swapping and bidirectional copying preserve sparse originals, an
 test('opening appearance selects canonical applied hair and palette instead of stale model defaults',()=>{
  const source=fs.readFileSync(new URL('../editor-src/player-appearance.mjs',import.meta.url),'utf8'),start=source.indexOf('function loadAppearancePlayer('),end=source.indexOf('function openAppearanceDialog(',start),elements={};
  const c=vm.createContext({currentPlayer:0,currentTeam:30,appearanceTempHair:0,appearanceTempPalette:0,nativeAppearanceIdentity:null,nativeAppearanceCore:core,teams:{30:{players:[{playerId:'30:8',baseSlot:8,name:'Pele',hair:0,palette:0}]}},TEAM_NAMES:{30:'Brasil'},$:id=>elements[id]||=( {} ),studioTeamsV3ReadFull:()=>({teams:{30:{players:[{playerId:'30:8',baseSlot:8,appearance:{hair:12,palette:1}}]}}}),renderAppearancePreview(){},renderAppearanceTransferPlayers(){}});
- vm.runInContext(source.slice(start,end)+'loadAppearancePlayer(0);',c);assert.equal(c.appearanceTempHair,12);assert.equal(c.appearanceTempPalette,1);assert.equal(elements.appearanceCurrentSummary.textContent,'APARÊNCIA ATUAL — Cabelo: Tipo 12 · Paleta: 1');assert.equal(c.nativeAppearanceIdentity.baseSlot,8);
+ vm.runInContext(source.slice(source.indexOf('function nativeAppearanceIsGoalkeeper('),source.indexOf('function nativeAppearanceSupported('))+source.slice(start,end)+'loadAppearancePlayer(0);',c);assert.equal(c.appearanceTempHair,12);assert.equal(c.appearanceTempPalette,1);assert.equal(elements.appearanceCurrentSummary.textContent,'APARÊNCIA ATUAL — Cabelo: Tipo 12 · Paleta: 1');assert.equal(c.nativeAppearanceIdentity.baseSlot,8);
 });
 
 test('appearance controls retain the applied selection independently of legacy clamp and unavailable graphics',()=>{
@@ -125,4 +125,17 @@ test('goalkeeper appearance controls select the embedded native model instead of
  const source=fs.readFileSync(new URL('../editor-src/player-appearance.mjs',import.meta.url),'utf8'),start=source.indexOf('function renderAppearancePreview('),end=source.indexOf('function loadAppearancePlayer(',start),elements={};
  const c=vm.createContext({appearanceTempHair:13,appearanceTempPalette:0,currentTeam:30,currentPlayer:0,teams:{30:{players:[{position:'GO'}]}},rom:new Uint8Array(),$:id=>elements[id]||=({querySelectorAll:()=>[]}),nativeAppearanceSupported:()=>true,renderHairGallery(){},nativeAppearanceCore:{readNativeAppearancePalettes(){throw Error('preview unavailable');}},nativeAppearanceNote(){}});
  vm.runInContext(source.slice(start,end)+'renderAppearancePreview();',c);assert.equal(c.appearanceTempHair,0);assert.equal(elements.appearanceHairRange.disabled,true);assert.equal(elements.appearanceHairValue.disabled,true);assert.match(elements.appearanceSelectedSummary.textContent,/nativo integrado/);
+});
+
+
+test('appearance navigation skips goalkeepers and transfer lists exclude them',()=>{
+ const source=fs.readFileSync(new URL('../editor-src/player-appearance.mjs',import.meta.url),'utf8');
+ const helper=source.slice(source.indexOf('function nativeAppearanceIsGoalkeeper('),source.indexOf('function nativeAppearanceSupported('));
+ const roster=Array.from({length:20},(_,i)=>({playerId:String(i),baseSlot:i,name:String(i),position:i===0?'GO':i===12?1:'DF',hair:0,palette:0}));
+ const elements={},c=vm.createContext({currentPlayer:11,currentTeam:30,teams:{30:{players:roster}},TEAM_NAMES:{30:'Brasil'},nativeAppearanceCore:core,studioTeamsV3ReadFull:()=>({teams:{30:{players:roster}}}),$:id=>elements[id]||={},renderAppearancePreview(){},renderAppearanceTransferPlayers(){}});
+ vm.runInContext(helper+source.slice(source.indexOf('function loadAppearancePlayer('),source.indexOf('function openAppearanceDialog('))+source.slice(source.indexOf('function nativeAppearanceTransferRoster('),source.indexOf('function nativeAppearanceTransferRef(')),c);
+ vm.runInContext('loadAppearancePlayer(12)',c);assert.equal(c.currentPlayer,13);
+ vm.runInContext('loadAppearancePlayer(12)',c);assert.equal(c.currentPlayer,11);
+ vm.runInContext('loadAppearancePlayer(20)',c);assert.equal(c.currentPlayer,1);
+ assert.equal(vm.runInContext('nativeAppearanceTransferRoster(30).length',c),18);
 });

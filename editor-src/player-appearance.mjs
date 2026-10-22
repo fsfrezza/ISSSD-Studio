@@ -1,6 +1,7 @@
 // Installed inside the legacy lexical scope, replacing the obsolete fixed image preview.
 let nativeAppearanceIdentity=null,nativeAppearanceFrame=0;
 const nativeAppearanceCore=window.ISSSDPlayerAppearanceCore;
+function nativeAppearanceIsGoalkeeper(player){return player?.position===1||['GO','GK'].includes(String(player?.position));}
 function nativeAppearanceSupported(){return !!rom&&activeRomProfile?.id==='iss-deluxe-plus';}
 function nativeAppearanceNote(message,error=false){const n=$('appearanceNativeStatus');if(n){n.textContent=message;n.className='note '+(error?'error':'info');}}
 function nativeAppearanceCanvas(canvas,hair,frame,palette){
@@ -48,7 +49,11 @@ function renderAppearancePreview(){
  }catch(e){nativeAppearanceNote('Não foi possível ler a prévia nativa: '+e.message,true);}
 }
 function loadAppearancePlayer(index){
- currentPlayer=(Number(index)+20)%20;const p=teams[currentTeam].players[currentPlayer];
+ const players=teams[currentTeam].players,direction=Number(index)<currentPlayer?-1:1;
+ let candidate=(Number(index)+20)%20;
+ for(let checked=0;checked<20&&nativeAppearanceIsGoalkeeper(players[candidate]);checked++)candidate=(candidate+direction+20)%20;
+ if(nativeAppearanceIsGoalkeeper(players[candidate]))return;
+ currentPlayer=candidate;const p=players[currentPlayer];
  const resolved=studioTeamsV3ReadFull()?.teams?.[String(currentTeam)]?.players?.find(q=>q.playerId===p.playerId&&Number(q.baseSlot)===Number(p.baseSlot))||studioTeamsV3ReadFull()?.teams?.[String(currentTeam)]?.players?.[currentPlayer];
  const value=nativeAppearanceCore.validatePlayerAppearance({hair:Number(resolved?.appearance?.hair??p.appearance?.hair??p.hair),palette:Number(resolved?.appearance?.palette??p.appearance?.palette??p.palette)});
  if(p.position===1||['GO','GK'].includes(String(p.position)))value.hair=0;
@@ -61,6 +66,7 @@ function loadAppearancePlayer(index){
  renderAppearanceTransferPlayers();
 }
 function openAppearanceDialog(){
+ if(nativeAppearanceIsGoalkeeper(teams[currentTeam]?.players?.[currentPlayer]))return;
  for(const id of ['appearanceHairRange','appearanceHairValue']){const input=$(id);if(!input.dataset.extendedHairBound){input.addEventListener('input',event=>{event.stopImmediatePropagation();if(input.value==='')return;appearanceTempHair=Math.max(0,Math.min(15,Number(input.value)||0));renderAppearancePreview();},true);input.dataset.extendedHairBound='1';}}
  const frame=$('appearanceNativeFrame');frame.innerHTML=Array.from({length:24},(_,i)=>`<option value="${i}">Quadro ${i+1}</option>`).join('');frame.value=nativeAppearanceFrame;
  frame.onchange=()=>{nativeAppearanceFrame=Number(frame.value);renderAppearancePreview();};
@@ -82,7 +88,7 @@ function commitAppearance(closeAfter=true){
 function applyAppearance(){commitAppearance(true);}
 function applyAppearanceNext(){commitAppearance(false);}
 
-function nativeAppearanceTransferRoster(team){return studioTeamsV3ReadFull()?.teams?.[String(team)]?.players||[];}
+function nativeAppearanceTransferRoster(team){return (studioTeamsV3ReadFull()?.teams?.[String(team)]?.players||[]).filter(p=>!nativeAppearanceIsGoalkeeper(p));}
 function nativeAppearanceTransferRef(){
  const team=Number($('appearanceTransferTeam').value),players=nativeAppearanceTransferRoster(team);
  const p=players[Number($('appearanceTransferPlayer').value)];
@@ -121,3 +127,16 @@ function transferAppearance(direction){
   nativeAppearanceNote((direction==='swap'?'Atributos de aparência trocados.':'Atributos de aparência copiados.')+' Salve o projeto para guardar e Salvar ROM para exportar. As cores continuam vinculadas às paletas de cada equipe.');
  }catch(e){nativeAppearanceNote('Operação não aplicada: '+e.message,true);}
 }
+
+// Keep goalkeeper identity and skills in Players; appearance belongs to Goalkeepers.
+const nativeAppearanceRenderEverything=renderEverything;
+renderEverything=function(...args){
+ const result=nativeAppearanceRenderEverything.apply(this,args);
+ const goalkeeper=nativeAppearanceIsGoalkeeper(teams[currentTeam]?.players?.[currentPlayer]);
+ document.querySelectorAll('button').forEach(button=>{
+  if(button.closest('#appearanceDialog'))return;
+  if(!/apar[eê]ncia/i.test(button.textContent)&&!/appearance/i.test(button.id))return;
+  button.hidden=goalkeeper;button.dataset.nativeGoalkeeperHidden=String(goalkeeper);
+ });
+ return result;
+};

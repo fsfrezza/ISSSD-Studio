@@ -11,3 +11,5 @@
 #appearanceDialog .sprite-comparison{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}#appearanceDialog #spriteReference{width:auto;height:auto;max-width:none;image-rendering:pixelated}#appearanceDialog .sprite-comparison>div{min-width:0}@media(max-width:760px){#appearanceDialog .sprite-comparison{grid-template-columns:1fr}}
 
 #appearanceDialog .native-hair-gallery>p{grid-column:1/-1;min-width:0;width:100%;max-width:none;box-sizing:border-box;margin:6px 0;white-space:normal;overflow-wrap:normal;text-align:justify;line-height:1.45}
+
+button[data-native-goalkeeper-hidden="true"]{display:none!important}
