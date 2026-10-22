@@ -15,11 +15,19 @@ O finalizador salva a seção no projeto e na requisição de exportação da RO
 A abertura valida e restaura a seção; importação inválida mantém a sessão
 anterior. A seção participa da seleção de categorias ao abrir/salvar projetos.
 
-Todas as onze cores são editáveis, incluindo pele e cabelo, quatro tons da
-camisa e dois tons compartilhados de calção/calçado. O tipo de cabelo pode ser
-escolhido nesta aba, usando a mesma identidade da aba Aparência. O seletor de cor principal
-gera os quatro tons de camisa; cada tom também pode ser ajustado separadamente.
-Não há alteração de layout dos sprites nesta etapa.
+As onze cores continuam no mesmo registro do projeto, mas a interface as separa:
+- **Jogadores → Aparência:** cor do cabelo e quatro tons de pele (índices 0–4).
+- **Goleiros:** quatro tons da camisa e dois de calção/calçado (índices 5–10).
+
+Editar, restaurar ou aplicar referências do uniforme preserva pele e cabelo.
+Aplicar ou restaurar a aparência preserva o uniforme. Os goleiros aparecem
+normalmente no elenco e na navegação da janela Aparência. A janela apresenta
+controles próprios de cores; os tipos de cabelo de linha não são compatíveis
+com a montagem nativa dos goleiros. As cores de aparência só são confirmadas
+com Aplicar ao jogador; cancelar descarta a seleção em edição.
+
+O seletor de cor principal gera os quatro tons de camisa; cada tom também pode
+ser ajustado separadamente. Não há alteração de layout dos sprites nesta etapa.
 
 O padrão para Brasil (teamId 30) é camisa verde escuro para os dois goleiros.
 Restaurar padrão recupera esse verde; usar cores originais da ROM permite
