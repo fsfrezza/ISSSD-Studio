@@ -12,7 +12,7 @@ function fixture(){
  const b=new Uint8Array(0x200000),primary=0x10274,skin=0x1043C,hair=0x103CA,gk=0x10358;
  for(const [at,table]of [[0x5CFD0,primary],[0x5CFEA,skin],[0x5CFFB,hair],[0x5D06E,gk]]){b[at]=0xBF;long(b,at+1,0x820000|table&65535);}
  function pal(ptr,colors){word(b,0x40000+ptr,colors.length*2-1);colors.forEach((v,i)=>word(b,0x40000+ptr+2+i*2,v));}
- pal(0x9000,Array.from({length:16},(_,i)=>i*0x421));pal(0x9100,Array(12).fill(0x1F));pal(0x8372,[0x1234]);
+ pal(0x9000,Array.from({length:16},(_,i)=>i*0x421));pal(0x9100,Array(11).fill(0x1F));pal(0x8372,[0x1234]);
  for(const [i,p]of core.NATIVE_SKIN_PRESETS.entries())pal(p.pointer,Array.from({length:5},(_,k)=>(i+1)*0x100+k));
  for(let t=0;t<56;t++){word(b,primary+t*2,0x9000);word(b,primary+(t+56)*2,0x9000);word(b,gk+t*2,0x9100);word(b,skin+t*2,t===1?0:0x8366);word(b,hair+t*2,t===1?0:0x8372);}
  for(let i=0;i<13;i++){long(b,0xED6D+i*4,0x97CD58+i*0x300);for(let f=0;f<24;f++)for(let y=0;y<8;y++)for(let plane=0;plane<4;plane++)b[0xBCD58+i*0x300+f*32+(plane>>1)*16+y*2+(plane&1)]=((i+f+plane+y)%2)?0xAA:0x55;}
@@ -23,7 +23,7 @@ test('native palette preview reads the actual Plus pointer tables and combines o
  const b=fixture(),before=b.slice(),r=core.readNativeAppearancePalettes(b,0);
  assert.equal(r.skinPointer,0x8366);assert.equal(r.hairPointer,0x8372);assert.equal(r.palettes[1][1],0x1234);assert.deepEqual(r.palettes[1].slice(2,7),[0x400,0x401,0x402,0x403,0x404]);assert.deepEqual(r.palettes[1].slice(7),r.palettes[0].slice(7));
  assert.equal(core.readNativeAppearancePalettes(b,1).identical,true);assert.equal(r.presets.length,4);assert.equal(r.colors[0].length,16);
- const goalie=core.readNativeAppearancePalettes(b,0,{goalkeeper:true});assert.equal(goalie.identical,true);assert.equal(goalie.palettes[0].length,12);
+ const goalie=core.readNativeAppearancePalettes(b,0,{goalkeeper:true});assert.equal(goalie.identical,true);assert.equal(goalie.palettes[0].length,11);
  const header=new Uint8Array(b.length+512);header.set(b,512);assert.deepEqual(core.readNativeAppearancePalettes(header,0),r);assert.deepEqual(b,before);
  for(const t of [0,30,55])assert.doesNotThrow(()=>core.readNativeAppearancePalettes(b,t));for(const t of [-1,56,0.5])assert.throws(()=>core.readNativeAppearancePalettes(b,t));
  b[0x5CFD0]=0;assert.throws(()=>core.readNativeAppearancePalettes(b,0),/leitor/);

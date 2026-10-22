@@ -50,6 +50,12 @@ html=html.replaceAll("'rom.title':'Título interno'","'sounds':'Sons · amostras
  .replaceAll("if(id==='teams.names'&&sem", "if(id==='sounds')delete sem.soundsV1;else if(id==='teams.names'&&sem")
  .replaceAll("if(id==='teams.names'&&ss", "if(id==='sounds')ds.soundsV1=clone(ss.soundsV1);else if(id==='teams.names'&&ss")
  .replace(" add('groups','Organização e nomes dos grupos'", " add('sounds','Sons · amostras e narração',studioProjectChangeHasValues(sem.soundsV1?.values),x=>delete x.soundsV1);\n add('groups','Organização e nomes dos grupos'");
+// Independent goalkeeper uniforms participate in selective project open/save.
+html=html.replaceAll("'sounds':'Sons · amostras e narração'","'goalkeepers':'Uniformes dos goleiros','sounds':'Sons · amostras e narração'")
+ .replaceAll("'sounds':sem.soundsV1||null","'goalkeepers':sem.goalkeeperPalettesV1||null,'sounds':sem.soundsV1||null")
+ .replaceAll("if(id==='sounds')delete sem.soundsV1","if(id==='goalkeepers')delete sem.goalkeeperPalettesV1;else if(id==='sounds')delete sem.soundsV1")
+ .replaceAll("if(id==='sounds')ds.soundsV1=clone(ss.soundsV1)","if(id==='goalkeepers')ds.goalkeeperPalettesV1=clone(ss.goalkeeperPalettesV1);else if(id==='sounds')ds.soundsV1=clone(ss.soundsV1)")
+ .replace(" add('sounds','Sons · amostras e narração'"," add('goalkeepers','Uniformes dos goleiros',studioProjectChangeHasValues(sem.goalkeeperPalettesV1?.players),x=>delete x.goalkeeperPalettesV1);\n add('sounds','Sons · amostras e narração'");
 const marker='ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE';
 html=html.replace(/<!--\s*ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE\s*-->\s*/g,'')
  .replace(/<style\s+id=["']isssd-git-visual-bridge-overrides["'][^>]*>[\s\S]*?<\/style>\s*/g,'')
@@ -130,8 +136,11 @@ const languagePresets=JSON.parse(fs.readFileSync(path.join(root,'project-data','
 const additionalSections=JSON.parse(fs.readFileSync(path.join(root,'project-data','additional-screen-text-fields.json'),'utf8'));
 const additionalRuntime='const ADDITIONAL_TEXT_SECTIONS='+JSON.stringify(additionalSections)+';\n'+fs.readFileSync(path.join(root,'editor-src','additional-screen-texts.mjs'),'utf8');
 const teamNameRuntime='const TEAM_NAME_LANGUAGE_PRESETS='+JSON.stringify(TEAM_NAME_LANGUAGE_PRESETS)+';\n'+fs.readFileSync(path.join(root,'editor-src','team-name-language-presets.mjs'),'utf8');
+const goalkeeperSource=fs.readFileSync(path.join(root,'src/core/goalkeeper-palettes.mjs'),'utf8').replace(/\r\n?/g,'\n');
+const goalkeeperExports=[...goalkeeperSource.matchAll(/^export (?:const|function) (\w+)/gm)].map(m=>m[1]);
+const goalkeeperRuntime='window.ISSSDGoalkeepers=(()=>{\n'+goalkeeperSource.replace(/^export /gm,'')+'\nreturn {'+goalkeeperExports.join(',')+'};})();\n'+fs.readFileSync(path.join(root,'editor-src/goalkeepers-editor.mjs'),'utf8');
 const soundsRuntime='const SOUND_SLOTS='+JSON.stringify(SOUND_SLOTS)+';\nconst FB96_SOUND_REFERENCES='+fs.readFileSync(path.join(root,'project-data','fb96-sound-references.json'),'utf8')+';\n'+fs.readFileSync(path.join(root,'editor-src','sounds-editor.mjs'),'utf8');
-const v11='const TEXT_LANGUAGE_PRESETS='+JSON.stringify(languagePresets)+';\n'+(fs.existsSync(v11File)?fs.readFileSync(v11File,'utf8'):'')+'\n'+additionalRuntime+'\n'+teamNameRuntime+'\n'+soundsRuntime;
+const v11='const TEXT_LANGUAGE_PRESETS='+JSON.stringify(languagePresets)+';\n'+(fs.existsSync(v11File)?fs.readFileSync(v11File,'utf8'):'')+'\n'+additionalRuntime+'\n'+teamNameRuntime+'\n'+soundsRuntime+'\n'+goalkeeperRuntime;
 try{new Function(js);new Function(v11)}catch(e){throw new Error('Build interrompido: JavaScript Git inválido: '+e.message)}
 const patch=`\n<!-- ${marker} -->\n<style id="isssd-git-visual-bridge-overrides">\n${css}\n</style>\n<script type="module" id="isssd-git-visual-bridge-runtime">\n${js}\n</script>\n<script type="module" id="isssd-git-project-import-v11">\n${v11}\n</script>\n`;
 if(html.includes('</body>'))html=html.replace('</body>',()=>patch+'\n</body>');else html+=patch;

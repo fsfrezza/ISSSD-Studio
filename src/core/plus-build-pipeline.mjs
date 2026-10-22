@@ -1,3 +1,4 @@
+import {plusGoalkeeperPalettesWriter} from './plus-goalkeeper-palettes.mjs';
 import {plusBaldPlayerBaseWriter,baldBaseSupported,prepareBaldAppearanceState} from './plus-bald-player-base.mjs';
 import {playerSpriteWriter} from './player-sprite-editor.mjs';
 import {plusCustomHairWriter} from './plus-custom-hair.mjs';
@@ -76,6 +77,7 @@ export function createPlusBuildStages({baseRom,patches=[],extraWriters=[],writeC
     },
     {id:'04b-player-sprites',kind:'semantic',run:(work,state)=>playerSpriteWriter(work,state,baseRom,selectedAreas)},
     {id:'04c-bald-player-base',kind:'semantic',run:(work,state)=>plusBaldPlayerBaseWriter(work,state,baseRom,selectedAreas)},
+    {id:'04c-goalkeeper-palettes',kind:'semantic',run:(work,state)=>plusGoalkeeperPalettesWriter(work,state,baseRom,selectedAreas)},
     {id:'04c-custom-hair',kind:'semantic',run:(work,state)=>plusCustomHairWriter(work,state,baseRom,selectedAreas)},
     {
       id:'05-tactical-infrastructure',kind:'derived',

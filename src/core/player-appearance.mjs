@@ -33,7 +33,7 @@ function appearanceTable(rom,instruction){
 }
 export function readNativeAppearancePalettes(rom,team,{goalkeeper=false,kit=0}={}){
  if(!Number.isInteger(team)||team<0||team>=56||![0,1].includes(kit))throw Error('Aparência: equipe ou conjunto inválido.');
- const primary=appearanceTable(rom,goalkeeper?0x5D06E:0x5CFD0),count=goalkeeper?12:16;
+ const primary=appearanceTable(rom,goalkeeper?0x5D06E:0x5CFD0),count=goalkeeper?11:16;
  const pointer=appearanceWord(rom,primary+(team+(goalkeeper?0:kit*56))*2);
  const first=appearancePaletteRecord(rom,pointer,count),second=first.slice();
  let skinPointer=0,hairPointer=0;
