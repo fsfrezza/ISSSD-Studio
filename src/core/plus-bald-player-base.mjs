@@ -47,7 +47,13 @@ export function plusBaldPlayerBaseWriter(rom,state,base,selectedAreas=null){
  add(BALD_BASE_SLOT,table);add(0x308000,baldPointerHelper());add(0x308200,baldPointerHelper(true));add(0x308400,baldOverlayHelper());
  // Default native code 0 becomes original style 14, except an explicit new bald choice.
  const explicitBald=new Set();for(const[id,t]of Object.entries(state?.teamsV1?.teams||{}))for(const p of t.players||[])if(p.custom?.appearance?.hair===0)explicitBald.add((t.teamId??id)+':'+(p.slot-1));
- for(let t=0;t<56;t++)for(let p=0;p<20;p++){const at=playerOffset(t,p)+6;if((rom[at]&15)===0&&!explicitBald.has(t+':'+p))add(at,Uint8Array.of((rom[at]&240)|14));}
+ for(let t=0;t<56;t++)for(let p=0;p<20;p++){const record=playerOffset(t,p),at=record+6;
+  // Goalkeeper poses have five-byte descriptors, without the four bytes of
+  // head-overlay metadata present in field-player poses. Nonzero styles make
+  // the native engine read the following descriptor as a head frame/spritemap.
+  if((rom[record+4]>>>4)===1){if(rom[at]&15)add(at,Uint8Array.of(rom[at]&240));continue;}
+  if((rom[at]&15)===0&&!explicitBald.has(t+':'+p))add(at,Uint8Array.of((rom[at]&240)|14));
+ }
  for(const h of hooks){const bytes=[0x22,...long(cpu(h.helper)),...Array(h.original.length-4).fill(0xEA)];if(!h.original.every((v,i)=>rom[h.pc+i]===v))throw Error('Leitor do corpo já alterado em '+h.pc.toString(16));add(h.pc,Uint8Array.from(bytes));}
  for(const w of writes)if(w.pc>=BALD_BASE_SLOT&&!rom.slice(w.pc,w.pc+w.data.length).every(v=>v===255))throw Error('Espaço da base careca ocupado em '+w.pc.toString(16));
  for(const w of writes)rom.set(w.data,w.pc);return rom;

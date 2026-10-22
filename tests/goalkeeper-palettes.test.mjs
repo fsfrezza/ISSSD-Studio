@@ -32,7 +32,7 @@ test('actual goalkeeper panel saves two independent uniforms, hydrates reopened 
  const skin=elements.gkIndividualColors.children[3].children[1];skin.value='#D6A573';skin.oninput();assert.equal(window.__ISSSD_GOALKEEPERS_EDITOR__.snapshot().players['30:1'].colors[3],core.goalkeeperHexBgr('#D6A573'));elements.gkIndividualShirt.oninput({target:{value:'#005A29'}});elements.gkIndividualPlayer.onchange({target:{value:'12'}});elements.gkIndividualShirt.oninput({target:{value:'#2030B0'}});
  const p=window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__({state:{semantic:{}}});assert.equal(p.other,'preserved');assert.notDeepEqual(p.state.semantic.goalkeeperPalettesV1.players['30:1'].colors,p.state.semantic.goalkeeperPalettesV1.players['30:12'].colors);
  const next=session();next.window.__ISSSD_GOALKEEPERS_EDITOR__.hydrate(JSON.parse(JSON.stringify(p)));assert.deepEqual(JSON.parse(JSON.stringify(next.window.__ISSSD_GOALKEEPERS_EDITOR__.snapshot())),JSON.parse(JSON.stringify(p.state.semantic.goalkeeperPalettesV1)));assert.deepEqual(b,before);
- elements.gkBrazilReference.onclick();const refs=window.__ISSSD_GOALKEEPERS_EDITOR__.snapshot();assert.deepEqual(refs.players['30:1'].colors.slice(5),refs.players['30:12'].colors.slice(5));const ps=window.__ISSSD_TEAMS_RESOLVED_OVERLAY_V1__.teams[30].players;assert.equal(ps[0].appearance.hair,13);assert.equal(ps[1].appearance.hair,12);
+ elements.gkBrazilReference.onclick();const refs=window.__ISSSD_GOALKEEPERS_EDITOR__.snapshot();assert.deepEqual(refs.players['30:1'].colors.slice(5),refs.players['30:12'].colors.slice(5));const ps=window.__ISSSD_TEAMS_RESOLVED_OVERLAY_V1__.teams[30].players;assert.equal(ps[0].appearance.hair,0);assert.equal(ps[1].appearance.hair,0);
  const hex=elements.gkIndividualColors.children[1].children[2];hex.value='#AA7733';hex.onchange();assert.equal(window.__ISSSD_GOALKEEPERS_EDITOR__.snapshot().players['30:12'].colors[1],core.goalkeeperHexBgr('#AA7733'));
 });
 
@@ -46,5 +46,5 @@ test('native skin ABI and scratch effects survive explicit palette reapplication
  for(const h of GOALKEEPER_SKIN_HOOKS)for(const team of[0,30,55,56])for(const slot of[0,1,11,19,20])for(const p of[0,1,4,8,9,12]){
  const result=executeKeeperPalette(r,h.helper,{x:team*2,a:slot,y:h.pc===0x5D09B?4:0,p,skin:true});assert.equal(result.native,!(team===30&&(slot===0||slot===11)));
  }
- const a=core.brazilGoalkeeperReference(b,1),c=core.brazilGoalkeeperReference(b,12);assert.deepEqual(a.colors.slice(5),c.colors.slice(5));assert.notDeepEqual(a.colors.slice(0,5),c.colors.slice(0,5));assert.equal(a.hair,13);assert.equal(c.hair,12);
+ const a=core.brazilGoalkeeperReference(b,1),c=core.brazilGoalkeeperReference(b,12);assert.deepEqual(a.colors.slice(5),c.colors.slice(5));assert.notDeepEqual(a.colors.slice(0,5),c.colors.slice(0,5));assert.equal(a.hair,0);assert.equal(c.hair,0);
 });

@@ -70,3 +70,11 @@ test('Skills previews use selected roster identity for Taffarel and R.Carlos on 
   wram[selection+1]=255;assert.equal(execute(rom,0x308000,{d,x,wram}),parseInt(pose.body.slice(2),16),'inactive '+JSON.stringify({side,selected,hair}));
  }
 });
+
+
+test('goalkeepers retain native embedded hair zero: outfield overlays must never reach five-byte keeper descriptors',()=>{
+ const base=fixture(),rom=expandPlusTo4MiB(base);for(const slot of[0,11]){const at=playerOffset(30,slot);rom[at+4]=0x19;rom[at+6]=0xB0|(slot===0?13:12);}
+ const before=base.slice();plusBaldPlayerBaseWriter(rom,prepareBaldAppearanceState({}),base);
+ for(const slot of[0,11]){const at=playerOffset(30,slot);assert.equal(rom[at+6],0xB0);assert.equal(rom[at+4],0x19);}
+ assert.equal(rom[playerOffset(30,1)+6],0xBE);assert.deepEqual(base,before);
+});

@@ -65,8 +65,8 @@ usa somente stack-relative, sem alocar WRAM. Reserva total termina em 2A7C00.
 A cópia inicial também reproduz o P=00 carregado pelo PEA/PLB/PLP nativo,
 incluindo I limpo; não restaura flags incompatíveis com o leitor original.
 
-O botão de referências do Brasil aplica pele clara, cabelo loiro com entradas
-(tipo 13) ao Taffarel, pele mais morena e cabelo curto (tipo 12) ao Gilmar.
+O botão de referências do Brasil aplica pele clara e cabelo loiro ao Taffarel,
+pele mais morena e cabelo escuro ao Gilmar, usando o modelo nativo (zero).
 Ambos usam a mesma camisa verde e tons escuros de calção/calçado. São
 aproximações com os tipos nativos disponíveis; não desenha novos rostos.
 
@@ -80,3 +80,44 @@ efeitos são mantidos e os testes exigem igualdade do contexto pós-nativo,
 incluindo caminhos com índice zero, ambos os lados e prévia. Trata-se de
 validação de ABI com fixture de efeitos nativos, não de uma execução Mesen.
 A confirmação visual da correção continua necessária no emulador.
+
+## Causa confirmada: sobreposição de cabelo em goleiros
+
+Em 22/10/2026 a ROM enviada (`11-sons.sfc`, SHA-256
+`d27b7b0f51d785786a62f584e1fc8aba714c812b41c2e7092d83844b6119bd2e`)
+foi executada no Snes9x/libretro (upstream fae2fea). A deformação foi reproduzida
+na animação de Skills, não apenas inferida de testes de gravação.
+
+A/B: (a) ROM enviada; (b) seis hooks de paleta restaurados aos bytes nativos;
+(c) cabelo 14; (d) cabelo zero nos goleiros, mantendo integralmente as cores
+individuais. A e B deformam em certas poses; C também, pois 14 continua não
+zero no leitor de cabelo da prévia. D anima corretamente em todos os quadros
+observados. Assim, a mudança da camisa não é causa suficiente da deformação.
+
+O disassembly confirma: 82CCB9/82CCC8 e os demais descritores de goleiro nessa
+sequência têm cinco bytes (`dw spritemap : dl gráficos`), sem os quatro bytes
+extras de metadados de cabeça presentes nos descritores de jogadores de linha.
+Exemplo de linha: 82A3D7 possui nove bytes. Códigos 12/13 (e qualquer outro
+não zero) acionam a interpretação de cabeça separada sobre um formato que não
+possui esses dados. O motor interpreta o descritor seguinte como metadados,
+produzindo fontes/tiles/partes do corpo repetidos. A prévia de Editar Atletas
+usa D=0D00; não deve ser confundida com as prévias 06A0/07A0 de outras telas.
+
+Correção: depois de aplicar posições/aparências, o writer de corpos mantém o
+nibble baixo do cabelo em zero para toda posição natural GO (código 1), sem
+alterar o nibble alto/paleta, skills ou uniforme. Esses sprites de goleiro já
+possuem o cabelo integrado; zero não significa o corpo careca dos atletas de
+linha. As opções incompatíveis são retiradas da aba Goleiros e bloqueadas na
+edição de aparência. A referência do Brasil mantém cabelo loiro no Taffarel,
+escuro no Gilmar e a mesma camisa verde. Desenhos diferentes para goleiros
+exigem edição específica desses corpos; não podem reutilizar os tipos de linha.
+
+O teste de execução do loader em Snes9x também confirmou que a gravação das
+cores toca somente 22 bytes em 7E2D82/7E2DA2. Os ajustes de ABI anteriores eram
+medidas de compatibilidade, mas não corrigiam a causa da deformação visual.
+
+Validação após a correção: geração nova a partir do projeto, inicialização fria
+no Snes9x, entrada em Editar Atletas, seleção de Taffarel e depois Gilmar
+(Left troca para os reservas), observação de 720 frames de animação em cada
+jogador. As poses antes deformadas passam a renderizar normalmente nos dois,
+com camisa verde, cabelo loiro no titular e escuro no reserva.

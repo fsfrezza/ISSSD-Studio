@@ -13,7 +13,7 @@ function nativeAppearanceCanvas(canvas,hair,frame,palette){
 }
 function nativeAppearanceSwatches(colors){return '<span class="native-swatches">'+colors.map(c=>`<span style="background:${c}" title="${c.toUpperCase()}"></span>`).join('')+'</span>';}
 function renderHairGallery(){
- const g=$('hairGallery');if(!g)return;
+ const g=$('hairGallery');if(!g)return;const player=teams[currentTeam]?.players?.[currentPlayer];if(player?.position===1||['GO','GK'].includes(String(player?.position))){g.innerHTML='<p>Goleiro: cabelo integrado ao desenho nativo. Edite sua cor na aba Goleiros. Os tipos de cabelo dos jogadores de linha não são compatíveis.</p>';return;}
  g.innerHTML=Array.from({length:16},(_,hair)=>`<button type="button" class="native-hair-option" data-hair-index="${hair}" aria-pressed="${hair===appearanceTempHair}" title="${hair===0?'Base careca, sem cabelo embutido':(hair>=14?nativeAppearanceCore.hairStyleLabel(hair):'Sobreposição nativa '+hair)}">${'<canvas aria-label="Cabelo '+hair+'"></canvas>'}<span>${nativeAppearanceCore.hairStyleLabel(hair)}${hair===appearanceTempHair?' · SELECIONADO':''}</span></button>`).join('');
  g.querySelectorAll('[data-hair-index]').forEach(button=>{button.onclick=()=>{appearanceTempHair=Number(button.dataset.hairIndex);renderAppearancePreview();};});
  const palettes=nativeAppearanceCore.readNativeAppearancePalettes(rom,currentTeam),palette=palettes.palettes[appearanceTempPalette];
@@ -22,10 +22,13 @@ function renderHairGallery(){
 function appearancePaletteCounts(){const ps=teams[currentTeam].players;return [ps.filter(p=>p.palette===0).length,ps.filter(p=>p.palette===1).length];}
 function renderAppearanceSharedColors(){} // Palette artwork is shown directly by the new native palette cards.
 function renderAppearancePreview(){
+ const currentAppearancePlayer=teams[currentTeam]?.players?.[currentPlayer],nativeGoalkeeper=currentAppearancePlayer?.position===1||['GO','GK'].includes(String(currentAppearancePlayer?.position));
+ if(nativeGoalkeeper)appearanceTempHair=0;
+ for(const id of ['appearanceHairRange','appearanceHairValue'])$(id).disabled=nativeGoalkeeper;
  appearanceTempHair=Math.max(0,Math.min(15,Number(appearanceTempHair)||0));appearanceTempPalette=Math.max(0,Math.min(1,Number(appearanceTempPalette)||0));
  $('appearanceHairRange').value=appearanceTempHair;$('appearanceHairValue').value=appearanceTempHair;$('appearancePalette').value=String(appearanceTempPalette);
  $('appearancePalette').querySelectorAll('option').forEach(o=>{o.selected=Number(o.value)===appearanceTempPalette;});
- $('appearanceSelectedSummary').textContent=`Seleção: cabelo ${appearanceTempHair} · paleta ${appearanceTempPalette}`;
+ $('appearanceSelectedSummary').textContent=nativeGoalkeeper?'Goleiro: cabelo nativo integrado; cores na aba Goleiros.':`Seleção: cabelo ${appearanceTempHair} · paleta ${appearanceTempPalette}`;
  for(const id of ['applyAppearanceBtn','applyAppearanceNextBtn','appearanceRestoreNativeBtn'])$(id).disabled=!nativeAppearanceSupported();
  try{renderHairGallery();}catch(e){nativeAppearanceNote('Cabelo selecionado; prévia indisponível: '+e.message,true);}
  if(!nativeAppearanceSupported()){nativeAppearanceNote('Abra um projeto Deluxe Plus para editar a aparência.',true);return;}
@@ -34,11 +37,11 @@ function renderAppearancePreview(){
   cards.innerHTML=data.colors.map((colors,i)=>`<button type="button" class="native-palette-option" data-native-palette="${i}" aria-pressed="${appearanceTempPalette===i}">${appearanceTempHair?'<canvas aria-label="Prévia da paleta '+i+'"></canvas>':''}<strong>Paleta ${i} · ${i?'alternativa':'principal'}</strong><div>Pele · sombras e luzes</div>${nativeAppearanceSwatches(colors.slice(2,6))}<div>Cabelo ${nativeAppearanceSwatches([colors[1]])}</div></button>`).join('');
   cards.querySelectorAll('[data-native-palette]').forEach(button=>{const i=Number(button.dataset.nativePalette);if(appearanceTempHair)nativeAppearanceCanvas(button.querySelector('canvas'),appearanceTempHair,nativeAppearanceFrame,data.palettes[i]);button.onclick=()=>{appearanceTempPalette=i;renderAppearancePreview();};});
   const p=teams[currentTeam].players[currentPlayer],gk=p.position===1||['GO','GK'].includes(String(p.position));
-  $('appearanceNativePaletteInfo').textContent=(data.identical?'Nesta equipe, as duas paletas de jogadores de linha possuem as mesmas cores. ':'As duas paletas podem mudar pele, cabelo e calçado em conjunto. ')+(gk?'Goleiro: estas são referências da equipe; a cor do goleiro em campo vem da paleta própria de goleiro.':'A escolha pertence ao jogador; as cores de cada conjunto são compartilhadas pela equipe.');
+  $('appearanceNativePaletteInfo').textContent=(data.identical?'Nesta equipe, as duas paletas de jogadores de linha possuem as mesmas cores. ':'As duas paletas podem mudar pele, cabelo e calçado em conjunto. ')+(gk?'Goleiro: use tipo 0, o desenho nativo com cabelo integrado. Tipos de linha não são compatíveis. As cores de pele, cabelo e uniforme são editadas na aba Goleiros.':'A escolha pertence ao jogador; as cores de cada conjunto são compartilhadas pela equipe.');
   const counts=appearancePaletteCounts();$('palette0Count').textContent=counts[0];$('palette1Count').textContent=counts[1];
   renderHairGallery();const frames=$('appearanceNativeFrames');
-  frames.innerHTML=Array.from({length:24},(_,i)=>`<canvas title="Quadro ${i+1}" aria-label="Quadro nativo ${i+1}"></canvas>`).join('');
-  $('appearanceNativeFrameInfo').textContent=appearanceTempHair?'':'Tipo 0: corpo careca. O antigo cabelo do corpo está disponível no tipo 14.';
+  frames.innerHTML=gk?'':Array.from({length:24},(_,i)=>`<canvas title="Quadro ${i+1}" aria-label="Quadro nativo ${i+1}"></canvas>`).join('');
+  $('appearanceNativeFrameInfo').textContent=gk?'Goleiro: tipo 0 é o modelo nativo, com cabelo integrado ao corpo. Os tipos dos jogadores de linha não se aplicam a essas poses.':appearanceTempHair?'':'Tipo 0: corpo careca. O antigo cabelo do corpo está disponível no tipo 14.';
   frames.querySelectorAll('canvas').forEach((canvas,i)=>nativeAppearanceCanvas(canvas,appearanceTempHair,i,data.palettes[appearanceTempPalette]));
   $('appearanceNativeSkinCatalog').innerHTML=data.presets.map(p=>`<div><strong>${p.label}</strong>${nativeAppearanceSwatches(p.colors.slice(0,4))}</div>`).join('');
   nativeAppearanceNote('Escolha as opções e use Aplicar ao jogador. Salve o projeto para guardar a escolha; Salvar ROM grava a aparência na fase Jogadores.');
@@ -48,6 +51,7 @@ function loadAppearancePlayer(index){
  currentPlayer=(Number(index)+20)%20;const p=teams[currentTeam].players[currentPlayer];
  const resolved=studioTeamsV3ReadFull()?.teams?.[String(currentTeam)]?.players?.find(q=>q.playerId===p.playerId&&Number(q.baseSlot)===Number(p.baseSlot))||studioTeamsV3ReadFull()?.teams?.[String(currentTeam)]?.players?.[currentPlayer];
  const value=nativeAppearanceCore.validatePlayerAppearance({hair:Number(resolved?.appearance?.hair??p.appearance?.hair??p.hair),palette:Number(resolved?.appearance?.palette??p.appearance?.palette??p.palette)});
+ if(p.position===1||['GO','GK'].includes(String(p.position)))value.hair=0;
  appearanceTempHair=value.hair;appearanceTempPalette=value.palette;
  $('appearanceCurrentSummary').textContent=`APARÊNCIA ATUAL — Cabelo: Tipo ${value.hair} · Paleta: ${value.palette}`;
  nativeAppearanceIdentity={team:currentTeam,playerId:p.playerId,baseSlot:p.baseSlot};
@@ -69,6 +73,7 @@ function commitAppearance(closeAfter=true){
   if(!nativeAppearanceSupported())throw Error('Abra um projeto Deluxe Plus.');
   const identity=nativeAppearanceIdentity;if(identity?.team!==currentTeam)throw Error('A equipe mudou. Reabra a aparência do jogador.');
   if(typeof window.__ISSSD_TEAMS_SET_PLAYER_APPEARANCE_V1__!=='function')throw Error('Editor semântico de aparência indisponível.');
+  const player=teams[currentTeam].players[currentPlayer],goalkeeper=player.position===1||['GO','GK'].includes(String(player.position));if(goalkeeper&&appearanceTempHair!==0)throw Error('Goleiros usam o cabelo integrado ao sprite (tipo 0). Tipos de linha corrompem suas animações. Edite a cor do cabelo na aba Goleiros.');
   window.__ISSSD_TEAMS_SET_PLAYER_APPEARANCE_V1__(currentTeam,identity,{hair:appearanceTempHair,palette:appearanceTempPalette});
   if(typeof studioUpdateBadge==='function')studioUpdateBadge();
   if(closeAfter){$('appearanceDialog').close();renderEverything();}else{const next=(currentPlayer+1)%20;renderEverything();loadAppearancePlayer(next);}

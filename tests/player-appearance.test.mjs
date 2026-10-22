@@ -95,7 +95,7 @@ test('opening appearance selects canonical applied hair and palette instead of s
 
 test('appearance controls retain the applied selection independently of legacy clamp and unavailable graphics',()=>{
  const source=fs.readFileSync(new URL('../editor-src/player-appearance.mjs',import.meta.url),'utf8'),start=source.indexOf('function renderAppearancePreview('),end=source.indexOf('function loadAppearancePlayer(',start),elements={},options=[{value:'0'},{value:'1'}];let gallery=false;
- const c=vm.createContext({appearanceTempHair:12,appearanceTempPalette:1,currentTeam:30,rom:new Uint8Array(),$:id=>elements[id]||=({querySelectorAll:()=>options}),clamp(){throw Error('Legacy clamp must not run');},nativeAppearanceSupported:()=>true,renderHairGallery(){gallery=true;},nativeAppearanceCore:{readNativeAppearancePalettes(){throw Error('preview unavailable');}},nativeAppearanceNote(){}});
+ const c=vm.createContext({appearanceTempHair:12,appearanceTempPalette:1,currentTeam:30,currentPlayer:0,teams:{30:{players:[{position:'MF'}]}},rom:new Uint8Array(),$:id=>elements[id]||=({querySelectorAll:()=>options}),clamp(){throw Error('Legacy clamp must not run');},nativeAppearanceSupported:()=>true,renderHairGallery(){gallery=true;},nativeAppearanceCore:{readNativeAppearancePalettes(){throw Error('preview unavailable');}},nativeAppearanceNote(){}});
  vm.runInContext(source.slice(start,end)+'renderAppearancePreview();',c);assert.equal(elements.appearanceHairValue.value,12);assert.equal(elements.appearancePalette.value,'1');assert.equal(options[1].selected,true);assert.equal(options[0].selected,false);assert.equal(gallery,true);assert.match(elements.appearanceSelectedSummary.textContent,/12.*1/);
 });
 
@@ -118,4 +118,11 @@ test('semantic hair overrides rebuild palette from clean identity despite stale 
  const base=new Uint8Array(0x200000),off=playerOffset(30,2)+6;base[off]=0x10;const work=base.slice();work[off]=0xE0;
  const state={teamsV1:{schema:'isssd-teams-v1',version:3,teams:{30:{teamId:30,players:[{slot:3,baseSlot:3,playerId:'30:3',custom:{appearance:{hair:14}}}]}}}};
  applySteps(work,teamsV3PlayerSteps(base,state));assert.equal(work[off],0x1E);assert.equal(base[off],0x10);
+});
+
+
+test('goalkeeper appearance controls select the embedded native model instead of offering outfield overlays',()=>{
+ const source=fs.readFileSync(new URL('../editor-src/player-appearance.mjs',import.meta.url),'utf8'),start=source.indexOf('function renderAppearancePreview('),end=source.indexOf('function loadAppearancePlayer(',start),elements={};
+ const c=vm.createContext({appearanceTempHair:13,appearanceTempPalette:0,currentTeam:30,currentPlayer:0,teams:{30:{players:[{position:'GO'}]}},rom:new Uint8Array(),$:id=>elements[id]||=({querySelectorAll:()=>[]}),nativeAppearanceSupported:()=>true,renderHairGallery(){},nativeAppearanceCore:{readNativeAppearancePalettes(){throw Error('preview unavailable');}},nativeAppearanceNote(){}});
+ vm.runInContext(source.slice(start,end)+'renderAppearancePreview();',c);assert.equal(c.appearanceTempHair,0);assert.equal(elements.appearanceHairRange.disabled,true);assert.equal(elements.appearanceHairValue.disabled,true);assert.match(elements.appearanceSelectedSummary.textContent,/nativo integrado/);
 });

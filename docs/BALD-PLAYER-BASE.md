@@ -1,7 +1,10 @@
 # Base careca v1
 
 O projeto usa `teamsV1.appearanceModel = "bald-base-v1"`.
-O código 0 é careca; 14 recupera o cabelo original; 15 é Cascão.
+Nos jogadores de linha, o código 0 é careca; 14 recupera o cabelo original;
+15 é Cascão. Goleiros usam descritores de cinco bytes, sem metadados de cabelo
+sobreposto: neles, zero é o modelo nativo com cabelo integrado. O build mantém
+zero para posições GO e não converte seus zeros em 14.
 A migração de projetos antigos troca 0/14 uma única vez, preserva os demais
 atributos e guarda os desenhos antigos do 14 em `legacyBaldHeadDrawings`.
 A ROM-base de 2 MiB é imutável.
