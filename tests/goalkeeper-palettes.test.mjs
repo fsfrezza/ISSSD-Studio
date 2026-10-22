@@ -13,7 +13,7 @@ test('palette writer follows identities across roster movement and does not muta
 });
 test('emitted DMA helpers select each current goalkeeper after substitutions and in Skills previews',()=>{
  const b=fixture(),r=expandPlusTo4MiB(b),s={goalkeeperPalettesV1:{schema:core.GOALKEEPER_PALETTE_SCHEMA,version:1,players:{'30:1':entry(123),'30:12':entry(456)}}};plusGoalkeeperPalettesWriter(r,s,b);
- for(const team of[0,30,55])for(const roster of[0,11,19])for(const mode of['side1','side2','preview'])for(const p of[0,1,8,9]){
+ for(const team of[0,30,55])for(const roster of[0,11,19])for(const mode of['side1','side2','preview'])for(const p of[0,1,4,8,9,12]){
   const h=GOALKEEPER_PALETTE_HOOKS.find(h=>h.mode===mode),wram=new Uint8Array(65536),dest=mode==='side2'?0x2DA2:0x2D82,oldD=0xD00;
   wram[mode==='side2'?0x3FA4:0x3F90]=roster;wram[oldD+0x34]=roster;
   assert.equal(executeKeeperPalette(r,h.helper,{x:team*2,a:mode==='side2'?0x34:0x30,p,wram,callerD:mode==='preview'?oldD:null}).native,false);
@@ -41,10 +41,10 @@ test('browser bundle remains a classic script and includes goalkeeper open/save 
  const build=fs.readFileSync(new URL('../scripts/build-editor.mjs',import.meta.url),'utf8');for(const fragment of["goalkeeperPalettesV1||null","delete sem.goalkeeperPalettesV1","ds.goalkeeperPalettesV1=clone(ss.goalkeeperPalettesV1)","+'\\n'+goalkeeperRuntime"])assert.ok(build.includes(fragment),fragment);
 });
 
-test('native skin copying is bypassed only for explicit per-player palettes in both sides and Skills',()=>{
+test('native skin ABI and scratch effects survive explicit palette reapplication in both sides and Skills',()=>{
  const b=fixture(),r=expandPlusTo4MiB(b);plusGoalkeeperPalettesWriter(r,{goalkeeperPalettesV1:{schema:core.GOALKEEPER_PALETTE_SCHEMA,version:1,players:{'30:1':entry(123),'30:12':entry(456)}}},b);
- for(const h of GOALKEEPER_SKIN_HOOKS)for(const team of[0,30,55,56])for(const slot of[0,1,11,19,20])for(const p of[0,1,8,9]){
- const result=executeKeeperPalette(r,h.helper,{x:team*2,a:slot,p,skin:true});assert.equal(result.native,!(team===30&&(slot===0||slot===11)));
+ for(const h of GOALKEEPER_SKIN_HOOKS)for(const team of[0,30,55,56])for(const slot of[0,1,11,19,20])for(const p of[0,1,4,8,9,12]){
+ const result=executeKeeperPalette(r,h.helper,{x:team*2,a:slot,y:h.pc===0x5D09B?4:0,p,skin:true});assert.equal(result.native,!(team===30&&(slot===0||slot===11)));
  }
  const a=core.brazilGoalkeeperReference(b,1),c=core.brazilGoalkeeperReference(b,12);assert.deepEqual(a.colors.slice(5),c.colors.slice(5));assert.notDeepEqual(a.colors.slice(0,5),c.colors.slice(0,5));assert.equal(a.hair,13);assert.equal(c.hair,12);
 });

@@ -33,8 +33,9 @@ O bloco nativo correto possui **11 cores**, e não 12: a tabela do leitor
 8BD06E aponta para 828358; cada registro no banco 89 começa com tamanho 21
 (22 bytes de cores). Os destinos nativos são C1/D1 da paleta de sprites.
 Cabeçalhos e paletas originais permanecem. Para entradas individuais explícitas,
-a cópia posterior de pele/cabelo é desativada por jogador, evitando sobrescrever
-as cores escolhidas. Entradas sem edição preservam a sobreposição nativa.
+a rotina posterior de pele/cabelo é executada integralmente e depois as cores
+individuais são reaplicadas. O wrapper conserva os efeitos nativos em A/X/Y/DB/P
+e no scratch da página direta. Entradas sem edição mantêm o resultado nativo.
 
 Cada jogador recebe uma cópia de 22 bytes na expansão. A seleção do goleiro em
 campo consulta o primeiro registro da escalação corrente (7E3F90/7E3FA4),
@@ -56,12 +57,26 @@ O projeto anexado pelo usuário também foi usado na geração cumulativa real.
 Ainda é necessária a conferência visual no emulador.
 
 Flags por jogador: PC 2A6200, 56 × 20 palavras. Helpers em 2A7600/7800/7A00;
-hooks nativos 05D081/05D09B/0C790C (JSL 8BD110). O wrapper usa o índice de
-jogador já passado pelo chamador, restaura A/X/Y/DB/P e retorna sem modificar
-cores somente quando existe uma paleta individual. Nos demais casos encadeia
-o leitor nativo. Reserva total termina em 2A7C00.
+hooks nativos 05D081/05D09B/0C790C (JSL 8BD110). O wrapper chama primeiro
+o leitor nativo, preservando suas alterações em registradores e DP scratch.
+Depois reaplica a paleta explícita usando os argumentos originais do chamador
+e restaura exatamente o contexto pós-nativo. A compactação do frame temporário
+usa somente stack-relative, sem alocar WRAM. Reserva total termina em 2A7C00.
+A cópia inicial também reproduz o P=00 carregado pelo PEA/PLB/PLP nativo,
+incluindo I limpo; não restaura flags incompatíveis com o leitor original.
 
-O botão de referências do Brasil aplica pele clara e cabelo com entradas
+O botão de referências do Brasil aplica pele clara, cabelo loiro com entradas
 (tipo 13) ao Taffarel, pele mais morena e cabelo curto (tipo 12) ao Gilmar.
 Ambos usam a mesma camisa verde e tons escuros de calção/calçado. São
 aproximações com os tipos nativos disponíveis; não desenha novos rostos.
+
+## Regressão visual reportada
+
+Os prints de 22/10/2026 mostraram sprites corrompidos nas prévias de ambos os
+goleiros e uma faixa de cabeças em campo. Testes apenas de conteúdo/destino
+não comprovavam o contrato do chamador. O wrapper anterior pulava 8BD110 para
+paletas explícitas; esse leitor também muda X/Y/A/P e scratch DP. Agora esses
+efeitos são mantidos e os testes exigem igualdade do contexto pós-nativo,
+incluindo caminhos com índice zero, ambos os lados e prévia. Trata-se de
+validação de ABI com fixture de efeitos nativos, não de uma execução Mesen.
+A confirmação visual da correção continua necessária no emulador.

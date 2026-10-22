@@ -3,7 +3,7 @@
   "version": 2,
   "app": "ISSSD Studio",
   "appVersion": "6.74",
-  "createdAt": "2026-10-18T01:28:09.770Z",
+  "createdAt": "2026-10-22T13:45:29.513Z",
   "name": "International-Superstar-Soccer-Deluxe-Plus-projeto",
   "base": {
     "sha256": "ca2d73b226ab252649d4c9c35bb6b81937586d908c1d9dc9d447db7babfaad0a",
@@ -32,62 +32,62 @@
   "state": {
     "ui": {
       "teamNames": [
-        "Itália",
-        "Holanda",
-        "Inglaterra",
-        "Noruega",
-        "Espanha",
-        "Irlanda",
-        "Portugal",
-        "Dinamarca",
-        "Alemanha",
-        "França",
-        "Bélgica",
-        "Suécia",
-        "Romênia",
-        "Bulgária",
-        "Rússia",
-        "Suíça",
-        "Grécia",
-        "Croácia",
-        "Áustria",
-        "País de Gales",
-        "Escócia",
-        "Turquia",
-        "República Tcheca",
-        "Polônia",
-        "Japão",
-        "Coreia do Sul",
-        "Arábia Saudita",
-        "Nigéria",
-        "Camarões",
-        "Marrocos",
-        "Brasil",
-        "Argentina",
-        "Colômbia",
-        "México",
-        "EUA",
-        "Uruguai",
-        "Venezuela",
-        "Equador",
-        "Chile",
-        "Bolívia",
-        "Paraguai",
-        "Peru",
-        "China",
-        "Irã",
-        "Uzbequistão",
-        "Zâmbia",
-        "Gana",
-        "África do Sul",
-        "Canadá",
-        "Honduras",
-        "Costa Rica",
-        "Austrália",
-        "Iugoslávia",
-        "Irlanda do Norte",
-        "Equipe dos autores",
-        "All Stars"
+        "ITÁLIA",
+        "HOLANDA",
+        "INGLATERRA",
+        "NORUEGA",
+        "ESPANHA",
+        "IRLANDA",
+        "PORTUGAL",
+        "DINAMARCA",
+        "ALEMANHA",
+        "FRANÇA",
+        "BÉLGICA",
+        "SUÉCIA",
+        "ROMÊNIA",
+        "BULGÁRIA",
+        "RÚSSIA",
+        "SUÍÇA",
+        "GRÉCIA",
+        "CROÁCIA",
+        "ÁUSTRIA",
+        "PAÍS DE GALES",
+        "ESCÓCIA",
+        "TURQUIA",
+        "REPÚBLICA TCHECA",
+        "POLÔNIA",
+        "JAPÃO",
+        "COREIA DO SUL",
+        "ARÁBIA SAUDITA",
+        "NIGÉRIA",
+        "CAMARÕES",
+        "MARROCOS",
+        "BRASIL",
+        "ARGENTINA",
+        "COLÔMBIA",
+        "MÉXICO",
+        "E.U.A.",
+        "URUGUAI",
+        "VENEZUELA",
+        "EQUADOR",
+        "CHILE",
+        "BOLÍVIA",
+        "PARAGUAI",
+        "PERU",
+        "CHINA",
+        "IRÃ",
+        "UZBEQUISTÃO",
+        "ZÂMBIA",
+        "GANA",
+        "ÁFRICA DO SUL",
+        "CANADÁ",
+        "HONDURAS",
+        "COSTA RICA",
+        "AUSTRÁLIA",
+        "IUGOSLÁVIA",
+        "IRLANDA DO NORTE",
+        "EQUIPE DOS AUTORES",
+        "TODAS AS ESTRELAS"
       ],
       "teamSelectLayout": "original",
       "currentTeam": 30,
@@ -714,61 +714,7 @@
         "off": 32732,
         "len": 4,
         "encoding": "rle-base64",
-        "data": "A41Icrc="
-      },
-      {
-        "off": 59378,
-        "len": 12,
-        "encoding": "rle-base64",
-        "data": "CxAAEggEAiIMFBgaHg=="
-      },
-      {
-        "off": 59391,
-        "len": 2,
-        "encoding": "rle-base64",
-        "data": "AQ4G"
-      },
-      {
-        "off": 59394,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "ACw="
-      },
-      {
-        "off": 59396,
-        "len": 5,
-        "encoding": "rle-base64",
-        "data": "BCgKaiYq"
-      },
-      {
-        "off": 59402,
-        "len": 12,
-        "encoding": "rle-base64",
-        "data": "Czo2OF5cWjIwVDRWWA=="
-      },
-      {
-        "off": 59420,
-        "len": 6,
-        "encoding": "rle-base64",
-        "data": "BUxSSmJkSA=="
-      },
-      {
-        "off": 59427,
-        "len": 2,
-        "encoding": "rle-base64",
-        "data": "AUJg"
-      },
-      {
-        "off": 59431,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "ABw="
-      },
-      {
-        "off": 59439,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "AAI="
+        "data": "AzQMy/M="
       },
       {
         "off": 95150,
@@ -811,18 +757,6 @@
         "len": 1,
         "encoding": "rle-base64",
         "data": "ANA="
-      },
-      {
-        "off": 260816,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "ACw="
-      },
-      {
-        "off": 260818,
-        "len": 1,
-        "encoding": "rle-base64",
-        "data": "ABw="
       },
       {
         "off": 311958,
@@ -3451,12 +3385,6 @@
         "len": 1,
         "encoding": "rle-base64",
         "data": "ABA="
-      },
-      {
-        "off": 1564704,
-        "len": 1812,
-        "encoding": "rle-base64",
-        "data": "FklTU1NEUExVU01FVEEwMQBJdMOhbGlhmAAGSG9sYW5kYZgACUluZ2xhdGVycmGVAAZOb3J1ZWdhmAAGRXNwYW5oYZgABklybGFuZGGYAAdQb3J0dWdhbJcACERpbmFtYXJjYZYAB0FsZW1hbmhhlwAGRnJhbsOnYZgAB0LDqWxnaWNhlwAGU3XDqWNpYZgAB1JvbcOqbmlhlwAIQnVsZ8OhcmlhlgAGUsO6c3NpYZgABlN1w63Dp2GYAAZHcsOpY2lhmAAHQ3Jvw6FjaWGXAAfDgXVzdHJpYZcADVBhw61zIGRlIEdhbGVzkQAHRXNjw7NjaWGXAAZUdXJxdWlhmAAQUmVww7pibGljYSBUY2hlY2GOAAdQb2zDtG5pYZcABUphcMOjb5kADENvcmVpYSBkbyBTdWySAA5BcsOhYmlhIFNhdWRpdGGQAAdOaWfDqXJpYZcACENhbWFyw7Vlc5YAB01hcnJvY29zlwAFQnJhc2lsmQAIQXJnZW50aW5hlgAIQ29sw7RtYmlhlgAGTcOpeGljb5gAAkVVQZwABlVydWd1YWmYAAhWZW5lenVlbGGWAAZFcXVhZG9ymAAEQ2hpbGWaAAdCb2zDrXZpYZcAB1BhcmFndWFplwADUGVydZsABENoaW5hmgADSXLDo5sAC1V6YmVxdWlzdMOjb5MABlrDom1iaWGYAANHYW5hmwANw4FmcmljYSBkbyBTdWyRAAZDYW5hZMOhmAAHSG9uZHVyYXOXAAlDb3N0YSBSaWNhlQAJQXVzdHLDoWxpYZUACkl1Z29zbMOhdmlhlAAPSXJsYW5kYSBkbyBOb3J0ZY8AEUVxdWlwZSBkb3MgYXV0b3Jlc40ACEFsbCBTdGFyc5YAA0dHNzY="
       }
     ],
     "semantic": {
@@ -3569,7 +3497,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "ITÁLIA"
+            }
           },
           "1": {
             "teamId": 1,
@@ -3674,7 +3605,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "HOLANDA"
+            }
           },
           "2": {
             "teamId": 2,
@@ -3779,7 +3713,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "INGLATERRA"
+            }
           },
           "3": {
             "teamId": 3,
@@ -3884,7 +3821,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "NORUEGA"
+            }
           },
           "4": {
             "teamId": 4,
@@ -3989,7 +3929,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "ESPANHA"
+            }
           },
           "5": {
             "teamId": 5,
@@ -4094,7 +4037,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "IRLANDA"
+            }
           },
           "6": {
             "teamId": 6,
@@ -4199,7 +4145,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "PORTUGAL"
+            }
           },
           "7": {
             "teamId": 7,
@@ -4304,7 +4253,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "DINAMARCA"
+            }
           },
           "8": {
             "teamId": 8,
@@ -4409,7 +4361,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "ALEMANHA"
+            }
           },
           "9": {
             "teamId": 9,
@@ -4514,7 +4469,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "FRANÇA"
+            }
           },
           "10": {
             "teamId": 10,
@@ -4619,7 +4577,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "BÉLGICA"
+            }
           },
           "11": {
             "teamId": 11,
@@ -4724,7 +4685,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "SUÉCIA"
+            }
           },
           "12": {
             "teamId": 12,
@@ -4829,7 +4793,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "ROMÊNIA"
+            }
           },
           "13": {
             "teamId": 13,
@@ -4934,7 +4901,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "BULGÁRIA"
+            }
           },
           "14": {
             "teamId": 14,
@@ -5039,7 +5009,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "RÚSSIA"
+            }
           },
           "15": {
             "teamId": 15,
@@ -5144,7 +5117,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "SUÍÇA"
+            }
           },
           "16": {
             "teamId": 16,
@@ -5249,7 +5225,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "GRÉCIA"
+            }
           },
           "17": {
             "teamId": 17,
@@ -5354,7 +5333,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "CROÁCIA"
+            }
           },
           "18": {
             "teamId": 18,
@@ -5459,7 +5441,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "ÁUSTRIA"
+            }
           },
           "19": {
             "teamId": 19,
@@ -5564,7 +5549,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "PAÍS DE GALES"
+            }
           },
           "20": {
             "teamId": 20,
@@ -5669,7 +5657,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "ESCÓCIA"
+            }
           },
           "21": {
             "teamId": 21,
@@ -5774,7 +5765,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "TURQUIA"
+            }
           },
           "22": {
             "teamId": 22,
@@ -5879,7 +5873,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "REPÚBLICA TCHECA"
+            }
           },
           "23": {
             "teamId": 23,
@@ -5984,7 +5981,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "POLÔNIA"
+            }
           },
           "24": {
             "teamId": 24,
@@ -6089,7 +6089,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "JAPÃO"
+            }
           },
           "25": {
             "teamId": 25,
@@ -6194,7 +6197,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "COREIA DO SUL"
+            }
           },
           "26": {
             "teamId": 26,
@@ -6299,7 +6305,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "ARÁBIA SAUDITA"
+            }
           },
           "27": {
             "teamId": 27,
@@ -6404,7 +6413,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "NIGÉRIA"
+            }
           },
           "28": {
             "teamId": 28,
@@ -6509,7 +6521,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "CAMARÕES"
+            }
           },
           "29": {
             "teamId": 29,
@@ -6614,7 +6629,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "MARROCOS"
+            }
           },
           "30": {
             "teamId": 30,
@@ -6996,7 +7014,10 @@
                   }
                 }
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "BRASIL"
+            }
           },
           "31": {
             "teamId": 31,
@@ -7101,7 +7122,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "ARGENTINA"
+            }
           },
           "32": {
             "teamId": 32,
@@ -7206,7 +7230,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "COLÔMBIA"
+            }
           },
           "33": {
             "teamId": 33,
@@ -7311,7 +7338,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "MÉXICO"
+            }
           },
           "34": {
             "teamId": 34,
@@ -7416,7 +7446,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "E.U.A."
+            }
           },
           "35": {
             "teamId": 35,
@@ -7521,7 +7554,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "URUGUAI"
+            }
           },
           "36": {
             "teamId": 36,
@@ -7626,7 +7662,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "VENEZUELA"
+            }
           },
           "37": {
             "teamId": 37,
@@ -7731,7 +7770,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "EQUADOR"
+            }
           },
           "38": {
             "teamId": 38,
@@ -7836,7 +7878,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "CHILE"
+            }
           },
           "39": {
             "teamId": 39,
@@ -7941,7 +7986,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "BOLÍVIA"
+            }
           },
           "40": {
             "teamId": 40,
@@ -8046,7 +8094,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "PARAGUAI"
+            }
           },
           "41": {
             "teamId": 41,
@@ -8151,7 +8202,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "PERU"
+            }
           },
           "42": {
             "teamId": 42,
@@ -8256,7 +8310,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "CHINA"
+            }
           },
           "43": {
             "teamId": 43,
@@ -8361,7 +8418,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "IRÃ"
+            }
           },
           "44": {
             "teamId": 44,
@@ -8466,7 +8526,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "UZBEQUISTÃO"
+            }
           },
           "45": {
             "teamId": 45,
@@ -8571,7 +8634,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "ZÂMBIA"
+            }
           },
           "46": {
             "teamId": 46,
@@ -8676,7 +8742,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "GANA"
+            }
           },
           "47": {
             "teamId": 47,
@@ -8781,7 +8850,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "ÁFRICA DO SUL"
+            }
           },
           "48": {
             "teamId": 48,
@@ -8886,7 +8958,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "CANADÁ"
+            }
           },
           "49": {
             "teamId": 49,
@@ -8991,7 +9066,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "HONDURAS"
+            }
           },
           "50": {
             "teamId": 50,
@@ -9096,7 +9174,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "COSTA RICA"
+            }
           },
           "51": {
             "teamId": 51,
@@ -9201,7 +9282,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "AUSTRÁLIA"
+            }
           },
           "52": {
             "teamId": 52,
@@ -9306,7 +9390,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "IUGOSLÁVIA"
+            }
           },
           "53": {
             "teamId": 53,
@@ -9411,7 +9498,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "IRLANDA DO NORTE"
+            }
           },
           "54": {
             "teamId": 54,
@@ -9516,7 +9606,10 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "EQUIPE DOS AUTORES"
+            }
           },
           "55": {
             "teamId": 55,
@@ -9621,9 +9714,13 @@
                 "baseSlot": 20,
                 "slot": 20
               }
-            ]
+            ],
+            "custom": {
+              "teamName": "TODAS AS ESTRELAS"
+            }
           }
-        }
+        },
+        "appearanceModel": "bald-base-v1"
       },
       "plusGroups": {
         "labels": [
@@ -11186,7 +11283,7 @@
         "players": {
           "30:1": {
             "colors": [
-              4262,
+              11862,
               7503,
               10741,
               16059,
@@ -11231,5 +11328,5 @@
     "Patches derivados do runtime GOSPEL-GOL não são persistidos; são regenerados deterministicamente ao Salvar ROM.",
     "ATENÇÃO: os rótulos gráficos do menu principal estão preservados semanticamente no projeto, mas o asset gráfico do menu ainda não possui escrita segura na ROM."
   ],
-  "savedAt": "2026-10-18T01:28:14.041Z"
+  "savedAt": "2026-10-22T13:45:32.978Z"
 }
