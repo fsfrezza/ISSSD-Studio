@@ -15,9 +15,9 @@ O finalizador salva a seção no projeto e na requisição de exportação da RO
 A abertura valida e restaura a seção; importação inválida mantém a sessão
 anterior. A seção participa da seleção de categorias ao abrir/salvar projetos.
 
-Pele e cabelo continuam seguindo Aparência e as sobreposições nativas; esses
-cinco campos aparecem somente como referência. São editáveis quatro tons da
-camisa e dois tons compartilhados de calção/calçado. O seletor de cor principal
+Todas as onze cores são editáveis, incluindo pele e cabelo, quatro tons da
+camisa e dois tons compartilhados de calção/calçado. O tipo de cabelo pode ser
+escolhido nesta aba, usando a mesma identidade da aba Aparência. O seletor de cor principal
 gera os quatro tons de camisa; cada tom também pode ser ajustado separadamente.
 Não há alteração de layout dos sprites nesta etapa.
 
@@ -32,7 +32,9 @@ já fica no projeto em memória; Salvar projeto grava o arquivo.
 O bloco nativo correto possui **11 cores**, e não 12: a tabela do leitor
 8BD06E aponta para 828358; cada registro no banco 89 começa com tamanho 21
 (22 bytes de cores). Os destinos nativos são C1/D1 da paleta de sprites.
-Cabeçalhos, paletas originais e sobreposições nativas de pele/cabelo permanecem.
+Cabeçalhos e paletas originais permanecem. Para entradas individuais explícitas,
+a cópia posterior de pele/cabelo é desativada por jogador, evitando sobrescrever
+as cores escolhidas. Entradas sem edição preservam a sobreposição nativa.
 
 Cada jogador recebe uma cópia de 22 bytes na expansão. A seleção do goleiro em
 campo consulta o primeiro registro da escalação corrente (7E3F90/7E3FA4),
@@ -52,3 +54,14 @@ persistência e reabertura reais da UI, os bytes 65816 dos três caminhos,
 limites da cópia, colisão de armazenamento e imutabilidade da ROM-base.
 O projeto anexado pelo usuário também foi usado na geração cumulativa real.
 Ainda é necessária a conferência visual no emulador.
+
+Flags por jogador: PC 2A6200, 56 × 20 palavras. Helpers em 2A7600/7800/7A00;
+hooks nativos 05D081/05D09B/0C790C (JSL 8BD110). O wrapper usa o índice de
+jogador já passado pelo chamador, restaura A/X/Y/DB/P e retorna sem modificar
+cores somente quando existe uma paleta individual. Nos demais casos encadeia
+o leitor nativo. Reserva total termina em 2A7C00.
+
+O botão de referências do Brasil aplica pele clara e cabelo com entradas
+(tipo 13) ao Taffarel, pele mais morena e cabelo curto (tipo 12) ao Gilmar.
+Ambos usam a mesma camisa verde e tons escuros de calção/calçado. São
+aproximações com os tipos nativos disponíveis; não desenha novos rostos.

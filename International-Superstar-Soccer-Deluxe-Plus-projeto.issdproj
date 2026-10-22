@@ -6635,6 +6635,9 @@
                     "intelligence": 9,
                     "dribbling": 4,
                     "jump": 9
+                  },
+                  "appearance": {
+                    "hair": 13
                   }
                 }
               },
@@ -6848,6 +6851,9 @@
                     "intelligence": 9,
                     "dribbling": 4,
                     "jump": 9
+                  },
+                  "appearance": {
+                    "hair": 12
                   }
                 }
               },
@@ -11171,6 +11177,42 @@
             "full": "TODAS AS ESTRELAS",
             "short": "ESTRELAS",
             "big": "ESTRELAS"
+          }
+        }
+      },
+      "goalkeeperPalettesV1": {
+        "schema": "isssd-goalkeeper-palettes-v1",
+        "version": 1,
+        "players": {
+          "30:1": {
+            "colors": [
+              4262,
+              7503,
+              10741,
+              16059,
+              24479,
+              2176,
+              3296,
+              4416,
+              5536,
+              4194,
+              7429
+            ]
+          },
+          "30:12": {
+            "colors": [
+              3172,
+              5388,
+              8594,
+              11832,
+              17149,
+              2176,
+              3296,
+              4416,
+              5536,
+              4194,
+              7429
+            ]
           }
         }
       }
