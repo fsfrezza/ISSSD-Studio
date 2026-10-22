@@ -81,3 +81,11 @@ A revisão anterior Careca=14 foi substituída pela [base careca v1](BALD-PLAYER
 Cascão. O projeto antigo é migrado uma vez. A edição de corpo parte da versão
 careca e a borracha dos cabelos revela essa base. O botão atual chama-se
 “Restaurar Original e Cascão (24 quadros)”.
+
+### Editar o nativo pela lista de tipos
+
+Selecione “0 · Nativo / base careca (editar corpo)” no mesmo seletor dos cabelos.
+As 24 poses levam diretamente ao bloco de corpo correspondente; a referência
+mostra o jogador inteiro. Aplicar salva como edição de corpo no projeto e a
+exportação grava na fase Jogadores. O seletor de tipos e poses permanece ativo.
+Para os demais 857 blocos, use o conjunto “Corpos · todos os blocos nativos”.
