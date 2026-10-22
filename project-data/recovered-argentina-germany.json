@@ -1,0 +1,1139 @@
+{
+  "sourceCommit": "05cf6fd",
+  "teams": {
+    "8": {
+      "teamId": 8,
+      "teamName": "Alemanha",
+      "formation": {
+        "index": 1,
+        "label": "4-4-2",
+        "custom": false
+      },
+      "players": [
+        {
+          "slot": 1,
+          "name": "Neuer",
+          "number": 1,
+          "position": "GO",
+          "skills": {
+            "acceleration": 9,
+            "speed": 8,
+            "shot": 5,
+            "curve": 5,
+            "balance": 9,
+            "intelligence": 8,
+            "dribbling": 6,
+            "jump": 7,
+            "energy": 10
+          },
+          "appearance": {
+            "hair": 0,
+            "palette": 0
+          },
+          "tactical": {
+            "x": -57,
+            "y": 0,
+            "className": "GO",
+            "attack": false,
+            "fixed": true
+          },
+          "nameHex": "7586968693000000",
+          "baseSlot": 1,
+          "playerId": "8:1"
+        },
+        {
+          "slot": 2,
+          "name": "Lahm",
+          "number": 2,
+          "position": "DF",
+          "skills": {
+            "acceleration": 8,
+            "speed": 9,
+            "shot": 8,
+            "curve": 7,
+            "balance": 9,
+            "intelligence": 9,
+            "dribbling": 7,
+            "jump": 9,
+            "energy": 9
+          },
+          "appearance": {
+            "hair": 0,
+            "palette": 0
+          },
+          "tactical": {
+            "x": -57,
+            "y": 30,
+            "className": "DF",
+            "attack": true
+          },
+          "nameHex": "7382898E00000000",
+          "baseSlot": 2,
+          "playerId": "8:2"
+        },
+        {
+          "slot": 3,
+          "name": "Beckenba",
+          "number": 10,
+          "position": "DF",
+          "skills": {
+            "acceleration": 8,
+            "speed": 9,
+            "shot": 10,
+            "curve": 8,
+            "balance": 10,
+            "intelligence": 9,
+            "dribbling": 7,
+            "jump": 8,
+            "energy": 10
+          },
+          "appearance": {
+            "hair": 1,
+            "palette": 0
+          },
+          "tactical": {
+            "x": -57,
+            "y": -10,
+            "className": "DF",
+            "attack": false
+          },
+          "nameHex": "6986848C868F8382",
+          "baseSlot": 3,
+          "playerId": "8:3"
+        },
+        {
+          "slot": 4,
+          "name": "Kohler",
+          "number": 4,
+          "position": "DF",
+          "skills": {
+            "acceleration": 9,
+            "speed": 8,
+            "shot": 7,
+            "curve": 6,
+            "balance": 9,
+            "intelligence": 8,
+            "dribbling": 7,
+            "jump": 9,
+            "energy": 9
+          },
+          "appearance": {
+            "hair": 1,
+            "palette": 0
+          },
+          "tactical": {
+            "x": -57,
+            "y": 10,
+            "className": "DF",
+            "attack": false
+          },
+          "nameHex": "7290898D86930000",
+          "baseSlot": 4,
+          "playerId": "8:4"
+        },
+        {
+          "slot": 5,
+          "name": "Brehme",
+          "number": 3,
+          "position": "DF",
+          "skills": {
+            "acceleration": 8,
+            "speed": 9,
+            "shot": 8,
+            "curve": 9,
+            "balance": 9,
+            "intelligence": 9,
+            "dribbling": 8,
+            "jump": 8,
+            "energy": 9
+          },
+          "appearance": {
+            "hair": 0,
+            "palette": 0
+          },
+          "tactical": {
+            "x": -57,
+            "y": -30,
+            "className": "DF",
+            "attack": true
+          },
+          "nameHex": "699386898E860000",
+          "baseSlot": 5,
+          "playerId": "8:5"
+        },
+        {
+          "slot": 6,
+          "name": "Matthaus",
+          "number": 5,
+          "position": "VOL",
+          "skills": {
+            "acceleration": 8,
+            "speed": 9,
+            "shot": 8,
+            "curve": 8,
+            "balance": 9,
+            "intelligence": 9,
+            "dribbling": 7,
+            "jump": 9,
+            "energy": 9
+          },
+          "appearance": {
+            "hair": 0,
+            "palette": 0
+          },
+          "tactical": {
+            "x": -10,
+            "y": -10,
+            "className": "MC",
+            "attack": false
+          },
+          "nameHex": "7482959589829694",
+          "baseSlot": 6,
+          "playerId": "8:6"
+        },
+        {
+          "slot": 7,
+          "name": "Kroos",
+          "number": 6,
+          "position": "MC",
+          "skills": {
+            "acceleration": 8,
+            "speed": 9,
+            "shot": 8,
+            "curve": 8,
+            "balance": 10,
+            "intelligence": 8,
+            "dribbling": 9,
+            "jump": 8,
+            "energy": 9
+          },
+          "appearance": {
+            "hair": 0,
+            "palette": 0
+          },
+          "tactical": {
+            "x": -10,
+            "y": 10,
+            "className": "MC",
+            "attack": false
+          },
+          "nameHex": "7293909094000000",
+          "baseSlot": 7,
+          "playerId": "8:7"
+        },
+        {
+          "slot": 8,
+          "name": "Walter",
+          "number": 8,
+          "position": "MC",
+          "skills": {
+            "acceleration": 9,
+            "speed": 9,
+            "shot": 8,
+            "curve": 10,
+            "balance": 9,
+            "intelligence": 8,
+            "dribbling": 10,
+            "jump": 6,
+            "energy": 10
+          },
+          "appearance": {
+            "hair": 1,
+            "palette": 0
+          },
+          "tactical": {
+            "x": 8,
+            "y": 28,
+            "className": "MC",
+            "attack": true
+          },
+          "nameHex": "7E828D9586930000",
+          "baseSlot": 8,
+          "playerId": "8:8"
+        },
+        {
+          "slot": 9,
+          "name": "Rummenig",
+          "number": 7,
+          "position": "MO",
+          "skills": {
+            "acceleration": 8,
+            "speed": 9,
+            "shot": 8,
+            "curve": 9,
+            "balance": 10,
+            "intelligence": 9,
+            "dribbling": 9,
+            "jump": 8,
+            "energy": 9
+          },
+          "appearance": {
+            "hair": 0,
+            "palette": 0
+          },
+          "tactical": {
+            "x": 8,
+            "y": -28,
+            "className": "MC",
+            "attack": true
+          },
+          "nameHex": "79968E8E868F8A88",
+          "baseSlot": 9,
+          "playerId": "8:9"
+        },
+        {
+          "slot": 10,
+          "name": "Muller",
+          "number": 11,
+          "position": "AT",
+          "skills": {
+            "acceleration": 9,
+            "speed": 9,
+            "shot": 7,
+            "curve": 8,
+            "balance": 9,
+            "intelligence": 8,
+            "dribbling": 7,
+            "jump": 9,
+            "energy": 10
+          },
+          "appearance": {
+            "hair": 1,
+            "palette": 0
+          },
+          "tactical": {
+            "x": 57,
+            "y": -10,
+            "className": "AT",
+            "attack": false
+          },
+          "nameHex": "74968D8D86930000",
+          "baseSlot": 10,
+          "playerId": "8:10"
+        },
+        {
+          "slot": 11,
+          "name": "Klose",
+          "number": 9,
+          "position": "AT",
+          "skills": {
+            "acceleration": 9,
+            "speed": 10,
+            "shot": 8,
+            "curve": 7,
+            "balance": 10,
+            "intelligence": 8,
+            "dribbling": 7,
+            "jump": 9,
+            "energy": 9
+          },
+          "appearance": {
+            "hair": 0,
+            "palette": 1
+          },
+          "tactical": {
+            "x": 57,
+            "y": 10,
+            "className": "AT",
+            "attack": false
+          },
+          "nameHex": "728D909486000000",
+          "baseSlot": 11,
+          "playerId": "8:11"
+        },
+        {
+          "slot": 12,
+          "name": "Maier",
+          "number": 12,
+          "position": "GO",
+          "skills": {
+            "acceleration": 8,
+            "speed": 8,
+            "shot": 6,
+            "curve": 5,
+            "balance": 8,
+            "intelligence": 8,
+            "dribbling": 6,
+            "jump": 9,
+            "energy": 9
+          },
+          "appearance": {
+            "hair": 1,
+            "palette": 0
+          },
+          "tactical": null,
+          "nameHex": "74828A8693000000",
+          "baseSlot": 12,
+          "playerId": "8:12"
+        },
+        {
+          "slot": 13,
+          "name": "Vogts",
+          "number": 13,
+          "position": "DF",
+          "skills": {
+            "acceleration": 8,
+            "speed": 9,
+            "shot": 7,
+            "curve": 6,
+            "balance": 9,
+            "intelligence": 8,
+            "dribbling": 7,
+            "jump": 9,
+            "energy": 10
+          },
+          "appearance": {
+            "hair": 1,
+            "palette": 0
+          },
+          "tactical": null,
+          "nameHex": "7D90889594000000",
+          "baseSlot": 13,
+          "playerId": "8:13"
+        },
+        {
+          "slot": 14,
+          "name": "Sammer",
+          "number": 14,
+          "position": "DF",
+          "skills": {
+            "acceleration": 7,
+            "speed": 8,
+            "shot": 7,
+            "curve": 5,
+            "balance": 9,
+            "intelligence": 7,
+            "dribbling": 6,
+            "jump": 8,
+            "energy": 9
+          },
+          "appearance": {
+            "hair": 0,
+            "palette": 0
+          },
+          "tactical": null,
+          "nameHex": "7A828E8E86930000",
+          "baseSlot": 14,
+          "playerId": "8:14"
+        },
+        {
+          "slot": 15,
+          "name": "Breitner",
+          "number": 15,
+          "position": "DF",
+          "skills": {
+            "acceleration": 8,
+            "speed": 8,
+            "shot": 6,
+            "curve": 5,
+            "balance": 9,
+            "intelligence": 8,
+            "dribbling": 7,
+            "jump": 8,
+            "energy": 8
+          },
+          "appearance": {
+            "hair": 0,
+            "palette": 0
+          },
+          "tactical": null,
+          "nameHex": "6993868A958F8693",
+          "baseSlot": 15,
+          "playerId": "8:15"
+        },
+        {
+          "slot": 16,
+          "name": "Schweins",
+          "number": 16,
+          "position": "MC",
+          "skills": {
+            "acceleration": 9,
+            "speed": 8,
+            "shot": 5,
+            "curve": 8,
+            "balance": 9,
+            "intelligence": 9,
+            "dribbling": 7,
+            "jump": 8,
+            "energy": 9
+          },
+          "appearance": {
+            "hair": 0,
+            "palette": 0
+          },
+          "tactical": null,
+          "nameHex": "7A848998868A8F94",
+          "baseSlot": 16,
+          "playerId": "8:16"
+        },
+        {
+          "slot": 17,
+          "name": "Ballack",
+          "number": 17,
+          "position": "AT",
+          "skills": {
+            "acceleration": 9,
+            "speed": 8,
+            "shot": 7,
+            "curve": 9,
+            "balance": 9,
+            "intelligence": 8,
+            "dribbling": 7,
+            "jump": 9,
+            "energy": 9
+          },
+          "appearance": {
+            "hair": 0,
+            "palette": 1
+          },
+          "tactical": null,
+          "nameHex": "69828D8D82848C00",
+          "baseSlot": 17,
+          "playerId": "8:17"
+        },
+        {
+          "slot": 18,
+          "name": "Ozil",
+          "number": 18,
+          "position": "AT",
+          "skills": {
+            "acceleration": 7,
+            "speed": 8,
+            "shot": 8,
+            "curve": 8,
+            "balance": 9,
+            "intelligence": 7,
+            "dribbling": 7,
+            "jump": 7,
+            "energy": 9
+          },
+          "appearance": {
+            "hair": 0,
+            "palette": 0
+          },
+          "tactical": null,
+          "nameHex": "769B8A8D00000000",
+          "baseSlot": 18,
+          "playerId": "8:18"
+        },
+        {
+          "slot": 19,
+          "name": "Klinsman",
+          "number": 19,
+          "position": "AT",
+          "skills": {
+            "acceleration": 7,
+            "speed": 9,
+            "shot": 6,
+            "curve": 9,
+            "balance": 8,
+            "intelligence": 8,
+            "dribbling": 9,
+            "jump": 6,
+            "energy": 8
+          },
+          "appearance": {
+            "hair": 1,
+            "palette": 0
+          },
+          "tactical": null,
+          "nameHex": "728D8A8F948E828F",
+          "baseSlot": 19,
+          "playerId": "8:19"
+        },
+        {
+          "slot": 20,
+          "name": "Seeler",
+          "number": 20,
+          "position": "AT",
+          "skills": {
+            "acceleration": 8,
+            "speed": 8,
+            "shot": 5,
+            "curve": 7,
+            "balance": 9,
+            "intelligence": 7,
+            "dribbling": 9,
+            "jump": 7,
+            "energy": 10
+          },
+          "appearance": {
+            "hair": 0,
+            "palette": 0
+          },
+          "tactical": null,
+          "nameHex": "7A86868D86930000",
+          "baseSlot": 20,
+          "playerId": "8:20"
+        }
+      ]
+    },
+    "31": {
+      "teamId": 31,
+      "teamName": "Argentina",
+      "formation": {
+        "index": 1,
+        "label": "4-4-2",
+        "custom": false
+      },
+      "players": [
+        {
+          "slot": 1,
+          "name": "Fillol",
+          "number": 1,
+          "position": "GO",
+          "skills": {
+            "acceleration": 7,
+            "speed": 7,
+            "shot": 5,
+            "curve": 4,
+            "balance": 9,
+            "intelligence": 7,
+            "dribbling": 8,
+            "jump": 7,
+            "energy": 6
+          },
+          "appearance": {
+            "hair": 0,
+            "palette": 0
+          },
+          "tactical": {
+            "x": -57,
+            "y": 0,
+            "className": "GO",
+            "attack": false,
+            "fixed": true
+          },
+          "nameHex": "6D8A8D8D908D0000",
+          "baseSlot": 1,
+          "playerId": "31:1"
+        },
+        {
+          "slot": 2,
+          "name": "Zanetti",
+          "number": 2,
+          "position": "DF",
+          "skills": {
+            "acceleration": 8,
+            "speed": 9,
+            "shot": 7,
+            "curve": 6,
+            "balance": 9,
+            "intelligence": 8,
+            "dribbling": 8,
+            "jump": 9,
+            "energy": 9
+          },
+          "appearance": {
+            "hair": 0,
+            "palette": 0
+          },
+          "tactical": {
+            "x": -57,
+            "y": 32,
+            "className": "DF",
+            "attack": true
+          },
+          "nameHex": "81828F8695958A00",
+          "baseSlot": 2,
+          "playerId": "31:2"
+        },
+        {
+          "slot": 3,
+          "name": "Passarel",
+          "number": 3,
+          "position": "DF",
+          "skills": {
+            "acceleration": 9,
+            "speed": 9,
+            "shot": 7,
+            "curve": 6,
+            "balance": 9,
+            "intelligence": 8,
+            "dribbling": 8,
+            "jump": 9,
+            "energy": 9
+          },
+          "appearance": {
+            "hair": 1,
+            "palette": 0
+          },
+          "tactical": {
+            "x": -57,
+            "y": -11,
+            "className": "DF",
+            "attack": false
+          },
+          "nameHex": "778294948293868D",
+          "baseSlot": 3,
+          "playerId": "31:3"
+        },
+        {
+          "slot": 4,
+          "name": "Ruggeri",
+          "number": 4,
+          "position": "DF",
+          "skills": {
+            "acceleration": 8,
+            "speed": 9,
+            "shot": 6,
+            "curve": 6,
+            "balance": 8,
+            "intelligence": 7,
+            "dribbling": 9,
+            "jump": 7,
+            "energy": 7
+          },
+          "appearance": {
+            "hair": 0,
+            "palette": 0
+          },
+          "tactical": {
+            "x": -57,
+            "y": 11,
+            "className": "DF",
+            "attack": false
+          },
+          "nameHex": "7996888886938A00",
+          "baseSlot": 4,
+          "playerId": "31:4"
+        },
+        {
+          "slot": 5,
+          "name": "Olartico",
+          "number": 6,
+          "position": "DF",
+          "skills": {
+            "acceleration": 8,
+            "speed": 9,
+            "shot": 6,
+            "curve": 7,
+            "balance": 9,
+            "intelligence": 8,
+            "dribbling": 9,
+            "jump": 8,
+            "energy": 8
+          },
+          "appearance": {
+            "hair": 0,
+            "palette": 0
+          },
+          "tactical": {
+            "x": -57,
+            "y": -32,
+            "className": "DF",
+            "attack": true
+          },
+          "nameHex": "768D8293958A8490",
+          "baseSlot": 5,
+          "playerId": "31:5"
+        },
+        {
+          "slot": 6,
+          "name": "Maschera",
+          "number": 5,
+          "position": "VOL",
+          "skills": {
+            "acceleration": 9,
+            "speed": 10,
+            "shot": 8,
+            "curve": 9,
+            "balance": 8,
+            "intelligence": 9,
+            "dribbling": 9,
+            "jump": 8,
+            "energy": 8
+          },
+          "appearance": {
+            "hair": 1,
+            "palette": 0
+          },
+          "tactical": {
+            "x": -14,
+            "y": -11,
+            "className": "MC",
+            "attack": false
+          },
+          "nameHex": "7482948489869382",
+          "baseSlot": 6,
+          "playerId": "31:6"
+        },
+        {
+          "slot": 7,
+          "name": "Redondo",
+          "number": 8,
+          "position": "VOL",
+          "skills": {
+            "acceleration": 9,
+            "speed": 9,
+            "shot": 6,
+            "curve": 8,
+            "balance": 8,
+            "intelligence": 9,
+            "dribbling": 9,
+            "jump": 7,
+            "energy": 7
+          },
+          "appearance": {
+            "hair": 0,
+            "palette": 0
+          },
+          "tactical": {
+            "x": -12,
+            "y": 10,
+            "className": "MC",
+            "attack": false
+          },
+          "nameHex": "798685908F859000",
+          "baseSlot": 7,
+          "playerId": "31:7"
+        },
+        {
+          "slot": 8,
+          "name": "Messi",
+          "number": 11,
+          "position": "MO",
+          "skills": {
+            "acceleration": 10,
+            "speed": 10,
+            "shot": 10,
+            "curve": 10,
+            "balance": 9,
+            "intelligence": 10,
+            "dribbling": 10,
+            "jump": 7,
+            "energy": 9
+          },
+          "appearance": {
+            "hair": 0,
+            "palette": 0
+          },
+          "tactical": {
+            "x": 8,
+            "y": 27,
+            "className": "MC",
+            "attack": true
+          },
+          "nameHex": "748694948A000000",
+          "baseSlot": 8,
+          "playerId": "31:8"
+        },
+        {
+          "slot": 9,
+          "name": "Maradona",
+          "number": 10,
+          "position": "MO",
+          "skills": {
+            "acceleration": 10,
+            "speed": 10,
+            "shot": 10,
+            "curve": 10,
+            "balance": 10,
+            "intelligence": 10,
+            "dribbling": 10,
+            "jump": 8,
+            "energy": 9
+          },
+          "appearance": {
+            "hair": 0,
+            "palette": 0
+          },
+          "tactical": {
+            "x": 8,
+            "y": -4,
+            "className": "MC",
+            "attack": true
+          },
+          "nameHex": "7482938285908F82",
+          "baseSlot": 9,
+          "playerId": "31:9"
+        },
+        {
+          "slot": 10,
+          "name": "Di Maria",
+          "number": 7,
+          "position": "AT",
+          "skills": {
+            "acceleration": 9,
+            "speed": 10,
+            "shot": 8,
+            "curve": 9,
+            "balance": 8,
+            "intelligence": 9,
+            "dribbling": 9,
+            "jump": 7,
+            "energy": 9
+          },
+          "appearance": {
+            "hair": 1,
+            "palette": 0
+          },
+          "tactical": {
+            "x": 57,
+            "y": -25,
+            "className": "AT",
+            "attack": false
+          },
+          "nameHex": "6B8A007482938A82",
+          "baseSlot": 10,
+          "playerId": "31:10"
+        },
+        {
+          "slot": 11,
+          "name": "Batistut",
+          "number": 9,
+          "position": "AT",
+          "skills": {
+            "acceleration": 8,
+            "speed": 9,
+            "shot": 10,
+            "curve": 8,
+            "balance": 10,
+            "intelligence": 9,
+            "dribbling": 8,
+            "jump": 9,
+            "energy": 9
+          },
+          "appearance": {
+            "hair": 1,
+            "palette": 0
+          },
+          "tactical": {
+            "x": 57,
+            "y": 7,
+            "className": "AT",
+            "attack": false
+          },
+          "nameHex": "6982958A94959695",
+          "baseSlot": 11,
+          "playerId": "31:11"
+        },
+        {
+          "slot": 12,
+          "name": "Martinez",
+          "number": 12,
+          "position": "GO",
+          "skills": {
+            "acceleration": 8,
+            "speed": 8,
+            "shot": 7,
+            "curve": 5,
+            "balance": 9,
+            "intelligence": 7,
+            "dribbling": 7,
+            "jump": 8,
+            "energy": 7
+          },
+          "appearance": {
+            "hair": 0,
+            "palette": 0
+          },
+          "tactical": null,
+          "nameHex": "748293958A8F869B",
+          "baseSlot": 12,
+          "playerId": "31:12"
+        },
+        {
+          "slot": 13,
+          "name": "Perfumo",
+          "number": 13,
+          "position": "DF",
+          "skills": {
+            "acceleration": 8,
+            "speed": 9,
+            "shot": 8,
+            "curve": 5,
+            "balance": 9,
+            "intelligence": 7,
+            "dribbling": 8,
+            "jump": 8,
+            "energy": 7
+          },
+          "appearance": {
+            "hair": 0,
+            "palette": 0
+          },
+          "tactical": null,
+          "nameHex": "77869387968E9000",
+          "baseSlot": 13,
+          "playerId": "31:13"
+        },
+        {
+          "slot": 14,
+          "name": "Ayala",
+          "number": 14,
+          "position": "DF",
+          "skills": {
+            "acceleration": 9,
+            "speed": 9,
+            "shot": 7,
+            "curve": 5,
+            "balance": 9,
+            "intelligence": 7,
+            "dribbling": 8,
+            "jump": 9,
+            "energy": 8
+          },
+          "appearance": {
+            "hair": 0,
+            "palette": 0
+          },
+          "tactical": null,
+          "nameHex": "689A828D82000000",
+          "baseSlot": 14,
+          "playerId": "31:14"
+        },
+        {
+          "slot": 15,
+          "name": "Sorin",
+          "number": 15,
+          "position": "MC",
+          "skills": {
+            "acceleration": 9,
+            "speed": 8,
+            "shot": 6,
+            "curve": 7,
+            "balance": 9,
+            "intelligence": 8,
+            "dribbling": 9,
+            "jump": 7,
+            "energy": 7
+          },
+          "appearance": {
+            "hair": 0,
+            "palette": 0
+          },
+          "tactical": null,
+          "nameHex": "7A90938A8F000000",
+          "baseSlot": 15,
+          "playerId": "31:15"
+        },
+        {
+          "slot": 16,
+          "name": "Simeone",
+          "number": 16,
+          "position": "MO",
+          "skills": {
+            "acceleration": 9,
+            "speed": 9,
+            "shot": 7,
+            "curve": 8,
+            "balance": 8,
+            "intelligence": 7,
+            "dribbling": 9,
+            "jump": 7,
+            "energy": 8
+          },
+          "appearance": {
+            "hair": 0,
+            "palette": 0
+          },
+          "tactical": null,
+          "nameHex": "7A8A8E86908F8600",
+          "baseSlot": 16,
+          "playerId": "31:16"
+        },
+        {
+          "slot": 17,
+          "name": "Kempes",
+          "number": 17,
+          "position": "AT",
+          "skills": {
+            "acceleration": 8,
+            "speed": 9,
+            "shot": 7,
+            "curve": 8,
+            "balance": 9,
+            "intelligence": 8,
+            "dribbling": 9,
+            "jump": 9,
+            "energy": 8
+          },
+          "appearance": {
+            "hair": 0,
+            "palette": 0
+          },
+          "tactical": null,
+          "nameHex": "72868E9186940000",
+          "baseSlot": 17,
+          "playerId": "31:17"
+        },
+        {
+          "slot": 18,
+          "name": "Riquelme",
+          "number": 18,
+          "position": "AT",
+          "skills": {
+            "acceleration": 9,
+            "speed": 9,
+            "shot": 5,
+            "curve": 7,
+            "balance": 9,
+            "intelligence": 7,
+            "dribbling": 9,
+            "jump": 7,
+            "energy": 8
+          },
+          "appearance": {
+            "hair": 0,
+            "palette": 0
+          },
+          "tactical": null,
+          "nameHex": "798A9296868D8E86",
+          "baseSlot": 18,
+          "playerId": "31:18"
+        },
+        {
+          "slot": 19,
+          "name": "Caniggia",
+          "number": 19,
+          "position": "AT",
+          "skills": {
+            "acceleration": 9,
+            "speed": 9,
+            "shot": 5,
+            "curve": 8,
+            "balance": 8,
+            "intelligence": 9,
+            "dribbling": 9,
+            "jump": 7,
+            "energy": 8
+          },
+          "appearance": {
+            "hair": 0,
+            "palette": 0
+          },
+          "tactical": null,
+          "nameHex": "6A828F8A88888A82",
+          "baseSlot": 19,
+          "playerId": "31:19"
+        },
+        {
+          "slot": 20,
+          "name": "Crespo",
+          "number": 20,
+          "position": "AT",
+          "skills": {
+            "acceleration": 9,
+            "speed": 9,
+            "shot": 6,
+            "curve": 8,
+            "balance": 9,
+            "intelligence": 8,
+            "dribbling": 9,
+            "jump": 8,
+            "energy": 9
+          },
+          "appearance": {
+            "hair": 0,
+            "palette": 0
+          },
+          "tactical": null,
+          "nameHex": "6A93869491900000",
+          "baseSlot": 20,
+          "playerId": "31:20"
+        }
+      ]
+    }
+  }
+}
