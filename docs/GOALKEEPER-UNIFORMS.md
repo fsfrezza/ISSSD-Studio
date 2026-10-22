@@ -1,6 +1,6 @@
 # Uniformes individuais dos goleiros — Plus
 
-A aba Goleiros substitui visualmente o painel legado sem remover os seus IDs.
+A seção de goleiros fica na aba Uniformes. A antiga aba Goleiros é ocultada sem remover seus IDs legados.
 Mostra uma seleção de equipe e dos dois jogadores com posição natural GO/GK.
 Quando a identidade ainda não está disponível na UI, usa como referência os
 registros originais 1 e 12. Os nomes e as escolhas pertencem à identidade, não
@@ -17,7 +17,7 @@ anterior. A seção participa da seleção de categorias ao abrir/salvar projeto
 
 As onze cores continuam no mesmo registro do projeto, mas a interface as separa:
 - **Jogadores → Aparência:** cor do cabelo e quatro tons de pele (índices 0–4).
-- **Goleiros:** quatro tons da camisa e dois de calção/calçado (índices 5–10).
+- **Uniformes → Goleiros:** quatro tons da camisa e dois de calção/calçado (índices 5–10).
 
 Editar, restaurar ou aplicar referências do uniforme preserva pele e cabelo.
 Aplicar ou restaurar a aparência preserva o uniforme. Os goleiros aparecem

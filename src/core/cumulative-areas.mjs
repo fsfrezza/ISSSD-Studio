@@ -1,3 +1,4 @@
+import {uniformRegions} from './team-uniforms.mjs';
 import {PLAYER_BODY_CATALOG} from './player-body-catalog.mjs';
 import {SOUND_REGIONS} from './plus-sounds.mjs';
 import {TRAINING_SELECTOR_POSITIONS,TRAINING_CHOICE_REGIONS} from './plus-native-menu-text.mjs';
@@ -62,7 +63,9 @@ export function areaClassifier(rom,base=null){
   if(base){const br=resolvePlusTacticalRecord(base,t);if(br)tactics.push([br.recordPc,br.recordPc+31]);}
  }
  for(let p=1;p<=7;p++)for(const s of knownMirrorSlices(30,p))derived.push([s.mirror,s.mirror+s.length]);
+ let uniforms=[];try{uniforms=uniformRegions(base||rom);}catch{}
  return off=>{
+  if(contains(off,uniforms))return 'jogadores';
   if((off>=0x300000&&off<0x3DC000)||(off>=0x266FB&&off<0x266FF)||(off>=0x26706&&off<0x2670A)||(off>=0x1C930&&off<0x1C936)||(off>=0x1CAFE&&off<0x1CB04))return 'jogadores';
   if((off>=0x2A0000&&off<0x2A7C00)||(off>=0x5D076&&off<0x5D07A)||(off>=0x5D090&&off<0x5D094)||(off>=0xC78FD&&off<0xC7901)||(off>=0x5D081&&off<0x5D085)||(off>=0x5D09B&&off<0x5D09F)||(off>=0xC790C&&off<0xC7910))return 'jogadores';
   if(isBodySpriteByte(off)||(off>=0xBCD58&&off<0xBF458))return 'jogadores';
