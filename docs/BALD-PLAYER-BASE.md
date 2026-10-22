@@ -42,3 +42,17 @@ substituições, tipos, carry/decimal flags e preservação de índices. Compara
 colisões de espaço, fase desmarcada e ausência de alterações parciais.
 A ROM Plus real também foi gerada e os pixels fora do cabelo foram comparados.
 A prévia é estática; o teste visual no emulador ainda é necessário.
+
+## Correção da leitura de aparência em execução
+
+CODE_83CA79 soma `(índice+1)*10` à referência 3DF6/3EBE. Os primeiros
+bytes de aparência ficam em 7E3E06 e 7E3ECE. A versão inicial do seletor
+usava 7E3DFC/7E3EC4 e lia uma entrada antes, misturando os cabelos dos
+jogadores. Os testes agora inicializam as entradas pela fórmula nativa, com
+valores diferentes no registro anterior para detectar regressões.
+
+Os objetos de prévia de Skills usam D=06A0/07A0. Sua identidade vem do byte
+alto de 7E1E6C/7E1E6E, como CODE_83C870, sem consultar a escalação da
+partida ou o campo 68 desses objetos. Seleções inativas/fora do elenco
+retornam ao caminho nativo. Os helpers continuam dentro dos 512 bytes
+reservados para cada um. Os bytes emitidos são executados em testes.

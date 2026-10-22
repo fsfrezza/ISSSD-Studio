@@ -20,7 +20,7 @@ test('all 857 base bodies become bald, original bodies remain exact under type 1
 test('body selector follows both lineups, substitutions and every pose without spending native overlay slots',()=>{
  const base=fixture(),rom=expandPlusTo4MiB(base);plusBaldPlayerBaseWriter(rom,prepareBaldAppearanceState({}),base);
  for(const side of[0,1])for(const slot of[0,5,10])for(const roster of[0,9,19])for(const hair of[0,1,13,14,15])for(const pose of[PLAYER_POSE_CATALOG[0],PLAYER_POSE_CATALOG.at(-1)]){
-  const wram=new Uint8Array(65536),d=(side?0x1000:0x500)+slot*256,x=parseInt(pose.id.slice(2),16);wram[d+0x68]=slot;wram[(side?0x3FA4:0x3F90)+slot]=roster;wram[(side?0x3EC4:0x3DFC)+roster*10]=0x10|hair;const expected=hair===14?long(rom,BALD_BASE_SLOT+x-32768):parseInt(pose.body,16);
+  const wram=new Uint8Array(65536),d=(side?0x1000:0x500)+slot*256,x=parseInt(pose.id.slice(2),16);wram[d+0x68]=slot;wram[(side?0x3FA4:0x3F90)+slot]=roster;wram[(side?0x3EBE:0x3DF6)+(roster+1)*10+6]=0x10|hair;const expected=hair===14?long(rom,BALD_BASE_SLOT+x-32768):parseInt(pose.body,16);
   for(const p of[0,1,8,9]){assert.equal(execute(rom,0x308000,{d,x,wram,p}),expected&65535);assert.equal(execute(rom,0x308200,{d,x,wram,p})&255,expected>>>16);}
  }
  const wram=new Uint8Array(65536);for(let h=0;h<16;h++){wram[0x206]=h;assert.equal(execute(rom,0x308400,{x:0x200,wram}),h===14?0:h);}
@@ -48,5 +48,25 @@ test('later body edits keep priority and uniforms carry across base 0 and origin
 test('index-1 shadows on leg and torso remain unchanged when regenerating bald bodies',()=>{
  for(const[id,indices]of Object.entries({'95AD70':[653,717],'9D8AC0':[216,280,281,343,63,512]})){
   const r=PLAYER_BODY_CATALOG.find(r=>r.id===id),n=r.mounted?768:64*Math.ceil((r.top+r.bottom)/256)*8,pixels=Array(n).fill(0);for(const i of indices)pixels[i]=1;const hair=BALD_BODY_PIXEL_INDICES[id][0];pixels[hair]=1;const bald=baldBodyPixels(id,pixels);for(const i of indices)assert.equal(bald[i],1);assert.notEqual(bald[hair],1);
+ }
+});
+
+test('match selector reads native (index+1)*10 records, not preceding player or sentinel',()=>{
+ const base=fixture(),rom=expandPlusTo4MiB(base),pose=PLAYER_POSE_CATALOG[0],x=parseInt(pose.id.slice(2),16);plusBaldPlayerBaseWriter(rom,prepareBaldAppearanceState({}),base);
+ for(const side of[0,1]){const wram=new Uint8Array(65536),d=side?0x1000:0x500,attrsBase=side?0x3EBE:0x3DF6,lineup=side?0x3FA4:0x3F90;
+  wram[d+0x68]=0;wram[lineup]=0;wram[attrsBase+6]=14;wram[attrsBase+10+6]=0;
+  assert.equal(execute(rom,0x308000,{d,x,wram}),parseInt(pose.body.slice(2),16));
+  wram[attrsBase+6]=0;wram[attrsBase+10+6]=14;const ptr=long(rom,BALD_BASE_SLOT+x-32768);assert.equal(execute(rom,0x308000,{d,x,wram}),ptr&65535);assert.equal(execute(rom,0x308200,{d,x,wram}),ptr>>>16);
+ }
+});
+
+test('Skills previews use selected roster identity for Taffarel and R.Carlos on either side',()=>{
+ const base=fixture(),rom=expandPlusTo4MiB(base),pose=PLAYER_POSE_CATALOG.find(p=>p.body==='968000'),x=parseInt(pose.id.slice(2),16);plusBaldPlayerBaseWriter(rom,prepareBaldAppearanceState({}),base);
+ for(const side of[0,1])for(const selected of[0,4,19])for(const hair of[0,14,15]){
+  const wram=new Uint8Array(65536),d=side?0x7A0:0x6A0,selection=side?0x1E6E:0x1E6C,attrsBase=side?0x3EBE:0x3DF6;
+  wram[d+0x68]=255;wram[selection]=7;wram[selection+1]=selected;wram[attrsBase+(selected+1)*10+6]=0x10|hair;
+  const expected=hair===14?long(rom,BALD_BASE_SLOT+x-32768):parseInt(pose.body,16);
+  for(const p of[0,1,8,9]){assert.equal(execute(rom,0x308000,{d,x,wram,p}),expected&65535);assert.equal(execute(rom,0x308200,{d,x,wram,p})&255,expected>>>16);}
+  wram[selection+1]=255;assert.equal(execute(rom,0x308000,{d,x,wram}),parseInt(pose.body.slice(2),16),'inactive '+JSON.stringify({side,selected,hair}));
  }
 });

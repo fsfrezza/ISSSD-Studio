@@ -38,7 +38,7 @@ test('proof preflights all hooks and storage atomically and can be reinstalled i
 test('emitted pointer helpers follow substitutions for all eleven slots on both sides without allocating special hair objects',()=>{
  const b=fixture(),r=expandPlusTo4MiB(b);installBodyCompositionProof(r,b);
  for(let side=0;side<2;side++)for(let slot=0;slot<11;slot++)for(const roster of [0,1,9,19])for(const hair of [0,1,13,14,15])for(const carry of [0,1,8,9]){
-  const d=(side?0x1000:0x500)+slot*256,wram=new Uint8Array(65536);wram[d+0x68]=slot;wram[(side?0x3FA4:0x3F90)+slot]=roster;wram[(side?0x3EC4:0x3DFC)+roster*10]=0x10|hair;
+  const d=(side?0x1000:0x500)+slot*256,wram=new Uint8Array(65536);wram[d+0x68]=slot;wram[(side?0x3FA4:0x3F90)+slot]=roster;wram[(side?0x3EBE:0x3DF6)+(roster+1)*10+6]=0x10|hair;
   const low=execute(r,BODY_PROOF_SLOT,{d,wram,p:carry}),bank=execute(r,BODY_PROOF_SLOT+0x200,{d,wram,p:carry});
   assert.equal(low,hair>=14?cpu(BODY_PROOF_VARIANTS[hair])&65535:0x8000);assert.equal(bank,hair>=14?cpu(BODY_PROOF_VARIANTS[hair])>>>16:0x296);
  }

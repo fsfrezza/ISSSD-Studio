@@ -21,13 +21,20 @@ export function composeBodyHead(r,pose,pixels,head){
 class Code{constructor(){this.b=[];this.labels={};this.refs=[];}put(...b){this.b.push(...b);return this;}label(n){this.labels[n]=this.b.length;return this;}branch(op,n){if(op!==0x80)this.put(({0xD0:0xF0,0xF0:0xD0,0x90:0xB0,0xB0:0x90})[op],3);this.put(0x82);this.refs.push([this.b.length,n]);return this.put(0,0);}finish(){for(const[at,n]of this.refs){const d=this.labels[n]-at-2;if(d< -32768||d>32767)throw Error('Branch fora do helper.');this.b[at]=d&255;this.b[at+1]=d>>8&255;}return Uint8Array.from(this.b);}}
 export function baldPointerHelper(bank=false){
  const c=new Code();c.put(0x08,0xD8,0xDA,0x5A,0xE0,0,0x80).branch(0x90,'fallback');
+ // Skills uses preview objects at $06A0/$07A0, not the page-aligned match objects.
+ c.put(0x7B,0xC9,0xA0,6).branch(0xF0,'preview1').put(0xC9,0xA0,7).branch(0xF0,'preview2');
  c.put(0x7B,0x29,255,0).branch(0xD0,'fallback').put(0x7B,0xC9,0,5).branch(0x90,'fallback').put(0xC9,0,0x1B).branch(0xB0,'fallback');
  c.put(0xA5,0x68,0x29,255,0,0xC9,11,0).branch(0xB0,'fallback').put(0xAA,0x7B,0xC9,0,0x10).branch(0xB0,'team2');
- const roster=(lineup,attrs)=>c.put(0xBF,...long(lineup),0x29,31,0,0xC9,20,0).branch(0xB0,'fallback').put(0x0A,0x48,0x0A,0x0A,0x18,0x63,1,0xFA,0xAA,0xBF,...long(attrs),0x29,15,0);
- roster(0x7E3F90,0x7E3DFC);c.branch(0x80,'select');c.label('team2');roster(0x7E3FA4,0x7E3EC4);
+ const attrs=address=>c.put(0x0A,0x48,0x0A,0x0A,0x18,0x63,1,0xFA,0xAA,0xBF,...long(address),0x29,15,0);
+ const roster=(lineup,address)=>{c.put(0xBF,...long(lineup),0x29,31,0,0xC9,20,0).branch(0xB0,'fallback');attrs(address);};
+ // CODE_83CA79 adds (index+1)*10 to $3DF6/$3EBE. Thus appearance 0 is $3E06/$3ECE.
+ roster(0x7E3F90,0x7E3E06);c.branch(0x80,'select');c.label('team2');roster(0x7E3FA4,0x7E3ECE);c.branch(0x80,'select');
+ for(const[name,selection,address]of[['preview1',0x7E1E6C,0x7E3E06],['preview2',0x7E1E6E,0x7E3ECE]]){
+  c.label(name).put(0xAF,...long(selection),0xEB,0x29,255,0,0xC9,20,0).branch(0xB0,'fallback');attrs(address);c.branch(0x80,'select');
+ }
  c.label('select').put(0xC9,14,0).branch(0xD0,'fallback').put(0x7A,0xFA,0xBF,...long(cpu(BALD_BASE_SLOT)-32768),0xC9,255,255).branch(0xF0,'native');
  c.put(0x28,0xBF,...long(cpu(BALD_BASE_SLOT)-32768+(bank?2:0)),0x6B);
- c.label('fallback').put(0x7A,0xFA);c.label('native').put(0x28,0xBF,...long(bank?0x820004:0x820002),0x6B);return c.finish();
+ c.label('fallback').put(0x7A,0xFA);c.label('native').put(0x28,0xBF,...long(bank?0x820004:0x820002),0x6B);const bytes=c.finish();if(bytes.length>0x200)throw Error('Helper do corpo excede espaço reservado.');return bytes;
 }
 export function baldOverlayHelper(){return Uint8Array.from([0x08,0xBD,6,0,0x29,15,0,0xC9,14,0,0xD0,5,0x28,0xA9,0,0,0x6B,0x28,0xBD,6,0,0x29,15,0,0x6B]);}
 export function plusBaldPlayerBaseWriter(rom,state,base,selectedAreas=null){

@@ -61,8 +61,8 @@ function bodyPointerHelper(bank=false){
   // index*10, keeping scratch out of the player's live direct page.
   c.put(0x0A,0x48,0x0A,0x0A,0x18,0x63,1,0xFA,0xAA,0xBF,...long(attrs),0x29,15,0);
  };
- roster(0x7E3F90,0x7E3DFC);c.branch(0x80,'select');
- c.label('team2');roster(0x7E3FA4,0x7E3EC4);
+ roster(0x7E3F90,0x7E3E06);c.branch(0x80,'select');
+ c.label('team2');roster(0x7E3FA4,0x7E3ECE);
  c.label('select').put(0xC9,14,0).branch(0xF0,'bald').put(0xC9,15,0).branch(0xF0,'tuft');
  c.label('fallback').put(0x7A,0xFA,0x28,0xBF,...long(bank?0x820004:0x820002),0x6B);
  for(const [name,h]of [['bald',14],['tuft',15]]){const address=cpu(BODY_PROOF_VARIANTS[h]);c.label(name).put(0x7A,0xFA,0x28,0xA9,...word(bank?address>>>16:address&65535),0x6B);}
