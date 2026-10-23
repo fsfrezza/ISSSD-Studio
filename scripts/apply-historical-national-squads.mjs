@@ -1,3 +1,4 @@
+import{applyHistoricalSkillCalibration}from'../src/core/historical-skills.mjs';
 import fs from 'node:fs';import path from 'node:path';import{fileURLToPath}from'node:url';
 import{encodeFixedPlayerName}from'../src/core/plus-player-name.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
@@ -42,6 +43,7 @@ const confirmed=new Set();for(const ref of appearanceReferences.references){cons
 for(const id of new Set(appearanceReferences.references.map(r=>r.team))){const overlays=teams[id].players.filter(p=>p.custom?.appearance?.hair>0&&p.custom.appearance.hair!==14);let excess=overlays.length-3;for(const p of overlays.slice().reverse()){if(excess<=0)break;if(confirmed.has(id+':'+p.baseSlot))continue;p.custom.appearance.hair=14;excess--;}if(excess>0)throw Error('Referências confirmadas excedem o limite nativo de cabelo.');}
 semantic.teamsV1.appearanceModel='bald-base-v1';
 project.savedAt=new Date().toISOString();
-fs.writeFileSync(target,JSON.stringify(project,null,2)+'\n');
+const calibrated=applyHistoricalSkillCalibration(project,JSON.parse(fs.readFileSync(path.join(root,'project-data/historical-skill-calibration.json'),'utf8')));
+fs.writeFileSync(target,JSON.stringify(calibrated,null,2)+'\n');
 fs.writeFileSync(path.join(root,'project-data/historical-national-squads.json'),JSON.stringify(catalog,null,2)+'\n');
 console.log(`Recuperados Alemanha/Argentina; ${Object.keys(catalog.teams).length} outras seleções, ${total} jogadores. Brasil e duas equipes especiais preservados.`);

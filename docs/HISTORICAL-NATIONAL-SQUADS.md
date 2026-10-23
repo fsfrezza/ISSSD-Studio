@@ -49,9 +49,7 @@ nesses antecedentes apenas por sua nacionalidade: precisa ter defendido a
 seleção correspondente. O caso da antiga URSS usa também o arquivo soviético,
 separado do registro da Rússia moderna.
 
-Os novos atributos são **valores iniciais de jogo por função**, para revisão
-individual posterior. Não são conversões exatas de números históricos em
-skills. As notas já revisadas de Brasil, Argentina e Alemanha são preservadas.
+Os quatro presets iniciais foram substituídos pela **calibração editorial individual** descrita em `HISTORICAL-SKILL-CALIBRATION.md`. As notas já revisadas de Brasil, Argentina e Alemanha são preservadas; os campos brasileiros ainda ausentes foram completados. Não se trata de conversão exata de estatísticas históricas em skills.
 As aparências dos novos atletas conservam os recursos nativos dos respectivos
 registros, ainda sem uma revisão visual fotográfica individual dos 1.020 nomes.
 A atualização de elenco não afirma que cada sprite já reproduz seu jogador.
