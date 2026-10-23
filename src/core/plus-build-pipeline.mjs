@@ -1,3 +1,4 @@
+import{plusIndependentTeamsWriter}from'./plus-independent-teams.mjs';
 import{plusPlayerCloseupWriter}from'./plus-player-closeup.mjs';
 import{plusPauseMenuWriter}from'./plus-pause-menu.mjs';
 import {plusUniformsWriter} from './team-uniforms.mjs';
@@ -33,7 +34,7 @@ import {syncPlusRuntimeMirrors,validatePlusRuntimeMirrors,writeFinalSnesChecksum
 
 function hasTacticalEdits(state){
   const teams=state?.plusTactics?.teams;
-  return (!!teams&&typeof teams==='object'&&!Array.isArray(teams)&&Object.keys(teams).length>0)||hasTeamsV3Tactics(state);
+  return !!state?.independentTeamsV1|| (!!teams&&typeof teams==='object'&&!Array.isArray(teams)&&Object.keys(teams).length>0)||hasTeamsV3Tactics(state);
 }
 
 function applyValidatedPatches(work,patches){
@@ -144,6 +145,8 @@ export function createPlusBuildStages({baseRom,patches=[],extraWriters=[],writeC
     kind:'semantic',
     run:(work,state)=>writer(work,state),
   }));
+
+  stages.push({id:'09-independent-teams',kind:'semantic',run:(work,state)=>plusIndependentTeamsWriter(work,state,baseRom,selectedAreas)});
 
   // Esta é a mesma regra de integridade que foi validada na ROM corrigida
   // manualmente: ao final de TODAS as etapas semânticas, as cópias runtime

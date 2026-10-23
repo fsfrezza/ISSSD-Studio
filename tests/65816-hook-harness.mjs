@@ -21,6 +21,7 @@ export function executeHook(memory,entry,initial={},nativeCalls=new Set()){
   case 0xE0:cmp(r.x,word());break;case 0xC0:cmp(r.y,word());break;case 0xC9:cmp(r.a,word());break;case 0xCF:cmp(r.a,read16(long()));break;
   case 0xD0:branch(!(r.p&2));break;case 0xF0:branch(r.p&2);break;
   case 0x90:branch(!(r.p&1));break;case 0xB0:branch(r.p&1);break;case 0x80:branch(true);break;
+  case 0xE8:r.x=nz((r.x+1)&65535);break;
   case 0xBB:r.x=nz(r.y);break;case 0xAA:r.x=nz(r.a);break;case 0xA8:r.y=nz(r.a);break;
   case 0x8A:r.a=nz(r.x);break;case 0x98:r.a=nz(r.y);break;
   case 0xD8:r.p&=~8;break;case 0x38:r.p|=1;break;case 0x49:r.a=nz(r.a^word());break;case 0x29:r.a=nz(r.a&word());break;case 0xEB:r.a=nz((r.a>>8)|(r.a<<8&65535));break;case 0x0A:r.p=(r.p&~1)|(r.a>>15);r.a=nz(r.a<<1&65535);break;case 0x63:adc(read16(r.s+byte()));break;case 0xE9:adc(word()^65535);break;case 0x82:{const d=word();pc+=d&32768?d-65536:d;break;}case 0x18:r.p&=~1;break;case 0x69:adc(word());break;case 0x6F:adc(read16(long()));break;

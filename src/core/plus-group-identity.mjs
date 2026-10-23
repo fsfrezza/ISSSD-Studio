@@ -14,14 +14,15 @@ export function planPlusGroupIdentity(base,state){
  if(convention&&convention!=='issd-plus-logical-v2')throw new Error('Grupos: convenção não suportada; use os nove grupos existentes da Plus.');
  const original=readPlusGroupIdentity(base);
  if([...original.groups.flat(),...original.secret].some(v=>!Number.isInteger(v))||original.titlePointers.some(v=>!PLUS_GROUP_TITLES.includes(v)))throw new Error('Grupos: tabelas da ROM-base incompatíveis com a Plus verificada.');
- const valid=v=>Number.isInteger(v)&&v>=-1&&v<56;
+ const expanded=!!state.independentTeamsV1,valid=v=>Number.isInteger(v)&&v>=-1&&v<(expanded?60:56);
  if(!Array.isArray(saved.groups)||saved.groups.length!==9||saved.groups.some(g=>!Array.isArray(g)||g.length!==6||g.some(v=>!valid(v))))throw new Error('Grupos: informe nove grupos com seis posições e IDs 0–55.');
  if(!Array.isArray(saved.secret)||saved.secret.length!==6||saved.secret.some(v=>!valid(v)))throw new Error('Grupos: grupo secreto inválido.');
  const rows=[...saved.groups,saved.secret],prior=[...original.groups,original.secret];
+ if(expanded){const ids=rows.flat();if(ids.length!==60||new Set(ids).size!==60||ids.some(v=>v<0))throw Error('Grupos GG: todas as 60 equipes devem aparecer uma vez.');}
  const changed=rows.some((r,i)=>r.some((v,j)=>v!==prior[i][j]));
  if(changed){
-  if(rows.some((r,i)=>r.some((v,j)=>(v===-1)!==(prior[i][j]===-1))))throw new Error('Grupos: mantenha as posições ocupadas existentes; adicionar/remover posições exige reestruturação.');
-  const all=rows.flat().filter(v=>v>=0),old=prior.flat().filter(v=>v>=0);
+  if(!expanded&&rows.some((r,i)=>r.some((v,j)=>(v===-1)!==(prior[i][j]===-1))))throw new Error('Grupos: mantenha as posições ocupadas existentes; adicionar/remover posições exige reestruturação.');
+  const all=rows.flat().filter(v=>v>=0),old=expanded?Array.from({length:60},(_,id)=>id):prior.flat().filter(v=>v>=0);
   if(new Set(all).size!==all.length||all.length!==old.length||all.some(v=>!old.includes(v)))throw new Error('Grupos: cada equipe existente deve aparecer exatamente uma vez.');
  }
  const pointers=saved.titlePointers??original.titlePointers;
@@ -32,7 +33,7 @@ export function planPlusGroupIdentity(base,state){
  return [{pc:0xE7F2,bytes:normal},{pc:0xE828,bytes:secret},{pc:0x3FAC8,bytes:titles}];
 }
 export function plusGroupIdentityWriter(rom,state,base,selectedAreas=null){
- if(selectedAreas&&!selectedAreas.includes('selecao-equipes'))return rom;
+ if(selectedAreas&&(!selectedAreas.includes('selecao-equipes')||state.independentTeamsV1&&!selectedAreas.includes('jogadores')))return rom;
  const writes=planPlusGroupIdentity(base,state);
  for(const {pc,bytes} of writes)rom.set(bytes,pc);
  // E82E is the start of DATA_81E82E, an unrelated three-byte record stream.

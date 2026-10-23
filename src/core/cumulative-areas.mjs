@@ -1,3 +1,4 @@
+import{independentTeamOwnedRanges}from'./plus-independent-teams.mjs';
 import{CLOSEUP_REGIONS}from'./plus-player-closeup.mjs';
 import{PAUSE_MENU_REGIONS}from'./plus-pause-menu.mjs';
 import {uniformRegions} from './team-uniforms.mjs';
@@ -66,7 +67,9 @@ export function areaClassifier(rom,base=null){
  }
  for(let p=1;p<=7;p++)for(const s of knownMirrorSlices(30,p))derived.push([s.mirror,s.mirror+s.length]);
  let uniforms=[];try{uniforms=uniformRegions(base||rom);}catch{}
+ const independent=independentTeamOwnedRanges(rom);
  return off=>{
+  if(contains(off,independent))return 'jogadores';
   if(contains(off,CLOSEUP_REGIONS)||(off>=0x2D0000&&off<0x2D8000))return 'jogadores';
   if(contains(off,uniforms))return 'jogadores';
   if((off>=0x591D0&&off<0x591D4)||(off>=0x591DB&&off<0x591DF))return 'jogadores';

@@ -9,6 +9,7 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const htmlPath=path.join(root,'editor','ISSSD-Studio.html');
 if(!fs.existsSync(htmlPath))throw new Error('Verificação final: editor gerado não encontrado: '+htmlPath);
 const html=fs.readFileSync(htmlPath,'utf8');
+if(!html.includes('id="isssd-independent-teams"')||!html.includes('__ISSSD_INDEPENDENT_TEAMS_EDITOR__'))throw Error('Verificação final: editor das equipes independentes ausente.');
 if(isRetiredTeamExpansion(html))throw new Error('Verificação final: extensão antiga ainda presente no Editor.');
 
 const restoreNeedle='function studioRestoreTeamsV1(state){';

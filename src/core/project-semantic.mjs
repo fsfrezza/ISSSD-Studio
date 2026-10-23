@@ -1,3 +1,4 @@
+import{validateIndependentTeams}from'./independent-teams.mjs';
 import {stripRetiredTeamExpansion} from './retired-team-expansion.mjs';
 import {migrateLegacyPlayerAttributes} from './plus-player-state.mjs';
 import {migrateLegacyPlayerNames} from './plus-player-name-state.mjs';
@@ -33,6 +34,7 @@ export function canonicalProjectSemantic(project){
     throw new TypeError('project semantic state must be an object');
   }
   const out=stripRetiredTeamExpansion(semantic);
+  if(out.independentTeamsV1!=null)out.independentTeamsV1=validateIndependentTeams(out.independentTeamsV1);
 
   if(out.teamsV1&&typeof out.teamsV1==='object'&&!Array.isArray(out.teamsV1)){
     // Attributes must migrate before names because old v6.92/v6.93 name-roster

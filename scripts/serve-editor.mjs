@@ -1,3 +1,5 @@
+import{createIndependentTeams}from'../src/core/independent-teams.mjs';
+import{readPlusGroupIdentity}from'../src/core/plus-group-identity.mjs';
 import {baldBaseSupported,prepareBaldAppearanceState} from '../src/core/plus-bald-player-base.mjs';
 import {canonicalProjectSemantic} from '../src/core/project-semantic.mjs';
 import {effectiveProjectHairFrames} from '../src/core/player-sprite-editor.mjs';
@@ -132,8 +134,19 @@ function buildPostedProject(req,res){
  });
 }
 
+function createPostedIndependentTeams(req,res){
+ collectBody(req,res,MAX_PROJECT_BODY,buffer=>{try{
+  const {project}=JSON.parse(buffer.toString('utf8'));if(!project?.state)throw Error('Projeto ausente.');
+  const semantic=canonicalProjectSemantic(project);if(semantic.independentTeamsV1)throw Error('O projeto já contém equipes GG.');
+  const base=Uint8Array.from(fs.readFileSync(defaultPlusRomPath)),built=buildPlusProjectRom(base,project,{forceTacticalInfrastructure:true}),model=createIndependentTeams(built.rom),original=readPlusGroupIdentity(base),groups=structuredClone(semantic.plusGroups??original);
+  groups.secret=[54,55,56,57,58,59];groups.labels=groups.labels??['AMERICA 1','AMERICA 2','AMERICA 3','EUROPE 1','EUROPE 2','EUROPE 3','EUROPE 4','ASIA','AFRICA','GG'];groups.labels[9]='GG';
+  res.writeHead(200,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify({model,groups}));
+ }catch(e){jsonError(res,422,e);}});
+}
+
 const server=http.createServer((req,res)=>{
  let u=decodeURIComponent((req.url||'/').split('?')[0]);
+ if(req.method==='POST'&&u==='/__isssd/create-independent-teams'){createPostedIndependentTeams(req,res);return;}
  if(req.method==='POST'&&u==='/__isssd/build-plus-project'){buildPostedProject(req,res);return;}
  if(req.method!=='GET'){res.writeHead(405,{'Allow':'GET, POST'});res.end('Method not allowed');return;}
  if(u==='/__isssd/build-info'){res.writeHead(200,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(serverBuild));return;}

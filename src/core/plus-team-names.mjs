@@ -43,7 +43,7 @@ function tokenize(text,pairs){
  }
  const tokens=[];for(let i=text.length;i>0;){const [p,t]=prev[i];tokens.push(t);i=p;}return {count:cost.at(-1),tokens:tokens.reverse()};
 }
-export function renderBigTeamNames(names,baseFont=new Uint8Array(4096)){
+export function renderBigTeamNames(names,baseFont=new Uint8Array(4096),maxSprites=763){
  const glyph=c=>c==='I'?['1','1','1','1','1','1','1']:c==='.'?['000','000','000','000','000','000','010']:PLUS_MAIN_MENU_GLYPHS[c]?.slice(0,7).map(v=>Array.from({length:5},(_,x)=>v&(1<<(6-x))?'1':'0').join(''));
  const sourceGlyph=glyph;
  const scaledGlyph=c=>{const g=sourceGlyph(c);return g?.map(row=>Array.from({length:row.length===5?6:row.length},(_,x)=>row[Math.floor(x*row.length/(row.length===5?6:row.length))]).join(''));};
@@ -58,7 +58,8 @@ export function renderBigTeamNames(names,baseFont=new Uint8Array(4096)){
  while(chars.length+pairs.size<Math.floor((128-reserved.size)/2)){let best=null,score=total(pairs);for(const p of candidates){if(pairs.has(p))continue;const next=total(new Set([...pairs,p]));if(next<score){score=next;best=p;}}if(best===null)break;pairs.add(best);}
  const tokens=names.map(n=>tokenize(n,pairs)),count=tokens.reduce((n,t)=>n+t.count*2,0);
  if(tokens.some(t=>t.count>12))throw Error('Nome grande exige mais de 12 sprites por linha; abrevie para preservar nomes, bandeiras e VS.');
- if(count>763)throw Error('Nomes grandes exigem '+count+' sprites; limite reservado de 763.');
+ if(!Number.isInteger(maxSprites)||maxSprites<1||maxSprites>32767)throw Error('Reserva de sprites inválida.');
+ if(count>maxSprites)throw Error('Nomes grandes exigem '+count+' sprites; limite reservado de '+maxSprites+'.');
  const dictionary=[...chars,...pairs],font=new Uint8Array(4096),tiles=new Map(),slots=Array.from({length:128},(_,i)=>i).filter(i=>!reserved.has(i));
  // Small OBJ cells avoid the SNES 34-tile scanline limit when two long names,
  // both flags and VS appear together. The lower P bit is the native size flag.
@@ -74,8 +75,8 @@ export function renderBigTeamNames(names,baseFont=new Uint8Array(4096)){
   for(let y=0;y<16;y++)for(let x=0;x<8;x++){const at=(y<8?tile:bottom)*32+(y%8)*2,bit=7-x,v=pixels[y][x];for(let plane=0;plane<4;plane++)font[at+(plane>>1)*16+(plane&1)]|=((v>>plane)&1)<<bit;}
  }
  const lists=tokens.map(t=>{const width=t.tokens.reduce((n,s)=>n+advance(s),0)-1;if(width>80)throw Error('Nome grande excede 80 px. Abrevie o campo Nome grande.');let x=Math.round(40-width/2);return t.tokens.flatMap(s=>{if(s===' '){x+=2;return [];}const [top,bottom]=tiles.get(s),sprites=[{x:x&255,y:1,tile:top,prop:0x0A},{x:x&255,y:9,tile:bottom,prop:0x0A}];x+=advance(s);return sprites;});});
- const raw=new Uint8Array(59+count*4),pointers=new Uint8Array(112);raw[0]=56;raw[1]=count&255;raw[2]=count>>8;let offset=0;
- lists.forEach((list,i)=>{raw[3+i]=list.length;pointers.set(word(2*offset),i*2);for(const sp of list){raw[59+offset]=sp.x;raw[59+count+offset]=sp.y;raw[59+count*2+offset]=sp.tile;raw[59+count*3+offset]=sp.prop;offset++;}});
+ const header=3+names.length,raw=new Uint8Array(header+count*4),pointers=new Uint8Array(names.length*2);raw[0]=names.length;raw[1]=count&255;raw[2]=count>>8;let offset=0;
+ lists.forEach((list,i)=>{raw[3+i]=list.length;pointers.set(word(2*offset),i*2);for(const sp of list){raw[header+offset]=sp.x;raw[header+count+offset]=sp.y;raw[header+count*2+offset]=sp.tile;raw[header+count*3+offset]=sp.prop;offset++;}});
  return {font,raw,pointers,count,dictionary};
 }
 export function planPlusTeamNames(base,state){

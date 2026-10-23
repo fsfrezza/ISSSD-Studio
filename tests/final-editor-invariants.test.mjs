@@ -7,7 +7,7 @@ const verifier=fs.readFileSync(new URL('../scripts/verify-final-editor-invariant
 const cmd=pkg.scripts['build:editor'];
 
 test('verificador final continua sendo a última etapa do build do Editor',()=>{
-  assert.match(cmd,/patch-canonical-rom-export\.mjs && node scripts\/patch-team-semantic-overlay\.mjs && node scripts\/patch-project-open-semantic-only\.mjs && node scripts\/patch-team-group-safety\.mjs && node scripts\/patch-retired-team-expansion\.mjs && node scripts\/verify-final-editor-invariants\.mjs$/);
+  assert.match(cmd,/patch-canonical-rom-export\.mjs && node scripts\/patch-team-semantic-overlay\.mjs && node scripts\/patch-project-open-semantic-only\.mjs && node scripts\/patch-team-group-safety\.mjs && node scripts\/patch-retired-team-expansion\.mjs && node scripts\/patch-independent-teams\.mjs && node scripts\/verify-final-editor-invariants\.mjs$/);
 });
 
 test('verificador final exige overlay teamsV1 antes da barreira de abertura',()=>{
