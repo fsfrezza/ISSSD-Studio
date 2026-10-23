@@ -1,0 +1,50 @@
+{
+  "schema": "isssd-player-appearance-references-v1",
+  "baseSha256": "ca2d73b226ab252649d4c9c35bb6b81937586d908c1d9dc9d447db7babfaad0a",
+  "references": [
+    {
+      "team": 31,
+      "baseSlot": 9,
+      "name": "Maradona",
+      "sourceTeam": 31,
+      "sourceSlot": 9,
+      "sourceName": "Redonda",
+      "sourceByte": 0,
+      "hair": 14,
+      "palette": 0
+    },
+    {
+      "team": 31,
+      "baseSlot": 11,
+      "name": "Batistut",
+      "sourceTeam": 31,
+      "sourceSlot": 11,
+      "sourceName": "Capitale",
+      "sourceByte": 18,
+      "hair": 2,
+      "palette": 1
+    },
+    {
+      "team": 31,
+      "baseSlot": 19,
+      "name": "Caniggia",
+      "sourceTeam": 31,
+      "sourceSlot": 10,
+      "sourceName": "Fuerte",
+      "sourceByte": 26,
+      "hair": 10,
+      "palette": 1
+    },
+    {
+      "team": 31,
+      "baseSlot": 7,
+      "name": "Redondo",
+      "sourceTeam": 31,
+      "sourceSlot": 6,
+      "sourceName": "Santos",
+      "sourceByte": 20,
+      "hair": 4,
+      "palette": 1
+    }
+  ]
+}

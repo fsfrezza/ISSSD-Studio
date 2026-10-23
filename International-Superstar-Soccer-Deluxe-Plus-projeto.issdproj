@@ -19118,7 +19118,7 @@
                     "energy": 9
                   },
                   "appearance": {
-                    "hair": 1,
+                    "hair": 14,
                     "palette": 0
                   },
                   "tactical": {
@@ -19214,7 +19214,7 @@
                     "energy": 8
                   },
                   "appearance": {
-                    "hair": 1,
+                    "hair": 14,
                     "palette": 0
                   },
                   "tactical": {
@@ -19246,8 +19246,8 @@
                     "energy": 7
                   },
                   "appearance": {
-                    "hair": 14,
-                    "palette": 0
+                    "hair": 4,
+                    "palette": 1
                   },
                   "tactical": {
                     "x": -12,
@@ -19342,7 +19342,7 @@
                     "energy": 9
                   },
                   "appearance": {
-                    "hair": 1,
+                    "hair": 14,
                     "palette": 0
                   },
                   "tactical": {
@@ -19374,8 +19374,8 @@
                     "energy": 9
                   },
                   "appearance": {
-                    "hair": 14,
-                    "palette": 0
+                    "hair": 2,
+                    "palette": 1
                   },
                   "tactical": {
                     "x": 57,
@@ -19595,8 +19595,8 @@
                     "energy": 8
                   },
                   "appearance": {
-                    "hair": 14,
-                    "palette": 0
+                    "hair": 10,
+                    "palette": 1
                   },
                   "tactical": null,
                   "name": "Caniggia",
@@ -32883,5 +32883,5 @@
     "Patches derivados do runtime GOSPEL-GOL não são persistidos; são regenerados deterministicamente ao Salvar ROM.",
     "ATENÇÃO: os rótulos gráficos do menu principal estão preservados semanticamente no projeto, mas o asset gráfico do menu ainda não possui escrita segura na ROM."
   ],
-  "savedAt": "2026-10-22T19:53:39.863Z"
+  "savedAt": "2026-10-23T00:17:53.382Z"
 }

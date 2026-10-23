@@ -21,3 +21,9 @@ test('new starting elevens use valid balanced tactical coordinates; no forward a
   for(const p of field){const q=p.custom.tactical;assert.ok(q.x>=-57&&q.x<=57&&q.y>=-39&&q.y<=39);if(q.className==='AT')assert.equal(q.attack,false);}
  }
 });
+
+test('confirmed Argentina references preserve original hair and palette semantics, with three overlays across the whole squad',()=>{
+ const refs=read('project-data/player-appearance-references.json').references;
+ for(const r of refs){const p=project.state.semantic.teamsV1.teams[r.team].players.find(p=>p.baseSlot===r.baseSlot);assert.equal(r.hair,(r.sourceByte&15)===0?14:r.sourceByte&15);assert.equal(r.palette,r.sourceByte>>4&1);assert.deepEqual(p.custom.appearance,{hair:r.hair,palette:r.palette});}
+ const starters=project.state.semantic.teamsV1.teams[31].players.filter(p=>p.slot<=11);assert.equal(starters.filter(p=>p.custom.appearance.hair>0&&p.custom.appearance.hair!==14).length,2);assert.equal(starters.find(p=>p.custom.name==='Di Maria').custom.appearance.hair,14);assert.equal(project.state.semantic.teamsV1.teams[31].players.filter(p=>p.custom.appearance.hair>0&&p.custom.appearance.hair!==14).length,3);
+});

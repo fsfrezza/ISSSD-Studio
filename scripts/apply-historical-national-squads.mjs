@@ -36,6 +36,10 @@ for(const [id,team]of Object.entries(catalog.teams)){
   return{playerId:`${id}:${slot}`,baseSlot:slot,slot,custom};
  });teams[id]={...teams[id],teamId:Number(id),players};total+=players.length;
 }
+// User-verified visual references override the older generic recovery guesses.
+const appearanceReferences=JSON.parse(fs.readFileSync(path.join(root,'project-data/player-appearance-references.json'),'utf8'));
+const confirmed=new Set();for(const ref of appearanceReferences.references){const player=teams[ref.team]?.players.find(p=>p.baseSlot===ref.baseSlot);if(!player)throw Error('Referência de aparência sem jogador: '+ref.name);player.custom.appearance={hair:ref.hair,palette:ref.palette};confirmed.add(ref.team+':'+ref.baseSlot);}
+for(const id of new Set(appearanceReferences.references.map(r=>r.team))){const overlays=teams[id].players.filter(p=>p.custom?.appearance?.hair>0&&p.custom.appearance.hair!==14);let excess=overlays.length-3;for(const p of overlays.slice().reverse()){if(excess<=0)break;if(confirmed.has(id+':'+p.baseSlot))continue;p.custom.appearance.hair=14;excess--;}if(excess>0)throw Error('Referências confirmadas excedem o limite nativo de cabelo.');}
 semantic.teamsV1.appearanceModel='bald-base-v1';
 project.savedAt=new Date().toISOString();
 fs.writeFileSync(target,JSON.stringify(project,null,2)+'\n');

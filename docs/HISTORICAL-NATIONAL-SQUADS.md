@@ -14,9 +14,19 @@ A aparência antiga usa a convenção anterior (0 = cabelo do corpo). Ela é
 convertida para 14 no modelo atual; goleiros continuam em 0, pois têm desenhos
 próprios. O motor nativo dispõe de três objetos de cabelo sobreposto por equipe.
 O arquivo antigo possuía quatro titulares com sobreposição em cada um desses
-elencos. Para exportar sem corrupção ou bloqueio, a quarta sobreposição de
-Müller e Batistuta foi adaptada ao cabelo original integrado (14). A escolha
-anterior permanece no arquivo recuperado para futura individualização.
+elencos. As referências posteriormente confirmadas pelo usuário prevalecem:
+Maradona usa Redonda (original 0 → modelo 14, paleta 0); Batistut usa Capitale
+(tipo 2, paleta 1); Caniggia usa Fuerte (tipo 10, paleta 1); Fernando Redondo usa o Santos da Argentina original (tipo 4, paleta 1). Os dados de origem
+estão em `project-data/player-appearance-references.json` e foram conferidos
+na ROM-base Plus, não inferidos dos nomes históricos.
+
+Para permitir Batistut, Redondo e Caniggia juntos, inclusive após substituições,
+a Argentina mantém somente essas três sobreposições em todo o elenco. As
+escolhas genéricas recuperadas de Passarela, Mascherano e Di María usam o
+cabelo original integrado (14). Müller permanece no 14 para respeitar o limite
+alemão. O arquivo recuperado conserva todas as escolhas anteriores. As
+referências copiadas preservam o cabelo e o índice da paleta de origem; nomes,
+números, skills, posições e táticas permanecem preservados.
 
 ## Demais seleções
 
