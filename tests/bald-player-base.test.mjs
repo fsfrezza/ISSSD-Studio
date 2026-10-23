@@ -2,7 +2,7 @@ import test from'node:test';import assert from'node:assert/strict';
 import{PLAYER_BODY_CATALOG,PLAYER_POSE_CATALOG,readPlayerSprite,baldBodyPixels}from'../src/core/player-sprite-editor.mjs';
 import{BALD_BODY_PIXEL_INDICES}from'../src/core/player-bald-base-data.mjs';
 import{migrateBaldAppearanceTeams}from'../src/core/player-appearance.mjs';
-import{plusBaldPlayerBaseWriter,encodeBodySprite,baldBaseSupported,prepareBaldAppearanceState,BALD_BASE_SLOT}from'../src/core/plus-bald-player-base.mjs';
+import{plusBaldPlayerBaseWriter,encodeBodySprite,baldBaseSupported,prepareBaldAppearanceState,BALD_BASE_SLOT,CASCAO_BODY_TABLE}from'../src/core/plus-bald-player-base.mjs';
 import{expandPlusTo4MiB}from'../src/core/plus-tactics-infrastructure.mjs';import{playerOffset}from'../src/core/plus-player.mjs';import{plusCustomHairWriter}from'../src/core/plus-custom-hair.mjs';
 import{makePlusTacticalFixture}from'./plus-tactics-fixture.mjs';import{execute}from'./65816-body-helper-fixture.mjs';
 const pc=v=>((v>>>16)&127)*32768+(v&32767),long=(b,p)=>b[p]|b[p+1]<<8|b[p+2]<<16;
@@ -20,10 +20,10 @@ test('all 857 base bodies become bald, original bodies remain exact under type 1
 test('body selector follows both lineups, substitutions and every pose without spending native overlay slots',()=>{
  const base=fixture(),rom=expandPlusTo4MiB(base);plusBaldPlayerBaseWriter(rom,prepareBaldAppearanceState({}),base);
  for(const side of[0,1])for(const slot of[0,5,10])for(const roster of[0,9,19])for(const hair of[0,1,13,14,15])for(const pose of[PLAYER_POSE_CATALOG[0],PLAYER_POSE_CATALOG.at(-1)]){
-  const wram=new Uint8Array(65536),d=(side?0x1000:0x500)+slot*256,x=parseInt(pose.id.slice(2),16);wram[d+0x68]=slot;wram[(side?0x3FA4:0x3F90)+slot]=roster;wram[(side?0x3EBE:0x3DF6)+(roster+1)*10+6]=0x10|hair;const expected=hair===14?long(rom,BALD_BASE_SLOT+x-32768):parseInt(pose.body,16);
+  const wram=new Uint8Array(65536),d=(side?0x1000:0x500)+slot*256,x=parseInt(pose.id.slice(2),16);wram[d+0x68]=slot;wram[(side?0x3FA4:0x3F90)+slot]=roster;wram[(side?0x3EBE:0x3DF6)+(roster+1)*10+6]=0x10|hair;const expected=hair>=14?long(rom,(hair===15?CASCAO_BODY_TABLE:BALD_BASE_SLOT)+x-32768):parseInt(pose.body,16);
   for(const p of[0,1,8,9]){assert.equal(execute(rom,0x308000,{d,x,wram,p}),expected&65535);assert.equal(execute(rom,0x308200,{d,x,wram,p})&255,expected>>>16);}
  }
- const wram=new Uint8Array(65536);for(let h=0;h<16;h++){wram[0x206]=h;assert.equal(execute(rom,0x308400,{x:0x200,wram}),h===14?0:h);}
+ const wram=new Uint8Array(65536);for(let h=0;h<16;h++){wram[0x206]=h;assert.equal(execute(rom,0x308400,{x:0x200,wram}),h>=14?0:h);}
 });
 test('explicit new bald selection, unchecked phase and occupied allocation are handled without partial writes',()=>{
  const base=fixture(),state=prepareBaldAppearanceState({teamsV1:{schema:'isssd-teams-v1',version:3,teams:{30:{teamId:30,players:[{slot:3,custom:{appearance:{hair:14}}}]}}}}),rom=expandPlusTo4MiB(base);plusBaldPlayerBaseWriter(rom,state,base);assert.equal(rom[playerOffset(30,2)+6]&15,0);assert.equal(rom[playerOffset(30,1)+6]&15,14);
@@ -65,7 +65,7 @@ test('Skills previews use selected roster identity for Taffarel and R.Carlos on 
  for(const side of[0,1])for(const selected of[0,4,19])for(const hair of[0,14,15]){
   const wram=new Uint8Array(65536),d=side?0x7A0:0x6A0,selection=side?0x1E6E:0x1E6C,attrsBase=side?0x3EBE:0x3DF6;
   wram[d+0x68]=255;wram[selection]=7;wram[selection+1]=selected;wram[attrsBase+(selected+1)*10+6]=0x10|hair;
-  const expected=hair===14?long(rom,BALD_BASE_SLOT+x-32768):parseInt(pose.body,16);
+  const expected=hair>=14?long(rom,(hair===15?CASCAO_BODY_TABLE:BALD_BASE_SLOT)+x-32768):parseInt(pose.body,16);
   for(const p of[0,1,8,9]){assert.equal(execute(rom,0x308000,{d,x,wram,p}),expected&65535);assert.equal(execute(rom,0x308200,{d,x,wram,p})&255,expected>>>16);}
   wram[selection+1]=255;assert.equal(execute(rom,0x308000,{d,x,wram}),parseInt(pose.body.slice(2),16),'inactive '+JSON.stringify({side,selected,hair}));
  }
@@ -91,4 +91,12 @@ test('cinematic close-ups never index native hair descriptors with extended styl
  const rom=expandPlusTo4MiB(base);plusBaldPlayerBaseWriter(rom,prepareBaldAppearanceState({}),base);
  assert.deepEqual(rom.slice(0x591D0,0x591D4),Uint8Array.of(0x22,0x80,0x84,0xE1));
  assert.deepEqual(rom.slice(0x591DB,0x591DF),Uint8Array.of(0x22,0xC0,0x84,0xE1));
+});
+
+test('eleven Cascao starters use baked per-pose bodies and leave three native overlay slots free',()=>{
+ const base=fixture(),rom=expandPlusTo4MiB(base),state=prepareBaldAppearanceState({});plusBaldPlayerBaseWriter(rom,state,base);
+ for(let p=0;p<11;p++)rom[playerOffset(30,p)+6]=15;
+ assert.doesNotThrow(()=>plusCustomHairWriter(rom,state,base));
+ for(const pose of PLAYER_POSE_CATALOG){const at=CASCAO_BODY_TABLE+parseInt(pose.id.slice(2),16)-32768,ptr=pc(long(rom,at)),r=PLAYER_BODY_CATALOG.find(r=>r.id===pose.body);assert.ok(ptr>=0x308600&&ptr+r.top+r.bottom+4<=0x3DC000);assert.ok((ptr&32767)+r.top+r.bottom+4<=32768);}
+ const four=expandPlusTo4MiB(base);plusBaldPlayerBaseWriter(four,state,base);for(let p=0;p<11;p++)four[playerOffset(30,p)+6]=p<4?1:15;const before=four.slice();assert.throws(()=>plusCustomHairWriter(four,state,base),/três titulares/);assert.deepEqual(four,before);
 });

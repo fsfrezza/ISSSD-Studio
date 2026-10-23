@@ -2,7 +2,7 @@ import{PLAYER_BODY_CATALOG,PLAYER_POSE_CATALOG,readPlayerSprite,baldBodyPixels,o
 import{migrateBaldAppearanceTeams,customHairPixels}from'./player-appearance.mjs';
 import{ORIGINAL_HAIR_FRAMES}from'./player-original-hair.mjs';
 import{encodeHairTile}from'./plus-custom-hair.mjs';import{playerOffset}from'./plus-player.mjs';
-export const BALD_BASE_SLOT=0x300000,BALD_BASE_END=0x3DC000;
+export const BALD_BASE_SLOT=0x300000,BALD_BASE_END=0x3DC000,CASCAO_BODY_TABLE=0x2D0000;
 const cpu=p=>((128+(p>>>15))<<16)|32768|(p&32767),word=v=>[v&255,v>>>8&255],long=v=>[...word(v),v>>>16&255];
 const hooks=[{pc:0x266FB,original:[0xBF,2,0,0x82],helper:0x308000},{pc:0x26706,original:[0xBF,4,0,0x82],helper:0x308200},...[0x1C930,0x1CAFE].map(pc=>({pc,original:[0xBD,6,0,0x29,15,0],helper:0x308400}))];
 export function baldBaseSupported(base){return hooks.every(h=>h.original.every((v,i)=>base[h.pc+i]===v))&&PLAYER_BODY_CATALOG.every(r=>base[r.pc]===(r.top&255)&&base[r.pc+1]===r.top>>8&&base[r.pc+2+r.top]===(r.bottom&255)&&base[r.pc+3+r.top]===r.bottom>>8);}
@@ -32,17 +32,19 @@ export function baldPointerHelper(bank=false){
  for(const[name,selection,address]of[['preview1',0x7E1E6C,0x7E3E06],['preview2',0x7E1E6E,0x7E3ECE]]){
   c.label(name).put(0xAF,...long(selection),0xEB,0x29,255,0,0xC9,20,0).branch(0xB0,'fallback');attrs(address);c.branch(0x80,'select');
  }
- c.label('select').put(0xC9,14,0).branch(0xD0,'fallback').put(0x7A,0xFA,0xBF,...long(cpu(BALD_BASE_SLOT)-32768),0xC9,255,255).branch(0xF0,'native');
+ c.label('select').put(0xC9,14,0).branch(0xF0,'original').put(0xC9,15,0).branch(0xD0,'fallback').put(0x7A,0xFA,0xBF,...long(cpu(CASCAO_BODY_TABLE)-32768+(bank?2:0)),0x28,0x6B);
+ c.label('original').put(0x7A,0xFA,0xBF,...long(cpu(BALD_BASE_SLOT)-32768),0xC9,255,255).branch(0xF0,'native');
  c.put(0x28,0xBF,...long(cpu(BALD_BASE_SLOT)-32768+(bank?2:0)),0x6B);
  c.label('fallback').put(0x7A,0xFA);c.label('native').put(0x28,0xBF,...long(bank?0x820004:0x820002),0x6B);const bytes=c.finish();if(bytes.length>0x200)throw Error('Helper do corpo excede espaço reservado.');return bytes;
 }
 // Cinematic close-ups have a separate native hair atlas (0..13). Types 14/15
-// use the native embedded head there; match/Skills sprites keep their edits.
+// first use a valid native descriptor. The later closeup stage replaces the
+// victory head tiles and palette; other cinematics retain this safe fallback.
 export function cinematicAppearanceHelper(side=0){
  if(side!==0&&side!==1)throw Error('Lado inválido.');
  return Uint8Array.from([0x08,0xBF,...long(side?0x7E3ECE:0x7E3E06),0x48,0x29,15,0,0xC9,14,0,0x68,0x90,3,0x29,0xF0,0xFF,0x28,0x09,0,0,0x6B]);
 }
-export function baldOverlayHelper(){return Uint8Array.from([0x08,0xBD,6,0,0x29,15,0,0xC9,14,0,0xD0,5,0x28,0xA9,0,0,0x6B,0x28,0xBD,6,0,0x29,15,0,0x6B]);}
+export function baldOverlayHelper(){return Uint8Array.from([0x08,0xBD,6,0,0x29,15,0,0xC9,14,0,0x90,5,0x28,0xA9,0,0,0x6B,0x28,0xBD,6,0,0x29,15,0,0x6B]);}
 export function plusBaldPlayerBaseWriter(rom,state,base,selectedAreas=null){
  if(selectedAreas&&!selectedAreas.includes('jogadores')||!baldBaseSupported(base))return rom;
  if(rom.length!==0x400000)throw Error('Base careca exige 4 MB.');
@@ -50,6 +52,13 @@ export function plusBaldPlayerBaseWriter(rom,state,base,selectedAreas=null){
  const originals=new Map(),bodies=new Map();for(const r of PLAYER_BODY_CATALOG){const image=readPlayerSprite(rom,{kind:'body',id:r.id}),saved=state?.teamsV1?.spriteEdits?.body?.[r.id],bald=saved?image.pixels:baldBodyPixels(r.id,image.pixels),original=saved?originalBodyWithEdits(base,r.id,state.teamsV1.spriteEdits):image.pixels;bodies.set(r.id,{r,bald});originals.set(r.id,alloc(encodeBodySprite(r,original)));const block=encodeBodySprite(r,bald);add(r.pc+2,block.slice(2,r.top+2));add(r.pc+r.top+4,block.slice(r.top+4));}
  const frames=Array.from({length:24},(_,frame)=>state?.teamsV1?.spriteEdits?.hair?.['14:'+frame]??Array.from(customHairPixels(base,14,frame))),changed=frames.map((a,f)=>a.some((v,i)=>v!==ORIGINAL_HAIR_FRAMES[f][i]));
  for(const pose of PLAYER_POSE_CATALOG){let pointer=originals.get(pose.body);if(pose.head&&changed[pose.frame]){const{r,bald}=bodies.get(pose.body);pointer=alloc(encodeBodySprite(r,composeBodyHead(r,pose,bald,frames[pose.frame])));}table.set([...long(pointer),0],parseInt(pose.id.slice(2),16)-32768);}
+ const cascao=new Uint8Array(32768);cascao.fill(255);const cascadeBlocks=new Map();
+ for(const pose of PLAYER_POSE_CATALOG){
+  const {r,bald}=bodies.get(pose.body),head=state?.teamsV1?.spriteEdits?.hair?.['15:'+pose.frame]??customHairPixels(base,15,Math.max(0,pose.frame)),block=encodeBodySprite(r,pose.head?composeBodyHead(r,pose,bald,head):bald),key=Array.from(block).join(',');
+  let ptr=cascadeBlocks.get(key);if(ptr===undefined){ptr=alloc(block);cascadeBlocks.set(key,ptr);}
+  cascao.set([...long(ptr),0],parseInt(pose.id.slice(2),16)-32768);
+ }
+ add(CASCAO_BODY_TABLE,cascao);
  for(const [pc,side]of [[0x591D0,0],[0x591DB,1]]){
   const original=[0xBF,...long(side?0x7E3ECE:0x7E3E06)];
   if(original.every((v,i)=>base[pc+i]===v)){
@@ -68,6 +77,6 @@ export function plusBaldPlayerBaseWriter(rom,state,base,selectedAreas=null){
   if((rom[at]&15)===0&&!explicitBald.has(t+':'+p))add(at,Uint8Array.of((rom[at]&240)|14));
  }
  for(const h of hooks){const bytes=[0x22,...long(cpu(h.helper)),...Array(h.original.length-4).fill(0xEA)];if(!h.original.every((v,i)=>rom[h.pc+i]===v))throw Error('Leitor do corpo já alterado em '+h.pc.toString(16));add(h.pc,Uint8Array.from(bytes));}
- for(const w of writes)if(w.pc>=BALD_BASE_SLOT&&!rom.slice(w.pc,w.pc+w.data.length).every(v=>v===255))throw Error('Espaço da base careca ocupado em '+w.pc.toString(16));
+ for(const w of writes)if((w.pc>=BALD_BASE_SLOT||w.pc===CASCAO_BODY_TABLE)&&!rom.slice(w.pc,w.pc+w.data.length).every(v=>v===255))throw Error('Espaço da base careca ocupado em '+w.pc.toString(16));
  for(const w of writes)rom.set(w.data,w.pc);return rom;
 }

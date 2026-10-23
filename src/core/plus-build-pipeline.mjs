@@ -1,3 +1,5 @@
+import{plusPlayerCloseupWriter}from'./plus-player-closeup.mjs';
+import{plusPauseMenuWriter}from'./plus-pause-menu.mjs';
 import {plusUniformsWriter} from './team-uniforms.mjs';
 import {plusGoalkeeperPalettesWriter} from './plus-goalkeeper-palettes.mjs';
 import {plusBaldPlayerBaseWriter,baldBaseSupported,prepareBaldAppearanceState} from './plus-bald-player-base.mjs';
@@ -81,6 +83,7 @@ export function createPlusBuildStages({baseRom,patches=[],extraWriters=[],writeC
     {id:'04c-team-uniforms',kind:'semantic',run:(work,state)=>plusUniformsWriter(work,state,baseRom,selectedAreas)},
     {id:'04c-goalkeeper-palettes',kind:'semantic',run:(work,state)=>plusGoalkeeperPalettesWriter(work,state,baseRom,selectedAreas)},
     {id:'04c-custom-hair',kind:'semantic',run:(work,state)=>plusCustomHairWriter(work,state,baseRom,selectedAreas)},
+    {id:'04d-player-closeup',kind:'semantic',run:(work,state)=>plusPlayerCloseupWriter(work,state,baseRom,selectedAreas)},
     {
       id:'05-tactical-infrastructure',kind:'derived',
       when:state=>forceTacticalInfrastructure||hasTacticalEdits(state),
@@ -107,6 +110,7 @@ export function createPlusBuildStages({baseRom,patches=[],extraWriters=[],writeC
       id:'07b-cursor-help-text',kind:'semantic',when:!selectedAreas||selectedAreas.includes('pre-partida'),
       run:(work,state)=>plusCursorTextWriter(work,state,baseRom,selectedAreas),
     },
+    {id:'07b-pause-menu',kind:'semantic',run:(work,state)=>plusPauseMenuWriter(work,state,baseRom,selectedAreas)},
     {id:'07b-sounds',kind:'semantic',run:(work,state)=>plusSoundsWriter(work,state,baseRom,selectedAreas)},
     {id:'07b-native-menu-pool',kind:'semantic',run:(work,state)=>plusNativeMenuTextWriter(work,state,baseRom,selectedAreas)},
     {id:'07b-prematch-graphics',kind:'semantic',run:(work,state)=>plusPrematchGraphicsWriter(work,state,baseRom,selectedAreas)},

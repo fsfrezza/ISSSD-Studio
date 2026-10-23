@@ -16,7 +16,7 @@ export function plusCustomHairWriter(rom,state,base,selectedAreas=null){
  if(rom.length!==0x400000)throw Error('Cabelos novos exigem ROM de 4 MB.');
  for(let t=0;t<56;t++){
   const hair=Array.from({length:11},(_,p)=>rom[playerOffset(t,p)+6]&15);
-  if(hair.some(h=>h>=14)&&hair.filter(h=>h!==0&&(!(rom[0x1C930]===0x22&&rom[0x1C931]===0&&rom[0x1C932]===0x84&&rom[0x1C933]===0xE1)||h!==14)).length>3)throw Error('Equipe '+t+': o motor nativo suporta até três titulares com cabelo especial; reduza a seleção antes de exportar.');
+  if(hair.some(h=>h>=14)&&hair.filter(h=>h!==0&&(!(rom[0x1C930]===0x22&&rom[0x1C931]===0&&rom[0x1C932]===0x84&&rom[0x1C933]===0xE1)||h<14)).length>3)throw Error('Equipe '+t+': o motor nativo suporta até três titulares com cabelo especial; reduza a seleção antes de exportar.');
  }
  const writes=[],add=(pc,data)=>writes.push({pc,data:Uint8Array.from(data)}),table=new Uint8Array(60);table.set(base.slice(0xED6D,0xEDA1));
  for(let h=14;h<=15;h++){

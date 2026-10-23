@@ -1,3 +1,4 @@
+import{PAUSE_MENU_SECTION}from'./pause-menu-fields.mjs';
 import {EXTRA_MENU_GRAPHIC_SECTIONS} from './extra-menu-graphic-fields.mjs';
 import {TRAINING_HUD_SECTION} from './training-hud-fields.mjs';
 import {MATCH_STATISTICS_SECTION} from './match-statistics-fields.mjs';
@@ -49,6 +50,7 @@ export const ADDITIONAL_TEXT_SECTIONS=Object.freeze([
  ...EXTRA_MENU_GRAPHIC_SECTIONS,
  TRAINING_HUD_SECTION,
  MATCH_ANNOUNCEMENT_SECTION,
+ PAUSE_MENU_SECTION,
  MATCH_STATISTICS_SECTION,
  ...NATIVE_MENU_TEXT_SECTIONS,
 ].map(section=>({...section,fields:section.fields.map(([id,en,pt,...rest])=>[id,en,USER_PORTUGUESE_PRESETS.additional[section.id]?.[id]??pt,...rest])})));
@@ -68,7 +70,7 @@ export function pendingAdditionalTextExports(semantic={},selectedAreas=null){
  for(const section of ADDITIONAL_TEXT_SECTIONS){
   if(selectedAreas&&!selectedAreas.includes(section.area))continue;
   for(const [id,english,,options] of section.fields){
-   if((section.id==='strategy-labels'&&['one','four'].includes(id))||GRAPHICAL_LABEL_FIELDS[section.id]?.includes(id)||options?.pool||options?.native||options?.announcement||options?.matchStatistics||options?.trainingHud||options?.extraMenuGraphic||options?.prematchGraphic||(section.id==='cursor-labels'&&CURSOR_LABEL_IDS.includes(id)))continue;
+   if((section.id==='strategy-labels'&&['one','four'].includes(id))||GRAPHICAL_LABEL_FIELDS[section.id]?.includes(id)||options?.pool||options?.native||options?.announcement||options?.pauseText||options?.matchStatistics||options?.trainingHud||options?.extraMenuGraphic||options?.prematchGraphic||(section.id==='cursor-labels'&&CURSOR_LABEL_IDS.includes(id)))continue;
    const fields=values[section.id]||{};
    if(Object.hasOwn(fields,id)&&String(fields[id])!==english)pending.push({
     section:section.id,sectionTitle:section.title,field:id,label:english,

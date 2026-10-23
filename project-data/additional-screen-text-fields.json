@@ -990,6 +990,23 @@
     ]
   },
   {
+    "id": "pause-menu",
+    "page": "texts-match",
+    "title": "Menu de pausa",
+    "area": "partida",
+    "fields": [
+      [
+        "resume",
+        "RESUME",
+        "RETOMAR",
+        {
+          "label": "Voltar à partida",
+          "pauseText": true
+        }
+      ]
+    ]
+  },
+  {
     "id": "match-statistics",
     "page": "texts-match",
     "title": "Estatísticas e histórico de gols",

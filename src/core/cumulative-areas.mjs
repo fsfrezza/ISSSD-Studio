@@ -1,3 +1,5 @@
+import{CLOSEUP_REGIONS}from'./plus-player-closeup.mjs';
+import{PAUSE_MENU_REGIONS}from'./plus-pause-menu.mjs';
 import {uniformRegions} from './team-uniforms.mjs';
 import {PLAYER_BODY_CATALOG} from './player-body-catalog.mjs';
 import {SOUND_REGIONS} from './plus-sounds.mjs';
@@ -65,6 +67,7 @@ export function areaClassifier(rom,base=null){
  for(let p=1;p<=7;p++)for(const s of knownMirrorSlices(30,p))derived.push([s.mirror,s.mirror+s.length]);
  let uniforms=[];try{uniforms=uniformRegions(base||rom);}catch{}
  return off=>{
+  if(contains(off,CLOSEUP_REGIONS)||(off>=0x2D0000&&off<0x2D8000))return 'jogadores';
   if(contains(off,uniforms))return 'jogadores';
   if((off>=0x591D0&&off<0x591D4)||(off>=0x591DB&&off<0x591DF))return 'jogadores';
   if((off>=0x300000&&off<0x3DC000)||(off>=0x266FB&&off<0x266FF)||(off>=0x26706&&off<0x2670A)||(off>=0x1C930&&off<0x1C936)||(off>=0x1CAFE&&off<0x1CB04))return 'jogadores';
@@ -88,6 +91,7 @@ export function areaClassifier(rom,base=null){
   if((off>=0x483C2&&off<0x483C2+56*2*34)||(off>=0x48D50&&off<0x48D50+56*24))return 'jogadores';
   if((off>=0x3fc00&&off<0x40000)||(off>=0x113a7&&off<0x113aa)||(off>=0x3cafa&&off<0x3caff)||(off>=0x167ade&&off<0x167c34))return 'pre-partida';
   if(contains(off,STADIUM_LABEL_REGIONS))return 'pre-partida';
+  if(contains(off,PAUSE_MENU_REGIONS))return 'partida';
   if(contains(off,TRAINING_CHOICE_REGIONS))return 'pre-partida';
   if(TRAINING_SELECTOR_POSITIONS.some(([pc])=>off>=pc&&off<pc+2))return 'pre-partida';
   for(const section of NATIVE_MENU_TEXT_SECTIONS)if(section.fields.some(f=>f[3].pool.segments.some(s=>off>=s.pc&&off<s.pc+s.original.length)))return section.area;

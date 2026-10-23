@@ -31950,6 +31950,9 @@
           },
           "scenario-graphics": {
             "timeRemaining": ""
+          },
+          "pause-menu": {
+            "resume": "RETOMAR"
           }
         },
         "drafts": {
@@ -32946,5 +32949,5 @@
     "Patches derivados do runtime GOSPEL-GOL não são persistidos; são regenerados deterministicamente ao Salvar ROM.",
     "ATENÇÃO: os rótulos gráficos do menu principal estão preservados semanticamente no projeto, mas o asset gráfico do menu ainda não possui escrita segura na ROM."
   ],
-  "savedAt": "2026-10-23T13:35:07.000Z"
+  "savedAt": "2026-10-23T15:09:04.923Z"
 }
