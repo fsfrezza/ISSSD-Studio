@@ -12,6 +12,10 @@ export const STADIUM_OAM_CACHE_SLOT=0x3E6D00;
 export const STADIUM_OAM_PLANE=0x1D2;
 export const STADIUM_RESTORE_SLOT=0x3E7500;
 export const STADIUM_RESTORE_SIZE=0x80;
+export const SQUAD_OAM_CACHE_SLOT=0x3E7600,SQUAD_OAM_CACHE_SIZE=0x200;
+export const SQUAD_RESTORE_SLOT=0x3E7800,SQUAD_RESTORE_SIZE=0x100;
+export const SQUAD_OAM_DEST=0x5EB2,SQUAD_OAM_PLANE=116;
+export const SQUAD_OAM_POINTERS=Object.freeze([0x175EE,0x175F0,0x175F2,...Array.from({length:11},(_,i)=>0x174F4+i*2)]);
 export const TEAM_NAME_HOOK_SLOT=0x3E3000;
 export const TEAM_NAME_HOOK_SIZE=0x200;
 export const TEAM_NAME_POINTER_READS=Object.freeze([0x1BA5B,0x1BA86,0x2A995,0x2A9CB,0x2C754,0x2D156,0x2D6AF,0x2E99F,0x364A0,0x5668E,0x566B1,0x566D4,0x566F7,0x5671A,0x5673D,0x59908,0x5FFCE,0x5FFD4,0x5FFE0,0x122046,0x1244E0]);
@@ -75,7 +79,29 @@ export function teamNameHookWrites(base,nameRaw){
  writes.push([TEAM_NAME_CACHE_SLOT,convertedTeamNameOam(nameRaw)]);
  const restore=[0x08,0xC2,0x30,0x8B,0x48,0xDA,0x5A];
  for(let p=0;p<4;p++)restore.push(0xA2,...long(cpu(MENU_OAM_CACHE_SLOT+p*MENU_OAM_PLANE_SIZE)).slice(0,2),0xA0,(0x5876+p*0x2000)&255,(0x5876+p*0x2000)>>8,0xA9,(MENU_OAM_PLANE_SIZE-1)&255,(MENU_OAM_PLANE_SIZE-1)>>8,0x54,0x7E,cpu(MENU_OAM_CACHE_SLOT)>>16);
- restore.push(0x7A,0xFA,0x68,0xAB,0x28,0x6B);slot.set(restore,0x1B0);
+ // Substitution sprites originally live at 57D2..5846, inside expanded names.
+ // Relocate them immediately after the shared menu objects, and reconstruct
+ // both datasets together even when the native loader skips a cached screen.
+ const squadCache=new Uint8Array(SQUAD_OAM_CACHE_SIZE);
+ for(const [pc,frames,plane,offset]of [[0xC3332,3,12,0],[0xC3348,11,104,12]]){
+  const decoded=konamiLzDecompress(base,pc).data;
+  const converted=convertedTeamNameOam(decoded,frames,plane);
+  for(let p=0;p<4;p++)squadCache.set(converted.slice(p*plane,(p+1)*plane),p*SQUAD_OAM_PLANE+offset);
+ }
+ for(const [pc,original,next]of [[0x111F4,0x57D2,SQUAD_OAM_DEST],[0x111F9,0xD7DE,SQUAD_OAM_DEST+12|0x8000]]){
+  if((base[pc]|base[pc+1]<<8)!==original)throw Error('Substituições: destino nativo divergente.');
+  writes.push([pc,Uint8Array.of(next&255,next>>8)]);
+ }
+ for(const pc of SQUAD_OAM_POINTERS){const original=base[pc]|base[pc+1]<<8;
+  if(original<0x57D2||original>=0x5846)throw Error('Substituições: ponteiro nativo divergente.');
+  const next=original+SQUAD_OAM_DEST-0x57D2;writes.push([pc,Uint8Array.of(next&255,next>>8)]);
+ }
+ for(let p=0;p<4;p++)restore.push(0xA2,...long(cpu(SQUAD_OAM_CACHE_SLOT+p*SQUAD_OAM_PLANE)).slice(0,2),0xA0,(SQUAD_OAM_DEST+p*0x2000)&255,(SQUAD_OAM_DEST+p*0x2000)>>8,0xA9,SQUAD_OAM_PLANE-1,0,0x54,0x7E,cpu(SQUAD_OAM_CACHE_SLOT)>>16);
+ restore.push(0x7A,0xFA,0x68,0xAB,0x28,0x6B);
+ if(restore.length>SQUAD_RESTORE_SIZE)throw Error('Substituições: restauração excede a reserva.');
+ const squadCode=new Uint8Array(SQUAD_RESTORE_SIZE).fill(255);squadCode.set(restore);
+ writes.push([SQUAD_OAM_CACHE_SLOT,squadCache],[SQUAD_RESTORE_SLOT,squadCode]);
+ slot.set([0x5C,...long(cpu(SQUAD_RESTORE_SLOT))],0x1B0);
  const stadiumRestore=[0x08,0xC2,0x30,0x8B,0x48,0xDA,0x5A];
  for(let p=0;p<4;p++)stadiumRestore.push(0xA2,...long(cpu(STADIUM_OAM_CACHE_SLOT+p*STADIUM_OAM_PLANE)).slice(0,2),0xA0,(0x5600+p*0x2000)&255,(0x5600+p*0x2000)>>8,0xA9,0xD1,1,0x54,0x7E,cpu(STADIUM_OAM_CACHE_SLOT)>>16);
  stadiumRestore.push(0x7A,0xFA,0x68,0xAB,0x28,0x6B);const stadiumCode=new Uint8Array(STADIUM_RESTORE_SIZE).fill(255);stadiumCode.set(stadiumRestore);

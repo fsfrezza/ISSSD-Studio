@@ -3705,6 +3705,10 @@ for(const [id,pc,ref]of [['data_87df39',0x3FBA0,0x3BDEE],['data_87df5b',0x3FBA8,
  f[3].pool={...f[3].pool,capacity:8,relocation:{pc,ref}};
 }
 
+// Same-bank private label supports the colon without overwriting GAME START.
+const stadiumLabel=AUDITED_NATIVE_MENU_TEXT_SECTIONS.find(s=>s.id==='stadium-native').fields.find(f=>f[0]==='data_87cad3');
+stadiumLabel[3]={...stadiumLabel[3],label:'Rótulo do estádio (antes do país)',pool:{...stadiumLabel[3].pool,capacity:8,relocation:{pc:0x3FBB0,ref:0x3B1BC}}};
+
 const handicapHelp=AUDITED_NATIVE_MENU_TEXT_SECTIONS.find(s=>s.id==='handicap-native').fields.find(f=>f[0]==='data_87c884');
 handicapHelp[1]='Press the select button to change 1P and CPU controls.';
 handicapHelp[3]={...handicapHelp[3],multiline:true,rows:2,pool:{...handicapHelp[3].pool,segments:[{pc:0x3C884,original:handicapHelp[1].slice(0,27)},{pc:0x3C89F,original:handicapHelp[1].slice(27)}]}};

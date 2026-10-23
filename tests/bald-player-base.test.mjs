@@ -78,3 +78,17 @@ test('goalkeepers retain native embedded hair zero: outfield overlays must never
  for(const slot of[0,11]){const at=playerOffset(30,slot);assert.equal(rom[at+6],0xB0);assert.equal(rom[at+4],0x19);}
  assert.equal(rom[playerOffset(30,1)+6],0xBE);assert.deepEqual(base,before);
 });
+
+
+test('cinematic close-ups never index native hair descriptors with extended styles; skin, roster bytes and CPU context survive',async()=>{
+ const {cinematicAppearanceHelper}=await import('../src/core/plus-bald-player-base.mjs');
+ for(const side of[0,1])for(let hair=0;hair<16;hair++)for(const palette of[0,1])for(const flags of[0,1,8,9]){
+  const rom=new Uint8Array(0x400000).fill(255),wram=new Uint8Array(65536),x=90,address=(side?0x3ECE:0x3E06)+x,raw=0xAB00|palette<<4|hair;
+  wram[address]=raw&255;wram[address+1]=raw>>8;rom.set(cinematicAppearanceHelper(side),0x308480);
+  assert.equal(execute(rom,0x308480,{x,wram,p:flags}),hair>=14?raw&0xFFF0:raw);
+ }
+ const base=fixture();base.set([0xBF,6,0x3E,0x7E],0x591D0);base.set([0xBF,0xCE,0x3E,0x7E],0x591DB);
+ const rom=expandPlusTo4MiB(base);plusBaldPlayerBaseWriter(rom,prepareBaldAppearanceState({}),base);
+ assert.deepEqual(rom.slice(0x591D0,0x591D4),Uint8Array.of(0x22,0x80,0x84,0xE1));
+ assert.deepEqual(rom.slice(0x591DB,0x591DF),Uint8Array.of(0x22,0xC0,0x84,0xE1));
+});

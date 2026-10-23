@@ -3,7 +3,7 @@ import {MENU_OAM_CACHE_SLOT,MENU_OAM_PLANE_SIZE,convertedMenuOam} from '../src/c
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {executeHook} from './65816-hook-harness.mjs';
-import {STADIUM_OAM_CACHE_SLOT,STADIUM_OAM_PLANE,TEAM_NAME_CACHE_SLOT,TEAM_NAME_CACHE_PLANE,teamNameHookWrites,TEAM_NAME_HOOK_SLOT,TEAM_NAME_POINTER_READS} from '../src/core/plus-team-name-hooks.mjs';
+import {SQUAD_OAM_CACHE_SLOT,SQUAD_OAM_PLANE,SQUAD_OAM_DEST,SQUAD_OAM_POINTERS,STADIUM_OAM_CACHE_SLOT,STADIUM_OAM_PLANE,TEAM_NAME_CACHE_SLOT,TEAM_NAME_CACHE_PLANE,teamNameHookWrites,TEAM_NAME_HOOK_SLOT,TEAM_NAME_POINTER_READS} from '../src/core/plus-team-name-hooks.mjs';
 import {renderBigTeamNames} from '../src/core/plus-team-names.mjs';
 import {encodeTrainingHud} from '../src/core/plus-training-hud.mjs';
 import {TRAINING_HUD_FIELDS} from '../src/core/training-hud-fields.mjs';
@@ -64,4 +64,18 @@ test('normal-match penalty names never overwrite any live ball animation plane i
   }
  }
  const unrelated=hooks();unrelated.set([0x80,0x52],0x7E5FFA);const out=executeHook(unrelated,cpu(TEAM_NAME_HOOK_SLOT),{a:255,x:0x8E4C,y:0x4F02},new Set([0x80947E]));assert.equal(out.calls[0].y,0x5280,'other menu names retain their existing layout');
+});
+
+
+test('substitution object planes and all fourteen frame pointers stay outside expanded team names across cached screen returns',()=>{
+ const memory=hooks(),cache=memory.slice(cpu(SQUAD_OAM_CACHE_SLOT),cpu(SQUAD_OAM_CACHE_SLOT)+SQUAD_OAM_PLANE*4);
+ assert.ok(SQUAD_OAM_DEST>=0x5876+MENU_OAM_PLANE_SIZE);
+ assert.ok(SQUAD_OAM_DEST+SQUAD_OAM_PLANE<=0x5FF8);
+ for(const pc of SQUAD_OAM_POINTERS){const pointer=word(memory,cpu(pc));assert.ok(pointer>=SQUAD_OAM_DEST&&pointer<SQUAD_OAM_DEST+SQUAD_OAM_PLANE);}
+ for(let visit=0;visit<3;visit++){
+  for(let plane=0;plane<4;plane++)memory.fill(0xDB,0x7E5280+plane*0x2000,0x7E5FF6+plane*0x2000);
+  memory.set([0x80,0x52],0x7E5FFA);
+  const out=executeHook(memory,cpu(TEAM_NAME_HOOK_SLOT+0x120),{a:0x1234,x:0x5678,y:0x90AB,p:0x81});assert.equal(out.r.a,0x1234);assert.equal(out.r.x,0x5678);assert.equal(out.r.y,0x90AB);assert.equal(out.r.s,0x1FF);
+  for(let plane=0;plane<4;plane++)assert.deepEqual(memory.slice(0x7E0000+SQUAD_OAM_DEST+plane*0x2000,0x7E0000+SQUAD_OAM_DEST+plane*0x2000+SQUAD_OAM_PLANE),cache.slice(plane*SQUAD_OAM_PLANE,(plane+1)*SQUAD_OAM_PLANE));
+ }
 });

@@ -36,6 +36,12 @@ export function baldPointerHelper(bank=false){
  c.put(0x28,0xBF,...long(cpu(BALD_BASE_SLOT)-32768+(bank?2:0)),0x6B);
  c.label('fallback').put(0x7A,0xFA);c.label('native').put(0x28,0xBF,...long(bank?0x820004:0x820002),0x6B);const bytes=c.finish();if(bytes.length>0x200)throw Error('Helper do corpo excede espaço reservado.');return bytes;
 }
+// Cinematic close-ups have a separate native hair atlas (0..13). Types 14/15
+// use the native embedded head there; match/Skills sprites keep their edits.
+export function cinematicAppearanceHelper(side=0){
+ if(side!==0&&side!==1)throw Error('Lado inválido.');
+ return Uint8Array.from([0x08,0xBF,...long(side?0x7E3ECE:0x7E3E06),0x48,0x29,15,0,0xC9,14,0,0x68,0x90,3,0x29,0xF0,0xFF,0x28,0x09,0,0,0x6B]);
+}
 export function baldOverlayHelper(){return Uint8Array.from([0x08,0xBD,6,0,0x29,15,0,0xC9,14,0,0xD0,5,0x28,0xA9,0,0,0x6B,0x28,0xBD,6,0,0x29,15,0,0x6B]);}
 export function plusBaldPlayerBaseWriter(rom,state,base,selectedAreas=null){
  if(selectedAreas&&!selectedAreas.includes('jogadores')||!baldBaseSupported(base))return rom;
@@ -44,6 +50,13 @@ export function plusBaldPlayerBaseWriter(rom,state,base,selectedAreas=null){
  const originals=new Map(),bodies=new Map();for(const r of PLAYER_BODY_CATALOG){const image=readPlayerSprite(rom,{kind:'body',id:r.id}),saved=state?.teamsV1?.spriteEdits?.body?.[r.id],bald=saved?image.pixels:baldBodyPixels(r.id,image.pixels),original=saved?originalBodyWithEdits(base,r.id,state.teamsV1.spriteEdits):image.pixels;bodies.set(r.id,{r,bald});originals.set(r.id,alloc(encodeBodySprite(r,original)));const block=encodeBodySprite(r,bald);add(r.pc+2,block.slice(2,r.top+2));add(r.pc+r.top+4,block.slice(r.top+4));}
  const frames=Array.from({length:24},(_,frame)=>state?.teamsV1?.spriteEdits?.hair?.['14:'+frame]??Array.from(customHairPixels(base,14,frame))),changed=frames.map((a,f)=>a.some((v,i)=>v!==ORIGINAL_HAIR_FRAMES[f][i]));
  for(const pose of PLAYER_POSE_CATALOG){let pointer=originals.get(pose.body);if(pose.head&&changed[pose.frame]){const{r,bald}=bodies.get(pose.body);pointer=alloc(encodeBodySprite(r,composeBodyHead(r,pose,bald,frames[pose.frame])));}table.set([...long(pointer),0],parseInt(pose.id.slice(2),16)-32768);}
+ for(const [pc,side]of [[0x591D0,0],[0x591DB,1]]){
+  const original=[0xBF,...long(side?0x7E3ECE:0x7E3E06)];
+  if(original.every((v,i)=>base[pc+i]===v)){
+   if(!original.every((v,i)=>rom[pc+i]===v))throw Error('Leitor de aparência da cena já alterado.');
+   const helper=0x308480+side*0x40;add(helper,cinematicAppearanceHelper(side));add(pc,Uint8Array.from([0x22,...long(cpu(helper))]));
+  }
+ }
  add(BALD_BASE_SLOT,table);add(0x308000,baldPointerHelper());add(0x308200,baldPointerHelper(true));add(0x308400,baldOverlayHelper());
  // Default native code 0 becomes original style 14, except an explicit new bald choice.
  const explicitBald=new Set();for(const[id,t]of Object.entries(state?.teamsV1?.teams||{}))for(const p of t.players||[])if(p.custom?.appearance?.hair===0)explicitBald.add((t.teamId??id)+':'+(p.slot-1));

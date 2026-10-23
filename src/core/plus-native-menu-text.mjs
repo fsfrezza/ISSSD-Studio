@@ -1,5 +1,6 @@
 import {NATIVE_MENU_FONTS,NATIVE_MENU_TEXT_SECTIONS} from './native-menu-text-fields.mjs';
 export const TRAINING_SELECTOR_POSITIONS=Object.freeze([[0x3BDBB,0x0108,0x010D],[0x3BDC1,0x0168,0x016D],[0x3BDC7,0x0111,0x0108],[0x3BDCD,0x0172,0x0168]]);
+export const STADIUM_LABEL_REGIONS=[[0x3FBB0,0x3FBB8],[0x3B1BC,0x3B1C1],[0x3448F,0x34491]];
 export const TRAINING_CHOICE_REGIONS=[[0x3FBA0,0x3FBB0],[0x3BDEE,0x3BDF3],[0x3BE00,0x3BE05],[0x3BE05,0x3BE07]];
 export function encodeNativeMenuField(field,value){
  const options=field[3],{segments,font}=options.pool,table=NATIVE_MENU_FONTS[font];
@@ -39,6 +40,12 @@ export function plusNativeMenuTextWriter(rom,state={},base=rom,selectedAreas=nul
     }else writes.push([segment.pc,next[i]]);
    });
   }
+ }
+ // A translated label precedes the country; original English keeps its native order.
+ const stadium=data.values?.['stadium-native'];
+ if((!selectedAreas||selectedAreas.includes('pre-partida'))&&stadium&&Object.hasOwn(stadium,'data_87cad3')&&stadium.data_87cad3!=='STADIUM'){
+  if((base[0x3B1BE]|base[0x3B1BF]<<8)!==0x0131||(base[0x3448F]|base[0x34490]<<8)!==0x0128)throw Error('Estádio: posições nativas divergentes.');
+  writes.push([0x3B1BE,Uint8Array.of(0x28,1)],[0x3448F,Uint8Array.of(0x31,1)]);
  }
  // MODE is shared with other training screens: only reorder this selector.
  if((!selectedAreas||selectedAreas.includes('pre-partida'))&&String(data.values?.['training-native']?.data_87df61??'').toUpperCase()==='MODO'){

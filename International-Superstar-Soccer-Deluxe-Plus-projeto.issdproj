@@ -31640,7 +31640,7 @@
             "data_87ca77": "CONDIÇÃO",
             "data_87ca80": "NEVE\nSOL\nCHUV",
             "data_87ca9b": " JAPÃO\n E.U.A.\nESPANHA\n ITÁLIA\nINGLAT.\nALEMAN.\n BRASIL\nNIGÉRIA",
-            "data_87cad3": "ESTÁDIO"
+            "data_87cad3": "ESTÁDIO:"
           },
           "results-native": {
             "data_87d73a": "NÃO DESISTA! - FIM DE JOGO -",
@@ -32883,5 +32883,5 @@
     "Patches derivados do runtime GOSPEL-GOL não são persistidos; são regenerados deterministicamente ao Salvar ROM.",
     "ATENÇÃO: os rótulos gráficos do menu principal estão preservados semanticamente no projeto, mas o asset gráfico do menu ainda não possui escrita segura na ROM."
   ],
-  "savedAt": "2026-10-23T00:54:47.018Z"
+  "savedAt": "2026-10-23T02:25:53.498378+00:00"
 }

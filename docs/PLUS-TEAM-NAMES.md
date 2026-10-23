@@ -74,3 +74,13 @@ O carregador `$8296AF` converte primeiro os 29 quadros nativos da bola em `$7E55
 Os dois invólucros dos conversores OAM agora selecionam `$5A00` especificamente nessa conversão dos nomes do pênalti. O helper em PC `$3E30C0` mantém os registradores, flags e a pilha, e usa a restauração existente do cache. Os demais carregadores conservam seu destino anterior.
 
 Validação: teste executa ambos os invólucros emitidos e verifica os quatro planos da bola após a escrita dos nomes. No núcleo SNES, a transição controlada campo → cobrança, com o projeto canônico, tinha divergências de 38/63/53/93 bytes nos quatro planos; após a correção todos os 376 bytes ficaram idênticos à conversão dos objetos originais. Essa comparação valida a integridade das animações; não substitui a confirmação visual da cobrança específica no emulador do usuário.
+
+
+## Substituições: objetos fora dos nomes ampliados
+
+Os datasets `$98B332` e `$98B348` ocupavam `$57D2..$5846`, dentro dos nomes ampliados em `$5280..$5876`. Os quatorze ponteiros de quadros e os dois destinos de conversão passam para `$5EB2..$5F26`, após os objetos compartilhados, sem tocar `$5FF8/$5FFA`. Os quatro planos originais ficam em cache imutável em PC `$3E7600`; a restauração de menu em `$3E7800` recompõe ambos os conjuntos em cada retorno, inclusive com carregamento nativo em cache. Os gráficos, cores e coordenadas dos objetos não são redesenhados.
+
+
+## Rótulo do estádio
+
+O campo `stadium-native/data_87cad3` aceita até oito células e fica antes do país quando traduzido. O padrão português é `ESTÁDIO:`. A string é relocalizada em PC `$3FBB0`, sem sobrescrever `GAME START`; a posição do rótulo passa de `$0131` para `$0128`, e a do país faz o caminho inverso. O inglês original mantém a ordem nativa. A mudança pertence à fase Pré-partida e é salva no projeto como os demais textos.

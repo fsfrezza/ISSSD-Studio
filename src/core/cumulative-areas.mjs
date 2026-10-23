@@ -1,7 +1,7 @@
 import {uniformRegions} from './team-uniforms.mjs';
 import {PLAYER_BODY_CATALOG} from './player-body-catalog.mjs';
 import {SOUND_REGIONS} from './plus-sounds.mjs';
-import {TRAINING_SELECTOR_POSITIONS,TRAINING_CHOICE_REGIONS} from './plus-native-menu-text.mjs';
+import {TRAINING_SELECTOR_POSITIONS,TRAINING_CHOICE_REGIONS,STADIUM_LABEL_REGIONS} from './plus-native-menu-text.mjs';
 import {EXTRA_MENU_GRAPHIC_REGIONS} from './plus-extra-menu-graphics.mjs';
 import {TRAINING_HUD_REGIONS} from './plus-training-hud.mjs';
 import {MATCH_STATISTICS_REGIONS} from './plus-match-statistics.mjs';
@@ -66,6 +66,7 @@ export function areaClassifier(rom,base=null){
  let uniforms=[];try{uniforms=uniformRegions(base||rom);}catch{}
  return off=>{
   if(contains(off,uniforms))return 'jogadores';
+  if((off>=0x591D0&&off<0x591D4)||(off>=0x591DB&&off<0x591DF))return 'jogadores';
   if((off>=0x300000&&off<0x3DC000)||(off>=0x266FB&&off<0x266FF)||(off>=0x26706&&off<0x2670A)||(off>=0x1C930&&off<0x1C936)||(off>=0x1CAFE&&off<0x1CB04))return 'jogadores';
   if((off>=0x2A0000&&off<0x2A7C00)||(off>=0x5D076&&off<0x5D07A)||(off>=0x5D090&&off<0x5D094)||(off>=0xC78FD&&off<0xC7901)||(off>=0x5D081&&off<0x5D085)||(off>=0x5D09B&&off<0x5D09F)||(off>=0xC790C&&off<0xC7910))return 'jogadores';
   if(isBodySpriteByte(off)||(off>=0xBCD58&&off<0xBF458))return 'jogadores';
@@ -86,6 +87,7 @@ export function areaClassifier(rom,base=null){
   if((off>=0x3E8000&&off<0x3E8700)||(off>=0xC7BC3&&off<0xC7BC9)||(off>=0xC7BE0&&off<0xC7BE6))return 'jogadores';
   if((off>=0x483C2&&off<0x483C2+56*2*34)||(off>=0x48D50&&off<0x48D50+56*24))return 'jogadores';
   if((off>=0x3fc00&&off<0x40000)||(off>=0x113a7&&off<0x113aa)||(off>=0x3cafa&&off<0x3caff)||(off>=0x167ade&&off<0x167c34))return 'pre-partida';
+  if(contains(off,STADIUM_LABEL_REGIONS))return 'pre-partida';
   if(contains(off,TRAINING_CHOICE_REGIONS))return 'pre-partida';
   if(TRAINING_SELECTOR_POSITIONS.some(([pc])=>off>=pc&&off<pc+2))return 'pre-partida';
   for(const section of NATIVE_MENU_TEXT_SECTIONS)if(section.fields.some(f=>f[3].pool.segments.some(s=>off>=s.pc&&off<s.pc+s.original.length)))return section.area;

@@ -59,3 +59,8 @@ alto de 7E1E6C/7E1E6E, como CODE_83C870, sem consultar a escalação da
 partida ou o campo 68 desses objetos. Seleções inativas/fora do elenco
 retornam ao caminho nativo. Os helpers continuam dentro dos 512 bytes
 reservados para cada um. Os bytes emitidos são executados em testes.
+
+
+## Animações grandes e telão
+
+As leituras dos dois elencos em `$8B91D0/$8B91DB` alimentam um atlas de animações grandes separado dos sprites pequenos. Esse atlas não contém os tipos novos 14/15. Helpers em PC `$308480/$3084C0` mantêm a paleta e os demais bytes, mas usam a cabeça nativa embutida nessa apresentação. Isso evita usar descritores de outro modelo e preserva os tipos editados em campo/Skills. Os desenhos personalizados de Careca/Cascão ainda não possuem equivalentes próprios nesse atlas grande; o fallback é explícito e restrito à animação cinematográfica.

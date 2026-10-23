@@ -1478,9 +1478,9 @@
       [
         "data_87cad3",
         "STADIUM",
-        "ESTÁDIO",
+        "ESTÁDIO:",
         {
-          "label": "STADIUM",
+          "label": "Rótulo do estádio (antes do país)",
           "multiline": false,
           "rows": 1,
           "pool": {
@@ -1491,7 +1491,12 @@
                 "original": "STADIUM"
               }
             ],
-            "symbol": "DATA_87CAD3"
+            "symbol": "DATA_87CAD3",
+            "capacity": 8,
+            "relocation": {
+              "pc": 261040,
+              "ref": 242108
+            }
           }
         }
       ]

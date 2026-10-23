@@ -156,7 +156,7 @@ export const USER_PORTUGUESE_PRESETS={
    "data_87ca77": "CONDIÇÃO",
    "data_87ca80": "NEVE\nSOL\nCHUV",
    "data_87ca9b": " JAPÃO\n E.U.A.\nESPANHA\n ITÁLIA\nINGLAT.\nALEMAN.\n BRASIL\nNIGÉRIA",
-   "data_87cad3": "ESTÁDIO"
+   "data_87cad3": "ESTÁDIO:"
   },
   "results-native": {
    "data_87d73a": "NÃO DESISTA! - FIM DE JOGO -",

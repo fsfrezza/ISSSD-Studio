@@ -6,6 +6,7 @@ export function execute(rom,start,{d=0x500,x=0xA3D7,y=0x120,a=0xBBCC,p=1,wram=ne
  while(steps++<350){const op=next8();switch(op){
  case 0x08:stack.push(p);break;case 0xD8:p&=~8;break;case 0x28:p=stack.pop();break;
  case 0xDA:push16(x);break;case 0x5A:push16(y);break;case 0x48:push16(a);break;
+ case 0x68:a=pop16();nz(a);break;case 0x09:a|=next16();nz(a);break;
  case 0xFA:x=pop16();nz(x);break;case 0x7A:y=pop16();nz(y);break;
  case 0xE0:cmp(x,next16());break;case 0xC9:cmp(a,next16());break;
  case 0xD0:case 0xF0:case 0x90:case 0xB0:case 0x80:{const r=next8(),take=op===0x80||op===0xD0&&!(p&2)||op===0xF0&&(p&2)||op===0x90&&!(p&1)||op===0xB0&&(p&1);if(take)at+=r<128?r:r-256;break;}
