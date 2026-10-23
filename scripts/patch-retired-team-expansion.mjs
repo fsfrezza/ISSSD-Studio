@@ -1,0 +1,10 @@
+import fs from'node:fs';import path from'node:path';import{fileURLToPath}from'node:url';
+import{stripRetiredExpansionHtml}from'./lib/retired-expansion-editor.mjs';
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),file=path.join(root,'editor/ISSSD-Studio.html');
+let html=stripRetiredExpansionHtml(fs.readFileSync(file,'utf8'));
+const id='isssd-retired-expansion-boundaries';html=html.replace(new RegExp('<script id="'+id+'">[\\s\\S]*?</script>','g'),'');
+const core=fs.readFileSync(path.join(root,'src/core/retired-team-expansion.mjs'),'utf8').replace(/^export /gm,'');
+const runtime='window.ISSSDRetiredExpansion=(()=>{'+core+';return{stripRetiredTeamExpansion};})();\n'+fs.readFileSync(path.join(root,'editor-src/retired-expansion-boundaries.mjs'),'utf8');
+if(!html.includes('</body>'))throw Error('Editor sem fechamento de body; limpeza interrompida.');
+html=html.replace('</body>','<script id="'+id+'">'+runtime+'</script>\n</body>');
+fs.writeFileSync(file,html);console.log('Editor: extensão antiga removida; importação e exportação de projetos/equipes sem metadados obsoletos.');

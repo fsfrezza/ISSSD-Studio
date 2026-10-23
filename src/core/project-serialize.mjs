@@ -1,3 +1,4 @@
+import {stripRetiredTeamExpansion} from './retired-team-expansion.mjs';
 import {canonicalProjectOpen} from './project-open.mjs';
 
 export const PROJECT_SCHEMA='isssd-studio-project-v1';
@@ -48,7 +49,7 @@ export function projectDocumentFromCanonical(canonical,{profile='plus'}={}){
     state:{
       targetLength,
       patches,
-      semantic:jsonSafe(canonical.semantic??{},'semantic'),
+      semantic:jsonSafe(stripRetiredTeamExpansion(canonical.semantic??{}),'semantic'),
     },
   };
 }

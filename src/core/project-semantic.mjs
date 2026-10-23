@@ -1,3 +1,4 @@
+import {stripRetiredTeamExpansion} from './retired-team-expansion.mjs';
 import {migrateLegacyPlayerAttributes} from './plus-player-state.mjs';
 import {migrateLegacyPlayerNames} from './plus-player-name-state.mjs';
 import {migrateLegacyPlusMainMenu} from './plus-main-menu-state.mjs';
@@ -31,7 +32,7 @@ export function canonicalProjectSemantic(project){
   if(semantic===null || typeof semantic!=='object' || Array.isArray(semantic)) {
     throw new TypeError('project semantic state must be an object');
   }
-  const out=structuredClone(semantic);
+  const out=stripRetiredTeamExpansion(semantic);
 
   if(out.teamsV1&&typeof out.teamsV1==='object'&&!Array.isArray(out.teamsV1)){
     // Attributes must migrate before names because old v6.92/v6.93 name-roster

@@ -8,7 +8,7 @@
     "restore:project": "node scripts/restore-canonical-project.mjs --force",
     "ensure:project": "node scripts/restore-canonical-project.mjs",
     "ensure:plus-preparation": "node scripts/ensure-plus-preparation-project.mjs && node scripts/migrate-sparse-team-overrides.mjs && node scripts/sanitize-legacy-plus-project.mjs",
-    "build:editor": "node scripts/verify-editor-source.mjs && node scripts/build-editor.mjs && node scripts/normalize-generated-html.mjs && node scripts/fix-lineup-swap.mjs && node scripts/patch-tactical-project-safety.mjs && node scripts/patch-canonical-teams-v3.mjs && node scripts/patch-team-field-state.mjs && node scripts/patch-immutable-player-attr-baseline.mjs && node scripts/patch-player-identity-v1.mjs && node scripts/patch-player-name-offset-compat.mjs && node scripts/patch-player-position-model.mjs && node scripts/patch-mandatory-plus-4mb.mjs && node scripts/patch-native-tactical-individualization.mjs && node scripts/patch-single-internal-title.mjs && node scripts/patch-overview-minimal.mjs && node scripts/patch-player-skill-restore-buttons.mjs && node scripts/patch-project-roundtrip-safety.mjs && node scripts/patch-global-file-offset.mjs && node scripts/patch-canonical-rom-export.mjs && node scripts/patch-team-semantic-overlay.mjs && node scripts/patch-project-open-semantic-only.mjs && node scripts/patch-team-group-safety.mjs && node scripts/verify-final-editor-invariants.mjs",
+    "build:editor": "node scripts/verify-editor-source.mjs && node scripts/build-editor.mjs && node scripts/normalize-generated-html.mjs && node scripts/fix-lineup-swap.mjs && node scripts/patch-tactical-project-safety.mjs && node scripts/patch-canonical-teams-v3.mjs && node scripts/patch-team-field-state.mjs && node scripts/patch-immutable-player-attr-baseline.mjs && node scripts/patch-player-identity-v1.mjs && node scripts/patch-player-name-offset-compat.mjs && node scripts/patch-player-position-model.mjs && node scripts/patch-mandatory-plus-4mb.mjs && node scripts/patch-native-tactical-individualization.mjs && node scripts/patch-single-internal-title.mjs && node scripts/patch-overview-minimal.mjs && node scripts/patch-player-skill-restore-buttons.mjs && node scripts/patch-project-roundtrip-safety.mjs && node scripts/patch-global-file-offset.mjs && node scripts/patch-canonical-rom-export.mjs && node scripts/patch-team-semantic-overlay.mjs && node scripts/patch-project-open-semantic-only.mjs && node scripts/patch-team-group-safety.mjs && node scripts/patch-retired-team-expansion.mjs && node scripts/verify-final-editor-invariants.mjs",
     "validate:editor:local": "node scripts/validate-local-editor.mjs",
     "serve:editor": "npm run build:editor && node scripts/serve-editor.mjs",
     "editor": "npm run ensure:project && npm run ensure:plus-preparation && npm run build:editor && npm run serve:editor",
@@ -29,5 +29,9 @@
     "hair:export:native": "node scripts/edit-player-hair.mjs export-native",
     "hair:verify": "node scripts/edit-player-hair.mjs verify",
     "body:proof": "node scripts/player-body-proof.mjs"
+  },
+  "devDependencies": {
+    "acorn": "^8.15.0",
+    "parse5": "^7.3.0"
   }
 }

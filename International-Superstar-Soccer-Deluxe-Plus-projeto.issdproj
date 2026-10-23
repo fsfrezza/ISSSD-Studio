@@ -31127,55 +31127,6 @@
           64364
         ]
       },
-      "plusGospelGol": {
-        "enabled": false,
-        "version": 2,
-        "label": "GOSPEL-GOL",
-        "teams": [
-          {
-            "id": 56,
-            "name": "Adiposos",
-            "bigName": "ADI",
-            "sourceTeam": 30,
-            "roster": null
-          },
-          {
-            "id": 57,
-            "name": "Bugigangas",
-            "bigName": "BUG",
-            "sourceTeam": 30,
-            "roster": null
-          },
-          {
-            "id": 58,
-            "name": "Encefálicos",
-            "bigName": "ENC",
-            "sourceTeam": 30,
-            "roster": null
-          },
-          {
-            "id": 59,
-            "name": "Macucos",
-            "bigName": "MAC",
-            "sourceTeam": 30,
-            "roster": null
-          },
-          {
-            "id": 60,
-            "name": "Telúricos",
-            "bigName": "TEL",
-            "sourceTeam": 30,
-            "roster": null
-          },
-          {
-            "id": 61,
-            "name": "Vaporosos",
-            "bigName": "VAP",
-            "sourceTeam": 30,
-            "roster": null
-          }
-        ]
-      },
       "studioVariant": {
         "preset": null,
         "plusCore": false,
@@ -32937,7 +32888,6 @@
     }
   },
   "notes": [
-    "GOSPEL-GOL não ativo neste projeto.",
     "Schema de projeto limpo: metadados experimentais Custom6/Special6 não são exportados.",
     "A ROM-base não está embutida neste arquivo.",
     "As alterações são sempre reaplicadas sobre a base identificada pelo SHA-256.",
@@ -32946,7 +32896,6 @@
     "Tela Inicial: textos, paletas, recoloração da faixa e espaçamento são persistidos explicitamente em state.semantic.titleScreen e reaplicados deterministicamente ao Salvar ROM.",
     "Tela Inicial: compositor persistido em state.titleComposerV2; imagens customizadas são embutidas no .issdproj em base64; buffers nativos temporários NÃO são exportados.",
     "Textos: rascunhos não são persistidos sem Implementar no projeto; faixas de texto direto não são gravadas como patches binários no .issdproj. A aplicação na ROM é independente.",
-    "Patches derivados do runtime GOSPEL-GOL não são persistidos; são regenerados deterministicamente ao Salvar ROM.",
     "ATENÇÃO: os rótulos gráficos do menu principal estão preservados semanticamente no projeto, mas o asset gráfico do menu ainda não possui escrita segura na ROM."
   ],
   "savedAt": "2026-10-23T15:09:04.923Z"

@@ -10,7 +10,7 @@ Mapa conferido na ROM Plus real:
 
 - Continent Text: PC F6C78, capacidade nativa 691 bytes, stream original de 665 bytes e 992 bytes descomprimidos. Formato 2bpp sem transformação planar.
 - Loader: PC 10EEE, fonte CPU 9EEC78.
-- O primeiro tile efetivamente carregado corresponde ao código **B2**, não AE. A tabela de conversão em 87:C016 mapeia B2 para o tile 1C0; o último código utilizável nesse intervalo é F1, tile 1FF. Os comentários antigos do experimento GOSPEL-GOL não refletiam esse deslocamento na Plus.
+- O primeiro tile efetivamente carregado corresponde ao código **B2**, não AE. A tabela de conversão em 87:C016 mapeia B2 para o tile 1C0; o último código utilizável nesse intervalo é F1, tile 1FF. Os comentários antigos do experimento antigo não refletiam esse deslocamento na Plus.
 - Os descritores continuam com oito células por duas linhas. Tiles idênticos são compartilhados; o atlas usa no máximo 64 tiles e não atravessa a página nativa de VRAM.
 - O gravador de títulos roda depois do gravador de organização para garantir a associação correta entre cada nome lógico e seu descritor independente.
 
