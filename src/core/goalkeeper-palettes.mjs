@@ -27,3 +27,14 @@ export function brazilGoalkeeperReference(rom,baseSlot){
  colors.splice(0,5,...skin.map(goalkeeperHexBgr));colors.splice(9,2,goalkeeperHexBgr('#101821'),goalkeeperHexBgr('#294239'));
  return{colors,hair:0};
 }
+
+// Appearance is only hair and skin (0..4). Uniform shades (5..10) stay with each keeper.
+export function transferGoalkeeperAppearance(rom,state,source,target,mode='copy'){
+ if(!['copy','swap'].includes(mode))throw Error('Operação de aparência inválida.');
+ const read=ref=>{const team=Number(ref?.team),slot=Number(ref?.identity?.baseSlot);if(!Number.isInteger(team)||team<0||team>=56||!Number.isInteger(slot)||slot<1||slot>20)throw Error('Identidade de goleiro inválida.');return{team,slot,key:team+':'+slot};};
+ const a=read(source),b=read(target);if(a.key===b.key)throw Error('Escolha dois goleiros diferentes.');
+ const next=validateGoalkeeperPalettes(state),ac=projectGoalkeeperPalette(rom,next,a.team,a.slot),bc=projectGoalkeeperPalette(rom,next,b.team,b.slot);
+ const targetColors=bc.slice();targetColors.splice(0,5,...ac.slice(0,5));next.players[b.key]={colors:targetColors};
+ if(mode==='swap'){const sourceColors=ac.slice();sourceColors.splice(0,5,...bc.slice(0,5));next.players[a.key]={colors:sourceColors};}
+ return next;
+}

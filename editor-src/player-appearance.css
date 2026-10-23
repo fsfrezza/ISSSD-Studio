@@ -16,5 +16,5 @@
 
 #appearanceDialog .appearance-goalkeeper-panel{display:none}
 #appearanceDialog.goalkeeper-appearance .appearance-goalkeeper-panel{display:block}
-#appearanceDialog.goalkeeper-appearance .native-appearance-grid,#appearanceDialog.goalkeeper-appearance .appearance-outfield-intro,#appearanceDialog.goalkeeper-appearance .native-appearance-notes,#appearanceDialog.goalkeeper-appearance .native-appearance-transfer,#appearanceDialog.goalkeeper-appearance details,#appearanceDialog.goalkeeper-appearance .player-sprite-tools{display:none!important}
+#appearanceDialog.goalkeeper-appearance .native-appearance-grid,#appearanceDialog.goalkeeper-appearance .appearance-outfield-intro,#appearanceDialog.goalkeeper-appearance .native-appearance-notes,#appearanceDialog.goalkeeper-appearance details,#appearanceDialog.goalkeeper-appearance .player-sprite-tools{display:none!important}
 #appearanceDialog .appearance-goalkeeper-panel p{width:100%;text-align:justify;line-height:1.45}

@@ -32853,11 +32853,11 @@
         "kits": {
           "30:0": {
             "colors": [
-              16912,
-              24311,
-              32767,
-              6342,
-              9513,
+              561,
+              726,
+              1023,
+              21504,
+              27978,
               32272,
               19026,
               28539,
@@ -32883,5 +32883,5 @@
     "Patches derivados do runtime GOSPEL-GOL não são persistidos; são regenerados deterministicamente ao Salvar ROM.",
     "ATENÇÃO: os rótulos gráficos do menu principal estão preservados semanticamente no projeto, mas o asset gráfico do menu ainda não possui escrita segura na ROM."
   ],
-  "savedAt": "2026-10-23T00:17:53.382Z"
+  "savedAt": "2026-10-23T00:54:47.018Z"
 }

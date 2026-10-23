@@ -51,3 +51,12 @@ test('native skin ABI and scratch effects survive explicit palette reapplication
  }
  const a=core.brazilGoalkeeperReference(b,1),c=core.brazilGoalkeeperReference(b,12);assert.deepEqual(a.colors.slice(5),c.colors.slice(5));assert.notDeepEqual(a.colors.slice(0,5),c.colors.slice(0,5));assert.equal(a.hair,0);assert.equal(c.hair,0);
 });
+
+test('cross-team goalkeeper copy and swap transfer only hair and skin, preserving both uniforms and unrelated state',()=>{
+ const base=fixture(),state=core.validateGoalkeeperPalettes({schema:core.GOALKEEPER_PALETTE_SCHEMA,version:1,players:{'2:1':{colors:Array.from({length:11},(_,i)=>100+i)},'30:1':{colors:Array.from({length:11},(_,i)=>200+i)},'30:12':{colors:Array(11).fill(333)}}});
+ const source={team:2,identity:{playerId:'2:1',baseSlot:1}},target={team:30,identity:{playerId:'30:1',baseSlot:1}},snapshot=JSON.stringify(state);
+ for(const mode of['copy','swap']){const next=core.transferGoalkeeperAppearance(base,state,source,target,mode);assert.deepEqual(next.players['30:1'].colors.slice(0,5),state.players['2:1'].colors.slice(0,5));assert.deepEqual(next.players['30:1'].colors.slice(5),state.players['30:1'].colors.slice(5));assert.deepEqual(next.players['2:1'].colors.slice(5),state.players['2:1'].colors.slice(5));assert.deepEqual(next.players['30:12'],state.players['30:12']);assert.deepEqual(next.players['2:1'].colors.slice(0,5),state.players[mode==='swap'?'30:1':'2:1'].colors.slice(0,5));}
+ const copied=core.transferGoalkeeperAppearance(base,state,source,target),r=expandPlusTo4MiB(base);plusGoalkeeperPalettesWriter(r,{goalkeeperPalettesV1:copied},base);
+ const offset=GOALKEEPER_PALETTE_SLOT+30*20*22;assert.deepEqual(Array.from({length:11},(_,i)=>r[offset+i*2]|r[offset+i*2+1]<<8),copied.players['30:1'].colors);assert.equal(JSON.stringify(state),snapshot);
+ for(const args of[[source,source,'copy'],[source,target,'invalid'],[{team:56,identity:source.identity},target,'copy']])assert.throws(()=>core.transferGoalkeeperAppearance(base,state,...args));assert.equal(JSON.stringify(state),snapshot);
+});

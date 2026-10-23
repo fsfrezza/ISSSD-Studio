@@ -140,6 +140,14 @@ window.__ISSSD_INSTALL_TEAMS_SEMANTIC_V1__=function(){
   const engine=window.ISSSDPlayerAppearanceCore;if(!engine)throw new Error('Núcleo de aparência indisponível.');
   const state=window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__||studioTeamsV3Snapshot();
   const complete=clone(state),resolved=studioTeamsV3ReadFull();
+  const selected=[source,target].map(ref=>{const p=resolved?.teams?.[String(ref?.team)]?.players?.find(p=>p.playerId===ref?.identity?.playerId&&Number(p.baseSlot)===Number(ref?.identity?.baseSlot));if(!p)throw new Error('Aparência: jogador selecionado não encontrado.');return p;});
+  const isKeeper=p=>p.position===1||['GO','GK'].includes(String(p.position));
+  if(selected.some(isKeeper)){
+   if(!selected.every(isKeeper))throw new Error('Copie a aparência de goleiro para goleiro; os modelos de linha são diferentes.');
+   const keeper=window.__ISSSD_GOALKEEPERS_EDITOR__;if(!keeper?.transferAppearance)throw new Error('Editor de aparência dos goleiros indisponível.');
+   return keeper.transferAppearance(source,target,mode);
+  }
+
   for(const ref of [source,target]){
    const team=Number(ref?.team),roster=resolved?.teams?.[String(team)];
    const player=roster?.players?.find(p=>p.playerId===ref?.identity?.playerId&&Number(p.baseSlot)===Number(ref?.identity?.baseSlot));

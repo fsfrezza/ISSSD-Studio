@@ -128,7 +128,7 @@ test('goalkeeper appearance edits show five independent colors in Players',()=>{
  vm.runInContext(source.slice(start,end)+'renderAppearancePreview();',c);assert.equal(c.appearanceTempHair,0);assert.equal(elements.appearanceGoalkeeperColors.children.length,5);elements.appearanceGoalkeeperColors.children[0].children[1].oninput();assert.equal(c.nativeGoalkeeperColors[0],123);assert.match(elements.appearanceSelectedSummary.textContent,/uniforme.*Goleiros/);
 });
 
-test('appearance navigation includes goalkeepers while outfield transfer lists exclude them',()=>{
+test('appearance navigation and transfer lists include only compatible player models',()=>{
  const source=fs.readFileSync(new URL('../editor-src/player-appearance.mjs',import.meta.url),'utf8');
  const helper=source.slice(source.indexOf('function nativeAppearanceIsGoalkeeper('),source.indexOf('function nativeAppearanceSupported('));
  const roster=Array.from({length:20},(_,i)=>({playerId:String(i),baseSlot:i,name:String(i),position:i===0?'GO':i===12?1:'DF',hair:0,palette:0}));
@@ -137,5 +137,5 @@ test('appearance navigation includes goalkeepers while outfield transfer lists e
  vm.runInContext('loadAppearancePlayer(12)',c);assert.equal(c.currentPlayer,12);
  vm.runInContext('loadAppearancePlayer(12)',c);assert.equal(c.currentPlayer,12);
  vm.runInContext('loadAppearancePlayer(20)',c);assert.equal(c.currentPlayer,0);
- assert.equal(vm.runInContext('nativeAppearanceTransferRoster(30).length',c),18);
+ assert.equal(vm.runInContext('nativeAppearanceTransferRoster(30).length',c),2);vm.runInContext('currentPlayer=1',c);assert.equal(vm.runInContext('nativeAppearanceTransferRoster(30).length',c),18);
 });

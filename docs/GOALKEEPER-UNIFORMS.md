@@ -129,3 +129,9 @@ no Snes9x, entrada em Editar Atletas, seleção de Taffarel e depois Gilmar
 (Left troca para os reservas), observação de 720 frames de animação em cada
 jogador. As poses antes deformadas passam a renderizar normalmente nos dois,
 com camisa verde, cabelo loiro no titular e escuro no reserva.
+
+## Cópia e troca de aparência
+
+A operação entre goleiros transfere somente as cinco cores de cabelo e pele (0–4). As seis cores de uniforme (5–10) permanecem com cada goleiro, inclusive na troca. Nenhuma paleta do uniforme de linha é modificada. A seleção oferece somente jogadores do mesmo modelo: goleiro com goleiro, jogador de linha com jogador de linha.
+
+O projeto distribuído restaura o uniforme titular do Brasil: camisa amarela, calção azul e meias brancas; os goleiros mantêm a camisa verde.
