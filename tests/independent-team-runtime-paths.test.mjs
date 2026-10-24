@@ -30,3 +30,17 @@ test('both shipped projects start all six teams in the same native 4-4-2, preser
  }
  for(const colors of [['#FFFFFF','#D82020'],['#001840','#FFFFFF']])assert.equal(independentKitColors(...colors)[8],GG_NATIVE_SHADOW);
 });
+
+test('uniform menu copies read private GG records from DC while ordinary palettes stay in 89',async()=>{
+ const{independentUniformCopyHelper}=await import('../src/core/plus-independent-teams.mjs');
+ for(const count of [16,32])for(const pointer of [0x6120,0x6280,0x8400,0x9000]){
+  const m=new Uint8Array(0x1000000),expanded=pointer>=0x6000&&pointer<0x8000,source=(expanded?0xDC8000:0x890000)+pointer,payload=Uint8Array.from({length:count},(_,i)=>i+17);
+  m.set(independentUniformCopyHelper(count),0xE00000);m.set(payload,source);const{r}=executeHook(m,0xE00000,{a:0x7890,x:pointer,y:0xE348,db:0xA4,p:9});assert.deepEqual(m.slice(0x7EE348,0x7EE348+count),payload);assert.equal(r.y,0xE348+count);assert.equal(r.x,(source&65535)+count);assert.equal(r.db,0xA4);assert.equal(r.p,9);assert.equal(r.s,0x1FF);
+ }
+});
+test('jersey number and blank DMAs never use the GG pattern bank',async()=>{
+ const{independentUniformBankHelper}=await import('../src/core/plus-independent-teams.mjs');
+ for(const team of [0,30,54,55,56,57,58,59])for(const x of [0,2,4,6,8,10,12,team*2])for(const pointer of [0xF014,0xE5D4,0x8100]){
+  const m=new Uint8Array(0x1000000);m.set(independentUniformBankHelper(),0xE00000);word(m,0x57,team*2);const{r}=executeHook(m,0xE00000,{a:pointer,x,y:0x7000,p:1});const expanded=pointer!==0xF014&&x>=108&&x<120&&team>=54&&team<60;assert.equal(r.a,expanded?0xDD80:0x9880);assert.equal(r.x,x);assert.equal(r.y,0x7000);assert.equal(r.s,0x1FF);assert.equal(r.p&1,1);
+ }
+});

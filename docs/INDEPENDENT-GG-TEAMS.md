@@ -199,3 +199,7 @@ sem classificação. Snes9x confirmou os gráficos editados na seleção e parti
 ### Prévia dos uniformes no Editor
 
 A aba Uniformes mostra uma prévia esquemática de camisa, calção e meias para a equipe e o conjunto selecionados. Ela usa a paleta corrente, atualiza durante a edição por seletor de cor ou hexadecimal e acompanha a restauração de cores. O detalhe central acompanha o quadro selecionado no editor de desenhos. A prévia não simula a montagem completa dos sprites nem a numeração em jogo; alterações na visualização não escrevem novos dados na ROM ou no projeto.
+
+### Caminhos nativos de uniformes
+
+O menu de cores e a prévia nativa copiam 16/32 bytes diretamente, sem usar o despachante geral de paletas. Os três pontos de cópia agora resolvem os endereços virtuais GG no banco DC; as equipes originais continuam no banco 89. As transferências de números/quadros vazios continuam no banco 98, enquanto apenas os desenhos próprios usam DD. O teste dos hooks executa as cópias e verifica os dados em WRAM, registradores, banco e pilha. Esta correção de leitura não constitui confirmação de que toda corrupção intermitente durante partidas esteja resolvida.

@@ -18,6 +18,19 @@ export function independentPaletteCopyHelper(){
  c.put(0x5A,0x29,0xFE,0,0xAA,0xBF,...long(0x819176),0xA8,0xFA,0x8A,0x09,0,0x80,0xAA,0xBF,...long(cpu(INDEPENDENT_PALETTES_SLOT)&0xFF0000),0xE8,0xE8,0x54,0x7E,cpu(INDEPENDENT_PALETTES_SLOT)>>16,0x7A,0xFA,0xAB,0x6B);
  c.label('native').put(0x29,0xFE,0,0xAA,0x5C,0xF3,0xA4,0x80);return c.finish();
 }
+// Native uniform menus also perform fixed-size copies outside the palette dispatcher.
+export function independentUniformCopyHelper(count){
+ const c=new Code();c.put(0x08,0x8B,0x8A,0xC9,0,0x60).branch(0x90,'native');c.put(0xC9,0,0x80).branch(0xB0,'native');
+ c.put(0x09,0,0x80,0xAA,0xA9,...word(count-1),0x54,0x7E,0xDC).branch(0x80,'done');
+ c.label('native').put(0xA9,...word(count-1),0x54,0x7E,0x89);c.label('done').put(0xAB,0x28,0x6B);return c.finish();
+}
+// A number/blank detail still belongs to bank $98. Only a team's custom
+// overlay (X = doubled team ID) is stored in the expanded pattern bank.
+export function independentUniformBankHelper(){
+ const c=new Code();c.put(0x08,0xC9,0x14,0xF0).branch(0xF0,'native');c.put(0xE0,108,0).branch(0x90,'native');c.put(0xE0,120,0).branch(0xB0,'native');
+ c.put(0xA5,0x57,0x29,255,0,0xC9,108,0).branch(0x90,'native');c.put(0xC9,120,0).branch(0xB0,'native');
+ c.put(0x28,0xA9,0x80,0xDD,0x6B);c.label('native').put(0x28,0xA9,0x80,0x98,0x6B);return c.finish();
+}
 // The three tactical pointer readers already use a per-team bank selector.
 // The two following MVNs must use that same bank, rather than literal $8B.
 export function independentTacticalCopyHelper(){
@@ -115,6 +128,11 @@ export function plusIndependentTeamsWriter(input,state,base,selectedAreas=null){
  // The native alternate-kit offset is 57, including the challenge palette.
  for(const at of[0x5CFCD,0x5D025]){if(readWord(base,at)!==114)throw Error('Deslocamento de uniforme divergente.');rom.set(word(120),at);}
  redirectLong(0x8282E6,paletteTables.home+120);
+ // Color-editor and kit-preview copies bypass CODE_80A4EF entirely.
+ for(const[at,count,loadFirst]of[[0x123C40,16,false],[0x123CF1,32,false],[0x1252D0,16,true]]){
+  const expected=[...(loadFirst?[0xA9,...word(count-1),0x8B]:[0x8B,0xA9,...word(count-1)]),0x54,0x7E,0x89,0xAB];if(expected.some((v,i)=>base[at+i]!==v))throw Error('Cópia direta de uniforme divergente.');
+  const helper=table(independentUniformCopyHelper(count));hook(at,Uint8Array.from([0x22,...long(cpu(helper)),0xEA,0xEA,0xEA,0xEA]));
+ }
  // Normalize expanded source addresses in RAM palette scripts before the
  // native four-byte copy record is consumed; ROM scripts remain untouched.
  const stream=new Code();stream.put(0x08,0x48,0xC0,0,0x80).branch(0xB0,'done');
@@ -134,7 +152,7 @@ export function plusIndependentTeamsWriter(input,state,base,selectedAreas=null){
  const skinDirectory=table(Uint8Array.from(photoSkins.flatMap(word))),skinIndices=table(Uint8Array.from(skinSelectors));redirectLong(0x82F945,skinDirectory);redirectLong(0x81FB29,skinIndices);redirectLong(0x81FB2A,skinIndices+1);
  // Each cloned detail pattern has its own bank and address.
  const layouts=Array.from({length:60},(_,id)=>{if(!data[id])return readWord(rom,0xFCEC+id*2);const at=INDEPENDENT_PATTERNS_SLOT+(id-54)*256;rom.set(data[id].pattern,at);return cpu(at)&65535;});const layoutTable=table(Uint8Array.from(layouts.flatMap(word)));redirectLong(0x81FCEC,layoutTable);
- const bankHelper=table(Uint8Array.from([0x08,0x48,0xA5,0x57,0x29,255,0,0xC9,108,0,0x90,6,0x68,0x28,0xA9,0x80,0xDD,0x6B,0x68,0x28,0xA9,0x80,0x98,0x6B]));
+ const bankHelper=table(independentUniformBankHelper());
  if(rom[0x26816]!==0xA9)throw Error('Banco do desenho de uniforme divergente.');hook(0x26816,Uint8Array.from([0x22,...long(cpu(bankHelper)),0xEA,0xEA]));
  // Cinematic color tables: each copy points to separately allocated records.
  for(let t=0;t<7;t++){const old=0x479E0+t*224,values=Array.from({length:120},(_,i)=>{const id=i>>1,kit=i&1;return data[id]?pal(data[id].palettes.closeup[t][kit]):readWord(rom,old+i*2);});const target=table(Uint8Array.from(values.flatMap(word)));longLoad([0x59107,0x59118,0x5912A,0x5913B,0x59150,0x59161,0x59183][t],'y',target);}
