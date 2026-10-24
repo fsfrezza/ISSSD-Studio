@@ -46,3 +46,34 @@ Foram executadas partidas amistosas com cada uma das seis equipes em Snes9x, inc
 O teste de interface usa o runtime real com um DOM de teste. O build completo do HTML legado não pôde ser executado neste checkout porque o baseline privado `.editor-vendor/legacy-ui/ISSSD-Studio.html` não está presente. O patch é aplicado depois da abertura semântica e antes do verificador final; a cópia local já existente do baseline deve ser preservada.
 
 Não foi ampliado o formato dos campeonatos nem validado todo o fluxo de competições ou desafios com as equipes novas. As restrições nativas de cabelos sobrepostos 1–13 continuam valendo: até três titulares por equipe; Careca 0, Nativo 14 e Cascão 15 usam o corpo regenerado. As duas paletas de jogadores de linha pertencem à equipe; alterar suas cores afeta os jogadores que usam a mesma paleta nessa equipe.
+
+## Bandeiras das seis referências
+
+As referências aprovadas estão em `assets/team-flags/*-reference.png`. Cada
+`*-native.png` mostra o resultado exato de 24 × 16 pixels, com no máximo quatro
+cores BGR555. A adaptação amplia a proporção horizontal sem cortar os símbolos.
+O manifesto `gg-flags.json` guarda pixels nos índices nativos 12–15 e as quatro
+cores. As bandeiras são independentes em seleção e partida.
+
+O projeto canônico já contém os bytes 4bpp e suas paletas em
+`independentTeamsV1.teams[54..59].data`. Importar o projeto recupera esses dados;
+exportar a ROM os materializa nas regiões próprias das equipes GG. Nenhuma
+imagem externa é necessária para abrir ou exportar o projeto. O Editor continua
+permitindo editar os desenhos e cores sem restaurar automaticamente as referências.
+
+Para reaplicar explicitamente as referências ao projeto canônico (substitui suas
+bandeiras GG), execute `node scripts/apply-gg-reference-flags.mjs`.
+
+## Diagnóstico de versão antiga
+
+Se ainda aparecer a opção de adicionar a extensão removida ou ALL STARS com duas
+equipes, a página não é o build atual. O servidor atual recusa esse HTML com HTTP
+409 em vez de permitir uma exportação aparentemente atualizada. Seu endpoint
+`/__isssd/build-info` identifica `independentTeams.count: 6`. Use o endereço exato
+impresso pelo servidor: caso 4173 esteja ocupada por uma instância antiga, o novo
+servidor pode iniciar em outra porta.
+
+Depois da atualização, importe o projeto canônico da raiz. A mensagem de abertura
+confirma as seis equipes; o painel Equipes GG apresenta os dez grupos e todos os
+60 times. Na exportação cumulativa, a fase Jogadores inclui a estrutura GG; use a
+última ROM do ZIP para testar todas as fases selecionadas.

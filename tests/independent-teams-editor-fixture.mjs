@@ -13,7 +13,7 @@ class Element{
 export function independentEditorFixture(){
  const body=new Element('body'),head=new Element('head'),pages={};for(const[id,title]of Object.entries({teams:'Equipes',players:'Jogadores',uniforms:'Uniformes',formations:'Formações',flags:'Bandeiras'})){const p=new Element('section');p.className='page';p.id='page-'+id;const h=new Element('h2');h.textContent=title;p.append(h);body.append(p);pages[p.id]=p;}
  const document={body,head,readyState:'complete',createElement:t=>new Element(t),querySelectorAll:s=>body.querySelectorAll(s),getElementById:id=>pages[id]??null};let applied=null;
- const window={studioApplyProjectWithBase:async project=>{if(project.fail)throw Error('Importação falhou');applied=project;return true;},__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__:p=>p,studioUpdateBadge(){}};
+ const window={studioProjectObject:async()=>({state:{semantic:{}}}),studioApplyProjectWithBase:async project=>{if(project.fail)throw Error('Importação falhou');applied=project;return true;},__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__:p=>p,studioUpdateBadge(){}};
  vm.runInNewContext(independentTeamsRuntime(),{window,document,structuredClone,console,setTimeout,clearTimeout,MutationObserver:class{observe(){}},Event:class{constructor(type){this.type=type;}},URL,Blob});
  return{window,document,pages,applied:()=>applied};
 }

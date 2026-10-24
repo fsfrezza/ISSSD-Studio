@@ -1,3 +1,4 @@
+import{assertCurrentEditorFeatures}from'./lib/editor-feature-readiness.mjs';
 import{createIndependentTeams}from'../src/core/independent-teams.mjs';
 import{readPlusGroupIdentity}from'../src/core/plus-group-identity.mjs';
 import {baldBaseSupported,prepareBaldAppearanceState} from '../src/core/plus-bald-player-base.mjs';
@@ -22,7 +23,7 @@ const diagnosticsRoot=path.join(root,'build-diagnostics');
 const port=Number(process.env.ISSSD_PORT||4173);
 let listeningPort=port,portRetries=0;
 const gitHead=spawnSync('git',['rev-parse','--short=12','HEAD'],{cwd:root,encoding:'utf8',shell:false});
-const serverBuild={commit:gitHead.status===0?gitHead.stdout.trim():'local',root,startedAt:new Date().toISOString(),supportedTextWriters:['strategy-one-four','uniform-labels','team-names','match-announcements','match-statistics']};
+const serverBuild={commit:gitHead.status===0?gitHead.stdout.trim():'local',root,startedAt:new Date().toISOString(),independentTeams:{version:1,count:6,group:"GG",projectField:"independentTeamsV1"},supportedTextWriters:['strategy-one-four','uniform-labels','team-names','match-announcements','match-statistics']};
 const defaultPlusRomPath=process.env.ISSSD_PLUS_ROM_PATH||'C:\\Users\\fsfre\\Downloads\\ISSSD-Studio\\roms\\International Superstar Soccer Deluxe Plus.sfc';
 const defaultPlusRomName=path.basename(defaultPlusRomPath);
 const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.svg':'image/svg+xml','.json':'application/json; charset=utf-8'};
@@ -164,8 +165,10 @@ const server=http.createServer((req,res)=>{
   if(err||!st.isFile()){res.writeHead(404);res.end('Not found');return;}
   if(path.extname(target).toLowerCase()==='.html'){
    // The visible stamp identifies BOTH the served file and the backend used by export.
-   const stamp='<div id="isssd-active-server" style="position:fixed;bottom:4px;right:8px;z-index:2147483647;background:#152131;color:#fff;padding:5px 9px;border:1px solid #7e9ab5;border-radius:4px;font:12px sans-serif" title="'+root.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'">Servidor '+serverBuild.commit+' · textos 1/4 + uniformes ativos</div>';
-   const html=fs.readFileSync(target,'utf8').replace('</body>',stamp+'</body>');
+   const stamp='<div id="isssd-active-server" style="position:fixed;bottom:4px;right:8px;z-index:2147483647;background:#152131;color:#fff;padding:5px 9px;border:1px solid #7e9ab5;border-radius:4px;font:12px sans-serif" title="'+root.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'">Servidor '+serverBuild.commit+' · textos 1/4 + uniformes ativos · 6 equipes GG</div>';
+   const source=fs.readFileSync(target,'utf8');
+   if(path.basename(target)==='ISSSD-Studio.html'){try{assertCurrentEditorFeatures(source);}catch(error){jsonError(res,409,error);return;}}
+   const html=source.replace('</body>',stamp+'</body>');
    res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'});res.end(html);return;
   }
   res.writeHead(200,{'Content-Type':mime[path.extname(target).toLowerCase()]||'application/octet-stream','Cache-Control':'no-store'});
