@@ -66,7 +66,7 @@ export function captureIndependentTeam(rom,team){
  const fieldFlags=[0,2].map(i=>{const pointer=nativeFieldFlagPointer(rom,team*4+i),at=0xD0000+(pointer&32767),d=konamiLzDecompress(rom,at);if(d.data.length!==96)throw Error('Bandeira: quadro nativo inesperado.');return{bytes:Array.from(d.data),planar:!!(rom[at+1]&128)};});
  const keeperPalettes=Array.from({length:20},(_,i)=>Array.from({length:11},(_,c)=>word(rom,GOALKEEPER_PALETTE_SLOT+(team*20+i)*22+c*2)));
  const keeperSkin=Array.from({length:20},(_,i)=>word(rom,GOALKEEPER_SKIN_FLAGS+(team*20+i)*2));
- return{photo:{bodyType:rom[0xFD5E+team],faceType:rom[0xFB99+team],script1:word(rom,0x17608+team*2),script2:word(rom,0x17600+team*2),formation:word(rom,0xFE78+team*2),palettes:[...([0xFA49,0xFAB9,0xFD96].map(at=>paletteRecord(rom,word(rom,at+team*2)))),...[0,1].map(i=>paletteRecord(rom,word(rom,0x17945+rom[0xFB29+team*2+i])))]},selectionFlags:captureSelectionFlags(rom,team),attributes,names,tactics:Array.from(r.raw),palettes,pattern,patternPointer,fieldFlags,keeperPalettes,keeperSkin,appearance:appearance.palettes};
+ return{photo:{bodyType:rom[0xFD5E+team],overlayType:rom[0xFBD1+team],extraType:rom[0xFC09+team],accessory:word(rom,0x17970+team*2),formationFlags:rom[0xFE78+team],faceType:rom[0xFB99+team],script1:word(rom,0x17608+team*2),script2:word(rom,0x17600+team*2),formation:word(rom,0xFE78+team*2),palettes:[...([0xFA49,0xFAB9,0xFD96].map(at=>paletteRecord(rom,word(rom,at+team*2)))),...[0,1].map(i=>paletteRecord(rom,word(rom,0x17945+rom[0xFB29+team*2+i])))]},selectionFlags:captureSelectionFlags(rom,team),attributes,names,tactics:Array.from(r.raw),palettes,pattern,patternPointer,fieldFlags,keeperPalettes,keeperSkin,appearance:appearance.palettes};
 }
 function bytes(value,size,label){if(!Array.isArray(value)||value.length!==size||value.some(v=>!Number.isInteger(v)||v<0||v>255))throw Error('Dados independentes inválidos: '+label);}
 export function validateIndependentTeams(value){
@@ -81,6 +81,7 @@ export function validateIndependentTeams(value){
   if(!Array.isArray(d.keeperPalettes)||d.keeperPalettes.length!==20||d.keeperPalettes.some(p=>!Array.isArray(p)||p.length!==11||p.some(c=>!Number.isInteger(c)||c<0||c>32767)))throw Error('Goleiros independentes inválidos.');bytes(d.keeperSkin,20,'goleiros');
   function pal(p){if(p===null)return;if(!Array.isArray(p))throw Error('Paletas independentes inválidas.');if(p.every(Number.isInteger)){bytes(p,p.length,'paleta');if(p.length<4||(p.length&1)||word(p,0)+3!==p.length)throw Error('Tamanho de paleta independente inválido.');}else p.forEach(pal);}
   if(!d.photo||['bodyType','faceType','script1','script2','formation'].some(k=>!Number.isInteger(d.photo[k])||d.photo[k]<0||d.photo[k]>(k.endsWith('Type')?255:65535))||!Array.isArray(d.photo.palettes)||d.photo.palettes.length!==5)throw Error('Foto de equipe ausente.');pal(d.photo.palettes);
+  for(const[k,max]of [['overlayType',255],['extraType',255],['accessory',65535],['formationFlags',255]])if(d.photo[k]!==undefined&&(!Number.isInteger(d.photo[k])||d.photo[k]<0||d.photo[k]>max))throw Error('Composição da foto inválida: '+k);
   for(const k of['home','away','skinAlt','hairAlt','keeper','fieldFlag','crowd','flag','banner','bleacher','closeup']){if(!(k in d.palettes))throw Error('Domínio de paleta ausente: '+k);pal(d.palettes[k]);}
  }
  return out;

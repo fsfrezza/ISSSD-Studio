@@ -44,6 +44,17 @@ export function independentShortNameHelper(cache){
  for(const[offset,destination]of[[0x17D4,0x5F50],[0x17D9,0x5FD0]])c.put(0xAF,...long(0x7E0000+offset),0x18,0x69,...word(cpu(cache)),0xA2,64,0,0xA0,...word(destination),0x22,0x37,0x8E,0x80);
  c.put(0x68,0x85,0,0x7A,0xFA,0x68,0xAB,0x28,0x6B);return c.finish();
 }
+// Only these directories are indexed by team. F600/F608 are indexed by
+// face type and must retain the native type directory, not a team directory.
+export const INDEPENDENT_PHOTO_DIRECTORIES=Object.freeze([
+ ['bodyType',0xFD5E,1,0],['faceType',0xFB99,1,0],
+ ['overlayType',0xFBD1,1,0],['extraType',0xFC09,1,255],
+ ['accessory',0x17970,2,65535],['formationFlags',0xFE78,1,0],
+].map(v=>Object.freeze(v)));
+export function independentPhotoDirectory(rom,teams,key,address,stride,fallback){
+ const values=Array.from({length:60},(_,id)=>teams[id]?(teams[id].photo[key]??fallback):stride===1?rom[address+id]:readWord(rom,address+id*2));
+ return Uint8Array.from(stride===1?values:values.flatMap(word));
+}
 function pointerReads(base,address){const a=long(address),found=[];for(let i=0;i<base.length-4;i++)if(base[i]===0xBF&&a.every((v,j)=>base[i+1+j]===v))found.push(i);return found;}
 function patchPattern(rom,from,to){for(let i=0;i<=rom.length-from.length;i++)if(from.every((v,j)=>rom[i+j]===v)){rom.set(to,i);i+=from.length-1;}}
 export function plusIndependentTeamsWriter(input,state,base,selectedAreas=null){
@@ -97,8 +108,8 @@ export function plusIndependentTeamsWriter(input,state,base,selectedAreas=null){
  stream.label('done').put(0x68,0x28,0xA9,0xA0,0,0x85,8,0x5C,0x7B,0xA9,0x80);
  if(Array.from(base.slice(0x2976,0x297B)).join(',')!=='169,160,0,133,8')throw Error('Stream de paletas divergente.');const streamHelper=table(stream.finish());hook(0x2976,Uint8Array.from([0x5C,...long(cpu(streamHelper)),0xEA]));
  // Team-photo graphics use their own palette and pose directories.
- for(const[key,address,stride]of[['bodyType',0xFD5E,1],['faceType',0xFB99,1],['script1',0x17608,2],['script2',0x17600,2],['formation',0xFE78,2]]){
-  const entries=Array.from({length:60},(_,id)=>data[id]?data[id].photo[key]:stride===1?rom[address+id]:readWord(rom,address+id*2)),target=table(Uint8Array.from(stride===1?entries:entries.flatMap(word)));redirectLong(cpu(address),target);
+ for(const[key,address,stride,fallback]of INDEPENDENT_PHOTO_DIRECTORIES){
+  const target=table(independentPhotoDirectory(rom,data,key,address,stride,fallback));redirectLong(cpu(address),target);
  }
  for(const[index,address]of[[0,0xFA49],[1,0xFAB9],[2,0xFD96]]){const entries=Array.from({length:60},(_,id)=>data[id]?pal(data[id].photo.palettes[index]):readWord(rom,address+id*2)),target=table(Uint8Array.from(entries.flatMap(word)));redirectLong(cpu(address),target);}
  // Two skin palette selectors keep their native palette lookup indices. Each

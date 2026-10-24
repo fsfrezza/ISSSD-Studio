@@ -30,7 +30,7 @@ predominantes invertidas. Fotos e uniformes mantêm seus mapeamentos individuais
 
 Salvar o projeto preserva todos esses domínios; reabrir os hidrata sem escrever na ROM-base. Salvar ROM materializa as equipes pelo pipeline canônico. Na exportação cumulativa, a fase **Jogadores (08)** inclui a estrutura completa das seis equipes, seus nomes e organização de grupos, porque esses componentes precisam ser aplicados juntos. As ROMs anteriores à fase 08 conservam a estrutura anterior.
 
-Os campos nativos dos antigos times secretos 54/55 são ocultados nos seletores de 56 equipes; esses times passam a ser editados nos painéis GG. As outras 54 seleções mantêm o Editor existente.
+Os antigos slots secretos 54/55 e os quatro slots adicionais usam os seletores comuns, junto das outras 54 seleções.
 
 ## Implementação nativa
 
@@ -46,7 +46,7 @@ Os campos nativos dos antigos times secretos 54/55 são ocultados nos seletores 
 
 Foram executadas partidas amistosas com cada uma das seis equipes em Snes9x, inclusive usando a ROM cumulativa. Também foram verificados: ROM-base imutável; alteração de uma equipe sem alterar os atributos das outras 59; gravação/reabertura do projeto; integração dos seletores e formulários comuns; exportação sem intervalos GG ausentes; e execução dos helpers 65816 de paletas, nomes grandes e placar.
 
-O teste de interface usa o runtime real com um DOM de teste. O build completo do HTML legado não pôde ser executado neste checkout porque o baseline privado `.editor-vendor/legacy-ui/ISSSD-Studio.html` não está presente. O patch é aplicado depois da abertura semântica e antes do verificador final; a cópia local já existente do baseline deve ser preservada.
+O teste de interface usa o runtime real com um DOM de teste. O build completo do HTML legado foi validado com o baseline privado fornecido pelo usuário. O patch é aplicado depois da abertura semântica e antes do verificador final; a cópia local já existente do baseline deve ser preservada.
 
 Não foi ampliado o formato dos campeonatos nem validado todo o fluxo de competições ou desafios com as equipes novas. As restrições nativas de cabelos sobrepostos 1–13 continuam valendo: até três titulares por equipe; Careca 0, Nativo 14 e Cascão 15 usam o corpo regenerado. As duas paletas de jogadores de linha pertencem à equipe; alterar suas cores afeta os jogadores que usam a mesma paleta nessa equipe.
 
@@ -113,3 +113,31 @@ O arquivo `International-Superstar-Soccer-Deluxe-Plus-projeto-recuperado.issdpro
 contém a recuperação do projeto anexado, preservando suas alterações
 nacionais esparsas. O projeto padrão completo permanece separado para evitar
 substituir silenciosamente seus dados pelos de uma revisão diferente.
+
+## Correção da composição das fotos e novas bandeiras
+
+Os prints de corrupção dos IDs 56–59 foram reproduzidos em Snes9x. Além das
+paletas e tipos de corpo/rosto, a foto lê seletores de sobreposições em
+`81:FBD1` e `81:FC09`, uma tabela de acessórios em `82:F970` e flags de um
+byte por equipe em `81:FE78`. Essas tabelas ainda eram nativas e limitadas aos
+slots anteriores. A leitura dos IDs novos ultrapassava os diretórios e gerava
+objetos inválidos, que contaminavam a seleção e a transição para a partida.
+
+As quatro propriedades são capturadas nos registros independentes
+(`overlayType`, `extraType`, `accessory`, `formationFlags`) e os diretórios
+agora cobrem 60 equipes. `82:F600/F608` são tabelas por tipo de rosto,
+não por equipe, e permanecem com sua indexação nativa. Projetos antigos sem
+as novas propriedades usam sobreposições vazias e limitadas; os projetos
+incluídos já contêm os seletores corretos de suas cópias iniciais. Nenhum
+carregamento consulta a equipe doadora para resolver esses novos campos.
+
+As seis referências integrais fornecidas nesta revisão substituem as sombras
+anteriores. As imagens originais estão nos arquivos `*-reference.png`; o
+manifesto e os `*-native.png` contêm a conversão para 24 × 16 e quatro cores
+BGR555. Textos e detalhes muito pequenos não são legíveis nesse formato.
+Ambos os projetos incluídos contêm os gráficos de seleção e partida.
+
+Verificação desta revisão: 653 testes; build completo do Editor; reprodução
+antes/depois na seleção; seis partidas GG contra Inglaterra na ROM cumulativa
+final; confrontos GG entre slots antigos e novos. A inspeção do emulador
+verificou campo, jogadores, minimapa, placar e bandeiras, além dos registros ROM.
