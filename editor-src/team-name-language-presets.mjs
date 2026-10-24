@@ -1,5 +1,6 @@
 // Canonical team-name state is semantic. Opening/filling this editor never writes ROM bytes.
 (()=>{
+ const unified=()=>window.__ISSSD_UNIFIED_TEAM_CORE__,independent=t=>unified()?.team(t);
  const entries=TEAM_NAME_LANGUAGE_PRESETS,clone=v=>JSON.parse(JSON.stringify(v));
  let saved={schema:'isssd-team-names-v1',values:{}},shown=-1;
  const preset=(team,language='portuguese',compact=false)=>{
@@ -9,17 +10,18 @@
  function status(text){const n=node('teamNameLanguageStatus');if(n&&n.textContent!==text)n.textContent=text;}
  function syncLabels(){
   if(!isPlus()||!Array.isArray(window.TEAM_NAMES))return;
-  for(const [id,row]of Object.entries(saved.values))window.TEAM_NAMES[Number(id)]=row.full;
+  for(const [id,row]of Object.entries(saved.values))if(!independent(Number(id)))window.TEAM_NAMES[Number(id)]=row.full;
  }
- function edited(){const team=current(),full=node('teamNameFull')?.value,short=node('teamNameShort')?.value,big=node('teamNameBig')?.value;if(!Number.isInteger(team)||team<0||team>55||full===undefined||short===undefined)return;
+ function edited(){const team=current(),full=node('teamNameFull')?.value,short=node('teamNameShort')?.value,big=node('teamNameBig')?.value;if(!Number.isInteger(team)||team<0||team>59||full===undefined||short===undefined)return;if(independent(team)){try{unified().editNames(team,{name:full.trim().toUpperCase(),big:(big??full).trim().toUpperCase(),short:short.trim().toUpperCase()});status('Nomes guardados no projeto.');}catch(e){status(e.message);}return;}if(team>55)return;
   saved.values[String(team)]={full,big:big??full,short};syncLabels();status('Nomes guardados no projeto. A exportação da fase Seleção de equipes grava nomes pequenos, grandes e placar.');
  }
  function fill(language){
+  if(independent(current())){status('Esta equipe usa os nomes personalizados do projeto.');return;}
   const row=entries.find(e=>e.teamId===current());if(!row)return;
   const full=preset(current(),language),short=language==='portuguese'?row.compact:row.englishShort??row.english;
   if(node('teamNameFull'))node('teamNameFull').value=full;if(node('teamNameShort'))node('teamNameShort').value=short;if(node('teamNameBig'))node('teamNameBig').value=language==='portuguese'?row.big:row.english;edited();
  }
- function fillAll(){for(const row of entries)saved.values[String(row.teamId)]={full:row.portuguese,big:row.big,short:row.compact};shown=-1;syncLabels();install();status('Português preenchido para as 56 equipes. Salve o projeto ou gere a ROM com a fase Seleção de equipes marcada.');}
+ function fillAll(){for(const row of entries)if(!independent(row.teamId))saved.values[String(row.teamId)]={full:row.portuguese,big:row.big,short:row.compact};shown=-1;syncLabels();install();status('Português preenchido para as seleções nacionais; equipes personalizadas preservadas. Salve o projeto ou gere a ROM com a fase Seleção de equipes marcada.');}
  function hydrate(project){const state=project?.state?.semantic?.teamNamesV1;saved=state?.schema==='isssd-team-names-v1'?clone(state):{schema:'isssd-team-names-v1',values:{}};saved.values||={};shown=-1;syncLabels();install();}
  function finalize(project){if(!project?.state)return project;project.state.semantic||={};if(Object.keys(saved.values).length)project.state.semantic.teamNamesV1=clone(saved);else delete project.state.semantic.teamNamesV1;return project;}
  function install(){
@@ -31,7 +33,7 @@
     const wrap=document.createElement('label');wrap.style.cssText='display:grid;gap:6px;margin:10px 0';wrap.append(document.createTextNode(label));const input=document.createElement('input');input.id=id;input.type='text';input.maxLength=max;input.autocomplete='off';input.addEventListener('input',edited);wrap.append(input);card.append(wrap);
    }
    const actions=document.createElement('div');actions.style.cssText='display:flex;gap:8px;flex-wrap:wrap;margin-top:10px';
-   for(const [id,label,action]of [['portuguese','Usar em português',()=>fill('portuguese')],['english','Usar em inglês',()=>fill('english')],['all','Português em todas as equipes',fillAll],['original','Restaurar nomes originais',()=>{delete saved.values[String(current())];if(Array.isArray(window.TEAM_NAMES))window.TEAM_NAMES[current()]=preset(current(),'english');shown=-1;install();status('Nomes desta equipe restaurados. As demais alterações foram preservadas.');}]]){
+   for(const [id,label,action]of [['portuguese','Usar em português',()=>fill('portuguese')],['english','Usar em inglês',()=>fill('english')],['all','Português em todas as equipes',fillAll],['original','Restaurar nomes originais',()=>{if(independent(current())){unified().restoreNames(current());shown=-1;install();return;}delete saved.values[String(current())];if(Array.isArray(window.TEAM_NAMES))window.TEAM_NAMES[current()]=preset(current(),'english');shown=-1;install();status('Nomes desta equipe restaurados. As demais alterações foram preservadas.');}]]){
     const button=document.createElement('button');button.type='button';button.className='btn';button.id='teamNameLanguage_'+id;button.textContent=label;button.onclick=action;actions.append(button);
    }
    card.append(actions);const text=document.createElement('div');text.id='teamNameLanguageStatus';text.className='note info';text.style.marginTop='12px';card.append(text);host.append(card);
@@ -39,7 +41,7 @@
   const enabled=isPlus();card.hidden=!enabled;const legacy=node('nativeTeamNameEditor');if(legacy)enabled?legacy.style.setProperty('display','none','important'):legacy.style.removeProperty('display');
   const unavailable=node('nativeTeamNameUnavailable');if(unavailable)enabled?unavailable.style.setProperty('display','none','important'):unavailable.style.removeProperty('display');
   if(!enabled)return;
-  const team=current();if(shown!==team){const row=entries.find(e=>e.teamId===team);if(!row)return;const value=saved.values[String(team)];node('teamNameFull').value=value?.full??row.english;node('teamNameShort').value=value?.short??row.englishShort??row.english;node('teamNameBig').value=value?.big??value?.full??row.english;shown=team;status('Edite livremente ou escolha uma sugestão. Acentos ficam no projeto; a fonte da ROM usa a forma sem acentos. Nomes que excederem o espaço serão recusados, sem corte automático.');}syncLabels();
+  const team=current();if(shown!==team){const own=independent(team);const row=own?{english:own.name,englishShort:own.short}:entries.find(e=>e.teamId===team);if(!row)return;const value=own?{full:own.name,big:own.big,short:own.short}:saved.values[String(team)];node('teamNameFull').value=value?.full??row.english;node('teamNameShort').value=value?.short??row.englishShort??row.english;node('teamNameBig').value=value?.big??value?.full??row.english;shown=team;status('Edite livremente ou escolha uma sugestão. Acentos ficam no projeto; a fonte da ROM usa a forma sem acentos. Nomes que excederem o espaço serão recusados, sem corte automático.');}syncLabels();
  }
  const priorFinalize=window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__;
  window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__=function(project){priorFinalize?.(project);return finalize(project);};

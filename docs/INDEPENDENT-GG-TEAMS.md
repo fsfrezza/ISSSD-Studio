@@ -15,15 +15,18 @@ A equipe fonte indica apenas a procedência inicial. A exportação não consult
 
 ## Edição e persistência
 
-Os painéis **Equipes GG** ficam dentro das abas existentes:
+As seis equipes usam os mesmos seletores e formulários das demais equipes.
+Os IDs 54 e 55 substituem as duas identidades secretas antigas; 56 a 59 são
+acrescentados, totalizando 60 equipes. Não existem seções separadas para GG.
 
-- Equipes: nome, nome grande, sigla, importar/exportar uma equipe e organização dos dez grupos. Mudar uma equipe de posição troca as duas posições, preservando as 60 equipes sem duplicação. Os nomes dos grupos são livres dentro do limite gráfico nativo.
-- Jogadores: todos os 20 jogadores, incluindo goleiros; nomes, camisas, posição, nove skills, cabelo e paleta. Cabelo/pele dos goleiros ficam aqui; seus uniformes ficam em Uniformes.
-- Uniformes: titular/reserva, cores predominantes, nove cores de roupa, oito quadros próprios de detalhes da camisa e cores individuais de cada goleiro.
-- Formações: formação nativa e coordenadas/linha/apoio ao ataque dos dez jogadores de linha titulares.
-- Bandeiras: desenho de 24×16 pixels e quatro cores. Seleção e partida guardam desenhos distintos; há um botão para copiar entre as telas.
+- Equipes: seleção normal de todas as equipes, nomes completo/grande/sigla e tática no campo existente.
+- Grupos: dez cartões no organizador comum, com nomes livres e troca de posições entre quaisquer das 60 equipes.
+- Jogadores: seletor comum e os 20 jogadores do elenco, incluindo goleiros; nomes, camisas, posições, skills e aparência usam os controles existentes. A edição em massa também usa esses dados.
+- Uniformes: os seletores comuns incluem as 60 equipes; cores titular/reserva, desenho próprio e uniformes dos dois goleiros são persistidos nos dados individuais.
+- Bandeiras: as equipes usam o mesmo seletor e editor de paletas, lendo seus gráficos próprios de 24 × 16 pixels.
 
-A cópia inicial conserva as bandeiras dos doadores. As cores predominantes alteram roupas, sem recolorir pele ou cabelo. O reserva começa com as cores predominantes invertidas. As fotos recebem as mesmas cores de roupa.
+As referências aprovadas já estão no projeto. O reserva começa com as cores
+predominantes invertidas. Fotos e uniformes mantêm seus mapeamentos individuais.
 
 Salvar o projeto preserva todos esses domínios; reabrir os hidrata sem escrever na ROM-base. Salvar ROM materializa as equipes pelo pipeline canônico. Na exportação cumulativa, a fase **Jogadores (08)** inclui a estrutura completa das seis equipes, seus nomes e organização de grupos, porque esses componentes precisam ser aplicados juntos. As ROMs anteriores à fase 08 conservam a estrutura anterior.
 
@@ -41,7 +44,7 @@ Os campos nativos dos antigos times secretos 54/55 são ocultados nos seletores 
 
 ## Verificação
 
-Foram executadas partidas amistosas com cada uma das seis equipes em Snes9x, inclusive usando a ROM cumulativa. Também foram verificados: ROM-base imutável; alteração de uma equipe sem alterar os atributos das outras 59; gravação/reabertura do projeto; hidratação das cinco abas; exportação sem intervalos GG ausentes; e execução dos helpers 65816 de paletas, nomes grandes e placar.
+Foram executadas partidas amistosas com cada uma das seis equipes em Snes9x, inclusive usando a ROM cumulativa. Também foram verificados: ROM-base imutável; alteração de uma equipe sem alterar os atributos das outras 59; gravação/reabertura do projeto; integração dos seletores e formulários comuns; exportação sem intervalos GG ausentes; e execução dos helpers 65816 de paletas, nomes grandes e placar.
 
 O teste de interface usa o runtime real com um DOM de teste. O build completo do HTML legado não pôde ser executado neste checkout porque o baseline privado `.editor-vendor/legacy-ui/ISSSD-Studio.html` não está presente. O patch é aplicado depois da abertura semântica e antes do verificador final; a cópia local já existente do baseline deve ser preservada.
 
@@ -80,11 +83,12 @@ confirma as seis equipes; o painel Equipes GG apresenta os dez grupos e todos os
 
 ## Integração com o HTML legado enviado
 
-O organizador GG fica na aba Grupos. Identidades ficam em Equipes; quando não
-existe uma página separada de Formações, o painel tático GG também fica em
-Equipes. Jogadores, Uniformes e Bandeiras têm seus próprios painéis. Ao importar
-um projeto GG, o organizador legado de 56 equipes fica oculto, evitando a exibição
-de apenas dois All Stars em paralelo à organização de 60 equipes.
+O organizador comum de Grupos apresenta dez grupos e 60 equipes. As formações
+ficam no campo tático existente em Equipes. Os painéis separados GG foram
+removidos. A ponte semântica hidrata os modelos normais e intercepta somente as
+gravações dos novos registros; os primeiros 54 times preservam seu fluxo nativo.
+Os endereços virtuais usados pela UI nunca são gravados no buffer ROM. A ROM final
+continua sendo produzida exclusivamente pelo pipeline canônico.
 
 O removedor da extensão antiga não atravessa corpos de funções para decidir se
 uma chamada pertence ao recurso removido: o IIFE principal é preservado. Ramos,

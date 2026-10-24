@@ -86,8 +86,12 @@
         "AUSTRÁLIA",
         "IUGOSLÁVIA",
         "IRLANDA DO NORTE",
-        "EQUIPE DOS AUTORES",
-        "TODAS AS ESTRELAS"
+        "ADIPOSOS",
+        "BUGIGANGAS",
+        "ENCEFALICOS",
+        "MACUCOS",
+        "TELURICOS",
+        "VAPOROSOS"
       ],
       "teamSelectLayout": "original",
       "currentTeam": 30,
@@ -32514,16 +32518,6 @@
             "full": "IRLANDA DO NORTE",
             "short": "IRLANDA N",
             "big": "IRLANDA NORTE"
-          },
-          "54": {
-            "full": "EQUIPE DOS AUTORES",
-            "short": "AUTORES",
-            "big": "AUTORES"
-          },
-          "55": {
-            "full": "TODAS AS ESTRELAS",
-            "short": "ESTRELAS",
-            "big": "ESTRELAS"
           }
         }
       },

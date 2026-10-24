@@ -23,7 +23,7 @@ const diagnosticsRoot=path.join(root,'build-diagnostics');
 const port=Number(process.env.ISSSD_PORT||4173);
 let listeningPort=port,portRetries=0;
 const gitHead=spawnSync('git',['rev-parse','--short=12','HEAD'],{cwd:root,encoding:'utf8',shell:false});
-const serverBuild={commit:gitHead.status===0?gitHead.stdout.trim():'local',root,startedAt:new Date().toISOString(),independentTeams:{version:1,count:6,group:"GG",projectField:"independentTeamsV1"},supportedTextWriters:['strategy-one-four','uniform-labels','team-names','match-announcements','match-statistics']};
+const serverBuild={commit:gitHead.status===0?gitHead.stdout.trim():'local',root,startedAt:new Date().toISOString(),independentTeams:{version:1,count:6,selectorMode:"unified-60",group:"GG",projectField:"independentTeamsV1"},supportedTextWriters:['strategy-one-four','uniform-labels','team-names','match-announcements','match-statistics']};
 const defaultPlusRomPath=process.env.ISSSD_PLUS_ROM_PATH||'C:\\Users\\fsfre\\Downloads\\ISSSD-Studio\\roms\\International Superstar Soccer Deluxe Plus.sfc';
 const defaultPlusRomName=path.basename(defaultPlusRomPath);
 const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.svg':'image/svg+xml','.json':'application/json; charset=utf-8'};

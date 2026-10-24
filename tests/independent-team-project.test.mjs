@@ -19,13 +19,15 @@ test('GG jersey numbers remain unique and malformed edits fail before mutating a
  const t=model.teams[54],before=structuredClone(t),old=readIndependentPlayer(t,1).number,target=readIndependentPlayer(t,2).number,next=editIndependentPlayer(t,1,{number:target});assert.equal(readIndependentPlayer(next,2).number,old);assert.equal(new Set(Array.from({length:20},(_,i)=>readIndependentPlayer(next,i).number)).size,20);
  assert.throws(()=>editIndependentPlayer(t,0,{hair:16}));assert.throws(()=>editIndependentPlayer(t,0,{skills:{speed:11}}));assert.throws(()=>editIndependentFlag(t,Array(384).fill(16)));assert.throws(()=>editIndependentPlayer(t,0,{name:'Muito grande'}));assert.deepEqual(t,before);
 });
-test('Editor hydrates all six panels and saves GG project state without sending expanded IDs to legacy group hydration',async()=>{
+test('ordinary selectors and player form contain all sixty teams and persist independent player edits',async()=>{
  const f=independentEditorFixture(),w=f.window;await w.studioApplyProjectWithBase(structuredClone(project));assert.equal(f.applied().state.semantic.independentTeamsV1,undefined);assert.equal(f.applied().state.semantic.plusGroups,undefined);
- assert.equal(f.document.querySelectorAll('.gg-panel').filter(p=>!p.hidden).length,6);
- const players=f.pages['page-players'].querySelector('.gg-body'),name=players.querySelectorAll('input').find(i=>i.maxLength===8);name.value='TESTE';name.onchange();
- const identity=f.pages['page-teams'].querySelector('.gg-body'),big=identity.querySelectorAll('input').find(i=>i.maxLength===12&&i.value==='ADIPOSOS');big.value='ADI TESTE';big.onchange();
- const output={state:{semantic:{}}};w.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__(output);assert.equal(readIndependentPlayer(output.state.semantic.independentTeamsV1.teams[54],0).name,'TESTE');assert.equal(output.state.semantic.independentTeamsV1.teams[54].name,'ADI TESTE');assert.deepEqual(output.state.semantic.plusGroups,project.state.semantic.plusGroups);
- await w.studioApplyProjectWithBase(JSON.parse(JSON.stringify(output)));const again={state:{semantic:{}}};w.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__(again);assert.deepEqual(JSON.parse(JSON.stringify(again)),JSON.parse(JSON.stringify(output)));
+ assert.equal(f.document.querySelectorAll('.gg-panel').length,0);assert.equal(w.activeRomProfile.teamCount,60);
+ for(const id of ['teamList','playerTeamSelect','bulkTeamSelect','flagTeamSelect','uniformTeamSelect']){const options=f.nodes[id].options;assert.equal(options.length,60);assert.equal(options[54].textContent,'55 · ADIPOSOS');assert.equal(options[59].textContent,'60 · VAPOROSOS');assert.equal(options[54].disabled,undefined);}
+ const before=Array.from(w.rom);w.currentTeam=54;w.currentPlayer=0;w.renderEverything();assert.equal(f.nodes.playerSelect.options.length,20);assert.equal(f.nodes.pName.value,readIndependentPlayer(model.teams[54],0).name);
+ w.teams[54].players[0].name='TESTE';w.savePlayerName();w.teams[54].players[0].speed=10;w.savePlayerAttrs('speed');w.savePlusJerseyPermutation(2);
+ const output=await w.studioProjectObject();assert.equal(readIndependentPlayer(output.state.semantic.independentTeamsV1.teams[54],0).name,'TESTE');assert.equal(readIndependentPlayer(output.state.semantic.independentTeamsV1.teams[54],0).skills.speed,10);assert.equal(readIndependentPlayer(output.state.semantic.independentTeamsV1.teams[54],0).number,2);
+ assert.equal(w.physicalWrites,0);assert.deepEqual(Array.from(w.rom),before);
+ await w.studioApplyProjectWithBase(JSON.parse(JSON.stringify(output)));assert.deepEqual(JSON.parse(JSON.stringify(w.__ISSSD_INDEPENDENT_TEAMS_EDITOR__.snapshot())),JSON.parse(JSON.stringify(output.state.semantic.independentTeamsV1)));
  const prior=w.__ISSSD_INDEPENDENT_TEAMS_EDITOR__.snapshot();await assert.rejects(w.studioApplyProjectWithBase({...project,fail:true}));assert.deepEqual(w.__ISSSD_INDEPENDENT_TEAMS_EDITOR__.snapshot(),prior);
 });
 
@@ -37,12 +39,27 @@ test('GG structure always prepares the tactical bank selector even without other
  const{createPlusBuildStages}=await import('../src/core/plus-build-pipeline.mjs');const stages=createPlusBuildStages({baseRom:new Uint8Array(0x200000)}),prepare=stages.find(s=>s.id==='05-tactical-infrastructure');assert.equal(!!prepare.when({}),false);assert.equal(!!prepare.when({independentTeamsV1:model}),true);
 });
 
-test('actual legacy page layout places GG groups in Groups and formations in Teams, preserving free sixty-team swaps',async()=>{
- const f=independentEditorFixture({withoutFormationPage:true}),w=f.window;await w.studioApplyProjectWithBase(structuredClone(project));
- assert.equal(f.pages['page-teams'].querySelectorAll('.gg-panel').length,2);
- const page=f.pages['page-groups'],body=page.querySelector('.gg-body');assert.ok(page.textContent.includes('Organização dos dez grupos'));
- assert.ok(f.document.body.className.includes('gg-independent-active'));
- const first=body.querySelector('select');assert.equal(first.options.length,60);first.value='54';first.onchange();
+test('ordinary Groups organizer includes six independent slots and preserves free sixty-team swaps',async()=>{
+ const f=independentEditorFixture(),w=f.window;await w.studioApplyProjectWithBase(structuredClone(project));const host=f.nodes.plusGroupCards;assert.equal(host.children.length,10);
+ const first=host.querySelector('select');assert.equal(first.options.length,60);first.value='54';first.onchange();
  const output=await w.studioProjectObject();assert.equal(output.state.semantic.plusGroups.groups[0][0],54);assert.equal(output.state.semantic.plusGroups.secret[0],30);
- const plain=structuredClone(project);delete plain.state.semantic.independentTeamsV1;await w.studioApplyProjectWithBase(plain);assert.equal(f.document.body.className.includes('gg-independent-active'),false);
+ assert.equal(w.studioTeamsV3ReadFull().teams[59].teamName,'VAPOROSOS');assert.equal(w.studioTeamsV3ReadFull().teams[59].players.length,20);
+ assert.equal(Object.keys(w.studioTeamsV3Snapshot().teams).length,54);
+ const plain=structuredClone(project);delete plain.state.semantic.independentTeamsV1;await w.studioApplyProjectWithBase(plain);assert.equal(w.TEAM_COUNT,56);assert.equal(w.activeRomProfile.teamCount,56);assert.equal(f.nodes.playerTeamSelect.options.length,56);
+});
+
+test('ordinary player and team exports retain independent records and uniform/appearance edits remain isolated',async()=>{
+ const f=independentEditorFixture(),w=f.window;await w.studioApplyProjectWithBase(structuredClone(project));
+ const core=w.__ISSSD_UNIFIED_TEAM_CORE__,original=JSON.parse(JSON.stringify(core.team(54))),other=JSON.parse(JSON.stringify(core.team(55)));
+ const kit=Array(9).fill(0x1234);core.setKitColors(54,0,kit);assert.deepEqual(JSON.parse(JSON.stringify(core.team(54).data.attributes)),original.data.attributes);assert.deepEqual(JSON.parse(JSON.stringify(core.team(55))),other);
+ const keeper=core.keeperColors(54,1);keeper[8]=0x4321;core.setKeeperColors(54,1,keeper);assert.equal(core.keeperColors(54,12)[8],original.data.keeperPalettes[11][8]);
+ const exported=w.playerTransferObject(54,0);assert.equal(exported.player.rawName.length,8);assert.equal(exported.player.rawPlayerRecord.length,7);
+ const team=w.teamTransferObject(54);assert.equal(team.team.independentTeamV1.name,'ADIPOSOS');assert.deepEqual(JSON.parse(JSON.stringify(team.team.independentTeamV1.data)),JSON.parse(JSON.stringify(core.team(54).data)));
+ const groups=core.exportGroups();assert.equal(groups.secret.length,6);assert.equal(groups.teamNames[59],'VAPOROSOS');assert.equal(w.physicalWrites,0);
+});
+
+test('own shirt pixels round-trip all eight frames and canonical UI names replace the two retired native identities',async()=>{
+ const{independentPatternPixels,editIndependentPattern}=await import('../src/core/independent-team-fields.mjs');
+ const t=model.teams[54],pixels=independentPatternPixels(t);assert.equal(pixels.length,512);pixels[511]=15;const next=editIndependentPattern(t,pixels);assert.deepEqual(independentPatternPixels(next),pixels);assert.deepEqual(next.data.attributes,t.data.attributes);assert.deepEqual(next.data.palettes,t.data.palettes);
+ assert.equal(project.state.ui.teamNames.length,60);assert.deepEqual(project.state.ui.teamNames.slice(54),GG_DEFAULT_IDENTITIES.map(t=>t.name));assert.equal(project.state.semantic.teamNamesV1.values[54],undefined);assert.equal(project.state.semantic.teamNamesV1.values[55],undefined);
 });
