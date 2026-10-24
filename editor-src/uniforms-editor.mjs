@@ -3,11 +3,11 @@
  let saved,installed=false,team=30,kit=0,style=0,frame=0,color=7,draft=null,undo=[];
  const unified=()=>window.__ISSSD_UNIFIED_TEAM_CORE__,independent=()=>unified()?.is(team);
  const read=()=>independent()?{colors:unified().kitColors(team,kit),layout:-1}:engine().readUniform(base(),saved,team,kit);
- function teamOptions(){const select=by('uniformTeam');if(!select)return;const signature=JSON.stringify(window.TEAM_NAMES);if(select.__teamNamesSignature===signature&&select.options?.length===(window.TEAM_COUNT||56))return;select.__teamNamesSignature=signature;select.innerHTML='';for(let t=0;t<(window.TEAM_COUNT||56);t++){const o=document.createElement('option');o.value=t;o.textContent=names(t);select.append(o);}select.value=team;}
+ function teamOptions(){const select=by('uniformTeam');if(!select)return;const signature=JSON.stringify(Array.from({length:window.TEAM_COUNT||56},(_,t)=>names(t)));if(select.__teamNamesSignature===signature&&select.options?.length===(window.TEAM_COUNT||56))return;select.__teamNamesSignature=signature;select.innerHTML='';for(let t=0;t<(window.TEAM_COUNT||56);t++){const o=document.createElement('option');o.value=t;o.textContent=names(t);select.append(o);}select.value=team;}
  const clean=()=>engine().validateUniforms(null),clone=v=>JSON.parse(JSON.stringify(v));
  function note(text,error=false){const n=by('uniformStatus');if(n){n.textContent=text;n.className='note '+(error?'error':'info');}}
  function changed(){window.studioUpdateBadge?.();note('Alterações no projeto em edição. Salve o projeto e Salvar ROM para exportar na fase Jogadores.');}
- function names(t){return window.__ISSSD_TEAMS_RESOLVED_OVERLAY_V1__?.teams?.[t]?.teamName||window.TEAM_NAMES?.[t]||'Equipe '+(t+1);}
+ function names(t){if(unified()?.is(t))return unified().team(t).name;return window.__ISSSD_TEAMS_RESOLVED_OVERLAY_V1__?.teams?.[t]?.teamName||window.TEAM_NAMES?.[t]||'Equipe '+(t+1);}
  function colors(){return read().colors;}
  function paint(){
   const canvas=by('uniformPatternCanvas'),ctx=canvas.getContext('2d'),palette=colors();ctx.clearRect(0,0,8,8);const img=ctx.createImageData(8,8);
