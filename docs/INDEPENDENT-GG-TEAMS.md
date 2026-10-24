@@ -77,3 +77,16 @@ Depois da atualização, importe o projeto canônico da raiz. A mensagem de aber
 confirma as seis equipes; o painel Equipes GG apresenta os dez grupos e todos os
 60 times. Na exportação cumulativa, a fase Jogadores inclui a estrutura GG; use a
 última ROM do ZIP para testar todas as fases selecionadas.
+
+## Integração com o HTML legado enviado
+
+O organizador GG fica na aba Grupos. Identidades ficam em Equipes; quando não
+existe uma página separada de Formações, o painel tático GG também fica em
+Equipes. Jogadores, Uniformes e Bandeiras têm seus próprios painéis. Ao importar
+um projeto GG, o organizador legado de 56 equipes fica oculto, evitando a exibição
+de apenas dois All Stars em paralelo à organização de 60 equipes.
+
+O removedor da extensão antiga não atravessa corpos de funções para decidir se
+uma chamada pertence ao recurso removido: o IIFE principal é preservado. Ramos,
+spreads e concatenações do estado antigo são eliminados sem deixar chamadas a
+`undefined` ou espalhamentos de valores ausentes.

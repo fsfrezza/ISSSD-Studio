@@ -1,22 +1,36 @@
 import{parse as parseJs}from'acorn';
 import{parse as parseHtml}from'parse5';
 import{isRetiredTeamExpansion as retired}from'../../src/core/retired-team-expansion.mjs';
-const each=(n,fn)=>{if(!n||typeof n!=='object')return;fn(n);for(const[k,v]of Object.entries(n))if(!['start','end','loc'].includes(k)){if(Array.isArray(v))v.forEach(x=>each(x,fn));else if(v&&typeof v==='object')each(v,fn);}};
-const has=n=>{let found=false;each(n,x=>{if(x.type==='Identifier'&&retired(x.name)||x.type==='Literal'&&typeof x.value==='string'&&retired(x.value)||x.type==='TemplateElement'&&retired(x.value?.cooked??''))found=true;});return found;};
+// A callee/test owns only its immediate references. Looking through a function
+// body mistakes the main Editor IIFE for a retired-feature call and deletes it.
+const has=n=>{
+ let found=false;
+ function visit(x){
+  if(!x||typeof x!=='object'||/^(?:FunctionExpression|ArrowFunctionExpression|FunctionDeclaration)$/.test(x.type??''))return;
+  if(x.type==='Identifier'&&retired(x.name)||x.type==='Literal'&&typeof x.value==='string'&&retired(x.value)||x.type==='TemplateElement'&&retired(x.value?.cooked??'')){found=true;return;}
+  for(const[k,v]of Object.entries(x))if(!['start','end','loc'].includes(k)){if(Array.isArray(v))v.forEach(visit);else if(v&&typeof v==='object')visit(v);}
+ }
+ visit(n);return found;
+};
 const name=n=>n?.type==='Identifier'?n.name:n?.type==='Literal'?String(n.value):n?.type==='MemberExpression'?name(n.property):'';
 function apply(source,edits){const outer=[];let end=-1;for(const e of edits.sort((a,b)=>a.start-b.start||b.end-a.end)){if(e.start<end)continue;outer.push(e);end=e.end;}for(const e of outer.reverse())source=source.slice(0,e.start)+e.text+source.slice(e.end);return source;}
 export function stripRetiredExpansionScript(source,sourceType='script'){
  let text=source;
+ // The old organizer inserts this self-contained activation card before the
+ // native group controls. Remove the block, preserving the shared renderer.
+ text=text.replace(/const activation=document\.createElement\("div"\);[\s\S]*?(?=const refreshDerived=\(\)=>\{)/g,block=>retired(block)?'':block);
  // Iterate so pruning obsolete properties/branches exposes removable wrappers.
  for(let round=0;round<8;round++){
   let ast;try{ast=parseJs(text,{ecmaVersion:'latest',sourceType,allowReturnOutsideFunction:true,allowAwaitOutsideFunction:true});}catch(e){throw Error('Código do Editor inválido antes da limpeza: '+e.message);}
   const edits=[];const replace=(n,s='')=>edits.push({start:n.start,end:n.end,text:s});
-  function ownedEntry(n){return n&&(retired(name(n))||n.type==='ObjectExpression'&&n.properties.some(p=>['id','key','name','title','label'].includes(name(p.key))&&p.value?.type==='Literal'&&retired(p.value.value))||n.type==='ArrayExpression'&&retired(name(n.elements[0])));}
+  function ownedEntry(n){return n&&(n.type==='SpreadElement'&&has(n.argument)||retired(name(n))||n.type==='ObjectExpression'&&n.properties.some(p=>['id','key','name','title','label'].includes(name(p.key))&&p.value?.type==='Literal'&&retired(p.value.value))||n.type==='ArrayExpression'&&retired(name(n.elements[0])));}
   function list(items){return items.filter(n=>n&&!ownedEntry(n));}
   function visit(n){
    if(!n||typeof n!=='object')return;
    if(n.type==='FunctionDeclaration'&&retired(n.id?.name)){replace(n);return;}
    if(n.type==='VariableDeclaration'&&n.declarations.some(d=>has(d.id))){const kept=n.declarations.filter(d=>!has(d.id));replace(n,kept.length?n.kind+' '+kept.map(d=>text.slice(d.start,d.end)).join(',')+';':'');return;}
+   if(n.type==='BinaryExpression'&&n.operator==='+'&&(has(n.left)||has(n.right))){replace(n,has(n.left)?has(n.right)?'""':text.slice(n.right.start,n.right.end):text.slice(n.left.start,n.left.end));return;}
+   if(n.type==='ConditionalExpression'&&has(n.test)){replace(n,text.slice(n.alternate.start,n.alternate.end));return;}
    if(n.type==='IfStatement'&&has(n.test)){replace(n,n.alternate?text.slice(n.alternate.start,n.alternate.end):';');return;}
    if(n.type==='ExpressionStatement'&&has(n.expression)){
     // Feature-owned calls, event handlers, assignments and namespace exports.
@@ -30,6 +44,7 @@ export function stripRetiredExpansionScript(source,sourceType='script'){
     let cleaned=stripRetiredExpansionHtml(combined).replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/\$\{/g,'\\${');
     cleaned=cleaned.replace(/__EXPR_(\d+)__/g,(_,i)=>'${'+text.slice(n.expressions[Number(i)].start,n.expressions[Number(i)].end)+'}');replace(n,'`'+cleaned+'`');return;
    }
+   if(n.type==='CallExpression'&&has(n.callee)){replace(n,'null');return;}
    if(n.type==='Identifier'&&retired(n.name)){replace(n,'undefined');return;}
    if(n.type==='Literal'&&typeof n.value==='string'&&retired(n.value)){replace(n,JSON.stringify(n.value.includes('<')?stripRetiredExpansionHtml(n.value):n.value.replace(new RegExp(retiredSource(),'gi'),'').trim()));return;}
    for(const[k,v]of Object.entries(n))if(!['start','end','loc'].includes(k)){if(Array.isArray(v))v.forEach(visit);else if(v&&typeof v==='object')visit(v);}
@@ -40,7 +55,7 @@ export function stripRetiredExpansionScript(source,sourceType='script'){
  text=text.replace(new RegExp(retiredSource(),'gi'),'retiredExtension');
  parseJs(text,{ecmaVersion:'latest',sourceType,allowReturnOutsideFunction:true,allowAwaitOutsideFunction:true});return text;
 }
-function retiredSource(){return String.fromCharCode(103,111,115,112,101,108)+'[\\s_-]*'+String.fromCharCode(103,111,108);}
+function retiredSource(){return String.fromCharCode(103,111,115,112,101,108)+'(?:[\\s_-]*'+String.fromCharCode(103,111,108)+')?';}
 export function stripRetiredExpansionHtml(html){
  const tree=parseHtml(html,{sourceCodeLocationInfo:true}),edits=[];
  function inspect(node){

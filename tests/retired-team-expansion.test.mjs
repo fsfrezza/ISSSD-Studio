@@ -32,3 +32,19 @@ test('generic future GG group data is preserved; removing obsolete state does no
 test('capacity audit distinguishes reusable secret slots from six linked special rosters and detects the empty-code collision',async()=>{
  const{auditNewTeamCapacity}=await import('../scripts/audit-new-team-capacity.mjs');const b=new Uint8Array(0x200000);b.set([0x6E,0x6C,0x70,0x70,0x70,0x70],0xE828);[0xF64F,0xF69F,0xF6EF,0xF73F,0xF78F,0xF7DF].forEach((p,i)=>b.set([p&255,p>>8],0x127643+i*2));const before=b.slice(),r=auditNewTeamCapacity(b);assert.equal(r.status,'analysis-only');assert.deepEqual(r.options.map(x=>[x.newIndependentTeams,x.totalTeams]),[[4,60],[6,62]]);assert.equal(r.blockers[0].emptyByte,r.blockers[0].firstNewEngineByte);assert.equal(r.blockers[1].independentPlayerBanks,false);assert.deepEqual(b,before);b[0xE82A]=0x72;assert.throws(()=>auditNewTeamCapacity(b),/Grupo secreto/);
 });
+
+test('cleanup preserves the private Editor IIFE and shared callees when retired code is nested inside',()=>{
+ const marker='/* isssd-team-semantic-overlay-v1 */';
+ for(const wrap of [body=>`(()=>{${body}})();`,body=>`(function(){${body}})();`,body=>`if((()=>{${body};return true;})()){globalThis.entered=true;}`]){
+  const source=wrap(`'use strict';let ${key}={enabled:false};function restore${word}Gol(){};${marker}\nfunction plusTacSwapSelectedPlayers(){return 42;}globalThis.answer=plusTacSwapSelectedPlayers();globalThis.snapshot={keep:1,${key}:${key}};`);
+  const output=stripRetiredExpansionScript(source),context={};
+  assert.equal(retired(output),false);assert.ok(output.includes(marker));assert.ok(output.includes('function plusTacSwapSelectedPlayers'));
+  vm.runInNewContext(output,context);assert.equal(context.answer,42);assert.equal(context.snapshot.keep,1);assert.equal(context.snapshot[key],undefined);
+ }
+});
+
+test('shared native group and team exports lose retired branches and spreads without dangling calls',()=>{
+ const alias=word.toLowerCase(),source=`(()=>{const nativeTeams=[1,2];const ${alias}=[];const values=[...nativeTeams,...${alias}];const labels=is${word}GolActive()?['old']:['native'];const message='native'+${alias};globalThis.result={values,labels,message};})();`;
+ const output=stripRetiredExpansionScript(source),context={};new vm.Script(output);vm.runInNewContext(output,context);
+ assert.equal(retired(output),false);assert.equal(output.includes('undefined()'),false);assert.equal(output.includes('...undefined'),false);assert.deepEqual(JSON.parse(JSON.stringify(context.result)),{values:[1,2],labels:['native'],message:'native'});
+});

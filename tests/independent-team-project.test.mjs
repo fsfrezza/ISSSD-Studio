@@ -19,9 +19,9 @@ test('GG jersey numbers remain unique and malformed edits fail before mutating a
  const t=model.teams[54],before=structuredClone(t),old=readIndependentPlayer(t,1).number,target=readIndependentPlayer(t,2).number,next=editIndependentPlayer(t,1,{number:target});assert.equal(readIndependentPlayer(next,2).number,old);assert.equal(new Set(Array.from({length:20},(_,i)=>readIndependentPlayer(next,i).number)).size,20);
  assert.throws(()=>editIndependentPlayer(t,0,{hair:16}));assert.throws(()=>editIndependentPlayer(t,0,{skills:{speed:11}}));assert.throws(()=>editIndependentFlag(t,Array(384).fill(16)));assert.throws(()=>editIndependentPlayer(t,0,{name:'Muito grande'}));assert.deepEqual(t,before);
 });
-test('Editor hydrates all five tabs and saves GG project state without sending expanded IDs to legacy group hydration',async()=>{
+test('Editor hydrates all six panels and saves GG project state without sending expanded IDs to legacy group hydration',async()=>{
  const f=independentEditorFixture(),w=f.window;await w.studioApplyProjectWithBase(structuredClone(project));assert.equal(f.applied().state.semantic.independentTeamsV1,undefined);assert.equal(f.applied().state.semantic.plusGroups,undefined);
- assert.equal(f.document.querySelectorAll('.gg-panel').filter(p=>!p.hidden).length,5);
+ assert.equal(f.document.querySelectorAll('.gg-panel').filter(p=>!p.hidden).length,6);
  const players=f.pages['page-players'].querySelector('.gg-body'),name=players.querySelectorAll('input').find(i=>i.maxLength===8);name.value='TESTE';name.onchange();
  const identity=f.pages['page-teams'].querySelector('.gg-body'),big=identity.querySelectorAll('input').find(i=>i.maxLength===12&&i.value==='ADIPOSOS');big.value='ADI TESTE';big.onchange();
  const output={state:{semantic:{}}};w.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__(output);assert.equal(readIndependentPlayer(output.state.semantic.independentTeamsV1.teams[54],0).name,'TESTE');assert.equal(output.state.semantic.independentTeamsV1.teams[54].name,'ADI TESTE');assert.deepEqual(output.state.semantic.plusGroups,project.state.semantic.plusGroups);
@@ -35,4 +35,14 @@ test('GG team import and project export cannot reintroduce retired expansion fie
 
 test('GG structure always prepares the tactical bank selector even without other tactical edits',async()=>{
  const{createPlusBuildStages}=await import('../src/core/plus-build-pipeline.mjs');const stages=createPlusBuildStages({baseRom:new Uint8Array(0x200000)}),prepare=stages.find(s=>s.id==='05-tactical-infrastructure');assert.equal(!!prepare.when({}),false);assert.equal(!!prepare.when({independentTeamsV1:model}),true);
+});
+
+test('actual legacy page layout places GG groups in Groups and formations in Teams, preserving free sixty-team swaps',async()=>{
+ const f=independentEditorFixture({withoutFormationPage:true}),w=f.window;await w.studioApplyProjectWithBase(structuredClone(project));
+ assert.equal(f.pages['page-teams'].querySelectorAll('.gg-panel').length,2);
+ const page=f.pages['page-groups'],body=page.querySelector('.gg-body');assert.ok(page.textContent.includes('Organização dos dez grupos'));
+ assert.ok(f.document.body.className.includes('gg-independent-active'));
+ const first=body.querySelector('select');assert.equal(first.options.length,60);first.value='54';first.onchange();
+ const output=await w.studioProjectObject();assert.equal(output.state.semantic.plusGroups.groups[0][0],54);assert.equal(output.state.semantic.plusGroups.secret[0],30);
+ const plain=structuredClone(project);delete plain.state.semantic.independentTeamsV1;await w.studioApplyProjectWithBase(plain);assert.equal(f.document.body.className.includes('gg-independent-active'),false);
 });
