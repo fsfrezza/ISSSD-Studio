@@ -7,6 +7,9 @@ import{resolvePlusTacticalRecord}from'./plus-tactics-address.mjs';
 import{GOALKEEPER_PALETTE_SLOT,GOALKEEPER_SKIN_FLAGS}from'./plus-goalkeeper-palettes.mjs';
 export const INDEPENDENT_TEAMS_SCHEMA='isssd-independent-teams-v1';
 export const GG_TEAM_IDS=Object.freeze([54,55,56,57,58,59]);
+// Verified original Plus Italy 4-4-2: ten native deltas and role/attack flags.
+export const GG_DEFAULT_442=Object.freeze([1,8,224,0,245,0,11,8,32,244,0,0,232,0,24,20,0,252,236,252,20,5,1,1,5,2,2,2,6,3,3]);
+export const GG_NATIVE_SHADOW=0x0120;
 export const GG_DEFAULT_SOURCES=Object.freeze([30,31,8,0,2,4]);
 export const GG_DEFAULT_IDENTITIES=Object.freeze([
  {name:'ADIPOSOS',short:'ADI',primary:'#FF8000',secondary:'#101010'},
@@ -20,7 +23,7 @@ const bgr=(hex,factor=1)=>{const channels=[1,3,5].map(p=>Math.max(0,Math.min(31,
 // Clothing starts at color 7. Never recolor the shared skin/hair indices 0–6.
 export function independentKitColors(primary,secondary){
  if(!/^#[0-9a-f]{6}$/i.test(primary)||!/^#[0-9a-f]{6}$/i.test(secondary))throw Error('Cores da equipe inválidas.');
- return[...([.5,.75,1].map(f=>bgr(primary,f))),...([.5,.75,1].map(f=>bgr(secondary,f))),bgr(primary,.65),bgr(primary),bgr(secondary)];
+ return[...([.5,.75,1].map(f=>bgr(primary,f))),...([.5,.75,1].map(f=>bgr(secondary,f))),bgr(primary,.65),bgr(primary),GG_NATIVE_SHADOW];
 }
 export function applyIndependentKitColors(data,primary,secondary){
  const out=structuredClone(data);
@@ -88,7 +91,7 @@ export function validateIndependentTeams(value){
 }
 export function createIndependentTeams(rom,sources=GG_DEFAULT_SOURCES,current=null){
  if(!Array.isArray(sources)||sources.length!==6)throw Error('Escolha seis equipes fonte.');const existing=validateIndependentTeams(current),teams={};
- GG_TEAM_IDS.forEach((teamId,i)=>{const sourceTeam=Number(sources[i]);if(!Number.isInteger(sourceTeam)||sourceTeam<0||sourceTeam>=56&&!existing?.teams[sourceTeam])throw Error('Equipe fonte inválida.');const data=existing?.teams[sourceTeam]?.data??captureIndependentTeam(rom,sourceTeam);const identity=GG_DEFAULT_IDENTITIES[i];teams[teamId]={teamId,sourceTeam,name:identity.name,big:identity.name,short:identity.short,colors:{primary:identity.primary,secondary:identity.secondary},data:applyIndependentKitColors(data,identity.primary,identity.secondary)};});
+ GG_TEAM_IDS.forEach((teamId,i)=>{const sourceTeam=Number(sources[i]);if(!Number.isInteger(sourceTeam)||sourceTeam<0||sourceTeam>=56&&!existing?.teams[sourceTeam])throw Error('Equipe fonte inválida.');const data=existing?.teams[sourceTeam]?.data??captureIndependentTeam(rom,sourceTeam);const identity=GG_DEFAULT_IDENTITIES[i];teams[teamId]={teamId,sourceTeam,name:identity.name,big:identity.name,short:identity.short,colors:{primary:identity.primary,secondary:identity.secondary},data:{...applyIndependentKitColors(data,identity.primary,identity.secondary),tactics:[...GG_DEFAULT_442]}};});
  return validateIndependentTeams({schema:INDEPENDENT_TEAMS_SCHEMA,version:1,group:'GG',teams});
 }
 

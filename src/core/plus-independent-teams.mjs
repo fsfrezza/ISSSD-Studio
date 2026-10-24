@@ -17,6 +17,15 @@ export function independentPaletteCopyHelper(){
  c.put(0x5A,0x29,0xFE,0,0xAA,0xBF,...long(0x819176),0xA8,0xFA,0x8A,0x09,0,0x80,0xAA,0xBF,...long(cpu(INDEPENDENT_PALETTES_SLOT)&0xFF0000),0xE8,0xE8,0x54,0x7E,cpu(INDEPENDENT_PALETTES_SLOT)>>16,0x7A,0xFA,0xAB,0x6B);
  c.label('native').put(0x29,0xFE,0,0xAA,0x5C,0xF3,0xA4,0x80);return c.finish();
 }
+// The three tactical pointer readers already use a per-team bank selector.
+// The two following MVNs must use that same bank, rather than literal $8B.
+export function independentTacticalCopyHelper(){
+ const c=new Code();c.put(0x08,0x8B,0x48,0xA5,4,0x29,255,0);
+ for(const bank of [0xC0,0xC1,0xC2,0xC3,0xC4,0xC5,0xC6,0xC7,0xDD])c.put(0xC9,bank,0).branch(0xF0,'bank'+bank);
+ c.put(0x68,0x54,0x7E,0x8B).branch(0x80,'done');
+ for(const bank of [0xC0,0xC1,0xC2,0xC3,0xC4,0xC5,0xC6,0xC7,0xDD])c.label('bank'+bank).put(0x68,0x54,0x7E,bank).branch(0x80,'done');
+ c.label('done').put(0xAB,0x28,0x6B);return c.finish();
+}
 export function independentTeamNameHelper(pointers,cache,plane,slotOffset,slotSize){
  const c=new Code();c.put(0x08,0x8B,0xDA,0x5A,0xE0,108,0).branch(0x90,'native');
  for(let i=0;i<6;i++)c.put(0xE0,...word((54+i)*2)).branch(0xF0,'team'+i);
@@ -36,6 +45,10 @@ export function independentTeamNameHelper(pointers,cache,plane,slotOffset,slotSi
  c.label('native').put(0xBF,...long(cpu(pointers.table)));
  c.label('finish').put(0x18,0x6F,0xF8,0x5F,0x7E,0x7A,0xFA,0xAB,0x28,0x09,0,0,0x6B);
  return c.finish();
+}
+// Handicap uses its own two uploads, not the scoreboard or group-list path.
+export function independentPreMatchNameHelper(cache){
+ return Uint8Array.from([0x29,255,0,0x0A,0x0A,0x0A,0x0A,0x0A,0x18,0x69,...word(cpu(cache)),0x48,0xA9,cpu(cache)>>16,0,0x85,0,0xBF,0xF7,0xF7,0x82,0xA8,0xA2,64,0,0x68,0x22,0x37,0x8E,0x80,0x6B]);
 }
 export function independentShortNameHelper(cache){
  const c=new Code();c.put(0x08,0xE0,0xD0,0x17).branch(0xF0,'score');
@@ -94,7 +107,7 @@ export function plusIndependentTeamsWriter(input,state,base,selectedAreas=null){
 
  const paletteTables={};
  for(const[k,old]of Object.entries({home:0x10274,skinAlt:0x1043C,hairAlt:0x103CA,keeper:0x10358,fieldFlag:0xFE06})){
-  const values=Array.from({length:k==='home'?120:60},(_,index)=>{const kit=k==='home'&&index>=60?1:0,id=index%60;if(data[id])return pal(data[id].palettes[k==='home'?(kit?'away':'home'):k]);return readWord(rom,old+(id+(k==='home'&&kit?57:0))*2);});
+  const values=Array.from({length:k==='home'?120:60},(_,index)=>{const kit=k==='home'&&index>=60?1:0,id=index%60;if(data[id]){const record=data[id].palettes[k==='home'?(kit?'away':'home'):k];if(k==='home'){const copy=record.slice();copy[32]=0x20;copy[33]=1;return pal(copy);}return pal(record);}return readWord(rom,old+(id+(k==='home'&&kit?57:0))*2);});
   paletteTables[k]=table(Uint8Array.from(values.flatMap(word)));redirectLong(cpu(old),paletteTables[k]);
  }
  // The native alternate-kit offset is 57, including the challenge palette.
@@ -141,7 +154,8 @@ export function plusIndependentTeamsWriter(input,state,base,selectedAreas=null){
   else{const at=0x17CA6+id*6,p=rom[at+3]|rom[at+4]<<8|rom[at+5]<<16,start=pc(p),d=konamiLzDecompress(rom,start);raw=rom[start+1]&128?transformLabelPlanes(d.data):d.data;}
   shortRaw.set(raw.slice(0,64),id*64);
  }
- const shortCache=table(shortRaw),shortPointers=table(Uint8Array.from(Array.from({length:60},(_,id)=>word(id*64)).flat()));redirectLong(0x81FEB0,shortPointers);
+ const selectionRaw=shortRaw.slice();for(const id of GG_TEAM_IDS)selectionRaw.set(renderSmallTeamName(model.teams[id].name).raw,id*64);
+ const selectionCache=table(selectionRaw),shortCache=table(shortRaw),shortPointers=table(Uint8Array.from(Array.from({length:60},(_,id)=>word(id*64)).flat()));redirectLong(0x81FEB0,shortPointers);
  if(Array.from(base.slice(0x3527,0x352D)).join(',')!=='160,0,0,173,0,1')throw Error('Carregador de nomes curtos divergente.');
  const flagCache=INDEPENDENT_PATTERNS_SLOT+0x1800,flagRaw=new Uint8Array(6*192);
  for(let i=0;i<6;i++)for(let half=0;half<2;half++){const f=data[54+i].selectionFlags[half],bytes=Uint8Array.from(f.bytes);flagRaw.set(f.planar?transformLabelPlanes(bytes):bytes,i*192+half*96);}
@@ -150,9 +164,10 @@ export function plusIndependentTeamsWriter(input,state,base,selectedAreas=null){
  // selection transitions reuse the upper 7F RAM as decompression workspace.
  for(const[entry,bytes]of[
   [0x2FDE0,[0x08,0x48,0xE0,108,0,0x90,5,0xA9,cpu(flagCache)>>16,0,0x80,3,0xA9,0x7F,0,0x85,0,0x68,0x28,0xA2,96,0,0x6B]],
-  [0x2FE00,[0x08,0xC9,0x80,0x0D,0x90,13,0x18,0x69,...word(cpu(shortCache)),0x48,0xA9,cpu(shortCache)>>16,0,0x85,0,0x68,0x80,8,0x48,0xA9,0x7F,0,0x85,0,0x68,0xEA,0x28,0xA2,64,0,0x6B]]
+  [0x2FE00,[0x08,0xC9,0x80,0x0D,0x90,13,0x18,0x69,...word(cpu(selectionCache)),0x48,0xA9,cpu(selectionCache)>>16,0,0x85,0,0x68,0x80,8,0x48,0xA9,0x7F,0,0x85,0,0x68,0xEA,0x28,0xA2,64,0,0x6B]]
  ]){const helper=table(Uint8Array.from(bytes));hook(entry,Uint8Array.from([0x22,...long(cpu(helper)),0x60]));}
  const shortHelper=table(independentShortNameHelper(shortCache));hook(0x3527,Uint8Array.from([0x5C,...long(cpu(shortHelper)),0xEA,0xEA]));
+ if([0x29,255,0,0x0A].some((v,i)=>base[0x2A8E0+i]!==v))throw Error('Nomes pré-jogo: carregador divergente.');const preMatchNames=table(independentPreMatchNameHelper(selectionCache));hook(0x2A8E0,Uint8Array.from([0x5C,...long(cpu(preMatchNames))]));
  // Independent goalkeeper palettes have room for all 1200 player records.
  const keeperBytes=new Uint8Array(60*20*22),skinBytes=new Uint8Array(60*20*2);
  keeperBytes.set(rom.slice(GOALKEEPER_PALETTE_SLOT,GOALKEEPER_PALETTE_SLOT+54*20*22));skinBytes.set(rom.slice(GOALKEEPER_SKIN_FLAGS,GOALKEEPER_SKIN_FLAGS+54*20*2));
@@ -165,6 +180,7 @@ export function plusIndependentTeamsWriter(input,state,base,selectedAreas=null){
  // Native tactical pointer lookup + selector bank use genuinely private records.
  const tacticsPointers=[];for(let id=0;id<60;id++){if(!data[id])tacticsPointers.push(readWord(rom,0x5FDD0+id*2));else{const at=INDEPENDENT_PATTERNS_SLOT+0x1000+(id-54)*32;rom.set(data[id].tactics,at);tacticsPointers.push(cpu(at)&65535);rom.set([cpu(at)>>16,0],0x200100+id*2);}}
  const tacticalTable=table(Uint8Array.from(tacticsPointers.flatMap(word)));redirectLong(0x8BFDD0,tacticalTable,[0x2AA88,0x2B160,0x31934]);
+ const tacticalCopy=table(independentTacticalCopyHelper());for(const at of [0x2AAAC,0x2AAC2]){if([0x8B,0x54,0x7E,0x8B,0xAB].some((v,i)=>base[at+i]!==v))throw Error('Cópia tática nativa divergente.');hook(at,Uint8Array.from([0x22,...long(cpu(tacticalCopy)),0xEA]));}
  // Six fully occupied slots; no empty code is presented as a selectable team.
  if(state.plusGroups?.secret?.length===6){for(const{pc,bytes}of planPlusGroupIdentity(base,state))rom.set(bytes,pc);}else rom.set(GG_TEAM_IDS.map(id=>id*2),0xE828);
  if(Array.from(base.slice(0x2AC99,0x2AC9D)).join(',')!=='175,114,212,126')throw Error('Contagem de grupos divergente.');

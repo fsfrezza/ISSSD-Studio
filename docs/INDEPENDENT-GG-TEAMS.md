@@ -141,3 +141,30 @@ Verificação desta revisão: 653 testes; build completo do Editor; reprodução
 antes/depois na seleção; seis partidas GG contra Inglaterra na ROM cumulativa
 final; confrontos GG entre slots antigos e novos. A inspeção do emulador
 verificou campo, jogadores, minimapa, placar e bandeiras, além dos registros ROM.
+
+## Nomes, 4-4-2 inicial e sombras
+
+A lista do grupo GG e os dois nomes na tela de vantagem usam os nomes completos
+compactos, em cache ROM separado das siglas do placar. A tela de vantagem tem
+seu próprio carregador em `85:A8E0`; ela não pode depender dos 56 nomes antigos
+no espaço de descompressão WRAM. As siglas de três letras continuam no placar.
+
+As duas cópias `MVN` das coordenadas e classes táticas em `85:AAAD/85:AAC3`
+ainda usavam o banco fixo `$8B`, apesar do ponteiro já ser privado. Agora
+seguem o mesmo seletor de banco usado para ler o cabeçalho da formação,
+preservando registradores, flags e pilha. Isso também cobre os bancos de
+individualização nativos `$C0–C7`, além do banco GG `$DD`.
+
+Os dois projetos incluídos iniciam as seis equipes com o registro original de
+31 bytes do 4-4-2 da Itália na Plus: formação 1, quatro defensores, quatro
+meias e dois atacantes. É uma configuração inicial persistida no projeto;
+edições posteriores do usuário não são substituídas pelo gravador da ROM.
+
+O índice 15 das paletas de jogadores é a sombra, não roupa. A cor original
+`$0120` é preservada nas duas paletas de uniforme GG e na exportação, inclusive
+para projetos antigos que haviam recolorido esse índice. As demais cores e os
+desenhos dos uniformes permanecem editáveis para a próxima etapa.
+
+Validação: 656 testes, build completo do Editor, helpers 65816 executados nos
+dez bancos táticos aceitos e conferência em Snes9x das seis equipes na seleção,
+na vantagem, no campo de formação e nas partidas entre equipes GG.
