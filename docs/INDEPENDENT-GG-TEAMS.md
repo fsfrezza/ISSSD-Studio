@@ -195,3 +195,7 @@ Validação: 660 testes, build completo do Editor e teste do HTML gerado com
 ROM intacto. Na Plus real foram decodificadas todas as 54 bandeiras nativas e
 verificadas edições dos IDs 35, 36 e 53 na ROM direta e cumulativa, sem bytes
 sem classificação. Snes9x confirmou os gráficos editados na seleção e partida.
+
+### Prévia dos uniformes no Editor
+
+A aba Uniformes mostra uma prévia esquemática de camisa, calção e meias para a equipe e o conjunto selecionados. Ela usa a paleta corrente, atualiza durante a edição por seletor de cor ou hexadecimal e acompanha a restauração de cores. O detalhe central acompanha o quadro selecionado no editor de desenhos. A prévia não simula a montagem completa dos sprites nem a numeração em jogo; alterações na visualização não escrevem novos dados na ROM ou no projeto.
