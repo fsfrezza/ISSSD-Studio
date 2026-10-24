@@ -100,3 +100,16 @@ test('eleven Cascao starters use baked per-pose bodies and leave three native ov
  for(const pose of PLAYER_POSE_CATALOG){const at=CASCAO_BODY_TABLE+parseInt(pose.id.slice(2),16)-32768,ptr=pc(long(rom,at)),r=PLAYER_BODY_CATALOG.find(r=>r.id===pose.body);assert.ok(ptr>=0x308600&&ptr+r.top+r.bottom+4<=0x3DC000);assert.ok((ptr&32767)+r.top+r.bottom+4<=32768);}
  const four=expandPlusTo4MiB(base);plusBaldPlayerBaseWriter(four,state,base);for(let p=0;p<11;p++)four[playerOffset(30,p)+6]=p<4?1:15;const before=four.slice();assert.throws(()=>plusCustomHairWriter(four,state,base),/três titulares/);assert.deepEqual(four,before);
 });
+
+test('extended body styles fall back to the native descriptor for unmapped animation frames',()=>{
+ const base=fixture(),x=0x8000;
+ // An unmapped descriptor is valid native data, not an entry in the sparse body atlas.
+ base.set([0x34,0x92,0x96,0x02],pc(0x820002+x));
+ const rom=expandPlusTo4MiB(base);plusBaldPlayerBaseWriter(rom,prepareBaldAppearanceState({}),base);
+ for(const hair of[14,15])for(const side of[0,1])for(const flags of[0,1,8,9]){
+  const wram=new Uint8Array(65536),d=side?0x1000:0x500;
+  wram[d+0x68]=0;wram[side?0x3FA4:0x3F90]=0;wram[side?0x3ECE:0x3E06]=hair;
+  assert.equal(execute(rom,0x308000,{d,x,wram,p:flags}),0x9234,'native source address, style '+hair);
+  assert.equal(execute(rom,0x308200,{d,x,wram,p:flags}),0x0296,'native bank word, style '+hair);
+ }
+});
