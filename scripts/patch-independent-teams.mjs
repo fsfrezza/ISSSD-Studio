@@ -3,7 +3,7 @@ import fs from'node:fs';import path from'node:path';import{fileURLToPath}from'no
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),file=path.join(root,'editor/ISSSD-Studio.html');
 const source=name=>fs.readFileSync(path.join(root,name),'utf8').replace(/^import[^\n]*\n/gm,'').replace(/^export /gm,'');
 export function independentTeamsRuntime(){
- const core='window.ISSSDIndependentTeams=(()=>{'+source('src/core/retired-team-expansion.mjs')+source('src/core/independent-teams.mjs')+';return{validateIndependentTeams,GG_TEAM_IDS,GG_DEFAULT_IDENTITIES,applyIndependentKitColors,normalNames:'+JSON.stringify(TEAM_NAME_LANGUAGE_PRESETS.map(p=>p.portuguese))+'};})();';
+ const core='window.ISSSDIndependentTeams=(()=>{'+source('src/core/retired-team-expansion.mjs')+source('src/core/independent-teams.mjs')+';return{validateIndependentTeams,independentTeamLabelsNeedRecovery,GG_TEAM_IDS,GG_DEFAULT_IDENTITIES,applyIndependentKitColors,normalNames:'+JSON.stringify(TEAM_NAME_LANGUAGE_PRESETS.map(p=>p.portuguese))+'};})();';
  const names='const{decodeFixedPlayerName,encodeFixedPlayerName,normalizePlayerName}=(()=>{'+source('src/core/plus-player-name.mjs')+';return{decodeFixedPlayerName,encodeFixedPlayerName,normalizePlayerName};})();';
  const tactics='const{decodePlusTacticalRecord,encodePlusTacticalRecord}=(()=>{'+source('src/core/plus-tactics-record.mjs')+';return{decodePlusTacticalRecord,encodePlusTacticalRecord};})();';
  const exports=['INDEPENDENT_SKILLS','readIndependentPlayer','editIndependentPlayer','readIndependentFormation','editIndependentFormation','independentPaletteColors','editIndependentPalette','independentFlagPixels','editIndependentFlag','independentPatternPixels','editIndependentPattern'];

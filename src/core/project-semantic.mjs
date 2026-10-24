@@ -1,4 +1,4 @@
-import{validateIndependentTeams}from'./independent-teams.mjs';
+import{validateIndependentTeams,independentTeamLabelsNeedRecovery}from'./independent-teams.mjs';
 import {stripRetiredTeamExpansion} from './retired-team-expansion.mjs';
 import {migrateLegacyPlayerAttributes} from './plus-player-state.mjs';
 import {migrateLegacyPlayerNames} from './plus-player-name-state.mjs';
@@ -29,6 +29,7 @@ function mergePlayerEdits(legacy,explicit){
 }
 
 export function canonicalProjectSemantic(project){
+  if(independentTeamLabelsNeedRecovery(project))throw Error('Projeto incompleto: há nomes de equipes adicionais na interface, mas seus registros independentes não foram salvos. Reabra o projeto no Editor atualizado para recuperar as seis equipes antes de gerar a ROM.');
   const semantic=project?.state?.semantic ?? project?.semantic ?? {};
   if(semantic===null || typeof semantic!=='object' || Array.isArray(semantic)) {
     throw new TypeError('project semantic state must be an object');

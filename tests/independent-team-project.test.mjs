@@ -45,7 +45,7 @@ test('ordinary Groups organizer includes six independent slots and preserves fre
  const output=await w.studioProjectObject();assert.equal(output.state.semantic.plusGroups.groups[0][0],54);assert.equal(output.state.semantic.plusGroups.secret[0],30);
  assert.equal(w.studioTeamsV3ReadFull().teams[59].teamName,'VAPOROSOS');assert.equal(w.studioTeamsV3ReadFull().teams[59].players.length,20);
  assert.equal(Object.keys(w.studioTeamsV3Snapshot().teams).length,54);
- const plain=structuredClone(project);delete plain.state.semantic.independentTeamsV1;await w.studioApplyProjectWithBase(plain);assert.equal(w.TEAM_COUNT,56);assert.equal(w.activeRomProfile.teamCount,56);assert.equal(f.nodes.playerTeamSelect.options.length,56);
+ const plain=structuredClone(project);delete plain.state.semantic.independentTeamsV1;plain.state.ui.teamNames=plain.state.ui.teamNames.slice(0,56);await w.studioApplyProjectWithBase(plain);assert.equal(w.TEAM_COUNT,56);assert.equal(w.activeRomProfile.teamCount,56);assert.equal(f.nodes.playerTeamSelect.options.length,56);
 });
 
 test('ordinary player and team exports retain independent records and uniform/appearance edits remain isolated',async()=>{
@@ -62,4 +62,33 @@ test('own shirt pixels round-trip all eight frames and canonical UI names replac
  const{independentPatternPixels,editIndependentPattern}=await import('../src/core/independent-team-fields.mjs');
  const t=model.teams[54],pixels=independentPatternPixels(t);assert.equal(pixels.length,512);pixels[511]=15;const next=editIndependentPattern(t,pixels);assert.deepEqual(independentPatternPixels(next),pixels);assert.deepEqual(next.data.attributes,t.data.attributes);assert.deepEqual(next.data.palettes,t.data.palettes);
  assert.equal(project.state.ui.teamNames.length,60);assert.deepEqual(project.state.ui.teamNames.slice(54),GG_DEFAULT_IDENTITIES.map(t=>t.name));assert.equal(project.state.semantic.teamNamesV1.values[54],undefined);assert.equal(project.state.semantic.teamNamesV1.values[55],undefined);
+});
+
+test('a deferred module replacing the finalizer cannot drop independent records or GG groups from downloaded JSON',async()=>{
+ const f=independentEditorFixture(),w=f.window;await w.studioApplyProjectWithBase(structuredClone(project));
+ // visual-bridge-overrides.mjs installs its finalizer as a deferred module,
+ // after classic scripts: reproduce that replacement, not just initial order.
+ w.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__=p=>{p.state.semantic.deferredModule=true;return p;};
+ const output=await w.studioProjectObject();assert.equal(Object.keys(output.state.semantic.independentTeamsV1.teams).length,6);assert.deepEqual(JSON.parse(JSON.stringify(output.state.semantic.plusGroups.secret)),[54,55,56,57,58,59]);
+ const filtered=structuredClone(output);delete filtered.state.semantic.independentTeamsV1;delete filtered.state.semantic.plusGroups;
+ const disk=JSON.parse(w.studioProjectStringify(filtered));assert.equal(Object.keys(disk.state.semantic.independentTeamsV1.teams).length,6);assert.equal(disk.state.semantic.plusGroups.labels[9],'GG');
+ assert.equal(disk.state.semantic.deferredModule,true);
+});
+
+test('labels-only projects recover before import and cannot silently build or serialize without records',async()=>{
+ const{independentTeamLabelsNeedRecovery}=await import('../src/core/independent-teams.mjs');
+ const broken=structuredClone(project);delete broken.state.semantic.independentTeamsV1;broken.state.semantic.plusGroups.secret=[55,54,-1,-1,-1,-1];broken.state.semantic.plusGroups.labels[9]='ALL STARS';
+ assert.equal(independentTeamLabelsNeedRecovery(broken),true);assert.throws(()=>canonicalProjectSemantic(broken),/registros independentes/);
+ const f=independentEditorFixture(),w=f.window;assert.throws(()=>w.studioProjectStringify(broken),/Projeto incompleto/);let called=0;
+ w.fetch=async(url,request)=>{assert.equal(url,'/__isssd/recover-independent-teams');assert.equal(JSON.parse(request.body).project.state.semantic.independentTeamsV1,undefined);called++;return{ok:true,json:async()=>({project:structuredClone(project),recoveredTeams:6})};};
+ await w.studioApplyProjectWithBase(broken);assert.equal(called,1);assert.equal(w.TEAM_COUNT,60);const saved=await w.studioProjectObject();assert.equal(saved.state.semantic.plusGroups.labels[9],'GG');assert.equal(Object.keys(saved.state.semantic.independentTeamsV1.teams).length,6);
+});
+
+test('recovered supplied project has six native snapshots and approved flags, retaining its normal groups and sparse national edits',()=>{
+ const value=JSON.parse(fs.readFileSync(new URL('../International-Superstar-Soccer-Deluxe-Plus-projeto-recuperado.issdproj',import.meta.url),'utf8')),sem=value.state.semantic;
+ assert.equal(Object.keys(sem.teamsV1.teams).length,54);assert.equal(sem.teamsV1.teams[30].players[0].custom.name,'Taffarel');assert.equal(sem.teamsV1.teams[30].players[0].custom.skills.energy,7);
+ assert.deepEqual(sem.plusGroups.groups[0],[30,31,32,35,40,39]);assert.deepEqual(sem.plusGroups.secret,[54,55,56,57,58,59]);assert.equal(sem.plusGroups.labels[9],'GG');assert.equal(new Set([...sem.plusGroups.groups.flat(),...sem.plusGroups.secret]).size,60);
+ const refs=JSON.parse(fs.readFileSync(new URL('../assets/team-flags/gg-flags.json',import.meta.url),'utf8'));
+ for(const[id,ref]of Object.entries(refs.teams))for(const part of ['selectionFlags','fieldFlags'])assert.deepEqual(independentFlagPixels(sem.independentTeamsV1.teams[id],part),ref.pixels);
+ assert.deepEqual(canonicalProjectSemantic(value).independentTeamsV1,validateIndependentTeams(sem.independentTeamsV1));
 });

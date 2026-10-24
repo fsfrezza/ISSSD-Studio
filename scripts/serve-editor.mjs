@@ -1,3 +1,5 @@
+import{initializeIndependentTeams}from'./initialize-independent-teams.mjs';
+import{independentTeamLabelsNeedRecovery}from'../src/core/independent-teams.mjs';
 import{assertCurrentEditorFeatures}from'./lib/editor-feature-readiness.mjs';
 import{createIndependentTeams}from'../src/core/independent-teams.mjs';
 import{readPlusGroupIdentity}from'../src/core/plus-group-identity.mjs';
@@ -135,6 +137,14 @@ function buildPostedProject(req,res){
  });
 }
 
+function recoverPostedIndependentTeams(req,res){
+ collectBody(req,res,MAX_PROJECT_BODY,buffer=>{try{
+  const {project}=JSON.parse(buffer.toString('utf8'));if(!independentTeamLabelsNeedRecovery(project))throw Error('O projeto não apresenta a inconsistência de nomes sem registros.');
+  const base=Uint8Array.from(fs.readFileSync(defaultPlusRomPath)),recovered=initializeIndependentTeams(base,project);
+  res.writeHead(200,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify({project:recovered,recoveredTeams:6}));
+ }catch(e){jsonError(res,422,e);}});
+}
+
 function createPostedIndependentTeams(req,res){
  collectBody(req,res,MAX_PROJECT_BODY,buffer=>{try{
   const {project}=JSON.parse(buffer.toString('utf8'));if(!project?.state)throw Error('Projeto ausente.');
@@ -147,6 +157,7 @@ function createPostedIndependentTeams(req,res){
 
 const server=http.createServer((req,res)=>{
  let u=decodeURIComponent((req.url||'/').split('?')[0]);
+ if(req.method==='POST'&&u==='/__isssd/recover-independent-teams'){recoverPostedIndependentTeams(req,res);return;}
  if(req.method==='POST'&&u==='/__isssd/create-independent-teams'){createPostedIndependentTeams(req,res);return;}
  if(req.method==='POST'&&u==='/__isssd/build-plus-project'){buildPostedProject(req,res);return;}
  if(req.method!=='GET'){res.writeHead(405,{'Allow':'GET, POST'});res.end('Method not allowed');return;}

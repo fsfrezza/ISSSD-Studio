@@ -35,7 +35,7 @@ export function independentEditorFixture(){
  function studioTeamsV3ReadFull(){return{schema:'isssd-teams-v1',version:3,teams:Object.fromEntries(Array.from({length:56},(_,i)=>[i,{teamId:i,teamName:TEAM_NAMES[i],players:teams[i]?.players||[]}]))};}
  function studioTeamsV3Snapshot(){return studioTeamsV3ReadFull();}function studioTeamsV3OriginalPlayer(){return{};}
  function uniformRecordOffset(){return 0;}function uniformInfo(){return{};}function flagInfo(){return{};}function bestFlagDecomp(){return{};}function setFlagColor(){}function setFlagColorBgr(){}function copyFlagPalette(){}function restoreFlagPalette(){}function applyFlagPreset(){}function flagPaletteBytes(){return new Uint8Array(8);}function renderSelectionAssetLab(){}function renderPlusGroupOrganizer(){}function plusGroupsObject(){return{};}function writePlusGroups(){}
- var __ISSSD_GIT_FINALIZE_PROJECT_OBJECT__=p=>p,studioProjectObject=async()=>({state:{semantic:{teamsV1:studioTeamsV3Snapshot()}}}),studioApplyProjectWithBase=async p=>{if(p.fail)throw Error('Importação falhou');applied=p;return true;},studioUpdateBadge=()=>{};
+ var __ISSSD_GIT_FINALIZE_PROJECT_OBJECT__=p=>p,studioProjectStringify=p=>JSON.stringify(p),studioProjectObject=async()=>({state:{semantic:{teamsV1:studioTeamsV3Snapshot()}}}),studioApplyProjectWithBase=async p=>{if(p.fail)throw Error('Importação falhou');applied=p;return true;},studioUpdateBadge=()=>{};
  `,context);
  vm.runInContext(fs.readFileSync(new URL('../editor-src/independent-teams-core.mjs',import.meta.url),'utf8'),context);
  vm.runInContext(independentTeamsRuntime(),context);

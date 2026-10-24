@@ -2,7 +2,7 @@
  const api=window.ISSSDIndependentTeams,clone=v=>structuredClone(v);let saved=null,groups=null,openedGroups=null;
  const core=()=>window.__ISSSD_UNIFIED_TEAM_CORE__;
  function note(text){const n=document.getElementById('plusGroupWarnings');if(n)n.textContent=text;window.studioUpdateBadge?.();}
- function finalize(project){if(!project?.state)return project;project.state.semantic||={};if(saved){project.state.semantic.independentTeamsV1=api.validateIndependentTeams(core()?.model()??saved);project.state.semantic.plusGroups=clone(groups);}else delete project.state.semantic.independentTeamsV1;return project;}
+ function finalize(project){if(!project?.state)return project;project.state.semantic||={};if(saved){project.state.semantic.independentTeamsV1=api.validateIndependentTeams(core()?.model()??saved);project.state.semantic.plusGroups=clone(groups);}else if(project.state.semantic.independentTeamsV1)project.state.semantic.independentTeamsV1=api.validateIndependentTeams(project.state.semantic.independentTeamsV1);return project;}
  function renderGroups(host){if(!saved||!groups)return;
  const apply=document.getElementById('plusGroupsApplyBtn');if(apply)apply.onclick=()=>note('Organização guardada no projeto. Salve o projeto ou gere a ROM.');
  const restore=document.getElementById('plusGroupsRestoreBtn');if(restore){restore.textContent='Restaurar grupos do projeto aberto';restore.onclick=()=>{groups=clone(openedGroups);renderGroups(host);note('Organização restaurada.');};}
@@ -14,15 +14,24 @@ host.replaceChildren();const rows=[...groups.groups,groups.secret];for(let g=0;g
   for(let i=0;i<6;i++){const wrap=document.createElement('label');wrap.textContent='Posição '+(i+1);const select=document.createElement('select');for(let t=0;t<60;t++){const o=document.createElement('option');o.value=t;o.textContent=(t+1)+' · '+(saved.teams[t]?.name||window.TEAM_NAMES?.[t]||'Equipe '+(t+1));select.append(o);}select.value=rows[g][i];select.onchange=()=>{const next=Number(select.value),other=rows.findIndex(row=>row.includes(next)),index=rows[other].indexOf(next);rows[other][index]=rows[g][i];rows[g][i]=next;renderGroups(host);note('Organização salva no projeto.');};wrap.append(select);slots.append(wrap);}host.append(card);
  }}
  const prior=window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__;window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__=function(project){return finalize(prior?.(project)??project);};
- const collect=window.studioProjectObject;if(typeof collect==='function')window.studioProjectObject=async function(...args){return window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__(await collect.apply(this,args));};
+ const collect=window.studioProjectObject;if(typeof collect==='function')window.studioProjectObject=async function(...args){const project=await collect.apply(this,args);return finalize(window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__?.(project)??project);};
+ const stringify=window.studioProjectStringify;if(typeof stringify==='function')window.studioProjectStringify=function(project,...args){
+  if(saved)finalize(project);
+  if(api.independentTeamLabelsNeedRecovery(project))throw Error('Projeto incompleto: os nomes adicionais não têm registros. Reabra o projeto para recuperá-los.');
+  const text=stringify.call(this,project,...args),disk=JSON.parse(text);
+  if(api.independentTeamLabelsNeedRecovery(disk)||saved&&!disk.state?.semantic?.independentTeamsV1)throw Error('O salvamento perdeu os registros das seis equipes; o arquivo não será baixado.');
+  return text;
+ };
  const apply=window.studioApplyProjectWithBase;if(typeof apply==='function')window.studioApplyProjectWithBase=async function(project,...args){
+  let recovered=false;if(api.independentTeamLabelsNeedRecovery(project)){const response=await fetch('/__isssd/recover-independent-teams',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({project})});const result=await response.json();if(!response.ok||!result.project)throw Error(result.error||'Não foi possível recuperar as seis equipes.');project=result.project;recovered=true;}
   const next=api.validateIndependentTeams(project?.state?.semantic?.independentTeamsV1),old=saved,oldGroups=groups,legacy=next?clone(project):project;
   if(next){delete legacy.state.semantic.independentTeamsV1;delete legacy.state.semantic.plusGroups;if(legacy.state.ui){if(legacy.state.ui.currentTeam>=54)legacy.state.ui.currentTeam=0;if(legacy.state.ui.teamNames)legacy.state.ui.teamNames=[...legacy.state.ui.teamNames.slice(0,54),api.normalNames[54],api.normalNames[55]];}for(let t=54;t<60;t++){if(legacy.state.ui?.teamNameEdits)delete legacy.state.ui.teamNameEdits[t];if(legacy.state.semantic.teamNamesV1?.values)delete legacy.state.semantic.teamNamesV1.values[t];}}
   core()?.activate(null);
-  try{const result=await apply.call(this,legacy,...args);saved=next;groups=next?clone(project.state.semantic.plusGroups):null;openedGroups=groups?clone(groups):null;core()?.activate(saved);window.__ISSSD_UNIFORMS_EDITOR__?.render();window.__ISSSD_GOALKEEPERS_EDITOR__?.render();window.__ISSSD_TEAM_NAME_LANGUAGES__?.install();return result;}
+  try{const result=await apply.call(this,legacy,...args);saved=next;groups=next?clone(project.state.semantic.plusGroups):null;openedGroups=groups?clone(groups):null;core()?.activate(saved);window.__ISSSD_UNIFORMS_EDITOR__?.render();window.__ISSSD_GOALKEEPERS_EDITOR__?.render();window.__ISSSD_TEAM_NAME_LANGUAGES__?.install();if(recovered)note('Seis equipes recuperadas e grupo GG restaurado. Salve o projeto para preservar os registros completos.');return result;}
   catch(e){saved=old;groups=oldGroups;core()?.activate(saved);throw e;}
  };
  window.__ISSSD_INDEPENDENT_TEAMS_EDITOR__={snapshot:()=>saved?api.validateIndependentTeams(core()?.model()??saved):null,replaceModel(value){saved=value;},renderGroups,groups:()=>clone(groups),finalize,install(){window.__ISSSD_INSTALL_UNIFIED_TEAM_CORE__?.();},render(){core()?.refresh();}};
+ window.__ISSSD_PROJECT_TEAM_RECORDS_GUARD__='v1';
  function boot(){const style=document.createElement('style');style.textContent='body[data-unified-teams="60"] #plusTeamExpansionCard{display:none!important}';document.head.append(style);window.__ISSSD_INSTALL_UNIFIED_TEAM_CORE__?.();}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();

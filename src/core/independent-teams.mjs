@@ -90,3 +90,10 @@ export function createIndependentTeams(rom,sources=GG_DEFAULT_SOURCES,current=nu
  GG_TEAM_IDS.forEach((teamId,i)=>{const sourceTeam=Number(sources[i]);if(!Number.isInteger(sourceTeam)||sourceTeam<0||sourceTeam>=56&&!existing?.teams[sourceTeam])throw Error('Equipe fonte inválida.');const data=existing?.teams[sourceTeam]?.data??captureIndependentTeam(rom,sourceTeam);const identity=GG_DEFAULT_IDENTITIES[i];teams[teamId]={teamId,sourceTeam,name:identity.name,big:identity.name,short:identity.short,colors:{primary:identity.primary,secondary:identity.secondary},data:applyIndependentKitColors(data,identity.primary,identity.secondary)};});
  return validateIndependentTeams({schema:INDEPENDENT_TEAMS_SCHEMA,version:1,group:'GG',teams});
 }
+
+// Old project saves can retain sixty UI labels while omitting the actual team
+// records. Such labels must never be treated as proof that ROM support exists.
+export function independentTeamLabelsNeedRecovery(project){
+ const sem=project?.state?.semantic??project?.semantic??{};
+ return !sem.independentTeamsV1&&project?.base?.profile==='iss-deluxe-plus'&&Array.isArray(project?.state?.ui?.teamNames)&&project.state.ui.teamNames.length>56;
+}

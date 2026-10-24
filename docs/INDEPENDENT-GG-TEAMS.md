@@ -94,3 +94,22 @@ O removedor da extensão antiga não atravessa corpos de funções para decidir 
 uma chamada pertence ao recurso removido: o IIFE principal é preservado. Ramos,
 spreads e concatenações do estado antigo são eliminados sem deixar chamadas a
 `undefined` ou espalhamentos de valores ausentes.
+
+## Recuperação de projetos que conservaram somente os nomes
+
+O módulo visual `type="module"` pode substituir o finalizador depois dos scripts
+clássicos. Por isso o coletor e o serializador aplicam diretamente a persistência
+das equipes independentes, além do finalizador global. Os testes reproduzem essa
+substituição tardia; apenas testar a ordem textual dos scripts não é suficiente.
+
+Uma lista com mais de 56 nomes sem `independentTeamsV1` não comprova que existem
+registros adicionais. O Editor detecta essa inconsistência ao importar e solicita
+`/__isssd/recover-independent-teams`: cria os seis registros a partir das equipes
+fonte do projeto, acrescenta as bandeiras aprovadas e restaura as seis posições GG.
+As nove organizações normais e os demais estados semânticos são preservados.
+A geração direta de ROM e o serializador recusam um projeto ainda inconsistente.
+
+O arquivo `International-Superstar-Soccer-Deluxe-Plus-projeto-recuperado.issdproj`
+contém a recuperação do projeto anexado, preservando suas alterações
+nacionais esparsas. O projeto padrão completo permanece separado para evitar
+substituir silenciosamente seus dados pelos de uma revisão diferente.
