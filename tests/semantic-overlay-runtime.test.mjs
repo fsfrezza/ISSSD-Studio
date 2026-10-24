@@ -1,3 +1,4 @@
+import {stripRetiredExpansionHtml} from '../scripts/lib/retired-expansion-editor.mjs';
 import * as appearanceCore from '../src/core/player-appearance.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -48,10 +49,15 @@ function session(){
   return r
  };
  </script></body>`;
- fs.writeFileSync(path.join(dir,'editor/ISSSD-Studio.html'),html);
+ const retiredLabel=String.fromCharCode(71,79,83,80,69,76,45,71,79,76);
+ const legacy=html.replace('<body>','<body><section class="card"><h3>Adicionar '+retiredLabel+'</h3><button>Adicionar</button></section>');
+ const cleaned=stripRetiredExpansionHtml(legacy);assert.equal(cleaned.includes(retiredLabel),false);
+ fs.writeFileSync(path.join(dir,'editor/ISSSD-Studio.html'),cleaned);
  try{
   execFileSync(process.execPath,[path.join(dir,'scripts/patch.mjs')]);
   const final=fs.readFileSync(path.join(dir,'editor/ISSSD-Studio.html'),'utf8');
+  assert.ok(final.includes('/* isssd-team-semantic-overlay-v1 */'));
+  assert.ok(final.includes('window.__ISSSD_INSTALL_TEAMS_SEMANTIC_V1__=function(){'));
   const c=vm.createContext({console,Uint8Array});c.window=c;
   for(const m of final.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g))vm.runInContext(m[1],c);
   return c;

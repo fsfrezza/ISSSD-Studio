@@ -34,3 +34,11 @@ test('overlay projeta campos de jogador, formação e tática nos modelos de UI'
   assert.match(patch,/plusTacticalRecordForTeam=function/);
   assert.match(patch,/studioTeamsV3ReadFull=function/);
 });
+
+test('obsolete source cleanup runs before canonical runtime patches, preserving their injected overlays',()=>{
+ const cmd=pkg.scripts['build:editor'];
+ const clean=cmd.indexOf('patch-retired-team-expansion.mjs');
+ assert.ok(clean>cmd.indexOf('normalize-generated-html.mjs'));
+ for(const name of ['fix-lineup-swap.mjs','patch-canonical-teams-v3.mjs','patch-team-semantic-overlay.mjs','patch-project-open-semantic-only.mjs','patch-independent-teams.mjs'])assert.ok(cmd.indexOf(name)>clean,name);
+ assert.equal(cmd.split('patch-retired-team-expansion.mjs').length,2);
+});
