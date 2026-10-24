@@ -1,3 +1,4 @@
+import{validateTeamFlags,flagPixelsToStreams}from'./team-flags.mjs';
 import{validateIndependentTeams,GG_TEAM_IDS,nativeFieldFlagPointer,captureSelectionFlags}from'./independent-teams.mjs';
 import{konamiLzCompress,konamiLzDecompress}from'./konami-lz.mjs';
 import{transformLabelPlanes}from'./plus-graphical-labels.mjs';
@@ -84,6 +85,7 @@ export function plusIndependentTeamsWriter(input,state,base,selectedAreas=null){
   // LDY abs,X followed by JSL native palette-copy: replace both calls with one wrapper.
   if(rom[at+3]!==0x22)throw Error('Chamada de paleta adjacente divergente.');const target=Array.from(rom.slice(at+4,at+7));const wrapper=table(Uint8Array.from([0x48,0xBF,...long(cpu(destination)),0xA8,0x68,0x22,...target,0x6B]));hook(at,Uint8Array.from([0x22,...long(cpu(wrapper)),0xEA,0xEA,0xEA]));
  };
+ const flagEdits=validateTeamFlags(state.teamFlagsV1).teams;
  const data=Object.fromEntries(GG_TEAM_IDS.map(id=>[id,model.teams[id].data]));
  // The native player bank has room for four added normal records, previously unused.
  for(const id of GG_TEAM_IDS){const d=data[id];const count=Array.from({length:11},(_,i)=>d.attributes[i*7+6]&15).filter(h=>h>0&&h<14).length;if(count>3)throw Error('Equipe GG '+id+': até três titulares podem usar os cabelos nativos 1–13.');const attrs=Uint8Array.from(d.attributes);for(let i=0;i<20;i++)if(attrs[i*7+4]>>4===1)attrs[i*7+6]&=240;rom.set(attrs,0x150000+id*140);}
@@ -107,7 +109,7 @@ export function plusIndependentTeamsWriter(input,state,base,selectedAreas=null){
 
  const paletteTables={};
  for(const[k,old]of Object.entries({home:0x10274,skinAlt:0x1043C,hairAlt:0x103CA,keeper:0x10358,fieldFlag:0xFE06})){
-  const values=Array.from({length:k==='home'?120:60},(_,index)=>{const kit=k==='home'&&index>=60?1:0,id=index%60;if(data[id]){const record=data[id].palettes[k==='home'?(kit?'away':'home'):k];if(k==='home'){const copy=record.slice();copy[32]=0x20;copy[33]=1;return pal(copy);}return pal(record);}return readWord(rom,old+(id+(k==='home'&&kit?57:0))*2);});
+  const values=Array.from({length:k==='home'?120:60},(_,index)=>{const kit=k==='home'&&index>=60?1:0,id=index%60;if(data[id]){const record=data[id].palettes[k==='home'?(kit?'away':'home'):k];if(k==='home'){const copy=record.slice();copy[32]=0x20;copy[33]=1;return pal(copy);}return pal(record);}if(k==='fieldFlag'&&flagEdits[id])return pal([7,0,...flagEdits[id].colors.flatMap(word)]);return readWord(rom,old+(id+(k==='home'&&kit?57:0))*2);});
   paletteTables[k]=table(Uint8Array.from(values.flatMap(word)));redirectLong(cpu(old),paletteTables[k]);
  }
  // The native alternate-kit offset is 57, including the challenge palette.
@@ -144,7 +146,7 @@ export function plusIndependentTeamsWriter(input,state,base,selectedAreas=null){
   }
  }
  // Field flags are complete private compressed copies, including the first 54 originals.
- const flagPointers=[];for(let id=0;id<60;id++)for(let half=0;half<2;half++){let d;if(data[id])d=data[id].fieldFlags[half];else{const p=nativeFieldFlagPointer(base,id*4+half*2),at=0xD0000+(p&32767);d={bytes:konamiLzDecompress(rom,at).data,planar:!!(rom[at+1]&128)};}let packed=konamiLzCompress(d.bytes);if(d.planar)packed[1]|=128;flagPointers.push(flag(packed));}
+ const flagPointers=[];for(let id=0;id<60;id++)for(let half=0;half<2;half++){let d;if(data[id])d=data[id].fieldFlags[half];else if(flagEdits[id])d=flagPixelsToStreams(flagEdits[id].fieldPixels)[half];else{const p=nativeFieldFlagPointer(base,id*4+half*2),at=0xD0000+(p&32767);d={bytes:konamiLzDecompress(rom,at).data,planar:!!(rom[at+1]&128)};}let packed=konamiLzCompress(d.bytes);if(d.planar)packed[1]|=128;flagPointers.push(flag(packed));}
  const flagTable=table(Uint8Array.from(flagPointers.flatMap(word)));redirectLong(0x81FF20,flagTable);hook(0x127E00,Uint8Array.from([0xBF,...long(cpu(flagTable)),0x60]));for(const descriptor of[0xE715,0x177A4])for(const o of[6,11,16,21])rom[descriptor+o]=0x5E;
  // Short labels use complete 64-byte strips. A private immutable cache serves
  // both bulk selection lists and the two scoreboard uploads.
@@ -157,13 +159,13 @@ export function plusIndependentTeamsWriter(input,state,base,selectedAreas=null){
  const selectionRaw=shortRaw.slice();for(const id of GG_TEAM_IDS)selectionRaw.set(renderSmallTeamName(model.teams[id].name).raw,id*64);
  const selectionCache=table(selectionRaw),shortCache=table(shortRaw),shortPointers=table(Uint8Array.from(Array.from({length:60},(_,id)=>word(id*64)).flat()));redirectLong(0x81FEB0,shortPointers);
  if(Array.from(base.slice(0x3527,0x352D)).join(',')!=='160,0,0,173,0,1')throw Error('Carregador de nomes curtos divergente.');
- const flagCache=INDEPENDENT_PATTERNS_SLOT+0x1800,flagRaw=new Uint8Array(6*192);
- for(let i=0;i<6;i++)for(let half=0;half<2;half++){const f=data[54+i].selectionFlags[half],bytes=Uint8Array.from(f.bytes);flagRaw.set(f.planar?transformLabelPlanes(bytes):bytes,i*192+half*96);}
- rom.set(flagRaw,flagCache);const flagSources=Array.from({length:60},(_,id)=>id<54?readWord(base,0x17C34+id*2):(cpu(flagCache)&65535)+(id-54)*192),selectionFlags=table(Uint8Array.from(flagSources.flatMap(word)));redirectLong(0x82FC34,selectionFlags);
+ const flagCache=INDEPENDENT_PATTERNS_SLOT+0x1800,flagRaw=new Uint8Array(60*192);
+ for(let id=0;id<60;id++){const halves=data[id]?.selectionFlags??(flagEdits[id]?flagPixelsToStreams(flagEdits[id].selectionPixels):captureSelectionFlags(rom,id));for(let half=0;half<2;half++){const f=halves[half],bytes=Uint8Array.from(f.bytes);flagRaw.set(f.planar?transformLabelPlanes(bytes):bytes,id*192+half*96);}}
+ rom.set(flagRaw,flagCache);const flagSources=Array.from({length:60},(_,id)=>(cpu(flagCache)&65535)+id*192),selectionFlags=table(Uint8Array.from(flagSources.flatMap(word)));redirectLong(0x82FC34,selectionFlags);
  // Read GG labels and flags directly from immutable ROM for each DMA. Native
  // selection transitions reuse the upper 7F RAM as decompression workspace.
  for(const[entry,bytes]of[
-  [0x2FDE0,[0x08,0x48,0xE0,108,0,0x90,5,0xA9,cpu(flagCache)>>16,0,0x80,3,0xA9,0x7F,0,0x85,0,0x68,0x28,0xA2,96,0,0x6B]],
+  [0x2FDE0,[0x08,0x48,0xA9,cpu(flagCache)>>16,0,0x85,0,0x68,0x28,0xA2,96,0,0x6B]],
   [0x2FE00,[0x08,0xC9,0x80,0x0D,0x90,13,0x18,0x69,...word(cpu(selectionCache)),0x48,0xA9,cpu(selectionCache)>>16,0,0x85,0,0x68,0x80,8,0x48,0xA9,0x7F,0,0x85,0,0x68,0xEA,0x28,0xA2,64,0,0x6B]]
  ]){const helper=table(Uint8Array.from(bytes));hook(entry,Uint8Array.from([0x22,...long(cpu(helper)),0x60]));}
  const shortHelper=table(independentShortNameHelper(shortCache));hook(0x3527,Uint8Array.from([0x5C,...long(cpu(shortHelper)),0xEA,0xEA]));

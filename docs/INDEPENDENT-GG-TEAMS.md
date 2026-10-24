@@ -168,3 +168,30 @@ desenhos dos uniformes permanecem editáveis para a próxima etapa.
 Validação: 656 testes, build completo do Editor, helpers 65816 executados nos
 dez bancos táticos aceitos e conferência em Snes9x das seis equipes na seleção,
 na vantagem, no campo de formação e nas partidas entre equipes GG.
+
+## Bandeiras das 60 equipes no Editor
+
+Com o projeto Plus de 60 equipes aberto, a aba Bandeiras usa um painel único
+com todas as 54 seleções e seis equipes GG. O seletor não depende do limite
+histórico de 36 identidades nem do mapeamento gráfico do Deluxe original.
+O painel mostra o gráfico real de 24 × 16, as quatro cores BGR555, desenho
+por pixels, desfazer e restauração do projeto aberto. É possível editar a
+bandeira da seleção ou da partida e aplicar um desenho às duas telas.
+
+As seleções normais usam overrides esparsos em `teamFlagsV1`; as seis GG
+continuam em seus registros `independentTeamsV1`, sem duplicar os dados.
+Abrir, editar e salvar o projeto não altera a ROM-base. O coletor e o
+serializador finais preservam os overrides mesmo com módulos diferidos.
+A exportação ocorre na fase **Jogadores**, junto da estrutura de 60 equipes;
+projetos com overrides sem essa estrutura são rejeitados para evitar perda.
+
+As bandeiras de seleção das 60 equipes têm cache imutável próprio na ROM
+`2E9800–2EC4FF`; as duas metades de cada bandeira de partida usam streams
+comprimidos individuais. As quatro cores de uma bandeira editada possuem
+paleta privada. A mudança de uma equipe não altera as outras.
+
+Validação: 660 testes, build completo do Editor e teste do HTML gerado com
+60 seletores/prévias, edições nativas e GG, salvamento e reabertura, com buffer
+ROM intacto. Na Plus real foram decodificadas todas as 54 bandeiras nativas e
+verificadas edições dos IDs 35, 36 e 53 na ROM direta e cumulativa, sem bytes
+sem classificação. Snes9x confirmou os gráficos editados na seleção e partida.

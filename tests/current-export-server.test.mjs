@@ -30,7 +30,7 @@ test('a fresh editor server avoids an occupied port and identifies its active bu
  const sourceRoot=fileURLToPath(new URL('..',import.meta.url));
  for(const dir of ['src','scripts'])fs.cpSync(path.join(sourceRoot,dir),path.join(fixtureRoot,dir),{recursive:true});
  fs.mkdirSync(path.join(fixtureRoot,'editor'));
- fs.writeFileSync(path.join(fixtureRoot,'editor','ISSSD-Studio.html'),'<!doctype html><html><body><main>Server integration fixture</main><script id="isssd-independent-teams">window.__ISSSD_INDEPENDENT_TEAMS_EDITOR__={};window.__ISSSD_PROJECT_TEAM_RECORDS_GUARD__="v1";window.__ISSSD_INSTALL_UNIFIED_TEAM_CORE__=()=>{};</script></body></html>');
+ fs.writeFileSync(path.join(fixtureRoot,'editor','ISSSD-Studio.html'),'<!doctype html><html><body><main>Server integration fixture</main><script id="isssd-independent-teams">window.__ISSSD_INDEPENDENT_TEAMS_EDITOR__={};window.__ISSSD_PROJECT_TEAM_RECORDS_GUARD__="v1";window.__ISSSD_ALL_FLAGS_EDITOR__={};window.__ISSSD_INSTALL_UNIFIED_TEAM_CORE__=()=>{};</script></body></html>');
  const busy=http.createServer();await new Promise(r=>busy.listen(0,'127.0.0.1',r));
  const port=busy.address().port;
  const child=spawn(process.execPath,['scripts/serve-editor.mjs'],{cwd:fixtureRoot,env:{...process.env,ISSSD_PORT:String(port),ISSSD_NO_OPEN:'1'},stdio:['ignore','pipe','pipe']});

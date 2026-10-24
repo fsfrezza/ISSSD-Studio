@@ -1,3 +1,4 @@
+import{validateTeamFlags}from'./team-flags.mjs';
 import{validateIndependentTeams,independentTeamLabelsNeedRecovery}from'./independent-teams.mjs';
 import {stripRetiredTeamExpansion} from './retired-team-expansion.mjs';
 import {migrateLegacyPlayerAttributes} from './plus-player-state.mjs';
@@ -35,6 +36,7 @@ export function canonicalProjectSemantic(project){
     throw new TypeError('project semantic state must be an object');
   }
   const out=stripRetiredTeamExpansion(semantic);
+  if(out.teamFlagsV1!=null){out.teamFlagsV1=validateTeamFlags(out.teamFlagsV1);if(Object.keys(out.teamFlagsV1.teams).length&&!out.independentTeamsV1)throw Error('Bandeiras editadas exigem a estrutura Plus de 60 equipes; reabra o projeto completo.');}
   if(out.independentTeamsV1!=null)out.independentTeamsV1=validateIndependentTeams(out.independentTeamsV1);
 
   if(out.teamsV1&&typeof out.teamsV1==='object'&&!Array.isArray(out.teamsV1)){
