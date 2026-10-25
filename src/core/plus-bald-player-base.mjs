@@ -52,7 +52,17 @@ export function baldOverlayHelper(){return Uint8Array.from([0x08,0xBD,6,0,0x29,1
 export function plusBaldPlayerBaseWriter(rom,state,base,selectedAreas=null){
  if(selectedAreas&&!selectedAreas.includes('jogadores')||!baldBaseSupported(base))return rom;
  if(rom.length!==0x400000)throw Error('Base careca exige 4 MB.');
- const writes=[],table=new Uint8Array(32768);table.fill(255);let next=0x308600;const add=(pc,data)=>writes.push({pc,data}),alloc=data=>{if((next&32767)+data.length>32768)next=(next+32767)&~32767;const pc=next;next+=data.length;if(next>BALD_BASE_END)throw Error('Espaço da base careca excedido.');add(pc,data);return cpu(pc);};
+ const writes=[],table=new Uint8Array(32768);table.fill(255);let next=0x308600;const add=(pc,data)=>writes.push({pc,data}),alloc=data=>{
+  if((next&32767)+data.length>32768)next=(next+32767)&~32767;
+  // ZSNES 1.42 installs unconditional SRAM read handlers for CPU banks
+  // F0-F3, including their upper ROM halves. A body header there becomes
+  // FFFF (the SRAM fill value), then a 65535-byte VRAM upload. Keep each
+  // complete body block outside PC 380000..39FFFF as well as bank boundaries.
+  if(next>=0x380000&&next<0x3A0000)next=0x3A0000;
+  const pc=next;next+=data.length;
+  if(next>BALD_BASE_END)throw Error('Espaço da base careca excedido.');
+  add(pc,data);return cpu(pc);
+ };
  const originals=new Map(),bodies=new Map();for(const r of PLAYER_BODY_CATALOG){const image=readPlayerSprite(rom,{kind:'body',id:r.id}),saved=state?.teamsV1?.spriteEdits?.body?.[r.id],bald=saved?image.pixels:baldBodyPixels(r.id,image.pixels),original=saved?originalBodyWithEdits(base,r.id,state.teamsV1.spriteEdits):image.pixels;bodies.set(r.id,{r,bald});originals.set(r.id,alloc(encodeBodySprite(r,original)));const block=encodeBodySprite(r,bald);add(r.pc+2,block.slice(2,r.top+2));add(r.pc+r.top+4,block.slice(r.top+4));}
  const frames=Array.from({length:24},(_,frame)=>state?.teamsV1?.spriteEdits?.hair?.['14:'+frame]??Array.from(customHairPixels(base,14,frame))),changed=frames.map((a,f)=>a.some((v,i)=>v!==ORIGINAL_HAIR_FRAMES[f][i]));
  for(const pose of PLAYER_POSE_CATALOG){let pointer=originals.get(pose.body);if(pose.head&&changed[pose.frame]){const{r,bald}=bodies.get(pose.body);pointer=alloc(encodeBodySprite(r,composeBodyHead(r,pose,bald,frames[pose.frame])));}table.set([...long(pointer),0],parseInt(pose.id.slice(2),16)-32768);}

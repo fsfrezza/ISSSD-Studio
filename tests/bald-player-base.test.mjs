@@ -113,3 +113,15 @@ test('extended body styles fall back to the native descriptor for unmapped anima
   assert.equal(execute(rom,0x308200,{d,x,wram,p:flags}),0x0296,'native bank word, style '+hair);
  }
 });
+
+test('body atlases avoid F0-F3: ZSNES 1.42 routes their ROM reads to SRAM',()=>{
+ const base=fixture(),rom=expandPlusTo4MiB(base);plusBaldPlayerBaseWriter(rom,prepareBaldAppearanceState({}),base);
+ for(const table of[BALD_BASE_SLOT,CASCAO_BODY_TABLE])for(const pose of PLAYER_POSE_CATALOG){
+  const ptr=long(rom,table+parseInt(pose.id.slice(2),16)-32768),bank=ptr>>>16;
+  assert.ok(bank<0xF0||bank>0xF3,pose.id+' points at SRAM-routed bank '+bank.toString(16));
+  const r=PLAYER_BODY_CATALOG.find(r=>r.id===pose.body),off=pc(ptr);
+  assert.equal(rom[off]|rom[off+1]<<8,r.top);
+  assert.equal(rom[off+r.top+2]|rom[off+r.top+3]<<8,r.bottom);
+  assert.ok((off&32767)+r.top+r.bottom+4<=32768);
+ }
+});
