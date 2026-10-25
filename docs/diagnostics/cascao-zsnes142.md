@@ -38,3 +38,11 @@ itself establish that independent GG replay, stadium, palette or other
 reported graphical issues have the same cause. A fresh run in the user's
 ZSNES environment remains the runtime acceptance test; an already-corrupt
 save state cannot test the fix.
+
+## Acceptance checkpoint — 2026-10-25
+
+The user tested 03C-CASCAO-BANCOS-SEGUROS.sfc, with type 15 and all other
+features retained, and reported that it did not corrupt the game. The
+canonical project retains Ronaldo's type 15. The compatibility fix belongs
+to the exporter; no appearance downgrade or project-data migration is needed.
+The project notes record the minimum exporter revision for this checkpoint.

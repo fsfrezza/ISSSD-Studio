@@ -45269,7 +45269,8 @@
     "Tela Inicial: textos, paletas, recoloração da faixa e espaçamento são persistidos explicitamente em state.semantic.titleScreen e reaplicados deterministicamente ao Salvar ROM.",
     "Tela Inicial: compositor persistido em state.titleComposerV2; imagens customizadas são embutidas no .issdproj em base64; buffers nativos temporários NÃO são exportados.",
     "Textos: rascunhos não são persistidos sem Implementar no projeto; faixas de texto direto não são gravadas como patches binários no .issdproj. A aplicação na ROM é independente.",
-    "ATENÇÃO: os rótulos gráficos do menu principal estão preservados semanticamente no projeto, mas o asset gráfico do menu ainda não possui escrita segura na ROM."
+    "ATENÇÃO: os rótulos gráficos do menu principal estão preservados semanticamente no projeto, mas o asset gráfico do menu ainda não possui escrita segura na ROM.",
+    "Cascão (tipo 15) preservado. Para gerar ROM compatível com ZSNES 1.42, use o Editor do commit 8929385 ou posterior, que mantém os sprites fora dos bancos F0–F3. Correção validada em partida em 25/10/2026."
   ],
   "savedAt": "2026-10-23T15:09:04.923Z"
 }
