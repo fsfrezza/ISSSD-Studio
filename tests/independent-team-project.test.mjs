@@ -92,3 +92,15 @@ test('recovered supplied project has six native snapshots and approved flags, re
  for(const[id,ref]of Object.entries(refs.teams))for(const part of ['selectionFlags','fieldFlags'])assert.deepEqual(independentFlagPixels(sem.independentTeamsV1.teams[id],part),ref.pixels);
  assert.deepEqual(canonicalProjectSemantic(value).independentTeamsV1,validateIndependentTeams(sem.independentTeamsV1));
 });
+
+test('recovered GG rosters populate ordinary player controls and survive project round trip',async()=>{
+ const saved=JSON.parse(fs.readFileSync(new URL('../project-data/recovered-gg-rosters.json',import.meta.url))),f=independentEditorFixture(),w=f.window;
+ await w.studioApplyProjectWithBase(structuredClone(project));
+ for(const[id,row]of Object.entries(saved.teams)){
+  w.currentTeam=Number(id);w.currentPlayer=0;w.renderEverything();
+  assert.deepEqual(Array.from(w.studioTeamsV3ReadFull().teams[id].players,p=>p.name),row.rom);
+  assert.equal(f.nodes.pName.value,row.rom[0]);assert.equal(f.nodes.playerSelect.options.length,20);
+ }
+ const exported=await w.studioProjectObject();await w.studioApplyProjectWithBase(structuredClone(exported));
+ for(const[id,row]of Object.entries(saved.teams))assert.deepEqual(Array.from(w.studioTeamsV3ReadFull().teams[id].players,p=>p.name),row.rom);
+});

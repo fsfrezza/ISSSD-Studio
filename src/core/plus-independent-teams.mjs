@@ -4,6 +4,7 @@ import{konamiLzCompress,konamiLzDecompress}from'./konami-lz.mjs';
 import{transformLabelPlanes}from'./plus-graphical-labels.mjs';
 import{renderBigTeamNames,renderSmallTeamName,normalizeTeamName,TEAM_NAME_REGIONS}from'./plus-team-names.mjs';
 import{convertedTeamNameOam,TEAM_NAME_CACHE_SLOT,TEAM_NAME_HOOK_SLOT,TEAM_NAME_CACHE_PLANE}from'./plus-team-name-hooks.mjs';
+import{PLUS_TACTICAL_BANK_SELECTOR_TABLE_PC}from'./plus-tactics-address.mjs';
 import{plusGroupTitlesWriter}from'./plus-group-titles.mjs';
 import{planPlusGroupIdentity,readPlusGroupIdentity}from'./plus-group-identity.mjs';
 import{TEAM_NAME_LANGUAGE_PRESETS}from'./team-name-presets.mjs';
@@ -34,7 +35,10 @@ export function independentUniformBankHelper(){
 // The three tactical pointer readers already use a per-team bank selector.
 // The two following MVNs must use that same bank, rather than literal $8B.
 export function independentTacticalCopyHelper(){
- const c=new Code();c.put(0x08,0x8B,0x48,0xA5,4,0x29,255,0);
+ // CODE_8585F7 overwrites $04 with formationIndex*10 before the role MVN.
+ // $00 still holds the doubled team ID set by the enclosing loader. Resolve
+ // its bank afresh for both copies instead of trusting the reused scratch word.
+ const c=new Code();c.put(0x08,0x8B,0x48,0xDA,0xA5,0,0x29,0xFE,0,0xAA,0xBF,...long(cpu(PLUS_TACTICAL_BANK_SELECTOR_TABLE_PC)),0x29,255,0,0xFA);
  for(const bank of [0xC0,0xC1,0xC2,0xC3,0xC4,0xC5,0xC6,0xC7,0xDD])c.put(0xC9,bank,0).branch(0xF0,'bank'+bank);
  c.put(0x68,0x54,0x7E,0x8B).branch(0x80,'done');
  for(const bank of [0xC0,0xC1,0xC2,0xC3,0xC4,0xC5,0xC6,0xC7,0xDD])c.label('bank'+bank).put(0x68,0x54,0x7E,bank).branch(0x80,'done');
