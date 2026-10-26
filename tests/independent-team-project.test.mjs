@@ -104,3 +104,13 @@ test('recovered GG rosters populate ordinary player controls and survive project
  const exported=await w.studioProjectObject();await w.studioApplyProjectWithBase(structuredClone(exported));
  for(const[id,row]of Object.entries(saved.teams))assert.deepEqual(Array.from(w.studioTeamsV3ReadFull().teams[id].players,p=>p.name),row.rom);
 });
+
+test('GG names are physically centered and keep that layout through edits and Editor round trip',async()=>{
+ const {fixedPlayerName}=await import('../src/core/independent-team-fields.mjs');
+ const {formatPlayerName}=await import('../src/core/plus-player-name.mjs');
+ for(const t of Object.values(model.teams))for(let i=0;i<20;i++)assert.equal(fixedPlayerName(t,i),formatPlayerName(readIndependentPlayer(t,i).name,'center'));
+ for(const name of['De','Bill','Mario','Wilson','Pedrinho'])assert.equal(fixedPlayerName(editIndependentPlayer(model.teams[54],0,{name}),0),formatPlayerName(name,'center'));
+ const f=independentEditorFixture(),w=f.window;await w.studioApplyProjectWithBase(structuredClone(project));w.currentTeam=54;w.currentPlayer=0;w.renderEverything();
+ assert.equal(w.teams[54].players[0].fixedName,'  Bill  ');
+ const out=await w.studioProjectObject();await w.studioApplyProjectWithBase(structuredClone(out));assert.equal(w.teams[54].players[0].manual,'  Bill  ');
+});

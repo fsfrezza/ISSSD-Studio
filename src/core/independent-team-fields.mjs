@@ -1,4 +1,4 @@
-import{decodeFixedPlayerName,encodeFixedPlayerName,normalizePlayerName}from'./plus-player-name.mjs';
+import{decodeFixedPlayerName,encodeFixedPlayerName,normalizePlayerName,formatPlayerName}from'./plus-player-name.mjs';
 import{decodePlusTacticalRecord,encodePlusTacticalRecord}from'./plus-tactics-record.mjs';
 export const INDEPENDENT_SKILLS=Object.freeze(['acceleration','speed','shot','curve','balance','intelligence','dribbling','jump','energy']);
 const integer=(n,min,max,label)=>{if(!Number.isInteger(n)||n<min||n>max)throw Error(label+' inválido.');return n;};
@@ -6,7 +6,7 @@ function playerBytes(team,slot){integer(slot,0,19,'Jogador');if(!team?.data?.att
 export function readIndependentPlayer(team,slot){const b=playerBytes(team,slot),skills={};INDEPENDENT_SKILLS.forEach((key,i)=>skills[key]=((b[i>>1]>>(i%2?0:4))&15)+1);return{name:decodeFixedPlayerName(Uint8Array.from(team.data.names.slice(slot*8,slot*8+8))).trim(),number:b[5]+1,position:b[4]>>4,hair:b[6]&15,palette:b[6]>>4&1,skills};}
 export function editIndependentPlayer(team,slot,edit){
  const out=structuredClone(team),b=playerBytes(team,slot);
- if(edit.name!==undefined){const bytes=encodeFixedPlayerName(normalizePlayerName(edit.name));out.data.names.splice(slot*8,8,...bytes);}
+ if(edit.name!==undefined){const bytes=encodeFixedPlayerName(formatPlayerName(edit.name,'center'));out.data.names.splice(slot*8,8,...bytes);}
  if(edit.number!==undefined){integer(edit.number,1,20,'Camisa');const duplicate=out.data.attributes.findIndex((v,i)=>i%7===5&&i!==slot*7+5&&v===edit.number-1);if(duplicate>=0)out.data.attributes[duplicate]=b[5];b[5]=edit.number-1;}
  if(edit.position!==undefined){b[4]=integer(edit.position,0,6,'Posição')<<4|b[4]&15;if(edit.position===1)b[6]&=240;}
  if((b[4]>>4)===1&&edit.hair!==undefined&&edit.hair!==0)throw Error('O goleiro usa cabelo incorporado; edite sua cor.');
@@ -31,3 +31,5 @@ export function editIndependentFlag(team,pixels,part='selectionFlags'){
 }
 export function independentPatternPixels(team){const out=[];for(let frame=0;frame<8;frame++)for(let y=0;y<8;y++)for(let x=0;x<8;x++){let v=0;for(let p=0;p<4;p++)v|=(team.data.pattern[frame*32+(p>>1)*16+y*2+(p&1)]>>(7-x)&1)<<p;out.push(v);}return out;}
 export function editIndependentPattern(team,pixels){if(!Array.isArray(pixels)||pixels.length!==512||pixels.some(v=>!Number.isInteger(v)||v<0||v>15))throw Error('Desenho de camisa inválido.');const out=structuredClone(team);out.data.pattern=Array(256).fill(0);for(let f=0;f<8;f++)for(let y=0;y<8;y++)for(let x=0;x<8;x++)for(let p=0;p<4;p++)out.data.pattern[f*32+(p>>1)*16+y*2+(p&1)]|=(pixels[f*64+y*8+x]>>p&1)<<(7-x);return out;}
+
+export function fixedPlayerName(team,slot){integer(slot,0,19,'Jogador');return decodeFixedPlayerName(Uint8Array.from(team.data.names.slice(slot*8,slot*8+8)));}
