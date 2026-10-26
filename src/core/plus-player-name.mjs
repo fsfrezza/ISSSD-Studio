@@ -64,7 +64,7 @@ export function normalizePlayerName(value){
     .replace(/['‘`´]/g,'’')
     .trim();
   if([...normalized].length>PLUS_NAME_LENGTH)throw new RangeError('player name must contain at most 8 characters');
-  if(!/^[A-Za-z .’]*$/.test(normalized))throw new RangeError('player name supports only letters, spaces, period and apostrophe');
+  if(!/^[A-Za-z0-9 .’]*$/.test(normalized))throw new RangeError('player name supports only letters, digits, spaces, period and apostrophe');
   return normalized;
 }
 

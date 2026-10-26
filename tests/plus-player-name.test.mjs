@@ -28,6 +28,7 @@ test('TallMenuText player names reproduce known v6.92 bytes',()=>{
 
 test('spaces, period and apostrophe are valid player-name characters',()=>{
   assert.equal(normalizePlayerName("O' Neil"),'O’ Neil');
+  assert.equal(decodeFixedPlayerName(encodeFixedPlayerName(formatPlayerName('Ale 100','center'))),'Ale 100 ');
   const bytes=encodeFixedPlayerName("O'Neil");
   assert.equal(bytes[1],0x5A);
   assert.equal(decodeFixedPlayerName(bytes),'O’Neil  ');
