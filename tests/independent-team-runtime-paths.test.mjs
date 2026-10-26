@@ -23,7 +23,7 @@ test('pre-match name uploads use the full-name immutable cache for both opponent
 test('both shipped projects start all six teams in the same native 4-4-2, preserve dark shadows and retain complete group names',()=>{
  for(const file of ['International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj','International-Superstar-Soccer-Deluxe-Plus-projeto-recuperado.issdproj']){
   const project=JSON.parse(fs.readFileSync(new URL('../'+file,import.meta.url)));for(const team of Object.values(project.state.semantic.independentTeamsV1.teams)){
-   assert.deepEqual(team.data.tactics,[...GG_DEFAULT_442]);const f=decodePlusTacticalRecord(Uint8Array.from(team.data.tactics));assert.equal(f.formationIndex,1);assert.deepEqual(['DF','MC','AT'].map(c=>f.players.filter(p=>p.className===c).length),[4,4,2]);assert.ok(f.players.every(p=>p.x>=-57&&p.x<=57&&p.y>=-39&&p.y<=39));
+   assert.deepEqual(Array.from({length:11},(_,i)=>team.data.attributes[i*7+5]+1),[1,2,3,4,6,5,8,11,10,9,7]);assert.deepEqual(Array.from({length:11},(_,i)=>team.data.attributes[i*7+4]>>4),[1,2,2,2,2,4,4,4,4,6,6]);const f=decodePlusTacticalRecord(Uint8Array.from(team.data.tactics));assert.equal(f.formationIndex,1);assert.deepEqual(f.players.map(p=>[p.x,p.y]),[[-31,32],[-39,-11],[-39,11],[-31,-32],[-16,-10],[-15,11],[15,-30],[10,24],[36,-20],[30,20]]);assert.deepEqual(['DF','MC','AT'].map(c=>f.players.filter(p=>p.className===c).length),[4,4,2]);assert.ok(f.players.every(p=>p.x>=-57&&p.x<=57&&p.y>=-39&&p.y<=39));
    for(const kit of ['home','away'])assert.equal(team.data.palettes[kit][32]|team.data.palettes[kit][33]<<8,GG_NATIVE_SHADOW);
    const rendered=renderSmallTeamName(team.name);assert.ok(rendered.width<=32);assert.notDeepEqual(rendered.raw,renderSmallTeamName(team.short).raw);
   }
