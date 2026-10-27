@@ -26,7 +26,7 @@ export function validateUniforms(value){
 }
 export function nativeUniform(base,team,kit=0){
  if(!Number.isInteger(team)||team<0||team>=56||![0,1].includes(kit))throw Error('Equipe/uniforme inválido.');
- const {palette,layouts}=uniformMapping(base),pointer=word(base,palette+(team+kit*56)*2),at=0x48000+(pointer&32767);
+ const {palette,layouts}=uniformMapping(base),pointer=word(base,palette+(team+kit*57)*2),at=0x48000+(pointer&32767);
  if(pointer<0x8000||at+34>base.length||word(base,at)!==31)throw Error('Paleta de uniforme inválida.');
  return{pc:at+2,colors:Array.from({length:16},(_,i)=>word(base,at+2+i*2)),layout:word(base,layouts+team*2)};
 }
