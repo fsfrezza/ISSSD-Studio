@@ -88,7 +88,7 @@ window.__ISSSD_INSTALL_UNIFIED_TEAM_CORE__=function(){
  kitColors(t,k){return F().independentPaletteColors(get(t).data.palettes[k?'away':'home']);},
  setKitColors(t,k,colors){let next=get(t);colors.forEach((c,i)=>{next=F().editIndependentPalette(next,k?'away':'home',i+7,c);});if(!k)colors.slice(0,8).forEach((c,i)=>{next.data.photo.palettes[0][2+i*2]=c&255;next.data.photo.palettes[0][3+i*2]=c>>8;});replace(t,next);},
  restoreKit(t,k){const next=copy(get(t));next.data.palettes[k?'away':'home']=copy(baseline.teams[t].data.palettes[k?'away':'home']);replace(t,next);},
- pattern(t){return F().independentPatternPixels(get(t));},setPattern(t,pixels){replace(t,F().editIndependentPattern(get(t),pixels));},restorePattern(t){const next=copy(get(t));next.data.pattern=baseline.teams[t].data.pattern.slice();replace(t,next);},
+ uniformModel(t){return get(t).uniformModelV1?.id||null;},setUniformModel(t,id){replace(t,window.ISSSDUniformModels.applyUniformModel(get(t),id));},pattern(t){return F().independentPatternPixels(get(t));},setPattern(t,pixels){const next=F().editIndependentPattern(get(t),pixels);delete next.uniformModelV1;replace(t,next);},restorePattern(t){const next=copy(get(t));next.data.pattern=baseline.teams[t].data.pattern.slice();delete next.uniformModelV1;replace(t,next);},
  keeperColors(t,slot){return get(t).data.keeperPalettes[slot-1].slice();},setKeeperColors(t,slot,colors){const next=copy(get(t));next.data.keeperPalettes[slot-1]=colors.slice();replace(t,next);},
  restoreNames(t){const b=baseline.teams[t];replace(t,{...get(t),name:b.name,big:b.big,short:b.short});}
  };
