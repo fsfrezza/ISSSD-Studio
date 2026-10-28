@@ -87,3 +87,10 @@ test('shipped original and Cascao overlays contain hair only; skin belongs to th
   assert.ok(playerReferencePose({kind:'hair',style:14,frame}));
  }
 });
+
+test('uniform reference overlays use the actual pose and native jersey mode, leaving number poses untouched',()=>{
+ const b=fixture(),r=PLAYER_BODY_CATALOG.find(r=>r.name==='Down_Running1'),pose=PLAYER_POSE_CATALOG.find(p=>p.body===r.id),ref={kind:'body',id:r.id},at=0x10000+(parseInt(pose.id.slice(2),16)&32767)+5;
+ b[at]=129;const before=renderPlayerReference(b,ref,null,{pose,style:0}),jersey=Array(256).fill(0);jersey.fill(255,16,32);
+ const next=renderPlayerReference(b,ref,null,{pose,style:0,jersey});assert.equal(next.name,'Down_Running1');assert.equal(next.width,before.width);assert.equal(next.height,before.height);assert.notDeepEqual(next.pixels,before.pixels);assert.ok(next.pixels.some(v=>v>0&&v<7));
+ b[at]=2;assert.deepEqual(renderPlayerReference(b,ref,null,{pose,style:0,jersey}).pixels,before.pixels);
+});
