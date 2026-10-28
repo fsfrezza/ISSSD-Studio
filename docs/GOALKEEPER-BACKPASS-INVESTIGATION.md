@@ -1,3 +1,86 @@
+# ROM experimental implementada — 28/10/2026
+
+A investigação desta etapa começou pelo disassembly. O protótipo está em
+`src/core/experimental-backpass-penalty.mjs`, separado da exportação do editor.
+A regra final em Regras Especiais continua bloqueada: esta entrega é a ROM de
+experimento amplo solicitada, não uma implementação da regra oficial.
+
+## Fluxo identificado no assembly e conferido na Plus
+
+| Ponto SNES | Offset de arquivo | Função nesta implementação |
+| --- | --- | --- |
+| `84:BA01` | `0x23A01` | Contato, antes da atualização do último toque; hook primário |
+| `85:F8C5` | `0x2F8C5` | Entrada alternativa de posse/liberação de bola; hook complementar |
+| `80:B173` | `0x3173` | Copia evento `$BA` para `$BC` e chama o preparador nativo |
+| `A4:DB90` | `0x125B90` | Preparação comum de reinício |
+| `A4:DBFF` | `0x125BFF` | Hook de despacho, antes da tabela de eventos |
+| `A4:DE9F` | `0x125E9F` | Preparação nativa de pênalti: cobrador, estatística, ponto da bola e estado 6 |
+| `A4:DD27` | `0x125D27` | Pós-etapa indispensável: `$E6=0x0100` inicia a transição nativa |
+
+Fonte: `Routine_Macros_ISSD.asm` do disassembly Yoshifanatic1 (versão USA).
+Os pontos modificados e a entrada/saída do preparador têm assinaturas verificadas
+na ROM Plus; o CLI também exige SHA-256 exato da base.
+
+## Condição e funcionamento
+
+- Papel do objeto atual `$30=1`: goleiro; modo de jogo `$70=8`.
+- `$C8` identifica o último jogador a tocar na bola; objeto alinhado entre
+  `$0500` e `$1A00`, diferente do goleiro atual.
+- Campo `$9A` coincide entre o jogador anterior e o goleiro: mesma equipe.
+- `$BA`, `$BC` e `$C0` precisam estar zerados: nenhum reinício em andamento.
+- Agenda evento experimental `$7F01` em `$BA`, sem reservar WRAM arbitrária.
+- Usa `$C4` como infrator e um objeto do adversário em `$C6` para selecionar a
+  equipe no preparador nativo. O objeto usado como referência não é
+  necessariamente o cobrador: o jogo escolhe o cobrador em `$11E8`.
+- O hook do despacho converte o evento em falta nativa, seleciona posse adversária,
+  zera cartões, chama `A4:DE9F` e reproduz o pós-processamento `A4:DD27`.
+- Hooks em `FF:F000`, `FF:F200` e `FF:F400`; ROM expandida para 4 MiB, com tamanho
+  e checksum atualizados. ROM-base permanece imutável.
+
+O primeiro hook interrompe o processamento do contato. O complementar mantém as
+instruções nativas de posse e agenda a interrupção no ciclo seguinte. Não depende
+explicitamente de A/B, nem diferencia mão/pé. Este protótipo usa a equipe do último
+toque, sem distinguir passe com os pés, cabeçada ou desvio: é propositalmente mais
+amplo que a regra final. Não ativar silenciosamente essa regra no editor.
+
+## Reprodução da build
+
+```bash
+node scripts/build-experimental-backpass-penalty.mjs Plus-limpa.sfc ISSSD-Recuo-Penalti-Experimental.sfc
+node --test tests/experimental-backpass-penalty.test.mjs
+```
+
+Base SHA-256: `ca2d73b226ab252649d4c9c35bb6b81937586d908c1d9dc9d447db7babfaad0a`.
+ROM produzida SHA-256: `089a65e98238c9697ce8e96f2c4ecd16005503b9b5449025281d431d70960d4b`.
+
+## Validação executada
+
+Seis testes de hooks executam os bytes 65816 emitidos, cobrindo ambos os goleiros,
+preservação de registradores/flags, chute adversário, liberação do próprio goleiro,
+jogador de linha, reinício ativo, ponteiros inválidos, caminho alternativo e
+pós-processamento `$E6`. Não se limitam a simular a condição em JavaScript.
+
+Em Snes9x, a ROM foi inicializada até uma partida Brasil x Inglaterra. A partir
+de um estado dessa própria ROM, foi criado um cenário controlado de contato:
+bola colocada no goleiro e último toque de companheiro, com o goleiro disponível
+para receber a bola. Não é um replay do savestate Mesen enviado pelo usuário.
+
+- Goleiro `$0500`: evento experimental no frame relativo 78, preparação nativa
+  no frame 79, estado `$C0/$C2=6`, cobrança da Inglaterra no ponto `$0100/$0140`.
+  A tela nativa de pênalti abriu, a IA cobrou e o jogo voltou ao campo.
+- Goleiro `$1000`: evento no frame relativo 0, preparação no frame 1, cobrador
+  do Brasil e ponto `$0640/$0140`; abriu a seleção nativa de cobrador para 1P.
+- Controle com último toque adversário: nenhum evento experimental nem entrada
+  no preparador do pênalti durante o mesmo cenário de teste; defesa nativa mantida.
+
+A cobertura inclui os dois lados em cenários controlados e a volta ao jogo após
+uma cobrança por IA. Captura manual A/B e partidas completas ainda precisam do
+uso prático no Mesen; não declarar cobertura total de todos os tipos de contato.
+
+---
+
+# Registro da etapa anterior (estado histórico)
+
 # Continuação no Work — 28/10/2026
 
 ## Contrato atual do experimento
