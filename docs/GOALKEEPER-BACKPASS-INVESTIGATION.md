@@ -1,3 +1,89 @@
+# v2 — somente mãos, levantamento e transição limpa — 28/10/2026
+
+Pedido do usuário após testar a v1: corrigir pixels corrompidos entre a marcação
+e a escolha do cobrador; punir somente a captura com as mãos; deixar o goleiro
+agarrar, levantar e segurar a bola antes da marcação.
+
+## Mudança de ponto de observação
+
+A v2 não modifica mais os contatos gerais `84:BA01` e `85:F8C5`.
+A pesquisa começou novamente em `Routine_Macros_ISSD.asm`:
+
+- `84:BB95` registra o tipo da bola que chega em jogador+$78 e inicia a captura.
+- A sequência `84:EA79`/`84:EAA2`/`84:EABF` termina em `84:EADA`, incluindo
+  levantamento e ajuste de orientação. A captura manual em salto passa por
+  `85:EE94`, aterrissa em `84:EF9D`/`84:EFAA` e converge em `84:EADA`.
+- `84:EB5D` chama `80:D78D`, que marca `$11FA & $0040` (posse com as mãos),
+  instala a ação `$0608` e inicia o temporizador de espera com `$70=$0030`.
+- `84:EB81` é a atualização de espera do goleiro já de pé com a bola. O novo hook
+  mantém essa animação por 30 ciclos de jogo e só então agenda a infração.
+- `$12A0` retém o jogador anterior antes de `$C8` ser substituído pelo goleiro
+  em `85:F8D6`/`85:F90A`. Isso evita reservar WRAM nova para o atraso.
+- `DATA_81DB1E` bit `$08` é a classificação nativa de recuo restrito consultada
+  em `84:BA4A`. A v2 a verifica no tipo de bola guardado em jogador+$78; cabeçadas
+  lícitas seguem o caminho nativo. Exige também posse de captura `$12F4=$000E`.
+- Na captura manual, jogador+$78 antes era usado como distância do salto. Um hook
+  em `85:EE94` guarda o tipo da bola antes que a atribuição nativa de posse o
+  substitua por `$000E`. Não interfere na geometria de colisão nem concede uma
+  captura que o jogo tenha recusado.
+
+Durante o pequeno intervalo, o caminho da infração ignora comandos de distribuição
+para permitir que a sequência solicitada termine. O temporizador nativo só avança
+com o jogo em andamento. Após a marcação, o goleiro mantém a bola durante o apito
+até a troca de tela, em vez de executar arremesso/chute no meio da transição.
+
+## Correção visual
+
+A transição anterior aguardava o preâmbulo longo de falta enquanto o goleiro podia
+continuar sua distribuição. A v2 mantém a bola nas mãos e usa 48 ciclos para o
+preâmbulo, seguido do fade nativo. Ao entrar em `A4:DAC0`, com `$C2=6`, mantém
+`INIDISP` e seu espelho `$1EA0` em `$80` durante a preparação da próxima tela.
+A inicialização nativa `80:8217` restaura a exibição na tela de destino.
+NMI permanece habilitado: o processamento do jogo também executa dentro de NMI.
+As transições de outros tipos não recebem esse apagamento.
+
+## Patches da v2
+
+| Ponto SNES | Offset | Função |
+| --- | --- | --- |
+| `84:EB81` | `0x26B81` | Espera com a bola nas mãos; atraso e elegibilidade |
+| `85:EE94` | `0x2EE94` | Preserva o tipo do passe na captura manual |
+| `A4:DBFF` | `0x125BFF` | Prepara o pênalti nativo para a equipe adversária |
+| `A4:DAC0` | `0x125AC0` | Apaga a exibição durante o carregamento da próxima tela |
+
+Código expandido: `FF:F000`–`FF:F7FF`. Não há novas variáveis persistentes em WRAM.
+A base continua imutável e o editor não ativa essa experiência automaticamente.
+
+## Verificação
+
+Suíte completa: 693 testes passaram, sem falhas.
+
+- Testes dos bytes 65816 emitidos: atraso para ambos os goleiros, mãos/pés,
+  levantamento, origem adversária, cabeçada lícita, posse própria, eventos já
+  ativos, ponteiros inválidos, captura manual, preservação de registradores e
+  escrita de 8 bits em INIDISP sem tocar em OBSEL ou desabilitar NMI.
+- Snes9x: partida iniciada pela própria ROM, capturas nativas em cenários
+  controlados. No cenário restrito, a origem da bola é ajustada após a captura
+  para reproduzir recuo recebido manualmente; não confundir isso com um replay
+  completo de entrada A/B do usuário.
+- Goleiro `$0500`: captura no frame relativo 78, de pé no 98, infração no 129.
+  Cerca de 0,5 s visível após o levantamento; abriu a cobrança nativa da Inglaterra
+  e retornou à partida após a cobrança.
+- Goleiro `$1000`: captura no frame 0, de pé no 20, infração no 51; abriu a seleção
+  de cobrador do Brasil.
+- Controle com defesa de chute adversário e controle com cabeçada lícita: sem
+  infração. Comandos A/B repetidos durante a espera não anteciparam a distribuição
+  nem impediram a marcação no frame 129.
+- Timeline visual revisada entre captura, apito, fade, carregamento e cobrança:
+  campo preservado, intervalo preto durante a carga e tela de pênalti normal.
+
+SHA-256 da ROM v2: `4b7f28db7b84fb6907bc54dc7afcf4fda23c07161697d3f03379f2bb7c67262f`.
+A validação no Mesen com a entrada manual real fica para o teste prático do usuário.
+
+---
+
+# Histórico da v1 (substituído pela v2)
+
 # ROM experimental implementada — 28/10/2026
 
 A investigação desta etapa começou pelo disassembly. O protótipo está em

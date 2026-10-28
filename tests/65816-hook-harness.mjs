@@ -10,14 +10,14 @@ export function executeHook(memory,entry,initial={},nativeCalls=new Set()){
  const adc=v=>{const n=r.a+v+(r.p&1);r.p=(r.p&~1)|(n>65535?1:0);r.a=nz(n&65535);};
  const branch=take=>{const n=byte();if(take)pc+=(n&128?n-256:n);};
  while(++steps<10000){switch(byte()){
-  case 0xF4:push16(word());break;case 0x08:push(r.p);break;case 0x28:r.p=pop();break;case 0xC2:r.p&=~byte();break;
+  case 0xF4:push16(word());break;case 0x08:push(r.p);break;case 0x28:r.p=pop();break;case 0xC2:r.p&=~byte();break;case 0xE2:r.p|=byte();break;
   case 0x48:push16(r.a);break;case 0x68:r.a=nz(pop16());break;
   case 0xDA:push16(r.x);break;case 0xFA:r.x=nz(pop16());break;
   case 0x5A:push16(r.y);break;case 0x7A:r.y=nz(pop16());break;
   case 0x8B:push(r.db);break;case 0xAB:r.db=pop();break;
-  case 0xA2:r.x=nz(word());break;case 0xA0:r.y=nz(word());break;case 0xA3:r.a=nz(read16(r.s+byte()));break;case 0x9C:write16(word(),0);break;case 0xA9:r.a=nz(word());break;case 0xAF:r.a=nz(read16(long()));break;
+  case 0xA2:r.x=nz(word());break;case 0xA0:r.y=nz(word());break;case 0xA3:r.a=nz(read16(r.s+byte()));break;case 0x9C:write16(word(),0);break;case 0xA9:if(r.p&0x20){const v=byte();r.a=(r.a&0xFF00)|v;r.p=(r.p&~0x82)|(v===0?2:0)|(v&0x80);}else r.a=nz(word());break;case 0xAF:r.a=nz(read16(long()));break;
   case 0xBF:r.a=nz(read16(long()+r.x));break;case 0xA5:r.a=nz(read16(r.dp+byte()));break;
-  case 0x85:write16(r.dp+byte(),r.a);break;case 0x8F:write16(long(),r.a);break;
+  case 0x85:write16(r.dp+byte(),r.a);break;case 0x8F:{const a=long();if(r.p&0x20)memory[a]=r.a&255;else write16(a,r.a);break;}
   case 0x9F:write16(long()+r.x,r.a);break;case 0x7B:r.a=nz(r.dp);break;
   case 0xC5:cmp(r.a,read16(r.dp+byte()));break;
   case 0xE0:cmp(r.x,word());break;case 0xC0:cmp(r.y,word());break;case 0xC9:cmp(r.a,word());break;case 0xCF:cmp(r.a,read16(long()));break;
