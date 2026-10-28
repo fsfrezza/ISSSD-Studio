@@ -1,3 +1,14 @@
+> **Atualização de prioridade — 28/10/2026:** usuário prefere marcar **tiro livre indireto** após captura ilegal, em vez do desvio. O plano abaixo descreve a alternativa anterior; investigar primeiro rotinas de falta e reinício (incluindo possível reutilização de controle de segundo toque do kick-off). Sem patch confirmado, manter bloqueio de exportação quando a regra estiver ativada.
+
+## Roteiro prioritário: tiro livre indireto
+
+1. Reproduzir recuo com os pés + captura com B, e repetir com A nos modos semi e manual.
+2. Localizar a decisão de conceder posse ao goleiro e diferenciar passe deliberado com os pés, cabeçada lícita e lateral direto do companheiro.
+3. Criar casos comparativos de falta existente e kick-off no Mesen; identificar variáveis de equipe cobradora, tipo de reinício, posição da bola, estado de jogadores, barreira e segundo toque.
+4. Determinar se as rotinas existentes suportam cobrança dentro da área, sem novos endereços presumidos. Para infração na pequena área, usar o ponto mais próximo da linha da pequena área paralela à linha de fundo.
+5. Proibir gol diretamente de cobrança indireta sem segundo toque; impedir contato antecipado irregular e respeitar posicionamento da defesa.
+6. Só construir writer quando houver mapa de código/WRAM e replays reproduzíveis. Desvio permanece alternativa de contingência.
+
 # Investigação: goleiro agarrando recuo — issue #21
 
 ## Escopo da primeira entrega
