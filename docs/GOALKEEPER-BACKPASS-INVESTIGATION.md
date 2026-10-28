@@ -1,3 +1,59 @@
+# Continuação no Work — 28/10/2026
+
+## Contrato atual do experimento
+
+O último pedido do usuário substitui as alternativas históricas abaixo: gerar uma
+ROM experimental isolada em que **qualquer contato do goleiro com recuo do próprio
+time, com mãos ou pés**, interrompa a partida e acione a rotina **nativa de pênalti**
+contra sua equipe. Não exigir A/B nem captura com as mãos neste primeiro teste.
+Isso é um experimento personalizado, separado da regra oficial e da implementação
+final opcional em Regras Especiais. O campo persistido `goalkeeperBackpassNoHands`
+permanece compatível; a exportação continua bloqueada enquanto não existir patch
+validado.
+
+## Evidência reproduzida nesta continuação
+
+- Branch de partida: `fix/goalkeeper-backpass-investigation`, commit `a0f5f93`.
+- Savestate Mesen2 SNES formato 4: `International Superstar Soccer Deluxe Plus_2.mss`.
+- SHA-256 do estado: `8ab78a7bf219dd7bf05ea09a864ecb01ed5bc631cb91444396cf98d4b255ed2a`.
+- 1.344 campos extraídos; WRAM de 131.072 bytes; frame 5.061.
+- CPU: A=15223, X=319, Y=320, PC=$FF9B, K=$00, DBR=$81, SP=427, PS=4.
+- A extração reproduz os valores do diagnóstico anterior. O PC salvo isoladamente
+  não identifica a rotina de contato nem a de pênalti.
+- Nenhum endereço de gameplay foi confirmado; nenhuma ROM experimental foi gerada.
+- O emulador disponível localmente é Mesen-S; o estado foi produzido pelo Mesen2.
+  Os formatos diferem. A compilação do Mesen2 neste ambiente não iniciou por falta
+  de Clang e SDL2. Não tratar a leitura do estado como replay executado.
+
+## Ferramenta implementada
+
+```bash
+node scripts/inspect-backpass-state.mjs antes.mss saida [depois.mss]
+```
+
+Lê o contêiner Mesen2 v4, valida seus tamanhos e campos e exporta
+`backpass-wram.bin` e `backpass-state.json`. Com um segundo estado da mesma ROM
+nominal, exporta `backpass-wram-diff.json`, agrupando alterações adjacentes e
+mapeando offsets de WRAM para $7E:0000–$7F:FFFF. A ferramenta é somente leitura
+sobre os estados de entrada e não altera a ROM. Nomes de ROM coincidentes não
+comprovam ROMs com bytes idênticos; conferir a base antes de comparar capturas.
+
+Testes cobrem compressão e estado sem compressão, truncamento, formato não
+suportado, tamanho de WRAM, limites dos dois bancos, identidade e ROMs divergentes.
+
+## Evidência ainda necessária para construir o hook
+
+É preciso um par controlado antes/depois do contato no recuo e um par antes/depois
+de uma falta que resulte em pênalti nativo, na mesma ROM. Comparar também uma defesa
+legal após chute adversário. Esses pares permitem selecionar endereços candidatos;
+write breakpoints/trace de CPU devem então confirmar quem os escreve, a equipe
+cobradora e a transição de reinício. Um único snapshot não permite inferir esses
+handlers. Não aplicar hooks em endereços escolhidos apenas pela diferença de RAM.
+
+---
+
+# Histórico anterior (substituído pelo contrato acima)
+
 > **Atualização de prioridade — 28/10/2026:** usuário prefere marcar **tiro livre indireto** após captura ilegal, em vez do desvio. O plano abaixo descreve a alternativa anterior; investigar primeiro rotinas de falta e reinício (incluindo possível reutilização de controle de segundo toque do kick-off). Sem patch confirmado, manter bloqueio de exportação quando a regra estiver ativada.
 
 ## Roteiro prioritário: tiro livre indireto
