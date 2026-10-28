@@ -1,3 +1,44 @@
+# v3 — captura manual após domínio com os pés — 28/10/2026
+
+A investigação começou pelo disassembly. Em `85:F8D6`, um novo toque do próprio
+goleiro substitui `$12A0` pelo goleiro. Assim, o domínio com os pés seguido de
+captura manual perdia a origem do recuo na v2. Jogador+$78 também pertence à
+geometria do salto e não deve ser usado como registro independente.
+
+A v3 registra jogador de origem e ação da bola antes da atualização nativa:
+`84:BA01` observa o contato comum e `85:EE94` observa a captura manual confirmada.
+Toques sucessivos do mesmo goleiro preservam esse registro. Contato vindo de
+adversário ou ação lícita limpa a elegibilidade. A punição continua restrita ao
+estado de posse com as mãos em `84:EB81`, depois do levantamento e de 30 ciclos
+de espera. A correção da transição visual da v2 permanece.
+
+O registro usa seis palavras na cauda de SRAM em `70:1800` e `70:1808`, com
+reinicialização no início da partida (`A4:DA3A`). O cabeçalho amplia SRAM de 2 KiB
+para 8 KiB; os 2 KiB originais permanecem intactos. Não ocupa campos de movimento
+do jogador nem endereços WRAM arbitrários. Código expandido até `FF:FBFF`.
+
+## Verificação da v3
+
+- Snes9x/libretro, entrada de controle real: recepção com os pés, captura manual,
+  aterrissagem e levantamento. A origem não foi reescrita pelo teste após a
+  captura. A v2 falha nessa sequência; a v3 marca a infração.
+- Na reprodução, captura no quadro 2, goleiro de pé no 27 e marcação no 58.
+- Controles negativos: apenas pés por 300 quadros, captura após chute adversário
+  e captura após cabeçada não geram pênalti.
+- Testes de hooks cobrem perda de `$12A0`, ambos os goleiros, limpeza de origem,
+  reinicialização e preservação da SRAM original. Suíte completa: 696 aprovados.
+- A configuração de controle do estado usado no emulador foi respeitada; o teste
+  verifica o comando de captura manual, sem pressupor a mesma associação física
+  de botões usada por todos os jogadores.
+
+ROM: `ISSSD-Recuo-Penalti-Maos-Delay-v3.sfc`.
+SHA-256: `aa1c43a19c5d20cb624185a87989c05698bf2b993565203b0c7aee11b2dfd0d1`.
+
+O histórico da v2 abaixo documenta a implementação anterior; as referências a
+`$12A0` e jogador+$78 foram substituídas na v3.
+
+---
+
 # v2 — somente mãos, levantamento e transição limpa — 28/10/2026
 
 Pedido do usuário após testar a v1: corrigir pixels corrompidos entre a marcação

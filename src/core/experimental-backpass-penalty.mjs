@@ -2,6 +2,9 @@
 // Source: Yoshifanatic ISSD disassembly, Routine_Macros_ISSD.asm.
 export const BACKPASS_EXPERIMENT_SLOT=0x3FF000;
 export const BACKPASS_EXPERIMENT_EVENT=0x7F01;
+// Temporary rule state uses the added SRAM tail; the original 2 KiB stay intact.
+export const BACKPASS_STATE=0x701800;
+export const BACKPASS_STATE_MAGIC=0xBACC;
 const cpu=off=>0x808000|((off>>15)<<16)|(off&0x7FFF);
 const offset=addr=>((addr>>16)&0x7F)*0x8000+(addr&0x7FFF);
 const long=n=>[n&255,n>>8&255,n>>16&255];
@@ -18,7 +21,7 @@ function assembler(start){
 export const BACKPASS_HANDS_DELAY_FRAMES=30;
 export const BACKPASS_PENALTY_TRANSITION_FRAMES=48;
 export function experimentalBackpassHooks(){
- const entry=cpu(BACKPASS_EXPERIMENT_SLOT),dispatch=entry+0x200,transition=entry+0x400,manualEntry=entry+0x600;
+ const entry=cpu(BACKPASS_EXPERIMENT_SLOT),dispatch=entry+0x200,transition=entry+0x400,manualEntry=entry+0x600,recordEntry=entry+0x800,contactEntry=entry+0xA00,resetEntry=entry+0xB00;
  const a=assembler(entry),e=(...v)=>a.emit(...v),reject=op=>a.reject(op,'normal');
  // Reproduce EB81's displaced TDC / STA $00A6 before preserving its result.
  e(0x7B,0x8F,...long(0xA6),0x08,0xC2,0x30,0x48,0xDA,0x5A);
@@ -31,17 +34,16 @@ export function experimentalBackpassHooks(){
  a.label('eligibility');
  for(const addr of [0xBA,0xBC,0xC0]){e(0xAF,...long(addr));reject(0xD0);}
  e(0xAF,...long(0x11FA),0x29,0x40,0);reject(0xF0); // native hands-possession flag
- e(0xAF,...long(0x12F4),0xC9,0x0E,0);reject(0xD0); // capture, not foot control
- e(0x7B,0xCF,...long(0xC8));reject(0xD0); // this keeper owns the ball
- // Native 85:F8D6 retained the preceding toucher in 12A0 before replacing C8.
- e(0xAF,...long(0x12A0),0xAA,0xE0,0,5);reject(0x90);
- e(0xE0,0,0x1B);reject(0xB0);
- e(0x8A,0x29,0xFF,0);reject(0xD0);
- e(0x7B,0xCF,...long(0x12A0));reject(0xF0);
+ e(0x7B,0xCF,...long(0xC8));reject(0xD0); // keeper still owns the ball
+ // Read the source captured BEFORE native possession bookkeeping. In particular,
+ // do not use 12A0 here: a manual pickup after foot control replaces it by self.
+ e(0xA0,0,0,0x7B,0xC9,0,5);a.reject(0xF0,'stateSlot');
+ e(0xC9,0,0x10);reject(0xD0);e(0xA0,8,0);
+ a.label('stateSlot');e(0xBB,0xBF,...long(BACKPASS_STATE),0xC9,...word(BACKPASS_STATE_MAGIC));reject(0xD0);
+ e(0xBF,...long(BACKPASS_STATE+2),0xAA,0xE0,0,5);reject(0x90);
+ e(0xE0,0,0x1B);reject(0xB0);e(0x8A,0x29,0xFF,0);reject(0xD0);
  e(0xBF,...long(0x9A),0xC5,0x9A);reject(0xD0);
- // BB95 retained incoming ball action in player+78. Native BA4A uses bit 8
- // of DATA_81DB1E to distinguish a restricted teammate kick from legal headers.
- e(0xA5,0x78,0xC9,0x21,0);reject(0xB0);
+ e(0xBB,0xBF,...long(BACKPASS_STATE+4),0xC9,0x21,0);reject(0xB0);
  e(0xAA,0xBF,...long(0x81DB1E),0x29,8,0);reject(0xF0);
  // Hold the normal standing animation, skipping kick/throw/turn input for this
  // short interval. The native EB92 decrements the timer once per gameplay tick.
@@ -70,13 +72,37 @@ export function experimentalBackpassHooks(){
  g(0xA9,0x80,0,0x8F,...long(0x1EA0),0xE2,0x20,0xA9,0x80,0x8F,...long(0x2100),0xC2,0x20);
  c.label('original');g(0x28,0xA9,0xFF,0xFF,0x8F,...long(0x1E6C),0x5C,...long(0xA4DAC6));
  const blank=c.finish();
- // Manual diving catch uses player+78 as a distance before contact. Record
- // the incoming action only after 85:EE94 has confirmed capture, before the
- // native call replaces 12F4. BB95 already does this for ordinary catches.
- const manual=Uint8Array.from([0x08,0x48,0xAF,...long(0x12F4),0x85,0x78,0x68,0x28,0xA2,0x0E,0,0x22,...long(0x85F8B9),0x5C,...long(0x85EE9B)]);
- const slot=new Uint8Array(0x800).fill(255);slot.set(hands);slot.set(restart,0x200);slot.set(blank,0x400);slot.set(manual,0x600);
- return {entry,dispatch,transition,manualEntry,hands,restart,blank,manual,writes:[
+ // Observe every ordinary contact and every confirmed manual capture BEFORE
+ // 85:F8D6 replaces C8 / 12A0 / 12F4. Self-touches retain the armed backpass.
+ const r=assembler(recordEntry),q=(...v)=>r.emit(...v),clear=op=>r.reject(op,'clear');
+ q(0x08,0xC2,0x30,0x48,0xDA,0x5A,0xA5,0x30,0xC9,1,0);r.reject(0xD0,'done');
+ q(0xAF,...long(0x70),0xC9,8,0);r.reject(0xD0,'done');
+ q(0xA0,0,0,0x7B,0xC9,0,5);r.reject(0xF0,'slot');
+ q(0xC9,0,0x10);r.reject(0xD0,'done');q(0xA0,8,0);
+ r.label('slot');q(0x7B,0xCF,...long(0xC8));r.reject(0xF0,'done');
+ q(0xAF,...long(0xC8),0xAA,0xE0,0,5);clear(0x90);
+ q(0xE0,0,0x1B);clear(0xB0);q(0x8A,0x29,0xFF,0);clear(0xD0);
+ q(0xBF,...long(0x9A),0xC5,0x9A);clear(0xD0);
+ q(0xAF,...long(0x12F4),0xC9,0x21,0);clear(0xB0);
+ q(0xAA,0xBF,...long(0x81DB1E),0x29,8,0);clear(0xF0);
+ q(0xBB,0xAF,...long(0xC8),0x9F,...long(BACKPASS_STATE+2));
+ q(0xAF,...long(0x12F4),0x9F,...long(BACKPASS_STATE+4));
+ q(0xA9,...word(BACKPASS_STATE_MAGIC),0x9F,...long(BACKPASS_STATE));
+ r.reject(0xD0,'done'); // stored magic is nonzero; restore caller state
+ r.label('clear');q(0xBB,0xA9,0,0,0x9F,...long(BACKPASS_STATE),0x9F,...long(BACKPASS_STATE+2),0x9F,...long(BACKPASS_STATE+4));
+ r.label('done');q(0x7A,0xFA,0x68,0x28,0x6B);
+ const record=r.finish();if(record.length>0x200)throw Error('Backpass recorder exceeds slot');
+ const contact=Uint8Array.from([0x22,...long(recordEntry),0x22,...long(0x85F91D),0x5C,...long(0x84BA05)]);
+ const manual=Uint8Array.from([0x22,...long(recordEntry),0xA2,0x0E,0,0x22,...long(0x85F8B9),0x5C,...long(0x85EE9B)]);
+ const resetBytes=[];
+ resetBytes.push(0xA9,0,0);for(const n of [0,2,4,8,10,12])resetBytes.push(0x8F,...long(BACKPASS_STATE+n));
+ resetBytes.push(0xA9,1,0,0x85,0xE4,0x5C,...long(0xA4DA3F));const reset=Uint8Array.from(resetBytes);
+ const slot=new Uint8Array(0xC00).fill(255);slot.set(hands);slot.set(restart,0x200);slot.set(blank,0x400);slot.set(manual,0x600);slot.set(record,0x800);slot.set(contact,0xA00);slot.set(reset,0xB00);
+
+ return {entry,dispatch,transition,manualEntry,recordEntry,contactEntry,resetEntry,hands,restart,blank,manual,record,contact,reset,writes:[
   [BACKPASS_EXPERIMENT_SLOT,slot],
+  [offset(0x84BA01),Uint8Array.from([0x5C,...long(contactEntry)])],
+  [offset(0xA4DA3A),Uint8Array.from([0x5C,...long(resetEntry),0xEA])],
   [offset(0x84EB81),Uint8Array.from([0x5C,...long(entry)])],
   [offset(0xA4DBFF),Uint8Array.from([0x5C,...long(dispatch)])],
   [offset(0x85EE94),Uint8Array.from([0x5C,...long(manualEntry),0xEA,0xEA,0xEA])],
@@ -85,6 +111,8 @@ export function experimentalBackpassHooks(){
 }
 
 const signatures=[
+ [0x84BA01,[0x22,0x1D,0xF9,0x85,0x22,0xE0,0xEB,0x83]],
+ [0xA4DA3A,[0xA9,1,0,0x85,0xE4]],
  [0x85EE94,[0xA2,0x0E,0,0x22,0xB9,0xF8,0x85]],
  [0x84EB81,[0x7B,0x8D,0xA6,0,0x20,0x60,0xE9]],
  [0xA4DAC0,[0xA9,0xFF,0xFF,0x8D,0x6C,0x1E,0x8D,0x6E,0x1E]],
@@ -98,6 +126,7 @@ export function buildExperimentalBackpassPenalty(base){
  const rom=new Uint8Array(0x400000).fill(255);rom.set(base);
  for(const [at,bytes] of experimentalBackpassHooks().writes)rom.set(bytes,at);
  rom[0x7FD7]=0x0C;
+ rom[0x7FD8]=3; // 8 KiB SRAM; rule state at +0x1800, original saves below +0x0800.
  rom.set([255,255,0,0],0x7FDC);
  const sum=rom.reduce((n,v)=>(n+v)&65535,0);rom.set([...word(sum^65535),...word(sum)],0x7FDC);
  return rom;
