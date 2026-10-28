@@ -148,7 +148,8 @@ const uniformExports=[...uniformSource.matchAll(/^export (?:const|function) (\w+
 const uniformRuntime='window.ISSSDUniforms=(()=>{\n'+uniformSource.replace(/^export /gm,'')+'\nreturn {'+uniformExports.join(',')+'};})();\n'+fs.readFileSync(path.join(root,'editor-src/uniforms-editor.mjs'),'utf8');
 const goalkeeperRuntime='window.ISSSDGoalkeepers=(()=>{\n'+goalkeeperSource.replace(/^export /gm,'')+'\nreturn {'+goalkeeperExports.join(',')+'};})();\n'+fs.readFileSync(path.join(root,'editor-src/goalkeepers-editor.mjs'),'utf8');
 const soundsRuntime='const SOUND_SLOTS='+JSON.stringify(SOUND_SLOTS)+';\nconst FB96_SOUND_REFERENCES='+fs.readFileSync(path.join(root,'project-data','fb96-sound-references.json'),'utf8')+';\n'+fs.readFileSync(path.join(root,'editor-src','sounds-editor.mjs'),'utf8');
-const v11='const TEXT_LANGUAGE_PRESETS='+JSON.stringify(languagePresets)+';\n'+(fs.existsSync(v11File)?fs.readFileSync(v11File,'utf8'):'')+'\n'+additionalRuntime+'\n'+teamNameRuntime+'\n'+soundsRuntime+'\n'+goalkeeperRuntime+'\n'+uniformRuntime;
+const specialRulesRuntime=fs.readFileSync(path.join(root,'editor-src/special-rules.mjs'),'utf8');
+const v11='const TEXT_LANGUAGE_PRESETS='+JSON.stringify(languagePresets)+';\n'+(fs.existsSync(v11File)?fs.readFileSync(v11File,'utf8'):'')+'\n'+additionalRuntime+'\n'+teamNameRuntime+'\n'+soundsRuntime+'\n'+goalkeeperRuntime+'\n'+uniformRuntime+'\n'+specialRulesRuntime;
 try{new Function(js);new Function(v11)}catch(e){throw new Error('Build interrompido: JavaScript Git inválido: '+e.message)}
 const patch=`\n<!-- ${marker} -->\n<style id="isssd-git-visual-bridge-overrides">\n${css}\n</style>\n<script type="module" id="isssd-git-visual-bridge-runtime">\n${js}\n</script>\n<script type="module" id="isssd-git-project-import-v11">\n${v11}\n</script>\n`;
 if(html.includes('</body>'))html=html.replace('</body>',()=>patch+'\n</body>');else html+=patch;
