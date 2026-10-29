@@ -164,7 +164,8 @@ const colorSource=fs.readFileSync(path.join(root,'src/core/player-color-catalog.
 const colorExports=[...colorSource.matchAll(/^export (?:const|function) (\w+)/gm)].map(m=>m[1]);
 const colorRuntime='window.ISSSDPlayerColors=(()=>{'+colorSource.replace(/^export /gm,'')+';return{'+colorExports.join(',')+'};})();\n'+fs.readFileSync(path.join(root,'editor-src/player-color-project.mjs'),'utf8');
 const expansionRuntime=fs.readFileSync(path.join(root,'editor-src/expansion-project-status.mjs'),'utf8');
-const specialRulesRuntime=expansionRuntime+'\n'+fs.readFileSync(path.join(root,'editor-src/special-rules.mjs'),'utf8')+'\n'+colorRuntime;
+const textNavigationRuntime=fs.readFileSync(path.join(root,'editor-src/text-navigation.mjs'),'utf8');
+const specialRulesRuntime=expansionRuntime+'\n'+fs.readFileSync(path.join(root,'editor-src/special-rules.mjs'),'utf8')+'\n'+colorRuntime+'\n'+textNavigationRuntime;
 const v11='const TEXT_LANGUAGE_PRESETS='+JSON.stringify(languagePresets)+';\n'+(fs.existsSync(v11File)?fs.readFileSync(v11File,'utf8'):'')+'\n'+additionalRuntime+'\n'+teamNameRuntime+'\n'+soundsRuntime+'\n'+goalkeeperRuntime+'\n'+uniformRuntime+'\n'+specialRulesRuntime;
 try{new Function(js);new Function(v11)}catch(e){throw new Error('Build interrompido: JavaScript Git inválido: '+e.message)}
 const patch=`\n<!-- ${marker} -->\n<style id="isssd-git-visual-bridge-overrides">\n${css}\n</style>\n<script type="module" id="isssd-git-visual-bridge-runtime">\n${js}\n</script>\n<script type="module" id="isssd-git-project-import-v11">\n${v11}\n</script>\n`;
