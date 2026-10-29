@@ -2,10 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {WINDOWS_PATH_DEFAULTS,resolveWindowsPathDefaults} from '../src/platform/windows-path-defaults.mjs';
 
-test('Windows defaults preserve the historical monolithic Studio folder layout and canonical filenames',()=>{
+test('Windows defaults preserve the unified Studio folder layout and canonical filenames',()=>{
   assert.deepEqual(WINDOWS_PATH_DEFAULTS,{
-    romDirectory:'C:\\Users\\fsfre\\Downloads\\ISSSD-Studio\\roms',
-    projectDirectory:'C:\\Users\\fsfre\\Downloads\\ISSSD-Studio',
+    romDirectory:'C:\\Users\\fsfre\\Downloads\\ISSSD-Studio-UNIFICADO\\roms',
+    projectDirectory:'C:\\Users\\fsfre\\Downloads\\ISSSD-Studio-UNIFICADO',
     romFileName:'International Superstar Soccer Deluxe Plus.sfc',
     projectFileName:'International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj',
   });
@@ -25,7 +25,7 @@ test('Windows defaults can be overridden without mutating canonical defaults',()
     romFileName:'custom.sfc',
     projectFileName:'custom.issdproj',
   });
-  assert.equal(WINDOWS_PATH_DEFAULTS.romDirectory,'C:\\Users\\fsfre\\Downloads\\ISSSD-Studio\\roms');
+  assert.equal(WINDOWS_PATH_DEFAULTS.romDirectory,'C:\\Users\\fsfre\\Downloads\\ISSSD-Studio-UNIFICADO\\roms');
   assert.equal(WINDOWS_PATH_DEFAULTS.romFileName,'International Superstar Soccer Deluxe Plus.sfc');
 });
 

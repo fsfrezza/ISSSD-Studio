@@ -1,6 +1,6 @@
 export const WINDOWS_PATH_DEFAULTS=Object.freeze({
-  romDirectory:'C:\\Users\\fsfre\\Downloads\\ISSSD-Studio\\roms',
-  projectDirectory:'C:\\Users\\fsfre\\Downloads\\ISSSD-Studio',
+  romDirectory:'C:\\Users\\fsfre\\Downloads\\ISSSD-Studio-UNIFICADO\\roms',
+  projectDirectory:'C:\\Users\\fsfre\\Downloads\\ISSSD-Studio-UNIFICADO',
   romFileName:'International Superstar Soccer Deluxe Plus.sfc',
   projectFileName:'International-Superstar-Soccer-Deluxe-Plus-projeto.issdproj',
 });

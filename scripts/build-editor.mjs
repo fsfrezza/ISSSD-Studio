@@ -84,7 +84,7 @@ const unsafeDeferredLength='(studioDeferredPlayerPatches.length-deferredNative.l
 
 // O servidor local conhece a ROM-base canônica Plus e a expõe somente ao Editor em
 // /__isssd/default-plus-rom. Assim, abrir um projeto Plus nunca depende do file picker.
-const fixedPlusPath='C:\\Users\\fsfre\\Downloads\\ISSSD-Studio\\roms\\International Superstar Soccer Deluxe Plus.sfc';
+const fixedPlusPath=process.env.ISSSD_PLUS_ROM_PATH||path.join(root,'roms','International Superstar Soccer Deluxe Plus.sfc');
 const fixedBaseMarker='__ISSSD_FIXED_PLUS_ROM_PATH__';
 if(!html.includes(fixedBaseMarker)){
  const baseResolverBoundary='function studioB64(bytes){';
