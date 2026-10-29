@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import {repairUiEncoding} from '../src/ui/repair-ui-encoding.mjs';
 import {normalizeLegacyScripts} from '../src/ui/normalize-legacy-scripts.mjs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -6,7 +7,7 @@ import {fileURLToPath} from 'node:url';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const htmlPath=path.join(root,'editor','ISSSD-Studio.html');
 if(!fs.existsSync(htmlPath))throw new Error('Editor gerado não encontrado: '+htmlPath);
-let html=fs.readFileSync(htmlPath,'utf8');
+let html=repairUiEncoding(fs.readFileSync(htmlPath,'utf8'));
 
 // 1) O legado possui conteúdo histórico depois de </html>. Reincorpore esse conteúdo
 // ao fim do <body>, antes que qualquer outro patch tente injetar runtime adicional.
