@@ -5,12 +5,32 @@
   ['main-menu','Menu principal'],['game-modes','Modos de jogo'],
   ['match-options','Opções da partida'],['controls','Controles'],
   ['strategies','Estratégias'],['texts-cursor','Cursor'],
+  ['texts-players','Jogadores'],['texts-formations','Formações'],['texts-uniforms','Uniformes'],
+  ['texts-title','Tela inicial'],
   ...ADDITIONAL_TEXT_SECTIONS.filter(s=>s.createPage).map(s=>[s.page,s.title.replace(/^Textos\s+/,'')]),
   ['texts','Índice e diagnóstico']
  ].filter(([id],i,all)=>all.findIndex(a=>a[0]===id)===i);
- const ids=new Set(areas.map(a=>a[0]));
  let selected='main-menu',queued=false;
  const node=id=>document.getElementById(id);
+ function relocateTitleTexts(){
+  const source=node('titleTextCopyright')?.closest('.card');
+  if(!source&&!node('tx615Press'))return;
+  let page=node('page-texts-title');
+  if(!page){
+   page=document.createElement('section');page.className='page';page.id='page-texts-title';
+   page.innerHTML='<div class="pagehead"><div><h2>Textos da tela inicial</h2><p>Inscrições, copyright e licença. A composição visual permanece na aba Tela inicial.</p></div></div><div class="rom-content"></div>';
+   const main=document.querySelector('main.content');if(!main)return;main.appendChild(page);
+   const nav=document.createElement('button');nav.className='navbtn text-area-nav-hidden';nav.dataset.page='texts-title';nav.type='button';
+   nav.onclick=()=>{
+    document.querySelectorAll('.page').forEach(p=>{p.classList.remove('active');p.style.removeProperty('display')});
+    document.querySelectorAll('.navbtn.active').forEach(b=>b.classList.remove('active'));
+    page.classList.add('active');nav.classList.add('active');
+   };
+   node('nav-texts')?.after(nav);
+  }
+  const host=page.querySelector('.rom-content');
+  for(const card of [source,node('tx615Press')])if(card&&!host.contains(card))host.appendChild(card);
+ }
  function open(id){
   const button=document.querySelector('.navbtn[data-page="'+id+'"]');
   if(!button)return;
@@ -20,6 +40,7 @@
   queued=false;
   let nav=node('nav-game-texts');
   const anchor=node('nav-texts');if(!anchor)return;
+  relocateTitleTexts();
   if(!nav){
    nav=document.createElement('button');nav.type='button';nav.id='nav-game-texts';nav.className='navbtn';
    nav.innerHTML='<span class="navico">▤</span><span>Textos do jogo</span>';

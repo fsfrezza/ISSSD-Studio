@@ -150,7 +150,9 @@ html=html.replace(menuCommitRx,semanticMenuCommit);
 const css=fs.existsSync(cssFile)?fs.readFileSync(cssFile,'utf8'):'';
 const js=fs.existsSync(jsFile)?fs.readFileSync(jsFile,'utf8'):'';
 const languagePresets=JSON.parse(fs.readFileSync(path.join(root,'project-data','text-language-presets-v1.json'),'utf8'));
-const additionalSections=JSON.parse(fs.readFileSync(path.join(root,'project-data','additional-screen-text-fields.json'),'utf8'));
+// Routing is UI-only: keep section IDs and export areas unchanged for existing projects.
+const textPageRoutes={'player-labels':'texts-players','formation-labels':'texts-formations','uniform-labels':'texts-uniforms'};
+const additionalSections=JSON.parse(fs.readFileSync(path.join(root,'project-data','additional-screen-text-fields.json'),'utf8')).map(section=>textPageRoutes[section.id]?{...section,page:textPageRoutes[section.id],createPage:true}:section);
 const additionalRuntime='const ADDITIONAL_TEXT_SECTIONS='+JSON.stringify(additionalSections)+';\n'+fs.readFileSync(path.join(root,'editor-src','additional-screen-texts.mjs'),'utf8');
 const teamNameRuntime='const TEAM_NAME_LANGUAGE_PRESETS='+JSON.stringify(TEAM_NAME_LANGUAGE_PRESETS)+';\n'+fs.readFileSync(path.join(root,'editor-src','team-name-language-presets.mjs'),'utf8');
 const goalkeeperSource=fs.readFileSync(path.join(root,'src/core/goalkeeper-palettes.mjs'),'utf8').replace(/\r\n?/g,'\n');
