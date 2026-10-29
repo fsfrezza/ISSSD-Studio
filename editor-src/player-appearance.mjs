@@ -31,6 +31,10 @@ function renderAppearancePreview(){
   $('appearanceCurrentSummary').textContent='APARÊNCIA ATUAL — Goleiro · cabelo integrado ao desenho nativo';
   $('appearanceSelectedSummary').textContent='Edite a cor do cabelo e os tons de pele. O uniforme é editado na aba Goleiros.';
   const grid=$('appearanceGoalkeeperColors');grid.innerHTML='';
+  const simple=document.createElement('div');simple.className='gk-controls';
+  const hairLabel=document.createElement('label');hairLabel.textContent='Cor do cabelo';const hairInput=document.createElement('input');hairInput.type='color';hairInput.value=window.ISSSDGoalkeepers.goalkeeperBgrHex(nativeGoalkeeperColors[0]);hairInput.onchange=()=>{nativeGoalkeeperColors[0]=window.ISSSDGoalkeepers.goalkeeperHexBgr(hairInput.value);renderAppearancePreview();};hairLabel.append(hairInput);
+  const skinLabel=document.createElement('label');skinLabel.textContent='Tom da pele · gera sombras automaticamente';const skinInput=document.createElement('input');skinInput.type='color';skinInput.value=window.ISSSDGoalkeepers.goalkeeperBgrHex(nativeGoalkeeperColors[4]);skinInput.onchange=()=>{nativeGoalkeeperColors.splice(1,4,...nativeAppearanceCore.appearanceSkinRamp(skinInput.value));renderAppearancePreview();};skinLabel.append(skinInput);simple.append(hairLabel,skinLabel);grid.append(simple);
+  const advanced=document.createElement('details');const summary=document.createElement('summary');summary.textContent='Ajustar sombras individualmente';advanced.append(summary);grid.append(advanced);
   const labels=['Cabelo · cor','Pele · sombra escura','Pele · sombra','Pele · tom médio','Pele · luz'];
   nativeGoalkeeperColors.forEach((color,i)=>{
    const label=document.createElement('label');label.className='gk-color';const title=document.createElement('span');title.textContent=labels[i];
@@ -39,7 +43,7 @@ function renderAppearancePreview(){
    input.setAttribute('aria-label',labels[i]);code.setAttribute('aria-label',labels[i]+' · hexadecimal');
    input.oninput=()=>{nativeGoalkeeperColors[i]=window.ISSSDGoalkeepers.goalkeeperHexBgr(input.value);code.value=input.value.toUpperCase();};
    code.onchange=()=>{try{nativeGoalkeeperColors[i]=window.ISSSDGoalkeepers.goalkeeperHexBgr(code.value.trim());input.value=window.ISSSDGoalkeepers.goalkeeperBgrHex(nativeGoalkeeperColors[i]);code.value=input.value.toUpperCase();}catch(e){nativeAppearanceNote(e.message,true);}};
-   label.append(title,input,code);grid.append(label);
+   label.append(title,input,code);advanced.append(label);
   });
   for(const id of ['applyAppearanceBtn','applyAppearanceNextBtn','appearanceRestoreNativeBtn'])$(id).disabled=!nativeAppearanceSupported();
   return;
@@ -54,7 +58,8 @@ function renderAppearancePreview(){
  if(!nativeAppearanceSupported()){nativeAppearanceNote('Abra um projeto Deluxe Plus para editar a aparência.',true);return;}
  try{
   const data=nativeAppearanceCore.readNativeAppearancePalettes(rom,currentTeam),cards=$('appearanceNativePalettes');
-  cards.innerHTML=data.colors.map((colors,i)=>`<button type="button" class="native-palette-option" data-native-palette="${i}" aria-pressed="${appearanceTempPalette===i}">${appearanceTempHair?'<canvas aria-label="Prévia da paleta '+i+'"></canvas>':''}<strong>Paleta ${i} · ${i?'alternativa':'principal'}</strong><div>Pele · sombras e luzes</div>${nativeAppearanceSwatches(colors.slice(2,6))}<div>Cabelo ${nativeAppearanceSwatches([colors[1]])}</div></button>`).join('');
+  cards.innerHTML=data.colors.map((colors,i)=>`<button type="button" class="native-palette-option" data-native-palette="${i}" aria-pressed="${appearanceTempPalette===i}">${appearanceTempHair?'<canvas aria-label="Prévia da paleta '+i+'"></canvas>':''}<strong>${nativeAppearanceCore.appearanceColorLabel(data.palettes[i])}</strong><small>Conjunto ${i+1}</small><div>Pele · sombras e luzes</div>${nativeAppearanceSwatches(colors.slice(2,6))}<div>Cabelo ${nativeAppearanceSwatches([colors[1]])}</div></button>`).join('');
+  $('appearancePalette').querySelectorAll('option').forEach((option,i)=>{option.textContent=nativeAppearanceCore.appearanceColorLabel(data.palettes[i]);});
   cards.querySelectorAll('[data-native-palette]').forEach(button=>{const i=Number(button.dataset.nativePalette);if(appearanceTempHair)nativeAppearanceCanvas(button.querySelector('canvas'),appearanceTempHair,nativeAppearanceFrame,data.palettes[i]);button.onclick=()=>{appearanceTempPalette=i;renderAppearancePreview();};});
   const p=teams[currentTeam].players[currentPlayer],gk=p.position===1||['GO','GK'].includes(String(p.position));
   $('appearanceNativePaletteInfo').textContent=(data.identical?'Nesta equipe, as duas paletas de jogadores de linha possuem as mesmas cores. ':'As duas paletas podem mudar pele, cabelo e calçado em conjunto. ')+(gk?'Goleiro: use tipo 0, o desenho nativo com cabelo integrado. Tipos de linha não são compatíveis. Pele e cabelo são editados aqui; o uniforme fica na aba Goleiros.':'A escolha pertence ao jogador; as cores de cada conjunto são compartilhadas pela equipe.');

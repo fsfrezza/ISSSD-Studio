@@ -25,3 +25,14 @@ test('model front previews distinguish sleeves and wearer-left halves without re
  const halves=uniformPreviewPixels(colors,patterns,0,'navy-red-halves');assert.equal(at(halves,18,24),9);assert.equal(at(halves,30,24),8);
  assert.throws(()=>uniformModelPixels('invalid'));for(const id of ['white-green-sleeves','navy-red-halves']){const p=uniformModelPixels(id);assert.equal(p.length,512);assert.ok(p.some(v=>v>0));assert.ok(p.every(v=>v===0||v>=7&&v<=12));}
 });
+
+test('striped native overlays survive 4bpp ROM writing with transparent predominant-color gaps',async()=>{
+ const {stripedUniformPixels}=await import('../src/core/uniform-models.mjs');
+ const {encodeJerseyPattern,readJerseyPattern,JERSEY_DETAILS_PC}=await import('../src/core/team-uniforms.mjs');
+ for(const direction of ['vertical','horizontal'])for(const width of [1,2,3]){
+  const pixels=stripedUniformPixels(direction,width,15),rom=new Uint8Array(0x200000);
+  assert.equal(pixels.length,512);assert.ok(pixels.includes(0));assert.ok(pixels.includes(15));assert.ok(pixels.every(p=>p===0||p===15));
+  rom.set(encodeJerseyPattern(pixels),JERSEY_DETAILS_PC);assert.deepEqual(readJerseyPattern(rom,null,0),pixels);
+ }
+ assert.throws(()=>stripedUniformPixels('diagonal'));assert.throws(()=>stripedUniformPixels('vertical',0));assert.throws(()=>stripedUniformPixels('vertical',2,1));
+});

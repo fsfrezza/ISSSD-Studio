@@ -124,8 +124,8 @@ test('semantic hair overrides rebuild palette from clean identity despite stale 
 test('goalkeeper appearance edits show five independent colors in Players',()=>{
  const source=fs.readFileSync(new URL('../editor-src/player-appearance.mjs',import.meta.url),'utf8'),start=source.indexOf('function renderAppearancePreview('),end=source.indexOf('function loadAppearancePlayer(',start),elements={};
  class E{constructor(){this.children=[];this.classList={toggle(){}};}set innerHTML(v){this.children=[];}append(...items){this.children.push(...items);}setAttribute(){}}
- const c=vm.createContext({appearanceTempHair:13,nativeGoalkeeperColors:[0,0,0,0,0],currentTeam:30,currentPlayer:0,teams:{30:{players:[{position:'GO'}]}},document:{createElement:()=>new E()},window:{ISSSDGoalkeepers:{goalkeeperBgrHex:()=> '#000000',goalkeeperHexBgr:()=>123}},$:id=>elements[id]||=new E(),nativeAppearanceSupported:()=>true,nativeAppearanceNote(){}});
- vm.runInContext(source.slice(start,end)+'renderAppearancePreview();',c);assert.equal(c.appearanceTempHair,0);assert.equal(elements.appearanceGoalkeeperColors.children.length,5);elements.appearanceGoalkeeperColors.children[0].children[1].oninput();assert.equal(c.nativeGoalkeeperColors[0],123);assert.match(elements.appearanceSelectedSummary.textContent,/uniforme.*Goleiros/);
+ const c=vm.createContext({appearanceTempHair:13,nativeGoalkeeperColors:[0,0,0,0,0],currentTeam:30,currentPlayer:0,teams:{30:{players:[{position:'GO'}]}},document:{createElement:()=>new E()},window:{ISSSDGoalkeepers:{goalkeeperBgrHex:()=> '#000000',goalkeeperHexBgr:()=>123}},$:id=>elements[id]||=new E(),nativeAppearanceCore:core,nativeAppearanceSupported:()=>true,nativeAppearanceNote(){}});
+ vm.runInContext(source.slice(start,end)+'renderAppearancePreview();',c);assert.equal(c.appearanceTempHair,0);assert.equal(elements.appearanceGoalkeeperColors.children.length,2);const advanced=elements.appearanceGoalkeeperColors.children[1];assert.equal(advanced.children.length,6);advanced.children[1].children[1].oninput();assert.equal(c.nativeGoalkeeperColors[0],123);assert.match(elements.appearanceSelectedSummary.textContent,/uniforme.*Goleiros/);
 });
 
 test('appearance navigation and transfer lists include only compatible player models',()=>{
@@ -138,4 +138,10 @@ test('appearance navigation and transfer lists include only compatible player mo
  vm.runInContext('loadAppearancePlayer(12)',c);assert.equal(c.currentPlayer,12);
  vm.runInContext('loadAppearancePlayer(20)',c);assert.equal(c.currentPlayer,0);
  assert.equal(vm.runInContext('nativeAppearanceTransferRoster(30).length',c),2);vm.runInContext('currentPlayer=1',c);assert.equal(vm.runInContext('nativeAppearanceTransferRoster(30).length',c),18);
+});
+
+test('simple skin selector generates ordered native shades and readable palette labels',()=>{
+ const ramp=core.appearanceSkinRamp('#E0A070');assert.equal(ramp.length,4);assert.ok(ramp.every(c=>c>=0&&c<=32767));
+ for(let i=1;i<4;i++)for(const shift of [0,5,10])assert.ok((ramp[i]>>shift&31)>=(ramp[i-1]>>shift&31));
+ assert.match(core.appearanceColorLabel([0,0,0,0,0,32767]),/Pele clara · cabelo preto/);assert.throws(()=>core.appearanceSkinRamp('bad'));
 });

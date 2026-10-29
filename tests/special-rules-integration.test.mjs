@@ -36,3 +36,13 @@ test('actual UI runtime round-trips selection, defaults old projects off and rol
  window.__ISSSD_GIT_REAPPLY_PROJECT_STATE__(JSON.parse(JSON.stringify(saved)));assert.equal(box.checked,true);
  fail=true;await assert.rejects(window.studioApplyProjectWithBase({state:{semantic:{}}}),/failed/);assert.equal(box.checked,true);
 });
+
+test('Plus choices are fixed and persisted while backpass remains optional',async()=>{
+ const vm=await import('node:vm'),document={readyState:'loading',addEventListener(){},getElementById:()=>null},window={};
+ vm.runInNewContext(script,{window,document});
+ const initial=window.ISSSDSpecialRules.getState();assert.equal(initial.baseProfile,'iss-deluxe-plus');
+ assert.equal(Object.keys(initial.includedPlus).length,7);assert.ok(Object.values(initial.includedPlus).every(v=>v===true));assert.equal(initial.goalkeeperBackpassNoHands,false);
+ window.ISSSDSpecialRules.restore({specialRulesV1:{schema:'isssd-special-rules-v1',goalkeeperBackpassNoHands:true,includedPlus:{shortGoalKickB:false}}});
+ const p={state:{semantic:{}}};window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__(p);assert.equal(p.state.semantic.specialRulesV1.goalkeeperBackpassNoHands,true);assert.equal(p.state.semantic.specialRulesV1.includedPlus.shortGoalKickB,true);assert.equal(p.state.semantic.specialRulesV1.future.penaltyReplayFix,false);
+ assert.match(script,/<div class="sectionbar"><label/);assert.match(script,/checked disabled data-plus-included/);
+});

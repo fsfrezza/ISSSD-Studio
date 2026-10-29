@@ -26,3 +26,9 @@ export function applyUniformModel(team,id){
  for(let i=0;i<9;i++){out.data.palettes.home[16+i*2]=colors[i]&255;out.data.palettes.home[17+i*2]=colors[i]>>8;}
  out.uniformModelV1={id,version:1,scope:'native-eight-frame-overlay',kit:0,experimental:true};return out;
 }
+
+// Transparent pixels retain the predominant shirt color from the body.
+export function stripedUniformPixels(direction='vertical',width=2,index=15){
+ if(!['vertical','horizontal'].includes(direction)||!Number.isInteger(width)||width<1||width>4||!Number.isInteger(index)||index<7||index>15)throw Error('Listras inválidas.');
+ return MODEL_MASKS.flatMap((mask,f)=>mask.map((v,i)=>(v||MODEL_SLEEVES[f][i])&&Math.floor((direction==='vertical'?i%8:i>>3)/width)%2===0?index:0));
+}

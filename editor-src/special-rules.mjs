@@ -2,8 +2,10 @@
 (()=>{
  const KEY='goalkeeperBackpassNoHands';
  const SCHEMA='isssd-special-rules-v1';
+ const PLUS_INCLUDED=Object.freeze({shortGoalKickB:true,lastAttackProtection:true,matchTimeSelection:true,oneMinuteMatch:true,penaltyInputFix:true,batterySave:true,playerOneSecretCodes:true});
+ const includedLabels={shortGoalKickB:'Tiro de meta rasteiro com B',lastAttackProtection:'Aguardar o último ataque dentro da área adversária',matchTimeSelection:'Escolha do horário da partida',oneMinuteMatch:'Duração de 1 minuto',penaltyInputFix:'Correção de interferência na cobrança de pênalti',batterySave:'Salvar progresso por bateria',playerOneSecretCodes:'Códigos secretos pelo controle 1'};
  let selected=false;
- const getState=()=>({schema:SCHEMA,[KEY]:selected});
+ const getState=()=>({schema:SCHEMA,baseProfile:'iss-deluxe-plus',includedPlus:{...PLUS_INCLUDED},future:{penaltyReplayFix:false,deluxeBase:false},[KEY]:selected});
  function setState(semantic){
    const rule=semantic?.specialRulesV1;
    selected=rule?.schema===SCHEMA && rule[KEY]===true;
@@ -17,17 +19,19 @@
    btn.innerHTML='<span class="navico" aria-hidden="true">✦</span><span>Melhorias de Jogo</span>';
    btn.classList.remove('active');ref.after(btn);
    const page=document.createElement('section');page.id='page-game-improvements';page.className='page';
-   page.innerHTML=`<h2>Melhorias de Jogo</h2><p>Escolha as correções que deseja aplicar à ROM Plus. As opções são salvas no projeto. Desmarcadas, preservam o comportamento original do jogo.</p>
-    <div class="card"><label style="display:flex;gap:10px;align-items:center"><input type="checkbox" id="isssdBackpassRule" aria-describedby="isssdBackpassDescription"> <strong>Impedir que usuário burle recuo ao goleiro.</strong></label>
+   page.innerHTML=`<h2>Melhorias de Jogo</h2><p>A Plus continua como ROM-base. As melhorias que ela já contém estão marcadas e bloqueadas. O recuo é opcional. Todas as escolhas ficam no projeto.</p>
+    <div class="card"><div class="sectionbar"><label style="display:flex;gap:10px;align-items:center"><input type="checkbox" id="isssdBackpassRule" aria-describedby="isssdBackpassDescription"> <strong>Impedir que usuário burle recuo ao goleiro.</strong></label></div>
     <p id="isssdBackpassDescription">Não deixa que o usuário com goleiro semiautomático segure a bola com as mãos após recuo de outro jogador de sua equipe.</p>
     <p>Ao agarrar um recuo proibido, o goleiro levanta e segura a bola por cerca de meio segundo antes da marcação de pênalti para o adversário. Dominar com os pés continua permitido.</p>
     <p>Ao salvar a ROM, inclua a fase <strong>12 · Melhorias de Jogo</strong>.</p></div>
-    <div class="card"><h3>Próximas melhorias</h3><p>Ainda não disponíveis para aplicação:</p><ul>
-    <li>Impedir o bug do pênalti que permite pegar a bola no replay após não defendê-la na cobrança.</li>
-    <li>Permitir que o goleiro bata tiro de meta rasteiro com B.</li></ul></div>`;
+    <div class="card"><div class="sectionbar"><h3>Incluídas na Plus · separação futura</h3></div><p>Presentes na base Plus. Serão opções independentes quando houver suporte à base Deluxe.</p>
+    ${Object.entries(includedLabels).map(([id,label])=>`<label style="display:flex;gap:10px;margin:12px 0"><input type="checkbox" checked disabled data-plus-included="${id}"><span>${label}</span></label>`).join('')}</div>
+    <div class="card"><div class="sectionbar"><h3>Planejadas · indisponíveis</h3></div>
+    <label style="display:flex;gap:10px;margin:12px 0"><input type="checkbox" disabled><span>Impedir defesa da bola durante o replay do pênalti</span></label>
+    <label style="display:flex;gap:10px;margin:12px 0"><input type="checkbox" disabled><span>Usar Deluxe original como base e aplicar somente as opções escolhidas</span></label></div>`;
    existingPage.parentElement.appendChild(page);
-   page.querySelector('input').checked=selected;
-   page.querySelector('input').addEventListener('change',e=>{selected=e.target.checked;window.studioUpdateBadge?.();});
+   page.querySelector('#isssdBackpassRule').checked=selected;
+   page.querySelector('#isssdBackpassRule').addEventListener('change',e=>{selected=e.target.checked;window.studioUpdateBadge?.();});
    btn.addEventListener('click',e=>{
      e.preventDefault();e.stopImmediatePropagation();
      for(const p of document.querySelectorAll('.page')){p.classList.toggle('active',p===page);p.style.removeProperty('display');}
