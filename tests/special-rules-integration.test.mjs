@@ -14,9 +14,25 @@ test('special rule saves and restores the same semantic key',()=>{
   assert.match(script,/const KEY='goalkeeperBackpassNoHands'/);
   assert.match(script,/specialRulesV1=getState\(\)/);
   assert.match(script,/setState\(project\?\.state\?\.semantic\)/);
-  assert.match(script,/Regras Especiais/);
+  assert.match(script,/Melhorias de Jogo/);
 });
-test('enabled but unimplemented gameplay patch fails closed in the ROM pipeline',()=>{
-  assert.match(pipeline,/specialRulesV1\?\.goalkeeperBackpassNoHands===true/);
-  assert.match(pipeline,/throw new Error\('Regras Especiais:/);
+test('pipeline applies optional validated improvements',()=>{
+ const pipeline=readFileSync(new URL('../src/core/plus-build-pipeline.mjs',import.meta.url),'utf8');
+ assert.match(pipeline,/gameImprovementsWriter\(work,state,baseRom,selectedAreas\)/);
+});
+
+test('actual UI runtime round-trips selection, defaults old projects off and rolls back failed opens',async()=>{
+ const vm=await import('node:vm');
+ const box={checked:false};let fail=false;
+ const document={readyState:'loading',addEventListener(){},getElementById:id=>id==='isssdBackpassRule'?box:null};
+ const window={__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__:p=>{p.kept=true;return p;},__ISSSD_GIT_REAPPLY_PROJECT_STATE__:()=>true,studioApplyProjectWithBase:async()=>{if(fail)throw Error('failed');return true;}};
+ vm.runInNewContext(script,{window,document});
+ assert.equal(window.ISSSDSpecialRules.getState().goalkeeperBackpassNoHands,false);
+ const project={state:{semantic:{specialRulesV1:{schema:'isssd-special-rules-v1',goalkeeperBackpassNoHands:true}}}};
+ await window.studioApplyProjectWithBase(project);assert.equal(box.checked,true);
+ const saved={state:{semantic:{}}};window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__(saved);
+ assert.equal(saved.kept,true);assert.equal(saved.state.semantic.specialRulesV1.goalkeeperBackpassNoHands,true);
+ window.__ISSSD_GIT_REAPPLY_PROJECT_STATE__({state:{semantic:{}}});assert.equal(box.checked,false);
+ window.__ISSSD_GIT_REAPPLY_PROJECT_STATE__(JSON.parse(JSON.stringify(saved)));assert.equal(box.checked,true);
+ fail=true;await assert.rejects(window.studioApplyProjectWithBase({state:{semantic:{}}}),/failed/);assert.equal(box.checked,true);
 });

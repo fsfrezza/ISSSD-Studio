@@ -39,7 +39,7 @@ test('cumulative ROMs retain previous edits, delay tactics until their step and 
  assert.equal(r.x,-30);assert.equal(r.y,30);assert.equal(r.attack,true);
  const earlyA=resolvePlusTacticalRecord(snapshots[0].rom,30),earlyB=resolvePlusTacticalRecord(snapshots[0].rom,31);
  assert.notEqual(earlyA.recordPc,earlyB.recordPc);
- assert.ok(snapshots.length<=11);
+ assert.ok(snapshots.length<=12);
  const attr=snapshots.at(-1).rom.slice(playerOffset(30,1),playerOffset(30,1)+7);
  assert.equal(attr[0]&15,8);assert.equal(attr[4]>>4,3);assert.equal(attr[5],1);
  for(const {rom} of snapshots){assert.equal(rom.length,0x400000);assert.ok(validatePlusRuntimeMirrors(rom));}
@@ -105,7 +105,7 @@ test('HTTP export returns an extractable ZIP, correct manifest and canonical fin
   const archive=Buffer.from(await partial.arrayBuffer()),partialFiles=new Map();let cursor=0;
   while(archive.readUInt32LE(cursor)===0x04034b50){const packed=archive.readUInt32LE(cursor+18),len=archive.readUInt16LE(cursor+26),extra=archive.readUInt16LE(cursor+28),start=cursor+30+len+extra,name=archive.toString('utf8',cursor+30,cursor+30+len),bytes=inflateRawSync(archive.subarray(start,start+packed));assert.equal(crc32(bytes),archive.readUInt32LE(cursor+14));partialFiles.set(name,bytes);cursor=start+packed;}
   const partialManifest=JSON.parse(partialFiles.get('indice.json'));
-  assert.equal(partialManifest.entries.length,11);assert.equal(partialManifest.allSelectedChangesApplied,false);
+  assert.equal(partialManifest.entries.length,12);assert.equal(partialManifest.allSelectedChangesApplied,false);
   assert.equal(partialManifest.pendingTextChanges.length,1);
   assert.equal(partialManifest.entries.find(e=>e.stage==='pre-partida').pendingTextChanges.length,1);
   assert.match(partialFiles.get('TEXTOS-PENDENTES.txt').toString('utf8'),/RESTAURAR/);
@@ -148,7 +148,7 @@ test('title and menu write sets are atomic game areas before player edits',()=>{
 test('mandatory individualization also runs with no player or tactical overrides',()=>{
  const {base}=fixture(),shots=[];
  const manifest=buildCumulativeProject(base,{state:{semantic:{}}},{onRom:(rom,e)=>shots.push({rom,e})});
- assert.equal(manifest.entries.length,11);
+ assert.equal(manifest.entries.length,12);
  const a=resolvePlusTacticalRecord(shots[0].rom,30),b=resolvePlusTacticalRecord(shots[0].rom,31);
  assert.notEqual(a.recordPc,b.recordPc);assert.equal(shots[0].rom.length,0x400000);
  assert.equal(manifest.entries[2].status,'sem-alteracao-binaria');

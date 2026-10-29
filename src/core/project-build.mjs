@@ -11,10 +11,6 @@ export function buildPlusProjectRom(baseRom,project,options={}){
   const canonical=canonicalProjectState(project,{baseSize:baseRom?.length});
   const ignorePersistedPatches=options.ignorePersistedPatches===true;
   const originalSemantic=canonicalProjectSemantic(project),semanticState=baldBaseSupported(baseRom)?prepareBaldAppearanceState(originalSemantic):originalSemantic;
-  // Fail closed until the goalkeeper gameplay patch has been mapped and validated.
-  if(semanticState?.specialRulesV1?.goalkeeperBackpassNoHands===true){
-    throw new Error('Regras Especiais: correção de recuo do goleiro ainda não implementada na ROM. Desmarque a opção para gerar a ROM sem essa regra.');
-  }
   const pendingTextChanges=pendingAdditionalTextExports(semanticState,options.selectedAreas??null);
   const userWriters=options.writers??[];
   if(!Array.isArray(userWriters)||userWriters.some(writer=>typeof writer!=='function'))throw new TypeError('writers must be functions');

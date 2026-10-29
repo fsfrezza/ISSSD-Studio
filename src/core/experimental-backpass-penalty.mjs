@@ -97,9 +97,21 @@ export function experimentalBackpassHooks(){
  const resetBytes=[];
  resetBytes.push(0xA9,0,0);for(const n of [0,2,4,8,10,12])resetBytes.push(0x8F,...long(BACKPASS_STATE+n));
  resetBytes.push(0xA9,1,0,0x85,0xE4,0x5C,...long(0xA4DA3F));const reset=Uint8Array.from(resetBytes);
- const slot=new Uint8Array(0xC00).fill(255);slot.set(hands);slot.set(restart,0x200);slot.set(blank,0x400);slot.set(manual,0x600);slot.set(record,0x800);slot.set(contact,0xA00);slot.set(reset,0xB00);
+ // Cover all three shared possession paths, before STX overwrites 12F4.
+ // EE94 alone misses EEC3 and the other native catch/foot-control callers.
+ const possessionSites=[
+  [0x85F877,[0x9C,0xDC,0x12,0x9C,0xDA,0x12]],
+  [0x85F89B,[0x9C,0xB4,0,0x9C,0xD8,0x19]],
+  [0x85F8C5,[0x9C,0xCA,0x17,0x9C,0xAE,0]],
+ ];
+ const possession=possessionSites.map(([site,original],i)=>{
+  const address=entry+0xC00+i*0x40;
+  return {site,address,bytes:Uint8Array.from([0x22,...long(recordEntry),...original,0x5C,...long(site+6)])};
+ });
+ const slot=new Uint8Array(0xD00).fill(255);slot.set(hands);slot.set(restart,0x200);slot.set(blank,0x400);slot.set(manual,0x600);slot.set(record,0x800);slot.set(contact,0xA00);slot.set(reset,0xB00);for(const p of possession)slot.set(p.bytes,p.address-entry);
 
- return {entry,dispatch,transition,manualEntry,recordEntry,contactEntry,resetEntry,hands,restart,blank,manual,record,contact,reset,writes:[
+ return {entry,dispatch,transition,manualEntry,recordEntry,contactEntry,resetEntry,hands,restart,blank,manual,record,contact,reset,possession,writes:[
+  ...possession.map(p=>[offset(p.site),Uint8Array.from([0x5C,...long(p.address),0xEA,0xEA])]),
   [BACKPASS_EXPERIMENT_SLOT,slot],
   [offset(0x84BA01),Uint8Array.from([0x5C,...long(contactEntry)])],
   [offset(0xA4DA3A),Uint8Array.from([0x5C,...long(resetEntry),0xEA])],
@@ -111,6 +123,9 @@ export function experimentalBackpassHooks(){
 }
 
 const signatures=[
+ [0x85F877,[0x9C,0xDC,0x12,0x9C,0xDA,0x12]],
+ [0x85F89B,[0x9C,0xB4,0,0x9C,0xD8,0x19]],
+ [0x85F8C5,[0x9C,0xCA,0x17,0x9C,0xAE,0]],
  [0x84BA01,[0x22,0x1D,0xF9,0x85,0x22,0xE0,0xEB,0x83]],
  [0xA4DA3A,[0xA9,1,0,0x85,0xE4]],
  [0x85EE94,[0xA2,0x0E,0,0x22,0xB9,0xF8,0x85]],

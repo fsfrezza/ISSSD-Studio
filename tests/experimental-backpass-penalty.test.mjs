@@ -7,7 +7,7 @@ const write=(m,a,v)=>{m[a]=v&255;m[a+1]=v>>8;};
 const read=(m,a)=>m[a]|m[a+1]<<8;
 const flags=[0x28,0x28,0x28,0x89,0x0F,0x0F,0x8F,0x28,0,0x60,0,1,8,8,0,0x80,8,8,0x10,0x90,0,0,0x0D,8,0x15,0x40,0,0,0,0,0x30,0x60,0x90];
 function fixture(keeper=0x500){
- const m=new Uint8Array(0x1000000),h=experimentalBackpassHooks();m.set(h.hands,h.entry);m.set(h.restart,h.dispatch);m.set(h.blank,h.transition);m.set(h.manual,h.manualEntry);m.set(h.record,h.recordEntry);m.set(h.contact,h.contactEntry);m.set(h.reset,h.resetEntry);m.set(flags,0x81DB1E);
+ const m=new Uint8Array(0x1000000),h=experimentalBackpassHooks();m.set(h.hands,h.entry);m.set(h.restart,h.dispatch);m.set(h.blank,h.transition);m.set(h.manual,h.manualEntry);m.set(h.record,h.recordEntry);m.set(h.contact,h.contactEntry);m.set(h.reset,h.resetEntry);for(const p of h.possession)m.set(p.bytes,p.address);m.set(flags,0x81DB1E);
  const own=keeper===0x500?0xD00:0xE00,opp=own===0xD00?0xE00:0xD00,passer=keeper+0x100;
  for(const [a,v]of [[0x70,8],[keeper+0x30,1],[keeper+0x32,0x608],[keeper+0x70,48],[keeper+0x78,2],[keeper+0x9A,own],[keeper+0x88,opp],[passer+0x9A,own],[0xC8,keeper],[0x12A0,passer],[0x12F4,0xE],[0x11FA,0x40],[opp+0xD4,keeper===0x500?0x1100:0x600],[own+0xA4,0x8080],[opp+0xA4,3]])write(m,a,v);
  const slot=BACKPASS_STATE+(keeper===0x500?0:8);write(m,slot,BACKPASS_STATE_MAGIC);write(m,slot+2,passer);write(m,slot+4,2);
@@ -46,7 +46,7 @@ test('feet, rising animation, legal headers, adversary shots, own release and re
 });
 test('ordinary contacts only record origin and preserve original contact processing',()=>{
  const {writes}=experimentalBackpassHooks();const offsets=writes.map(([at])=>at);
- assert.ok(offsets.includes(0x23A01));assert.ok(!offsets.includes(0x2F8C5));
+ assert.ok(offsets.includes(0x23A01));assert.ok(offsets.includes(0x2F8C5));
  assert.ok(offsets.includes(0x26B81));
 });
 test('private restart chooses adversary, native penalty setup and its transition postlude',()=>{
@@ -114,4 +114,17 @@ test('new-match initialization clears both records without touching original SRA
  write(m,BACKPASS_STATE+8,BACKPASS_STATE_MAGIC);executeHook(m,h.resetEntry,{dp:0},stops);
  for(const n of [0,2,4,8,10,12])assert.equal(read(m,BACKPASS_STATE+n),0);
  assert.deepEqual(m.slice(0x700000,0x700800),before);assert.equal(read(m,0xE4),1);
+});
+
+test('all shared native possession entries record the source before action overwrite',()=>{
+ for(const keeper of [0x500,0x1000])for(let path=0;path<3;path++){
+  const {m,h,slot,passer}=fixture(keeper);write(m,slot,0);write(m,0xC8,passer);write(m,0x12F4,2);
+  const p=h.possession[path],before=initial(keeper);
+  const result=executeHook(m,p.address,before,new Set([p.site+6]));
+  assert.deepEqual(result.r,before);assert.equal(read(m,slot),BACKPASS_STATE_MAGIC);
+  assert.equal(read(m,slot+2),passer);assert.equal(read(m,slot+4),2);
+  // Native routine replaces both fields immediately after this hook.
+  write(m,0xC8,keeper);write(m,0x12F4,0xE);write(m,keeper+0x70,18);
+  executeHook(m,h.entry,before,stops);assert.equal(read(m,0xBA),BACKPASS_EXPERIMENT_EVENT);
+ }
 });

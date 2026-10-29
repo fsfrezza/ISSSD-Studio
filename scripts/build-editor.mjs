@@ -61,6 +61,12 @@ html=html.replaceAll("'goalkeepers':'Uniformes dos goleiros'","'uniforms':'Unifo
  .replaceAll("if(id==='goalkeepers')delete sem.goalkeeperPalettesV1","if(id==='uniforms')delete sem.uniformsV1;else if(id==='goalkeepers')delete sem.goalkeeperPalettesV1")
  .replaceAll("if(id==='goalkeepers')ds.goalkeeperPalettesV1=clone(ss.goalkeeperPalettesV1)","if(id==='uniforms')ds.uniformsV1=clone(ss.uniformsV1);else if(id==='goalkeepers')ds.goalkeeperPalettesV1=clone(ss.goalkeeperPalettesV1)")
  .replace(" add('goalkeepers','Uniformes dos goleiros'"," add('uniforms','Uniformes de linha · cores e desenhos',studioProjectChangeHasValues(sem.uniformsV1),x=>delete x.uniformsV1);\n add('goalkeepers','Paletas dos goleiros · aparência e uniforme'");
+// Optional gameplay choices participate in selective project open/save.
+html=html.replaceAll("'uniforms':'Uniformes de linha · cores e desenhos'","'game-improvements':'Melhorias de Jogo','uniforms':'Uniformes de linha · cores e desenhos'")
+ .replaceAll("'uniforms':sem.uniformsV1||null","'game-improvements':sem.specialRulesV1||null,'uniforms':sem.uniformsV1||null")
+ .replaceAll("if(id==='uniforms')delete sem.uniformsV1","if(id==='game-improvements')delete sem.specialRulesV1;else if(id==='uniforms')delete sem.uniformsV1")
+ .replaceAll("if(id==='uniforms')ds.uniformsV1=clone(ss.uniformsV1)","if(id==='game-improvements')ds.specialRulesV1=clone(ss.specialRulesV1);else if(id==='uniforms')ds.uniformsV1=clone(ss.uniformsV1)")
+ .replace(" add('uniforms','Uniformes de linha · cores e desenhos'"," add('game-improvements','Melhorias de Jogo',sem.specialRulesV1?.goalkeeperBackpassNoHands===true,x=>delete x.specialRulesV1);\n add('uniforms','Uniformes de linha · cores e desenhos'");
 const marker='ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE';
 html=html.replace(/<!--\s*ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE\s*-->\s*/g,'')
  .replace(/<style\s+id=["']isssd-git-visual-bridge-overrides["'][^>]*>[\s\S]*?<\/style>\s*/g,'')
