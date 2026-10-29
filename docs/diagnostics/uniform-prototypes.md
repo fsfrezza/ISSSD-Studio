@@ -16,11 +16,16 @@ native eight overlays apply to front/diagonal and selected leaning/lying poses.
 Back views use number graphics and some profiles use no overlay. Sleeves outside
 the overlay rectangle remain part of the native body. The pattern is shared by
 home/away; only the home palette is changed by selecting a preset. Full independent
-home/away body designs require further engine work. The Editor names and status
-make these constraints visible; its larger preview is schematic, not an emulator
-render of every animation.
+home/away body designs require further engine work. The Editor names and status make these constraints visible. Its preview now uses
+the actual body/OAM pose, the chosen palette and the native jersey tile, rather
+than a schematic drawing. The original hair is shown for body reference.
 
 Validation: preset codec and project/Editor round trips, non-clothing preservation,
 full tests and final Editor build; actual cumulative ROM generation; Snes9x fresh
 boot MACUCOS vs BUGIGANGAS and continued play/replay. This checks the new native
 assets load in a match, not complete coverage of every animation or ZSNES version.
+
+Scoreboard flags: exported custom graphics now avoid index 12, which is shared
+with a live match indicator. Selection retains all four source colors; match
+previews and exported flags adapt to stable indices 13–15, preserving border
+colors and the darkest emblem color. Source project pixels are never rewritten.

@@ -1,3 +1,5 @@
+import{stableFieldFlag}from'./field-flag-colors.mjs';
+import{independentFlagPixels}from'./independent-team-fields.mjs';
 import{validateTeamFlags,flagPixelsToStreams}from'./team-flags.mjs';
 import{validateIndependentTeams,GG_TEAM_IDS,nativeFieldFlagPointer,captureSelectionFlags}from'./independent-teams.mjs';
 import{konamiLzCompress,konamiLzDecompress}from'./konami-lz.mjs';
@@ -104,6 +106,7 @@ export function plusIndependentTeamsWriter(input,state,base,selectedAreas=null){
  };
  const flagEdits=validateTeamFlags(state.teamFlagsV1).teams;
  const data=Object.fromEntries(GG_TEAM_IDS.map(id=>[id,model.teams[id].data]));
+ const stableFlags=Object.fromEntries([...GG_TEAM_IDS.map(id=>{const d=data[id],colors=Array.from({length:4},(_,i)=>readWord(d.palettes.fieldFlag,2+i*2));return[id,stableFieldFlag(independentFlagPixels(model.teams[id],'fieldFlags'),colors)];}),...Object.entries(flagEdits).map(([id,v])=>[id,stableFieldFlag(v.fieldPixels,v.colors)])]);
  // The native player bank has room for four added normal records, previously unused.
  for(const id of GG_TEAM_IDS){const d=data[id];const count=Array.from({length:11},(_,i)=>d.attributes[i*7+6]&15).filter(h=>h>0&&h<14).length;if(count>3)throw Error('Equipe GG '+id+': até três titulares podem usar os cabelos nativos 1–13.');const attrs=Uint8Array.from(d.attributes);for(let i=0;i<20;i++)if(attrs[i*7+4]>>4===1)attrs[i*7+6]&=240;rom.set(attrs,0x150000+id*140);}
  // All sixty name records are copied to a private bank with a complete pointer table.
@@ -126,7 +129,7 @@ export function plusIndependentTeamsWriter(input,state,base,selectedAreas=null){
 
  const paletteTables={};
  for(const[k,old]of Object.entries({home:0x10274,skinAlt:0x1043C,hairAlt:0x103CA,keeper:0x10358,fieldFlag:0xFE06})){
-  const values=Array.from({length:k==='home'?120:60},(_,index)=>{const kit=k==='home'&&index>=60?1:0,id=index%60;if(data[id]){const record=data[id].palettes[k==='home'?(kit?'away':'home'):k];if(k==='home'){const copy=record.slice();copy[32]=0x20;copy[33]=1;return pal(copy);}return pal(record);}if(k==='fieldFlag'&&flagEdits[id])return pal([7,0,...flagEdits[id].colors.flatMap(word)]);return readWord(rom,old+(id+(k==='home'&&kit?57:0))*2);});
+  const values=Array.from({length:k==='home'?120:60},(_,index)=>{const kit=k==='home'&&index>=60?1:0,id=index%60;if(data[id]){const record=k==='fieldFlag'?[7,0,...stableFlags[id].colors.flatMap(word)]:data[id].palettes[k==='home'?(kit?'away':'home'):k];if(k==='home'){const copy=record.slice();copy[32]=0x20;copy[33]=1;return pal(copy);}return pal(record);}if(k==='fieldFlag'&&flagEdits[id])return pal([7,0,...stableFlags[id].colors.flatMap(word)]);return readWord(rom,old+(id+(k==='home'&&kit?57:0))*2);});
   paletteTables[k]=table(Uint8Array.from(values.flatMap(word)));redirectLong(cpu(old),paletteTables[k]);
  }
  // The native alternate-kit offset is 57, including the challenge palette.
@@ -168,7 +171,7 @@ export function plusIndependentTeamsWriter(input,state,base,selectedAreas=null){
   }
  }
  // Field flags are complete private compressed copies, including the first 54 originals.
- const flagPointers=[];for(let id=0;id<60;id++)for(let half=0;half<2;half++){let d;if(data[id])d=data[id].fieldFlags[half];else if(flagEdits[id])d=flagPixelsToStreams(flagEdits[id].fieldPixels)[half];else{const p=nativeFieldFlagPointer(base,id*4+half*2),at=0xD0000+(p&32767);d={bytes:konamiLzDecompress(rom,at).data,planar:!!(rom[at+1]&128)};}let packed=konamiLzCompress(d.bytes);if(d.planar)packed[1]|=128;flagPointers.push(flag(packed));}
+ const flagPointers=[];for(let id=0;id<60;id++)for(let half=0;half<2;half++){let d;if(stableFlags[id])d=flagPixelsToStreams(stableFlags[id].pixels)[half];else{const p=nativeFieldFlagPointer(base,id*4+half*2),at=0xD0000+(p&32767);d={bytes:konamiLzDecompress(rom,at).data,planar:!!(rom[at+1]&128)};}let packed=konamiLzCompress(d.bytes);if(d.planar)packed[1]|=128;flagPointers.push(flag(packed));}
  const flagTable=table(Uint8Array.from(flagPointers.flatMap(word)));redirectLong(0x81FF20,flagTable);hook(0x127E00,Uint8Array.from([0xBF,...long(cpu(flagTable)),0x60]));for(const descriptor of[0xE715,0x177A4])for(const o of[6,11,16,21])rom[descriptor+o]=0x5E;
  // Short labels use complete 64-byte strips. A private immutable cache serves
  // both bulk selection lists and the two scoreboard uploads.

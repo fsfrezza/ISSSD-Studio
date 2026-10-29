@@ -51,7 +51,7 @@ export function playerReferenceSequence(pose){
  const found=new Map();for(const p of PLAYER_POSE_CATALOG){const n=records.get(p.body)?.name||'',m=n.match(/^(.*?)(\d+)$/);if(m&&m[1]===match[1]&&!found.has(p.body))found.set(p.body,{pose:p,order:Number(m[2])});}
  return [...found.values()].sort((a,b)=>a.order-b.order).map(p=>p.pose);
 }
-export function renderPlayerReference(rom,ref,edits,{pose=playerReferencePose(ref),style=ref.kind==='hair'?ref.style:0}={}){
+export function renderPlayerReference(rom,ref,edits,{pose=playerReferencePose(ref),style=ref.kind==='hair'?ref.style:0,jersey=null}={}){
  if(!pose)return null;const originalStyle14=style===14&&pose.frame>=0&&readPlayerSprite(rom,{kind:'hair',style:14,frame:pose.frame},edits).pixels.every((v,i)=>v===ORIGINAL_HAIR_FRAMES[pose.frame][i]);
  const body=readPlayerSprite(rom,{kind:'body',id:pose.body},edits,{baldBase:!originalStyle14});if(originalStyle14)body.pixels=originalBodyWithEdits(rom,pose.body,edits);const g=geometry({kind:'body',id:pose.body}),signed=v=>v>=128?v-256:v;
  const tileAt=(index,x,y)=>{const top=g.record.top/32,bottom=g.record.bottom/32,t=index<top?index:index>=16&&index<16+bottom?top+index-16:-1;if(t<0)return 0;const [dy,dx]=coord(g,t,x,y);return body.pixels[dy*g.width+dx];};
@@ -63,6 +63,13 @@ export function renderPlayerReference(rom,ref,edits,{pose=playerReferencePose(re
  // OAM entries earlier in the list have priority over later body entries.
  for(const o of objects.slice().reverse()){const size=o[3]&16?16:8;for(let y=0;y<size;y++)for(let x=0;x<size;x++){const sx=o[3]&64?size-1-x:x,sy=o[3]&128?size-1-y:y,v=tileAt(o[2]+(sy>>3)*16+(sx>>3),sx&7,sy&7);if(v)pixels[(oy(o)-minY+y)*width+ox(o)-minX+x]=v;}}
  if(style&&pose.head&&!originalStyle14){const head=readPlayerSprite(rom,{kind:'hair',style,frame:pose.frame},edits).pixels,o=pose.head;for(let y=0;y<8;y++)for(let x=0;x<8;x++){const v=head[(o[3]&128?7-y:y)*8+(o[3]&64?7-x:x)];if(v)pixels[(signed(o[1])-4-minY+y)*width+signed(o[0])-4-minX+x]=v;}}
+ if(jersey){
+  const record=0x10000+(parseInt(pose.id.slice(2),16)&32767),mode=rom[record+5],frame=(mode&127)-1;
+  if(mode>=129&&mode<=136){
+   const tile=tilePixels(jersey,frame),o=pose.objects.find(o=>o[2]===23&&!(o[3]&16));
+   if(o)for(let y=0;y<8;y++)for(let x=0;x<8;x++){const v=tile[(o[3]&128?7-y:y)*8+(o[3]&64?7-x:x)];if(!v)continue;const px=ox(o)-minX+x,py=oy(o)-minY+y;if(px>=0&&px<width&&py>=0&&py<height)pixels[py*width+px]=v;}
+  }
+ }
  return{width,height,pixels,pose,name:records.get(pose.body).name};
 }
 export function readBaldHeadTile(rom,frame,edits){
