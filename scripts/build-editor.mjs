@@ -68,11 +68,11 @@ html=html.replaceAll("'uniforms':'Uniformes de linha · cores e desenhos'","'gam
  .replaceAll("if(id==='uniforms')delete sem.uniformsV1","if(id==='game-improvements')delete sem.specialRulesV1;else if(id==='uniforms')delete sem.uniformsV1")
  .replaceAll("if(id==='uniforms')ds.uniformsV1=clone(ss.uniformsV1)","if(id==='game-improvements')ds.specialRulesV1=clone(ss.specialRulesV1);else if(id==='uniforms')ds.uniformsV1=clone(ss.uniformsV1)")
  .replace(" add('uniforms','Uniformes de linha · cores e desenhos'"," add('game-improvements','Melhorias de Jogo',sem.specialRulesV1?.goalkeeperBackpassNoHands===true,x=>delete x.specialRulesV1);\n add('uniforms','Uniformes de linha · cores e desenhos'");
-html=html.replaceAll("'game-improvements':'Melhorias de Jogo'","'player-colors':'Pele e cabelo por jogador','game-improvements':'Melhorias de Jogo'")
- .replaceAll("'game-improvements':sem.specialRulesV1||null","'player-colors':sem.playerColorsV1||null,'game-improvements':sem.specialRulesV1||null")
- .replaceAll("if(id==='game-improvements')delete sem.specialRulesV1","if(id==='player-colors')delete sem.playerColorsV1;else if(id==='game-improvements')delete sem.specialRulesV1")
- .replaceAll("if(id==='game-improvements')ds.specialRulesV1=clone(ss.specialRulesV1)","if(id==='player-colors')ds.playerColorsV1=clone(ss.playerColorsV1);else if(id==='game-improvements')ds.specialRulesV1=clone(ss.specialRulesV1)")
- .replace(" add('game-improvements','Melhorias de Jogo'"," add('player-colors','Pele e cabelo por jogador',studioProjectChangeHasValues(sem.playerColorsV1?.players),x=>delete x.playerColorsV1);\n add('game-improvements','Melhorias de Jogo'");
+html=html.replaceAll("'game-improvements':'Melhorias de Jogo'","'stadiums':'Estádios','player-colors':'Pele e cabelo por jogador','game-improvements':'Melhorias de Jogo'")
+ .replaceAll("'game-improvements':sem.specialRulesV1||null","'stadiums':sem.stadiumsV1||null,'player-colors':sem.playerColorsV1||null,'game-improvements':sem.specialRulesV1||null")
+ .replaceAll("if(id==='game-improvements')delete sem.specialRulesV1","if(id==='stadiums')delete sem.stadiumsV1;else if(id==='player-colors')delete sem.playerColorsV1;else if(id==='game-improvements')delete sem.specialRulesV1")
+ .replaceAll("if(id==='game-improvements')ds.specialRulesV1=clone(ss.specialRulesV1)","if(id==='stadiums')ds.stadiumsV1=clone(ss.stadiumsV1);else if(id==='player-colors')ds.playerColorsV1=clone(ss.playerColorsV1);else if(id==='game-improvements')ds.specialRulesV1=clone(ss.specialRulesV1)")
+ .replace(" add('game-improvements','Melhorias de Jogo'"," add('stadiums','Estádios',studioProjectChangeHasValues(sem.stadiumsV1?.stadiums),x=>delete x.stadiumsV1);\n add('player-colors','Pele e cabelo por jogador',studioProjectChangeHasValues(sem.playerColorsV1?.players),x=>delete x.playerColorsV1);\n add('game-improvements','Melhorias de Jogo'");
 const marker='ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE';
 html=html.replace(/<!--\s*ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE\s*-->\s*/g,'')
  .replace(/<style\s+id=["']isssd-git-visual-bridge-overrides["'][^>]*>[\s\S]*?<\/style>\s*/g,'')
@@ -172,7 +172,9 @@ const textNavigationRuntime=fs.readFileSync(path.join(root,'editor-src/text-navi
 const expansionAnchor='function expansionPushResizeHistory(oldRom,label){';
 if(!html.includes(expansionAnchor))throw Error('Estado de expansão: escopo legado não encontrado.');
 html=html.replace(expansionAnchor,()=>expansionRuntime+'\n'+expansionAnchor);
-const specialRulesRuntime=fs.readFileSync(path.join(root,'editor-src/special-rules.mjs'),'utf8')+'\n'+colorRuntime;
+const stadiumSource=fs.readFileSync(path.join(root,'src/core/stadiums.mjs'),'utf8').replace(/^export /gm,'');
+const stadiumRuntime='window.ISSSDStadiums=(()=>{'+stadiumSource+';return{STADIUMS,readStadiums,validateStadiums};})();\n'+fs.readFileSync(path.join(root,'editor-src/stadiums-editor.mjs'),'utf8');
+const specialRulesRuntime=fs.readFileSync(path.join(root,'editor-src/special-rules.mjs'),'utf8')+'\n'+colorRuntime+'\n'+stadiumRuntime;
 const v11='const TEXT_LANGUAGE_PRESETS='+JSON.stringify(languagePresets)+';\n'+(fs.existsSync(v11File)?fs.readFileSync(v11File,'utf8'):'')+'\n'+additionalRuntime+'\n'+teamNameRuntime+'\n'+soundsRuntime+'\n'+goalkeeperRuntime+'\n'+uniformRuntime+'\n'+specialRulesRuntime;
 try{new Function(js);new Function(v11)}catch(e){throw new Error('Build interrompido: JavaScript Git inválido: '+e.message)}
 const patch=`\n<!-- ${marker} -->\n<style id="isssd-git-visual-bridge-overrides">\n${css}\n</style>\n<script type="module" id="isssd-git-visual-bridge-runtime">\n${js}\n</script>\n<script type="module" id="isssd-git-project-import-v11">\n${v11}\n</script>\n<script id="isssd-text-navigation">\n(()=>{const ADDITIONAL_TEXT_SECTIONS=${JSON.stringify(additionalSections)};\n${textNavigationRuntime}\n})();\n</script>\n`;

@@ -1,3 +1,4 @@
+import {stadiumsWriter} from './stadiums.mjs';
 import {gameImprovementsWriter} from './game-improvements.mjs';
 import{plusIndependentTeamsWriter}from'./plus-independent-teams.mjs';
 import{plusPlayerCloseupWriter}from'./plus-player-closeup.mjs';
@@ -82,6 +83,7 @@ export function createPlusBuildStages({baseRom,patches=[],extraWriters=[],writeC
     },
     {id:'04b-player-sprites',kind:'semantic',run:(work,state)=>playerSpriteWriter(work,state,baseRom,selectedAreas)},
     {id:'04c-bald-player-base',kind:'semantic',run:(work,state)=>plusBaldPlayerBaseWriter(work,state,baseRom,selectedAreas)},
+    {id:'04c-stadiums',kind:'semantic',run:(work,state)=>stadiumsWriter(work,state,baseRom,selectedAreas)},
     {id:'04c-team-uniforms',kind:'semantic',run:(work,state)=>plusUniformsWriter(work,state,baseRom,selectedAreas)},
     {id:'04c-goalkeeper-palettes',kind:'semantic',run:(work,state)=>plusGoalkeeperPalettesWriter(work,state,baseRom,selectedAreas)},
     {id:'04c-custom-hair',kind:'semantic',run:(work,state)=>plusCustomHairWriter(work,state,baseRom,selectedAreas)},
