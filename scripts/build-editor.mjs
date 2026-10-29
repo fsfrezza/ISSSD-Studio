@@ -165,10 +165,15 @@ const colorExports=[...colorSource.matchAll(/^export (?:const|function) (\w+)/gm
 const colorRuntime='window.ISSSDPlayerColors=(()=>{'+colorSource.replace(/^export /gm,'')+';return{'+colorExports.join(',')+'};})();\n'+fs.readFileSync(path.join(root,'editor-src/player-color-project.mjs'),'utf8');
 const expansionRuntime=fs.readFileSync(path.join(root,'editor-src/expansion-project-status.mjs'),'utf8');
 const textNavigationRuntime=fs.readFileSync(path.join(root,'editor-src/text-navigation.mjs'),'utf8');
-const specialRulesRuntime=expansionRuntime+'\n'+fs.readFileSync(path.join(root,'editor-src/special-rules.mjs'),'utf8')+'\n'+colorRuntime+'\n'+textNavigationRuntime;
+// Expansion reads the private legacy ROM buffer. Run in that closure, never
+// from the independent import module where renderExpansion is out of scope.
+const expansionAnchor='function expansionPushResizeHistory(oldRom,label){';
+if(!html.includes(expansionAnchor))throw Error('Estado de expansão: escopo legado não encontrado.');
+html=html.replace(expansionAnchor,()=>expansionRuntime+'\n'+expansionAnchor);
+const specialRulesRuntime=fs.readFileSync(path.join(root,'editor-src/special-rules.mjs'),'utf8')+'\n'+colorRuntime;
 const v11='const TEXT_LANGUAGE_PRESETS='+JSON.stringify(languagePresets)+';\n'+(fs.existsSync(v11File)?fs.readFileSync(v11File,'utf8'):'')+'\n'+additionalRuntime+'\n'+teamNameRuntime+'\n'+soundsRuntime+'\n'+goalkeeperRuntime+'\n'+uniformRuntime+'\n'+specialRulesRuntime;
 try{new Function(js);new Function(v11)}catch(e){throw new Error('Build interrompido: JavaScript Git inválido: '+e.message)}
-const patch=`\n<!-- ${marker} -->\n<style id="isssd-git-visual-bridge-overrides">\n${css}\n</style>\n<script type="module" id="isssd-git-visual-bridge-runtime">\n${js}\n</script>\n<script type="module" id="isssd-git-project-import-v11">\n${v11}\n</script>\n`;
+const patch=`\n<!-- ${marker} -->\n<style id="isssd-git-visual-bridge-overrides">\n${css}\n</style>\n<script type="module" id="isssd-git-visual-bridge-runtime">\n${js}\n</script>\n<script type="module" id="isssd-git-project-import-v11">\n${v11}\n</script>\n<script id="isssd-text-navigation">\n(()=>{const ADDITIONAL_TEXT_SECTIONS=${JSON.stringify(additionalSections)};\n${textNavigationRuntime}\n})();\n</script>\n`;
 if(html.includes('</body>'))html=html.replace('</body>',()=>patch+'\n</body>');else html+=patch;
 const markerCount=(html.match(/ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE/g)||[]).length,runtimeCount=(html.match(/id=["']isssd-git-visual-bridge-runtime["']/g)||[]).length,styleCount=(html.match(/id=["']isssd-git-visual-bridge-overrides["']/g)||[]).length,v11Count=(html.match(/id=["']isssd-git-project-import-v11["']/g)||[]).length;
 if(markerCount!==1||runtimeCount!==1||styleCount!==1||v11Count!==1)throw new Error(`Build interrompido: injeção Git duplicada/incompleta (marker=${markerCount}, runtime=${runtimeCount}, style=${styleCount}, v11=${v11Count}).`);
