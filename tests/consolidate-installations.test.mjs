@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {consolidateInstallations} from '../scripts/consolidate-installations.mjs';
+import {consolidateInstallations,transferInstallation} from '../scripts/consolidate-installations.mjs';
 function fixture(){
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'isssd-consolidate-'));
  const put=(name,rel,content)=>{const p=path.join(root,name,rel);fs.mkdirSync(path.dirname(p),{recursive:true});fs.writeFileSync(p,content)};
@@ -37,5 +37,19 @@ test('symlink in an old installation stops consolidation before removing or repl
   fs.symlinkSync(path.join(f.root,'ISSSD-Studio-Atualizado'),path.join(f.root,'ISSSD-Studio','external'),'dir');
   assert.throws(()=>consolidateInstallations(f.root,{build:false}),/Link encontrado/);
   for(const name of ['ISSSD-Studio','ISSSD-Studio-Atualizado','ISSSD-Studio-UNIFICADO'])assert(fs.existsSync(path.join(f.root,name)));
+ }finally{f.clean()}
+});
+
+test('Windows EBUSY during rename falls back to verified copy including recovery and Git metadata',()=>{
+ const f=fixture();try{
+  const source=path.join(f.root,'ISSSD-Studio-Atualizado'),target=path.join(f.root,'Copied');
+  f.put('ISSSD-Studio-Atualizado','.git/HEAD','ref: refs/heads/current');
+  f.put('ISSSD-Studio-Atualizado','recovery/previous.zip','PREVIOUS BACKUP');
+  f.put('ISSSD-Studio-Atualizado','node_modules/cache','regenerate');
+  const result=transferInstallation(source,target,{rename(){throw Object.assign(Error('locked'),{code:'EBUSY'})}});
+  assert.equal(result.copied,true);assert.equal(result.sourceRemoved,true);
+  for(const [rel,content]of [['custom.issdproj','CURRENT'],['.git/HEAD','ref: refs/heads/current'],['recovery/previous.zip','PREVIOUS BACKUP']])assert.equal(fs.readFileSync(path.join(target,rel),'utf8'),content);
+  assert.equal(fs.existsSync(path.join(target,'node_modules')),false);
+  assert.equal(fs.existsSync(source),false);
  }finally{f.clean()}
 });

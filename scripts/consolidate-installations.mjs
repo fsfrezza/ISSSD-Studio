@@ -8,6 +8,25 @@ import {ZipFile} from '../src/platform/zip-file.mjs';
 
 const sha=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
 const generated=rel=>rel==='node_modules'||rel.startsWith('node_modules/')||rel==='editor/ISSSD-Studio.html';
+export function transferInstallation(source,target,{rename=fs.renameSync}={}){
+ try{rename(source,target);return {copied:false,sourceRemoved:true};}
+ catch(error){if(!['EBUSY','EPERM','EACCES'].includes(error.code))throw error;}
+ console.log('Windows bloqueou a renomeação. Copiando e verificando a instalação...');
+ const snapshot=files(source).map(rel=>({rel,sha256:sha(fs.readFileSync(path.join(source,rel)))}));
+ fs.mkdirSync(target,{recursive:false});
+ for(const {rel,sha256}of snapshot){
+  const from=path.join(source,rel),to=path.join(target,rel);
+  fs.mkdirSync(path.dirname(to),{recursive:true});fs.copyFileSync(from,to,fs.constants.COPYFILE_EXCL);
+  if(sha(fs.readFileSync(to))!==sha256||sha(fs.readFileSync(from))!==sha256)throw Error('A cópia não conferiu; origem preservada: '+rel);
+ }
+ if(JSON.stringify(files(source))!==JSON.stringify(snapshot.map(e=>e.rel)))throw Error('A origem mudou durante a cópia; nenhuma exclusão foi iniciada.');
+ // Dependencies and the generated editor are recreated in the final path.
+ // A locked source may remain, but the verified target is already complete.
+ let sourceRemoved=true;
+ try{fs.rmSync(source,{recursive:true,maxRetries:3,retryDelay:200});}
+ catch(error){sourceRemoved=false;console.warn('Instalação unificada pronta. Limpeza pendente da pasta bloqueada: '+source+' ('+error.code+').');}
+ return {copied:true,sourceRemoved};
+}
 function files(root,relative=''){
  const out=[];
  for(const e of fs.readdirSync(path.join(root,relative),{withFileTypes:true})){
@@ -85,12 +104,17 @@ export function consolidateInstallations(parent,{build=true}={}){
  for(const {root,list}of inventories)if(JSON.stringify(files(root))!==JSON.stringify(list))throw Error('A pasta mudou durante a consolidação: '+root);
  fs.writeFileSync(path.join(recovery,'manifesto.json'),JSON.stringify({version:1,source:path.basename(source),target:path.basename(target),excluded:['node_modules (reinstalável)','editor/ISSSD-Studio.html (gerado pelo build)'],records},null,2));
  if(fs.existsSync(target))fs.rmSync(target,{recursive:true});
- fs.renameSync(source,target);
- for(const root of olds)if(root!==target)fs.rmSync(root,{recursive:true});
+ const transfer=transferInstallation(source,target);
+ let cleanupPending=!transfer.sourceRemoved;
+ for(const root of olds)if(root!==target){
+  try{fs.rmSync(root,{recursive:true,maxRetries:3,retryDelay:200});}
+  catch(error){cleanupPending=true;console.warn('Limpeza pendente da pasta antiga: '+root+' ('+error.code+'). Os dados já foram preservados.');}
+ }
  console.log('\nConsolidação concluída: '+target);
  console.log('Arquivos exclusivos preservados em: '+path.join(target,path.relative(source,recovery)));
- console.log('Foram removidas as instalações antigas, dependências duplicadas e HTMLs gerados antigos.');
- return {target,records,archived:entries.length};
+ console.log(!cleanupPending?'Pastas antigas removidas.':'A limpeza das pastas bloqueadas ficará pendente até liberar o bloqueio do Windows.');
+ if(transfer.copied)console.log('Execute npm ci na pasta UNIFICADO antes de npm run editor.');
+ return {target,records,archived:entries.length,...transfer};
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
  const parent=process.argv[2];
