@@ -7,11 +7,14 @@
  const takerBoxes={goalkeeperFreeKickTaker:'isssdGoalkeeperFreeKickTaker',goalkeeperCornerKickTaker:'isssdGoalkeeperCornerKickTaker'};
  let takers={goalkeeperFreeKickTaker:false,goalkeeperCornerKickTaker:false};
  let selected=false;
- const getState=()=>({schema:SCHEMA,baseProfile:'iss-deluxe-plus',includedPlus:{...PLUS_INCLUDED},future:{penaltyReplayFix:false,deluxeBase:false},[KEY]:selected,...takers});
+ let punishment='penalty';
+ const getState=()=>({schema:SCHEMA,baseProfile:'iss-deluxe-plus',includedPlus:{...PLUS_INCLUDED},future:{penaltyReplayFix:false,deluxeBase:false},[KEY]:selected,goalkeeperBackpassPunishment:punishment,...takers});
  function setState(semantic){
    const rule=semantic?.specialRulesV1;
    selected=rule?.schema===SCHEMA && rule[KEY]===true;
+   punishment=rule?.goalkeeperBackpassPunishment==='free-kick'?'free-kick':'penalty';
    const box=document.getElementById('isssdBackpassRule');if(box)box.checked=selected;
+   const choice=document.getElementById('isssdBackpassPunishment');if(choice){choice.value=punishment;choice.disabled=!selected;}
    for(const [key,id]of Object.entries(takerBoxes)){takers[key]=rule?.schema===SCHEMA&&rule[key]===true;const input=document.getElementById(id);if(input)input.checked=takers[key];}
  }
  function mount(){
@@ -25,7 +28,9 @@
    page.innerHTML=`<h2>Melhorias de Jogo</h2><p>A Plus continua como ROM-base. As melhorias que ela já contém estão marcadas e bloqueadas. As opções adicionais abaixo são independentes e ficam salvas no projeto.</p>
     <div class="card"><div class="sectionbar"><label style="display:flex;gap:10px;align-items:center"><input type="checkbox" id="isssdBackpassRule" aria-describedby="isssdBackpassDescription"> <strong>Impedir que usuário burle recuo ao goleiro.</strong></label></div>
     <p id="isssdBackpassDescription">Não deixa que o usuário com goleiro semiautomático segure a bola com as mãos após recuo de outro jogador de sua equipe.</p>
-    <p>Ao agarrar um recuo proibido, o goleiro levanta e segura a bola por cerca de meio segundo antes da marcação de pênalti para o adversário. Dominar com os pés continua permitido.</p>
+    <label for="isssdBackpassPunishment">Punição pelo recuo</label>
+    <select id="isssdBackpassPunishment" disabled><option value="penalty">Pênalti</option><option value="free-kick">Tiro livre direto dentro da área</option></select>
+    <p>Ao agarrar um recuo proibido, o goleiro segura a bola por cerca de meio segundo antes da punição escolhida. O tiro livre é cobrado no local da infração, inclusive dentro da área. Dominar com os pés continua permitido. Desmarcada, a opção mantém o comportamento original.</p>
     <p>Ao salvar a ROM, inclua a fase <strong>12 · Melhorias de Jogo</strong>.</p></div>
     <div class="card"><div class="sectionbar"><h3>Permitir que o goleiro seja batedor de faltas e/ou escanteios</h3></div>
     <label style="display:flex;gap:10px;margin:12px 0"><input type="checkbox" id="isssdGoalkeeperFreeKickTaker"><span>Permitir goleiro como batedor de faltas</span></label>
@@ -39,7 +44,8 @@
     <label style="display:flex;gap:10px;margin:12px 0"><input type="checkbox" disabled><span>Usar Deluxe original como base e aplicar somente as opções escolhidas</span></label></div>`;
    existingPage.parentElement.appendChild(page);
    page.querySelector('#isssdBackpassRule').checked=selected;
-   page.querySelector('#isssdBackpassRule').addEventListener('change',e=>{selected=e.target.checked;window.studioUpdateBadge?.();});
+   page.querySelector('#isssdBackpassRule').addEventListener('change',e=>{selected=e.target.checked;page.querySelector('#isssdBackpassPunishment').disabled=!selected;window.studioUpdateBadge?.();});
+   const choice=page.querySelector('#isssdBackpassPunishment');choice.value=punishment;choice.disabled=!selected;choice.addEventListener('change',e=>{punishment=e.target.value;window.studioUpdateBadge?.();});
    for(const [key,id]of Object.entries(takerBoxes)){const input=page.querySelector('#'+id);input.checked=takers[key];input.addEventListener('change',e=>{takers[key]=e.target.checked;window.studioUpdateBadge?.();});}
    btn.addEventListener('click',e=>{
      e.preventDefault();e.stopImmediatePropagation();

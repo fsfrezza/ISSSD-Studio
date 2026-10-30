@@ -11,6 +11,7 @@ export function executeHook(memory,entry,initial={},nativeCalls=new Set()){
  const branch=take=>{const n=byte();if(take)pc+=(n&128?n-256:n);};
  while(++steps<10000){switch(byte()){
   case 0xF4:push16(word());break;case 0x08:push(r.p);break;case 0x28:r.p=pop();break;case 0xC2:r.p&=~byte();break;case 0xE2:r.p|=byte();break;
+  case 0x0B:push16(r.dp);break;case 0x2B:r.dp=nz(pop16());break;case 0x5B:r.dp=nz(r.a);break;
   case 0x48:push16(r.a);break;case 0x68:r.a=nz(pop16());break;
   case 0xDA:push16(r.x);break;case 0xFA:r.x=nz(pop16());break;
   case 0x5A:push16(r.y);break;case 0x7A:r.y=nz(pop16());break;

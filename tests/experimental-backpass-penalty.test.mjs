@@ -6,8 +6,8 @@ import {experimentalBackpassHooks,BACKPASS_STATE,BACKPASS_STATE_MAGIC,BACKPASS_E
 const write=(m,a,v)=>{m[a]=v&255;m[a+1]=v>>8;};
 const read=(m,a)=>m[a]|m[a+1]<<8;
 const flags=[0x28,0x28,0x28,0x89,0x0F,0x0F,0x8F,0x28,0,0x60,0,1,8,8,0,0x80,8,8,0x10,0x90,0,0,0x0D,8,0x15,0x40,0,0,0,0,0x30,0x60,0x90];
-function fixture(keeper=0x500){
- const m=new Uint8Array(0x1000000),h=experimentalBackpassHooks();m.set(h.hands,h.entry);m.set(h.restart,h.dispatch);m.set(h.blank,h.transition);m.set(h.manual,h.manualEntry);m.set(h.record,h.recordEntry);m.set(h.contact,h.contactEntry);m.set(h.reset,h.resetEntry);for(const p of h.possession)m.set(p.bytes,p.address);m.set(flags,0x81DB1E);
+function fixture(keeper=0x500,options={}){
+ const m=new Uint8Array(0x1000000),h=experimentalBackpassHooks(options);m.set(h.decision,h.decisionEntry);m.set(h.hands,h.entry);m.set(h.restart,h.dispatch);m.set(h.blank,h.transition);m.set(h.manual,h.manualEntry);m.set(h.record,h.recordEntry);m.set(h.contact,h.contactEntry);m.set(h.reset,h.resetEntry);for(const p of h.possession)m.set(p.bytes,p.address);m.set(flags,0x81DB1E);
  const own=keeper===0x500?0xD00:0xE00,opp=own===0xD00?0xE00:0xD00,passer=keeper+0x100;
  for(const [a,v]of [[0x70,8],[keeper+0x30,1],[keeper+0x32,0x608],[keeper+0x70,48],[keeper+0x78,2],[keeper+0x9A,own],[keeper+0x88,opp],[passer+0x9A,own],[0xC8,keeper],[0x12A0,passer],[0x12F4,0xE],[0x11FA,0x40],[opp+0xD4,keeper===0x500?0x1100:0x600],[own+0xA4,0x8080],[opp+0xA4,3]])write(m,a,v);
  const slot=BACKPASS_STATE+(keeper===0x500?0:8);write(m,slot,BACKPASS_STATE_MAGIC);write(m,slot+2,passer);write(m,slot+4,2);
@@ -126,5 +126,33 @@ test('all shared native possession entries record the source before action overw
   // Native routine replaces both fields immediately after this hook.
   write(m,0xC8,keeper);write(m,0x12F4,0xE);write(m,keeper+0x70,18);
   executeHook(m,h.entry,before,stops);assert.equal(read(m,0xBA),BACKPASS_EXPERIMENT_EVENT);
+ }
+});
+
+
+test('backpass alone bypasses native penalty classification and consumes its marker once',()=>{
+ for(const carry of [0,1])for(const marked of [false,true]){
+  const {m,h}=fixture(0x500,{punishment:'free-kick'});
+  write(m,BACKPASS_STATE+16,marked?BACKPASS_STATE_MAGIC:0);
+  // The displaced PLD pops the caller's saved direct page.
+  write(m,0x1AE,0);const before={a:0x9876,x:0x4567,y:0x2345,p:0x84|carry,dp:0x1100,s:0x1AD,db:0x81};
+  const expected=marked||carry?0xA4DD57:0xA4DE9F;
+  const {r,calls}=executeHook(m,h.decisionEntry,before,new Set([0xA4DD57,0xA4DE9F]));
+  assert.equal(calls[0].target,expected);assert.equal(r.a,before.a);assert.equal(r.x,before.x);assert.equal(r.y,before.y);
+  assert.equal(r.p&1,carry);assert.equal(r.dp,0);assert.equal(r.s,0x1AF);assert.equal(read(m,BACKPASS_STATE+16),0);
+  // A following ordinary foul inside the box must still be a penalty.
+  const follow=executeHook(m,h.decisionEntry,{...before,p:before.p&~1},new Set([0xA4DD57,0xA4DE9F]));assert.equal(follow.calls[0].target,0xA4DE9F);
+ }
+});
+test('both free-kick keepers use native foul setup and possession helpers without penalty fade',()=>{
+ for(const keeper of [0x500,0x1000]){
+  const {m,h}=fixture(keeper,{punishment:'free-kick'});write(m,keeper+0x70,18);write(m,keeper+0x2A,0x100);write(m,keeper+0x2C,0x140);
+  executeHook(m,h.entry,initial(keeper),stops);assert.equal(read(m,0xBA),BACKPASS_EXPERIMENT_EVENT);assert.equal(read(m,0x11F0),0x100);assert.equal(read(m,0x11F2),0x140);
+  write(m,0xBC,BACKPASS_EXPERIMENT_EVENT);write(m,0x11E8,0x1800);
+  const {calls,r}=executeHook(m,h.dispatch,{dp:0},new Set([...stops,0xA4DD45,0x848544,0x85EECE]));
+  assert.deepEqual(calls.map(c=>c.target),[0x80D38E,0xA4DD45,0x848544,0x85EECE]);
+  assert.equal(calls[2].dp,keeper);assert.equal(calls[2].a,0x10);assert.equal(calls[3].dp,0x1800);assert.equal(r.dp,0);
+  assert.equal(read(m,0xE6),0);assert.equal(read(m,BACKPASS_STATE+16),BACKPASS_STATE_MAGIC);
+  executeHook(m,h.resetEntry,{dp:0},stops);assert.equal(read(m,BACKPASS_STATE+16),0);
  }
 });

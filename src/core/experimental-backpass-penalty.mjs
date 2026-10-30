@@ -1,4 +1,4 @@
-// Isolated experiment. Not wired into the editor's validated export pipeline.
+// Optional backpass punishments used by the editor export pipeline.
 // Source: Yoshifanatic ISSD disassembly, Routine_Macros_ISSD.asm.
 export const BACKPASS_EXPERIMENT_SLOT=0x3FF000;
 export const BACKPASS_EXPERIMENT_EVENT=0x7F01;
@@ -20,8 +20,10 @@ function assembler(start){
 // Native standing-with-ball timer starts at 48; punish after 30 visible frames.
 export const BACKPASS_HANDS_DELAY_FRAMES=30;
 export const BACKPASS_PENALTY_TRANSITION_FRAMES=48;
-export function experimentalBackpassHooks(){
- const entry=cpu(BACKPASS_EXPERIMENT_SLOT),dispatch=entry+0x200,transition=entry+0x400,manualEntry=entry+0x600,recordEntry=entry+0x800,contactEntry=entry+0xA00,resetEntry=entry+0xB00;
+export function experimentalBackpassHooks({punishment='penalty'}={}){
+ if(!['penalty','free-kick'].includes(punishment))throw Error('Punição de recuo inválida: '+punishment);
+ const freeKick=punishment==='free-kick';
+ const entry=cpu(BACKPASS_EXPERIMENT_SLOT),dispatch=entry+0x200,transition=entry+0x400,manualEntry=entry+0x600,recordEntry=entry+0x800,contactEntry=entry+0xA00,resetEntry=entry+0xB00,decisionEntry=entry+0xD00;
  const a=assembler(entry),e=(...v)=>a.emit(...v),reject=op=>a.reject(op,'normal');
  // Reproduce EB81's displaced TDC / STA $00A6 before preserving its result.
  e(0x7B,0x8F,...long(0xA6),0x08,0xC2,0x30,0x48,0xDA,0x5A);
@@ -29,7 +31,8 @@ export function experimentalBackpassHooks(){
  e(0xA5,0x32,0xC9,8,6);reject(0xD0); // native upright hands-holding action
  e(0xAF,...long(0x70),0xC9,8,0);reject(0xD0);
  // Keep the infracting keeper holding the ball during the whistle/fade.
- e(0xAF,...long(0xC2),0xC9,6,0);a.reject(0xD0,'eligibility');
+ e(0xAF,...long(0xC2));if(freeKick)e(0x29,0xFE,0xFF);e(0xC9,freeKick?4:6,0);a.reject(0xD0,'eligibility');
+ if(freeKick){e(0xAF,...long(0xE6));a.reject(0xF0,'eligibility');}
  e(0x7B,0xCF,...long(0xC4));a.reject(0xF0,'holding');
  a.label('eligibility');
  for(const addr of [0xBA,0xBC,0xC0]){e(0xAF,...long(addr));reject(0xD0);}
@@ -49,6 +52,7 @@ export function experimentalBackpassHooks(){
  // short interval. The native EB92 decrements the timer once per gameplay tick.
  e(0xA5,0x70,0xC9,...word(49-BACKPASS_HANDS_DELAY_FRAMES));a.reject(0xB0,'wait');
  e(0x7B,0x8F,...long(0xC4),0xA5,0x88,0xAA,0xBF,...long(0xD4),0x8F,...long(0xC6));
+ if(freeKick){e(0xA5,0x2A,0x8F,...long(0xCA),0x8F,...long(0x11F0),0xA5,0x2C,0x8F,...long(0xCE),0x8F,...long(0x11F2));}
  e(0xA9,...word(BACKPASS_EXPERIMENT_EVENT),0x8F,...long(0xBA));
  a.label('wait');e(0x7A,0xFA,0x68,0x28,0x5C,...long(0x84EB92));
  a.label('holding');e(0x7A,0xFA,0x68,0x28,0x5C,...long(0x84EB76));
@@ -60,8 +64,15 @@ export function experimentalBackpassHooks(){
  f(0xA9,3,0,0x8F,...long(0xBA),0x8F,...long(0xBC),0xA9,0,0,0x8F,...long(0x12DE));
  f(0xAF,...long(0xC4),0xAA,0xBF,...long(0x88),0xAA,0xBF,...long(0xA4),0x09,0x80,0,0x9F,...long(0xA4));
  f(0xAF,...long(0xC4),0xAA,0xBF,...long(0x9A),0xAA,0xBF,...long(0xA4),0x29,0x7F,0xFF,0x9F,...long(0xA4));
- // Preserve the native penalty loader and its outer DD27 transition postlude.
- f(0x22,...long(0xA4DE9F),0xA9,...word(BACKPASS_PENALTY_TRANSITION_FRAMES),0x8F,...long(0xE6),0x6B);
+ // Native free kicks restart in place; the penalty-only fade must not run.
+ if(freeKick)f(0xA9,...word(BACKPASS_STATE_MAGIC),0x8F,...long(BACKPASS_STATE+16));
+ f(0x22,...long(freeKick?0xA4DD45:0xA4DE9F));
+ if(freeKick){
+  // Release the keeper's hands action and transfer possession using native helpers.
+  f(0x0B,0xAF,...long(0xC4),0x5B,0xA9,0x10,0,0x22,...long(0x848544),0x2B);
+  f(0x0B,0xAF,...long(0x11E8),0x5B,0x22,...long(0x85EECE),0x2B);
+ }
+ f(0xA9,...word(freeKick?0:BACKPASS_PENALTY_TRANSITION_FRAMES),0x8F,...long(0xE6),0x6B);
  b.label('normal');f(0x5C,...long(0xA4DC03));
  const restart=b.finish();
  const c=assembler(transition),g=(...v)=>c.emit(...v);
@@ -95,7 +106,7 @@ export function experimentalBackpassHooks(){
  const contact=Uint8Array.from([0x22,...long(recordEntry),0x22,...long(0x85F91D),0x5C,...long(0x84BA05)]);
  const manual=Uint8Array.from([0x22,...long(recordEntry),0xA2,0x0E,0,0x22,...long(0x85F8B9),0x5C,...long(0x85EE9B)]);
  const resetBytes=[];
- resetBytes.push(0xA9,0,0);for(const n of [0,2,4,8,10,12])resetBytes.push(0x8F,...long(BACKPASS_STATE+n));
+ resetBytes.push(0xA9,0,0);for(const n of (freeKick?[0,2,4,8,10,12,16]:[0,2,4,8,10,12]))resetBytes.push(0x8F,...long(BACKPASS_STATE+n));
  resetBytes.push(0xA9,1,0,0x85,0xE4,0x5C,...long(0xA4DA3F));const reset=Uint8Array.from(resetBytes);
  // Cover all three shared possession paths, before STX overwrites 12F4.
  // EE94 alone misses EEC3 and the other native catch/foot-control callers.
@@ -108,9 +119,18 @@ export function experimentalBackpassHooks(){
   const address=entry+0xC00+i*0x40;
   return {site,address,bytes:Uint8Array.from([0x22,...long(recordEntry),...original,0x5C,...long(site+6)])};
  });
- const slot=new Uint8Array(0xD00).fill(255);slot.set(hands);slot.set(restart,0x200);slot.set(blank,0x400);slot.set(manual,0x600);slot.set(record,0x800);slot.set(contact,0xA00);slot.set(reset,0xB00);for(const p of possession)slot.set(p.bytes,p.address-entry);
+ // Consume the private marker once. Ordinary fouls retain the native carry
+ // decision (carry set => free kick; carry clear => penalty).
+ const d=assembler(decisionEntry),h=(...v)=>d.emit(...v);
+ h(0x2B,0x08,0x48,0xAF,...long(BACKPASS_STATE+16),0xC9,...word(BACKPASS_STATE_MAGIC));d.reject(0xD0,'original');
+ h(0xA9,0,0,0x8F,...long(BACKPASS_STATE+16),0x68,0x28,0x5C,...long(0xA4DD57));
+ d.label('original');h(0x68,0x28);d.reject(0x90,'penalty');h(0x5C,...long(0xA4DD57));
+ d.label('penalty');h(0x5C,...long(0xA4DE9F));const decision=d.finish();
+ const slot=new Uint8Array(freeKick?0xE00:0xD00).fill(255);slot.set(hands);slot.set(restart,0x200);slot.set(blank,0x400);slot.set(manual,0x600);slot.set(record,0x800);slot.set(contact,0xA00);slot.set(reset,0xB00);for(const p of possession)slot.set(p.bytes,p.address-entry);
 
- return {entry,dispatch,transition,manualEntry,recordEntry,contactEntry,resetEntry,hands,restart,blank,manual,record,contact,reset,possession,writes:[
+ if(freeKick)slot.set(decision,0xD00);
+ return {decisionEntry,decision,entry,dispatch,transition,manualEntry,recordEntry,contactEntry,resetEntry,hands,restart,blank,manual,record,contact,reset,possession,writes:[
+  ...(freeKick?[[offset(0xA4DD51),Uint8Array.from([0x5C,...long(decisionEntry),0xEA,0xEA])]]:[]),
   ...possession.map(p=>[offset(p.site),Uint8Array.from([0x5C,...long(p.address),0xEA,0xEA])]),
   [BACKPASS_EXPERIMENT_SLOT,slot],
   [offset(0x84BA01),Uint8Array.from([0x5C,...long(contactEntry)])],
@@ -135,14 +155,25 @@ const signatures=[
  [0xA4DE9F,[0xA5,0x70,0xC9,0x19,0,0xF0,4,0x22,0xE6,0xD8,0x86,0xA5,0xC6]],
  [0xA4DEEE,[0x8D,0xF0,0x11,0xAD,0xD8,0x12,0x8D,0xF2,0x11,0xA9,6,0,0x4C,0xA6,0xDC]],
 ];
-export function buildExperimentalBackpassPenalty(base){
+const freeKickSignatures=[
+ [0xA4DD45,[0x20,0x4C,0xE0,0x0B,0xAD,0xC6,0,0x5B,0x22,0x78,0xD9,0x80]],
+ [0xA4DD51,[0x2B,0xB0,3,0x4C,0x9F,0xDE]],
+ [0x848544,[0x20,0x4E,0x85,0x6B]],
+ [0x85EECE,[0xA2,0,0,0x22,0xC5,0xF8,0x85,0x8E,0xA6,0,0x6B]],
+];
+export function buildExperimentalBackpassPenalty(base,options={}){
  if(base.length!==0x200000)throw Error('Experimento exige ROM Plus limpa de 2 MiB sem header');
  for(const [addr,expected] of signatures)if(expected.some((v,i)=>base[offset(addr)+i]!==v))throw Error('Rotina nativa divergente em '+addr.toString(16));
+ if(options.punishment==='free-kick')for(const [addr,expected] of freeKickSignatures){
+  if(expected.some((v,i)=>base[offset(addr)+i]!==v))throw Error('Rotina de tiro livre divergente em '+addr.toString(16));
+ }
  const rom=new Uint8Array(0x400000).fill(255);rom.set(base);
- for(const [at,bytes] of experimentalBackpassHooks().writes)rom.set(bytes,at);
+ for(const [at,bytes] of experimentalBackpassHooks(options).writes)rom.set(bytes,at);
  rom[0x7FD7]=0x0C;
  rom[0x7FD8]=3; // 8 KiB SRAM; rule state at +0x1800, original saves below +0x0800.
  rom.set([255,255,0,0],0x7FDC);
  const sum=rom.reduce((n,v)=>(n+v)&65535,0);rom.set([...word(sum^65535),...word(sum)],0x7FDC);
  return rom;
 }
+
+export function buildExperimentalBackpassFreeKick(base){return buildExperimentalBackpassPenalty(base,{punishment:"free-kick"});}

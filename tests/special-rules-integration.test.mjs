@@ -58,3 +58,17 @@ test('goalkeeper taker choices round-trip independently and old projects reset b
  }
  window.ISSSDSpecialRules.restore({});assert.equal(window.ISSSDSpecialRules.getState().goalkeeperFreeKickTaker,false);assert.equal(window.ISSSDSpecialRules.getState().goalkeeperCornerKickTaker,false);
 });
+
+test('backpass punishment round-trips through project finalization and rollback; legacy projects retain penalty',async()=>{
+ const vm=await import('node:vm'),choice={value:'',disabled:true},box={checked:false};let fail=false;
+ const document={readyState:'loading',addEventListener(){},getElementById:id=>id==='isssdBackpassPunishment'?choice:id==='isssdBackpassRule'?box:null};
+ const window={studioApplyProjectWithBase:async()=>{if(fail)throw Error('failed');}};vm.runInNewContext(script,{window,document});
+ const project={state:{semantic:{specialRulesV1:{schema:'isssd-special-rules-v1',goalkeeperBackpassNoHands:true,goalkeeperBackpassPunishment:'free-kick',goalkeeperFreeKickTaker:true}}}};
+ await window.studioApplyProjectWithBase(project);assert.equal(choice.value,'free-kick');assert.equal(choice.disabled,false);
+ const saved={state:{semantic:{}}};window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__(saved);
+ assert.equal(saved.state.semantic.specialRulesV1.goalkeeperBackpassPunishment,'free-kick');assert.equal(saved.state.semantic.specialRulesV1.goalkeeperFreeKickTaker,true);
+ window.ISSSDSpecialRules.restore({});assert.equal(choice.disabled,true);
+ window.__ISSSD_GIT_REAPPLY_PROJECT_STATE__(JSON.parse(JSON.stringify(saved)));assert.equal(choice.value,'free-kick');
+ fail=true;await assert.rejects(window.studioApplyProjectWithBase({state:{semantic:{}}}),/failed/);assert.equal(choice.value,'free-kick');assert.equal(box.checked,true);
+ window.ISSSDSpecialRules.restore({specialRulesV1:{schema:'isssd-special-rules-v1',goalkeeperBackpassNoHands:true}});assert.equal(choice.value,'penalty');
+});
