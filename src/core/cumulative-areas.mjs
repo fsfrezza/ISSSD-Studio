@@ -71,6 +71,7 @@ export function areaClassifier(rom,base=null){
  let uniforms=[];try{uniforms=uniformRegions(base||rom);}catch{}
  const independent=independentTeamOwnedRanges(rom);
  return off=>{
+  if(((off>=0x266FB&&off<0x266FF)||(off>=0x26706&&off<0x2670A))&&rom[off<0x26706?0x266FB:0x26706]===0x22&&rom[off<0x26706?0x266FE:0x26709]===0xFF)return 'melhorias-jogo';
   if(contains(off,GAME_IMPROVEMENT_RANGES))return 'melhorias-jogo';
   if(contains(off,independent))return 'jogadores';
   if(contains(off,CLOSEUP_REGIONS)||(off>=0x2D0000&&off<0x2D8000))return 'jogadores';

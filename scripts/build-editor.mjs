@@ -67,7 +67,7 @@ html=html.replaceAll("'uniforms':'Uniformes de linha · cores e desenhos'","'gam
  .replaceAll("'uniforms':sem.uniformsV1||null","'game-improvements':sem.specialRulesV1||null,'uniforms':sem.uniformsV1||null")
  .replaceAll("if(id==='uniforms')delete sem.uniformsV1","if(id==='game-improvements')delete sem.specialRulesV1;else if(id==='uniforms')delete sem.uniformsV1")
  .replaceAll("if(id==='uniforms')ds.uniformsV1=clone(ss.uniformsV1)","if(id==='game-improvements')ds.specialRulesV1=clone(ss.specialRulesV1);else if(id==='uniforms')ds.uniformsV1=clone(ss.uniformsV1)")
- .replace(" add('uniforms','Uniformes de linha · cores e desenhos'"," add('game-improvements','Melhorias de Jogo',sem.specialRulesV1?.goalkeeperBackpassNoHands===true,x=>delete x.specialRulesV1);\n add('uniforms','Uniformes de linha · cores e desenhos'");
+ .replace(" add('uniforms','Uniformes de linha · cores e desenhos'"," add('game-improvements','Melhorias de Jogo',['goalkeeperBackpassNoHands','goalkeeperFreeKickTaker','goalkeeperCornerKickTaker'].some(key=>sem.specialRulesV1?.[key]===true),x=>delete x.specialRulesV1);\n add('uniforms','Uniformes de linha · cores e desenhos'");
 html=html.replaceAll("'game-improvements':'Melhorias de Jogo'","'stadiums':'Estádios','player-colors':'Pele e cabelo por jogador','game-improvements':'Melhorias de Jogo'")
  .replaceAll("'game-improvements':sem.specialRulesV1||null","'stadiums':sem.stadiumsV1||null,'player-colors':sem.playerColorsV1||null,'game-improvements':sem.specialRulesV1||null")
  .replaceAll("if(id==='game-improvements')delete sem.specialRulesV1","if(id==='stadiums')delete sem.stadiumsV1;else if(id==='player-colors')delete sem.playerColorsV1;else if(id==='game-improvements')delete sem.specialRulesV1")

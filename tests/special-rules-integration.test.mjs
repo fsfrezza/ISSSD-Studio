@@ -46,3 +46,15 @@ test('Plus choices are fixed and persisted while backpass remains optional',asyn
  const p={state:{semantic:{}}};window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__(p);assert.equal(p.state.semantic.specialRulesV1.goalkeeperBackpassNoHands,true);assert.equal(p.state.semantic.specialRulesV1.includedPlus.shortGoalKickB,true);assert.equal(p.state.semantic.specialRulesV1.future.penaltyReplayFix,false);
  assert.match(script,/<div class="sectionbar"><label/);assert.match(script,/checked disabled data-plus-included/);
 });
+
+test('goalkeeper taker choices round-trip independently and old projects reset both',async()=>{
+ const vm=await import('node:vm'),boxes={isssdGoalkeeperFreeKickTaker:{checked:false},isssdGoalkeeperCornerKickTaker:{checked:false}},document={readyState:'loading',addEventListener(){},getElementById:id=>boxes[id]||null},window={};
+ vm.runInNewContext(script,{window,document});
+ for(const [fk,ck]of [[true,false],[false,true],[true,true],[false,false]]){
+  window.ISSSDSpecialRules.restore({specialRulesV1:{schema:'isssd-special-rules-v1',goalkeeperFreeKickTaker:fk,goalkeeperCornerKickTaker:ck}});
+  const p={state:{semantic:{}}};window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__(p);
+  assert.equal(p.state.semantic.specialRulesV1.goalkeeperFreeKickTaker,fk);assert.equal(p.state.semantic.specialRulesV1.goalkeeperCornerKickTaker,ck);
+  assert.equal(boxes.isssdGoalkeeperFreeKickTaker.checked,fk);assert.equal(boxes.isssdGoalkeeperCornerKickTaker.checked,ck);
+ }
+ window.ISSSDSpecialRules.restore({});assert.equal(window.ISSSDSpecialRules.getState().goalkeeperFreeKickTaker,false);assert.equal(window.ISSSDSpecialRules.getState().goalkeeperCornerKickTaker,false);
+});
