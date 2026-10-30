@@ -159,7 +159,9 @@ const goalkeeperSource=fs.readFileSync(path.join(root,'src/core/goalkeeper-palet
 const goalkeeperExports=[...goalkeeperSource.matchAll(/^export (?:const|function) (\w+)/gm)].map(m=>m[1]);
 const uniformSource=fs.readFileSync(path.join(root,'src/core/team-uniforms.mjs'),'utf8').replace(/\r\n?/g,'\n');
 const uniformExports=[...uniformSource.matchAll(/^export (?:const|function) (\w+)/gm)].map(m=>m[1]);
-const uniformRuntime='window.ISSSDUniforms=(()=>{\n'+uniformSource.replace(/^export /gm,'')+'\nreturn {'+uniformExports.join(',')+'};})();\n'+fs.readFileSync(path.join(root,'editor-src/uniforms-editor.mjs'),'utf8');
+const pixelSource=fs.readFileSync(path.join(root,'src/core/pixel-editor.mjs'),'utf8').replace(/\r\n?/g,'\n').replace(/^export /gm,'');
+const pixelRuntime='window.ISSSDPixelCore=(()=>{'+pixelSource+';return{IndexedPixelEditor,quantizeRgba};})();\n'+fs.readFileSync(path.join(root,'editor-src/pixel-editor.mjs'),'utf8');
+const uniformRuntime=pixelRuntime+'window.ISSSDUniforms=(()=>{\n'+uniformSource.replace(/^export /gm,'')+'\nreturn {'+uniformExports.join(',')+'};})();\n'+fs.readFileSync(path.join(root,'editor-src/uniforms-editor.mjs'),'utf8');
 const goalkeeperRuntime='window.ISSSDGoalkeepers=(()=>{\n'+goalkeeperSource.replace(/^export /gm,'')+'\nreturn {'+goalkeeperExports.join(',')+'};})();\n'+fs.readFileSync(path.join(root,'editor-src/goalkeepers-editor.mjs'),'utf8');
 const soundsRuntime='const SOUND_SLOTS='+JSON.stringify(SOUND_SLOTS)+';\nconst FB96_SOUND_REFERENCES='+fs.readFileSync(path.join(root,'project-data','fb96-sound-references.json'),'utf8')+';\n'+fs.readFileSync(path.join(root,'editor-src','sounds-editor.mjs'),'utf8');
 const colorSource=fs.readFileSync(path.join(root,'src/core/player-color-catalog.mjs'),'utf8');

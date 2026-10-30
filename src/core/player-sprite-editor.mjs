@@ -78,6 +78,18 @@ export function readBaldHeadTile(rom,frame,edits){
  const a=draw(14),b=draw(15),base=draw(0),changed=a.pixels.flatMap((v,i)=>v!==b.pixels[i]?[i]:[]),x=Math.min(...changed.map(i=>i%a.width)),y=Math.min(...changed.map(i=>Math.floor(i/a.width)));
  return Array.from({length:64},(_,i)=>base.pixels[(y+(i>>3))*a.width+x+(i&7)]);
 }
+// Five native source orientations plus horizontal mirrors, as used by the game.
+// Overlay frame selection stays tied to the pose record; it is never a direction ID.
+export function uniformDirectionalViews(rom,edits,jersey,{step=0}={}){
+ const directions=[['N','Costas','Up',false],['NE','Diagonal de costas · direita','DiagonalUp',false],['E','Direita','Side',false],['SE','Diagonal de frente · direita','DiagonalDown',false],['S','Frente','Down',false],['SW','Diagonal de frente · esquerda','DiagonalDown',true],['W','Esquerda','Side',true],['NW','Diagonal de costas · esquerda','DiagonalUp',true]];
+ return directions.map(([id,label,prefix,mirrored])=>{
+  const first=[...records.values()].find(r=>r.name===prefix+'_Running1');
+  const initial=PLAYER_POSE_CATALOG.find(p=>p.body===first.id),sequence=playerReferenceSequence(initial),pose=sequence[((step%sequence.length)+sequence.length)%sequence.length];
+  const view=renderPlayerReference(rom,{kind:'body',id:pose.body},edits,{pose,style:14,jersey});
+  if(mirrored)view.pixels=view.pixels.map((_,i)=>view.pixels[Math.floor(i/view.width)*view.width+view.width-1-i%view.width]);
+  return{...view,id,label,mirrored};
+ });
+}
 export function playerSpriteWriter(rom,state,base,selectedAreas=null){
  if(selectedAreas&&!selectedAreas.includes('jogadores'))return rom;const edits=state?.teamsV1?.spriteEdits;if(!edits)return rom;
  if(edits.version!==1)throw Error('Versão dos desenhos de jogador incompatível.');const writes=[];

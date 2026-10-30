@@ -1,0 +1,6 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {PLAYER_BODY_CATALOG,PLAYER_POSE_CATALOG,uniformDirectionalViews} from '../src/core/player-sprite-editor.mjs';
+function fixture(){const b=new Uint8Array(0x200000);for(const r of PLAYER_BODY_CATALOG){b[r.pc]=r.top&255;b[r.pc+1]=r.top>>8;const q=r.pc+2+r.top;b[q]=r.bottom&255;b[q+1]=r.bottom>>8;for(let i=0;i<r.top;i++)b[r.pc+2+i]=i*17&255;for(let i=0;i<r.bottom;i++)b[q+2+i]=i*31&255;}return b;}
+test('eight directions use five native poses and exact horizontal mirrors without mutating source data',()=>{
+ const rom=fixture(),before=rom.slice(),catalog=JSON.stringify(PLAYER_POSE_CATALOG);const views=uniformDirectionalViews(rom,null,new Uint8Array(256));assert.deepEqual(views.map(v=>v.id),['N','NE','E','SE','S','SW','W','NW']);for(const [a,b]of [[1,7],[2,6],[3,5]]){assert.equal(views[a].pose.body,views[b].pose.body);const v=views[a];assert.deepEqual(views[b].pixels,v.pixels.map((_,i)=>v.pixels[Math.floor(i/v.width)*v.width+v.width-1-i%v.width]));}assert.deepEqual(rom,before);assert.equal(JSON.stringify(PLAYER_POSE_CATALOG),catalog);assert.notEqual(uniformDirectionalViews(rom,null,null,{step:1})[0].pose.body,views[0].pose.body);assert.equal(uniformDirectionalViews(rom,null,null,{step:10})[0].pose.body,views[0].pose.body);
+});
