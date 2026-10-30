@@ -1,3 +1,4 @@
+import {applyAppearanceChoice} from './player-color-catalog.mjs';
 import{stableFieldFlag}from'./field-flag-colors.mjs';
 import{independentFlagPixels}from'./independent-team-fields.mjs';
 import{validateTeamFlags,flagPixelsToStreams}from'./team-flags.mjs';
@@ -127,9 +128,17 @@ export function plusIndependentTeamsWriter(input,state,base,selectedAreas=null){
   [0x3783,[0x29,0x40,0x04,0x05],[0xC9,0x5E,0xD0,4,0xA9,0,0x80,2,0x29,0x40,0x04,0x05,0x6B]]
  ]){if(expected.some((v,i)=>base[at+i]!==v))throw Error('Leitor de streams divergente.');const helper=table(Uint8Array.from(body));hook(at,Uint8Array.from([0x22,...long(cpu(helper))]));}
 
+ const colorPlans=state.__playerColorPlans||{};
+ for(const[id,plan]of Object.entries(colorPlans))for(const[slot,index]of Object.entries(plan.assignments)){const at=0x150000+Number(id)*140+(Number(slot)-1)*7+6;rom[at]=(rom[at]&239)|(index<<4);}
+ const words=bytes=>Array.from({length:bytes.length/2},(_,i)=>readWord(bytes,i*2));
  const paletteTables={};
  for(const[k,old]of Object.entries({home:0x10274,skinAlt:0x1043C,hairAlt:0x103CA,keeper:0x10358,fieldFlag:0xFE06})){
-  const values=Array.from({length:k==='home'?120:60},(_,index)=>{const kit=k==='home'&&index>=60?1:0,id=index%60;if(data[id]){const record=k==='fieldFlag'?[7,0,...stableFlags[id].colors.flatMap(word)]:data[id].palettes[k==='home'?(kit?'away':'home'):k];if(k==='home'){const copy=record.slice();copy[32]=0x20;copy[33]=1;return pal(copy);}return pal(record);}if(k==='fieldFlag'&&flagEdits[id])return pal([7,0,...stableFlags[id].colors.flatMap(word)]);return readWord(rom,old+(id+(k==='home'&&kit?57:0))*2);});
+  const values=Array.from({length:k==='home'?120:60},(_,index)=>{const kit=k==='home'&&index>=60?1:0,id=index%60;if(data[id]){let record=k==='fieldFlag'?[7,0,...stableFlags[id].colors.flatMap(word)]:data[id].palettes[k==='home'?(kit?'away':'home'):k];if(colorPlans[id]&&['home','skinAlt','hairAlt'].includes(k)){const plan=colorPlans[id],choice=plan.combinations[k==='home'?0:Math.min(1,plan.combinations.length-1)];record=k==='home'?[31,0,...applyAppearanceChoice(words(record.slice(2)),choice).flatMap(word)]:k==='skinAlt'?[9,0,...choice.skin.flatMap(word)]:[1,0,...word(choice.hairColor)];}if(k==='home'){const copy=record.slice();copy[32]=0x20;copy[33]=1;return pal(copy);}return pal(record);}if(colorPlans[id]&&['home','skinAlt','hairAlt'].includes(k)){
+   const plan=colorPlans[id],choice=plan.combinations[k==='home'?0:Math.min(1,plan.combinations.length-1)];
+   if(k==='home'){const ptr=readWord(rom,old+(id+(kit?57:0))*2),at=0x48000+(ptr&32767),record=Array.from(rom.slice(at,at+34));return pal([31,0,...applyAppearanceChoice(words(record.slice(2)),choice).flatMap(word)]);}
+   if(k==='skinAlt')return pal([9,0,...choice.skin.flatMap(word)]);
+   return pal([1,0,...word(choice.hairColor)]);
+  }if(k==='fieldFlag'&&flagEdits[id])return pal([7,0,...stableFlags[id].colors.flatMap(word)]);return readWord(rom,old+(id+(k==='home'&&kit?57:0))*2);});
   paletteTables[k]=table(Uint8Array.from(values.flatMap(word)));redirectLong(cpu(old),paletteTables[k]);
  }
  // The native alternate-kit offset is 57, including the challenge palette.
@@ -202,7 +211,7 @@ export function plusIndependentTeamsWriter(input,state,base,selectedAreas=null){
  rom.set(keeperBytes,INDEPENDENT_KEEPERS_SLOT);rom.set(skinBytes,0x2FE800);
  for(const[start,end]of[[0x2A7000,0x2A7C00]]){const code=rom.slice(start,end);patchPattern(code,[0xC9,112,0],[0xC9,120,0]);patchPattern(code,[0x54,0x7E,0xD4],[0x54,0x7E,0xDF]);patchPattern(code,[0xF4,0xD4,0],[0xF4,0xDF,0]);patchPattern(code,[0xBF,...long(cpu(GOALKEEPER_SKIN_FLAGS))],[0xBF,...long(cpu(0x2FE800))]);rom.set(code,start);}
  // Per-roster cinematic skin/hair follows each clone's own attributes and colors.
- for(const id of GG_TEAM_IDS)for(let i=0;i<20;i++){const a=data[id].attributes.slice(i*7,i*7+7),hair=a[6]&15,keeper=a[4]>>4===1;let colors=data[id].palettes.home.slice(2).reduce((v,_,k,arr)=>{if(!(k&1))v.push(arr[k]|arr[k+1]<<8);return v;},[]);if(a[6]&16){const skin=data[id].palettes.skinAlt,h=data[id].palettes.hairAlt;if(skin)colors.splice(2,5,...Array.from({length:5},(_,c)=>readWord(skin,2+c*2)));if(h)colors[1]=readWord(h,2);}if(keeper){const k=data[id].keeperPalettes[i];colors=[0,k[0],k[1],k[1],k[2],k[3],k[4]];}rom.set(closeupPalette(colors).flatMap(word),CLOSEUP_PALETTE_SLOT+(id*20+i)*32);rom.set(word((keeper||hair===0||hair>=14?0x8000:0)|(keeper?14:hair)),CLOSEUP_STYLE_SLOT+(id*20+i)*2);}
+ for(const id of GG_TEAM_IDS)for(let i=0;i<20;i++){const a=data[id].attributes.slice(i*7,i*7+7),hair=a[6]&15,keeper=a[4]>>4===1;let colors=data[id].palettes.home.slice(2).reduce((v,_,k,arr)=>{if(!(k&1))v.push(arr[k]|arr[k+1]<<8);return v;},[]);if(a[6]&16){const skin=data[id].palettes.skinAlt,h=data[id].palettes.hairAlt;if(skin)colors.splice(2,5,...Array.from({length:5},(_,c)=>readWord(skin,2+c*2)));if(h)colors[1]=readWord(h,2);}if(colorPlans[id]&&!keeper)colors=applyAppearanceChoice(colors,colorPlans[id].combinations[colorPlans[id].assignments[i+1]]);if(keeper){const k=data[id].keeperPalettes[i];colors=[0,k[0],k[1],k[1],k[2],k[3],k[4]];}rom.set(closeupPalette(colors).flatMap(word),CLOSEUP_PALETTE_SLOT+(id*20+i)*32);rom.set(word((keeper||hair===0||hair>=14?0x8000:0)|(keeper?14:hair)),CLOSEUP_STYLE_SLOT+(id*20+i)*2);}
  const cinema=rom.slice(CLOSEUP_HELPER_SLOT,CLOSEUP_HELPER_SLOT+0x800);patchPattern(cinema,[0xC9,56,0],[0xC9,60,0]);rom.set(cinema,CLOSEUP_HELPER_SLOT);
  // Native tactical pointer lookup + selector bank use genuinely private records.
  const tacticsPointers=[];for(let id=0;id<60;id++){if(!data[id])tacticsPointers.push(readWord(rom,0x5FDD0+id*2));else{const at=INDEPENDENT_PATTERNS_SLOT+0x1000+(id-54)*32;rom.set(data[id].tactics,at);tacticsPointers.push(cpu(at)&65535);rom.set([cpu(at)>>16,0],0x200100+id*2);}}

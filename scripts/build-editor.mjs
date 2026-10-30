@@ -1,3 +1,4 @@
+import {repairSectionHeadings} from '../src/ui/repair-section-headings.mjs';
 import {loadPlayerHairFiles} from '../src/platform/player-hair-files.mjs';
 import {SOUND_SLOTS} from '../src/core/sound-slots.mjs';
 import {TEAM_NAME_LANGUAGE_PRESETS} from '../src/core/team-name-presets.mjs';
@@ -20,7 +21,7 @@ if(!fs.existsSync(source))throw new Error('Baseline local ausente: '+source+'. N
 const generatedMarkers=['ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE','isssd-git-controller-v17','git-controller-ui-v17-native-font','git-controller-ui-v18-stable-no-observer'];
 if(generatedMarkers.some(m=>fs.readFileSync(source,'utf8').includes(m)))throw new Error('Baseline contém build gerado; .editor-vendor foi preservado.');
 
-let html=fs.readFileSync(source,'utf8');
+let html=repairSectionHeadings(fs.readFileSync(source,'utf8'));
 // Replace only the generated appearance UI; the private baseline stays immutable.
 const appearanceCore='const CUSTOM_HAIR_MANUAL_FRAMES='+JSON.stringify(loadPlayerHairFiles(root).frames)+';\n'+fs.readFileSync(path.join(root,'src/core/player-appearance.mjs'),'utf8').replace("import {CUSTOM_HAIR_MANUAL_FRAMES} from './player-hair-manual.mjs';",'');
 const appearanceExports=[...appearanceCore.matchAll(/^export (?:const|function) (\w+)/gm)].map(m=>m[1]);
@@ -61,6 +62,17 @@ html=html.replaceAll("'goalkeepers':'Uniformes dos goleiros'","'uniforms':'Unifo
  .replaceAll("if(id==='goalkeepers')delete sem.goalkeeperPalettesV1","if(id==='uniforms')delete sem.uniformsV1;else if(id==='goalkeepers')delete sem.goalkeeperPalettesV1")
  .replaceAll("if(id==='goalkeepers')ds.goalkeeperPalettesV1=clone(ss.goalkeeperPalettesV1)","if(id==='uniforms')ds.uniformsV1=clone(ss.uniformsV1);else if(id==='goalkeepers')ds.goalkeeperPalettesV1=clone(ss.goalkeeperPalettesV1)")
  .replace(" add('goalkeepers','Uniformes dos goleiros'"," add('uniforms','Uniformes de linha · cores e desenhos',studioProjectChangeHasValues(sem.uniformsV1),x=>delete x.uniformsV1);\n add('goalkeepers','Paletas dos goleiros · aparência e uniforme'");
+// Optional gameplay choices participate in selective project open/save.
+html=html.replaceAll("'uniforms':'Uniformes de linha · cores e desenhos'","'game-improvements':'Melhorias de Jogo','uniforms':'Uniformes de linha · cores e desenhos'")
+ .replaceAll("'uniforms':sem.uniformsV1||null","'game-improvements':sem.specialRulesV1||null,'uniforms':sem.uniformsV1||null")
+ .replaceAll("if(id==='uniforms')delete sem.uniformsV1","if(id==='game-improvements')delete sem.specialRulesV1;else if(id==='uniforms')delete sem.uniformsV1")
+ .replaceAll("if(id==='uniforms')ds.uniformsV1=clone(ss.uniformsV1)","if(id==='game-improvements')ds.specialRulesV1=clone(ss.specialRulesV1);else if(id==='uniforms')ds.uniformsV1=clone(ss.uniformsV1)")
+ .replace(" add('uniforms','Uniformes de linha · cores e desenhos'"," add('game-improvements','Melhorias de Jogo',['goalkeeperBackpassNoHands','goalkeeperFreeKickTaker','goalkeeperCornerKickTaker'].some(key=>sem.specialRulesV1?.[key]===true),x=>delete x.specialRulesV1);\n add('uniforms','Uniformes de linha · cores e desenhos'");
+html=html.replaceAll("'game-improvements':'Melhorias de Jogo'","'stadiums':'Estádios','player-colors':'Pele e cabelo por jogador','game-improvements':'Melhorias de Jogo'")
+ .replaceAll("'game-improvements':sem.specialRulesV1||null","'stadiums':sem.stadiumsV1||null,'player-colors':sem.playerColorsV1||null,'game-improvements':sem.specialRulesV1||null")
+ .replaceAll("if(id==='game-improvements')delete sem.specialRulesV1","if(id==='stadiums')delete sem.stadiumsV1;else if(id==='player-colors')delete sem.playerColorsV1;else if(id==='game-improvements')delete sem.specialRulesV1")
+ .replaceAll("if(id==='game-improvements')ds.specialRulesV1=clone(ss.specialRulesV1)","if(id==='stadiums')ds.stadiumsV1=clone(ss.stadiumsV1);else if(id==='player-colors')ds.playerColorsV1=clone(ss.playerColorsV1);else if(id==='game-improvements')ds.specialRulesV1=clone(ss.specialRulesV1)")
+ .replace(" add('game-improvements','Melhorias de Jogo'"," add('stadiums','Estádios',studioProjectChangeHasValues(sem.stadiumsV1?.stadiums),x=>delete x.stadiumsV1);\n add('player-colors','Pele e cabelo por jogador',studioProjectChangeHasValues(sem.playerColorsV1?.players),x=>delete x.playerColorsV1);\n add('game-improvements','Melhorias de Jogo'");
 const marker='ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE';
 html=html.replace(/<!--\s*ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE\s*-->\s*/g,'')
  .replace(/<style\s+id=["']isssd-git-visual-bridge-overrides["'][^>]*>[\s\S]*?<\/style>\s*/g,'')
@@ -72,7 +84,7 @@ const unsafeDeferredLength='(studioDeferredPlayerPatches.length-deferredNative.l
 
 // O servidor local conhece a ROM-base canônica Plus e a expõe somente ao Editor em
 // /__isssd/default-plus-rom. Assim, abrir um projeto Plus nunca depende do file picker.
-const fixedPlusPath='C:\\Users\\fsfre\\Downloads\\ISSSD-Studio\\roms\\International Superstar Soccer Deluxe Plus.sfc';
+const fixedPlusPath=process.env.ISSSD_PLUS_ROM_PATH||path.join(root,'roms','International Superstar Soccer Deluxe Plus.sfc');
 const fixedBaseMarker='__ISSSD_FIXED_PLUS_ROM_PATH__';
 if(!html.includes(fixedBaseMarker)){
  const baseResolverBoundary='function studioB64(bytes){';
@@ -138,19 +150,36 @@ html=html.replace(menuCommitRx,semanticMenuCommit);
 const css=fs.existsSync(cssFile)?fs.readFileSync(cssFile,'utf8'):'';
 const js=fs.existsSync(jsFile)?fs.readFileSync(jsFile,'utf8'):'';
 const languagePresets=JSON.parse(fs.readFileSync(path.join(root,'project-data','text-language-presets-v1.json'),'utf8'));
-const additionalSections=JSON.parse(fs.readFileSync(path.join(root,'project-data','additional-screen-text-fields.json'),'utf8'));
+// Routing is UI-only: keep section IDs and export areas unchanged for existing projects.
+const textPageRoutes={'player-labels':'texts-players','formation-labels':'texts-formations','uniform-labels':'texts-uniforms'};
+const additionalSections=JSON.parse(fs.readFileSync(path.join(root,'project-data','additional-screen-text-fields.json'),'utf8')).map(section=>textPageRoutes[section.id]?{...section,page:textPageRoutes[section.id],createPage:true}:section);
 const additionalRuntime='const ADDITIONAL_TEXT_SECTIONS='+JSON.stringify(additionalSections)+';\n'+fs.readFileSync(path.join(root,'editor-src','additional-screen-texts.mjs'),'utf8');
 const teamNameRuntime='const TEAM_NAME_LANGUAGE_PRESETS='+JSON.stringify(TEAM_NAME_LANGUAGE_PRESETS)+';\n'+fs.readFileSync(path.join(root,'editor-src','team-name-language-presets.mjs'),'utf8');
 const goalkeeperSource=fs.readFileSync(path.join(root,'src/core/goalkeeper-palettes.mjs'),'utf8').replace(/\r\n?/g,'\n');
 const goalkeeperExports=[...goalkeeperSource.matchAll(/^export (?:const|function) (\w+)/gm)].map(m=>m[1]);
 const uniformSource=fs.readFileSync(path.join(root,'src/core/team-uniforms.mjs'),'utf8').replace(/\r\n?/g,'\n');
 const uniformExports=[...uniformSource.matchAll(/^export (?:const|function) (\w+)/gm)].map(m=>m[1]);
-const uniformRuntime='window.ISSSDUniforms=(()=>{\n'+uniformSource.replace(/^export /gm,'')+'\nreturn {'+uniformExports.join(',')+'};})();\n'+fs.readFileSync(path.join(root,'editor-src/uniforms-editor.mjs'),'utf8');
+const pixelSource=fs.readFileSync(path.join(root,'src/core/pixel-editor.mjs'),'utf8').replace(/\r\n?/g,'\n').replace(/^export /gm,'');
+const pixelRuntime='window.ISSSDPixelCore=(()=>{'+pixelSource+';return{IndexedPixelEditor,quantizeRgba};})();\n'+fs.readFileSync(path.join(root,'editor-src/pixel-editor.mjs'),'utf8');
+const uniformRuntime=pixelRuntime+'window.ISSSDUniforms=(()=>{\n'+uniformSource.replace(/^export /gm,'')+'\nreturn {'+uniformExports.join(',')+'};})();\n'+fs.readFileSync(path.join(root,'editor-src/uniforms-editor.mjs'),'utf8');
 const goalkeeperRuntime='window.ISSSDGoalkeepers=(()=>{\n'+goalkeeperSource.replace(/^export /gm,'')+'\nreturn {'+goalkeeperExports.join(',')+'};})();\n'+fs.readFileSync(path.join(root,'editor-src/goalkeepers-editor.mjs'),'utf8');
 const soundsRuntime='const SOUND_SLOTS='+JSON.stringify(SOUND_SLOTS)+';\nconst FB96_SOUND_REFERENCES='+fs.readFileSync(path.join(root,'project-data','fb96-sound-references.json'),'utf8')+';\n'+fs.readFileSync(path.join(root,'editor-src','sounds-editor.mjs'),'utf8');
-const v11='const TEXT_LANGUAGE_PRESETS='+JSON.stringify(languagePresets)+';\n'+(fs.existsSync(v11File)?fs.readFileSync(v11File,'utf8'):'')+'\n'+additionalRuntime+'\n'+teamNameRuntime+'\n'+soundsRuntime+'\n'+goalkeeperRuntime+'\n'+uniformRuntime;
+const colorSource=fs.readFileSync(path.join(root,'src/core/player-color-catalog.mjs'),'utf8');
+const colorExports=[...colorSource.matchAll(/^export (?:const|function) (\w+)/gm)].map(m=>m[1]);
+const colorRuntime='window.ISSSDPlayerColors=(()=>{'+colorSource.replace(/^export /gm,'')+';return{'+colorExports.join(',')+'};})();\n'+fs.readFileSync(path.join(root,'editor-src/player-color-project.mjs'),'utf8');
+const expansionRuntime=fs.readFileSync(path.join(root,'editor-src/expansion-project-status.mjs'),'utf8');
+const textNavigationRuntime=fs.readFileSync(path.join(root,'editor-src/text-navigation.mjs'),'utf8');
+// Expansion reads the private legacy ROM buffer. Run in that closure, never
+// from the independent import module where renderExpansion is out of scope.
+const expansionAnchor='function expansionPushResizeHistory(oldRom,label){';
+if(!html.includes(expansionAnchor))throw Error('Estado de expansão: escopo legado não encontrado.');
+html=html.replace(expansionAnchor,()=>expansionRuntime+'\n'+expansionAnchor);
+const stadiumSource=fs.readFileSync(path.join(root,'src/core/stadiums.mjs'),'utf8').replace(/^export /gm,'');
+const stadiumRuntime='window.ISSSDStadiums=(()=>{'+stadiumSource+';return{STADIUMS,readStadiums,validateStadiums};})();\n'+fs.readFileSync(path.join(root,'editor-src/stadiums-editor.mjs'),'utf8');
+const specialRulesRuntime=fs.readFileSync(path.join(root,'editor-src/special-rules.mjs'),'utf8')+'\n'+colorRuntime+'\n'+stadiumRuntime;
+const v11='const TEXT_LANGUAGE_PRESETS='+JSON.stringify(languagePresets)+';\n'+(fs.existsSync(v11File)?fs.readFileSync(v11File,'utf8'):'')+'\n'+additionalRuntime+'\n'+teamNameRuntime+'\n'+soundsRuntime+'\n'+goalkeeperRuntime+'\n'+uniformRuntime+'\n'+specialRulesRuntime;
 try{new Function(js);new Function(v11)}catch(e){throw new Error('Build interrompido: JavaScript Git inválido: '+e.message)}
-const patch=`\n<!-- ${marker} -->\n<style id="isssd-git-visual-bridge-overrides">\n${css}\n</style>\n<script type="module" id="isssd-git-visual-bridge-runtime">\n${js}\n</script>\n<script type="module" id="isssd-git-project-import-v11">\n${v11}\n</script>\n`;
+const patch=`\n<!-- ${marker} -->\n<style id="isssd-git-visual-bridge-overrides">\n${css}\n</style>\n<script type="module" id="isssd-git-visual-bridge-runtime">\n${js}\n</script>\n<script type="module" id="isssd-git-project-import-v11">\n${v11}\n</script>\n<script id="isssd-text-navigation">\n(()=>{const ADDITIONAL_TEXT_SECTIONS=${JSON.stringify(additionalSections)};\n${textNavigationRuntime}\n})();\n</script>\n`;
 if(html.includes('</body>'))html=html.replace('</body>',()=>patch+'\n</body>');else html+=patch;
 const markerCount=(html.match(/ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE/g)||[]).length,runtimeCount=(html.match(/id=["']isssd-git-visual-bridge-runtime["']/g)||[]).length,styleCount=(html.match(/id=["']isssd-git-visual-bridge-overrides["']/g)||[]).length,v11Count=(html.match(/id=["']isssd-git-project-import-v11["']/g)||[]).length;
 if(markerCount!==1||runtimeCount!==1||styleCount!==1||v11Count!==1)throw new Error(`Build interrompido: injeção Git duplicada/incompleta (marker=${markerCount}, runtime=${runtimeCount}, style=${styleCount}, v11=${v11Count}).`);

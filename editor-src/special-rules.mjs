@@ -1,0 +1,75 @@
+// Optional validated improvements; keep the existing project key.
+(()=>{
+ const KEY='goalkeeperBackpassNoHands';
+ const SCHEMA='isssd-special-rules-v1';
+ const PLUS_INCLUDED=Object.freeze({shortGoalKickB:true,lastAttackProtection:true,matchTimeSelection:true,oneMinuteMatch:true,penaltyInputFix:true,batterySave:true,playerOneSecretCodes:true});
+ const includedLabels={shortGoalKickB:'Tiro de meta rasteiro com B',lastAttackProtection:'Aguardar o último ataque dentro da área adversária',matchTimeSelection:'Escolha do horário da partida',oneMinuteMatch:'Duração de 1 minuto',penaltyInputFix:'Correção de interferência na cobrança de pênalti',batterySave:'Salvar progresso por bateria',playerOneSecretCodes:'Códigos secretos pelo controle 1'};
+ const takerBoxes={goalkeeperFreeKickTaker:'isssdGoalkeeperFreeKickTaker',goalkeeperCornerKickTaker:'isssdGoalkeeperCornerKickTaker'};
+ let takers={goalkeeperFreeKickTaker:false,goalkeeperCornerKickTaker:false};
+ let selected=false;
+ let punishment='penalty';
+ const getState=()=>({schema:SCHEMA,baseProfile:'iss-deluxe-plus',includedPlus:{...PLUS_INCLUDED},future:{penaltyReplayFix:false,deluxeBase:false},[KEY]:selected,goalkeeperBackpassPunishment:punishment,...takers});
+ function setState(semantic){
+   const rule=semantic?.specialRulesV1;
+   selected=rule?.schema===SCHEMA && rule[KEY]===true;
+   punishment=rule?.goalkeeperBackpassPunishment==='free-kick'?'free-kick':'penalty';
+   const box=document.getElementById('isssdBackpassRule');if(box)box.checked=selected;
+   const choice=document.getElementById('isssdBackpassPunishment');if(choice){choice.value=punishment;choice.disabled=!selected;}
+   for(const [key,id]of Object.entries(takerBoxes)){takers[key]=rule?.schema===SCHEMA&&rule[key]===true;const input=document.getElementById(id);if(input)input.checked=takers[key];}
+ }
+ function mount(){
+   if(document.getElementById('isssdSpecialRulesNav'))return;
+   const ref=document.querySelector('.navbtn[data-page="dashboard"]')||document.querySelector('.navbtn[data-page]');
+   const existingPage=document.querySelector('.page');if(!ref||!existingPage)return;
+   const btn=ref.cloneNode(false);btn.id='isssdSpecialRulesNav';btn.type='button';btn.dataset.page='game-improvements';
+   btn.innerHTML='<span class="navico" aria-hidden="true">✦</span><span>Melhorias de Jogo</span>';
+   btn.classList.remove('active');ref.after(btn);
+   const page=document.createElement('section');page.id='page-game-improvements';page.className='page';
+   page.innerHTML=`<h2>Melhorias de Jogo</h2><p>A Plus continua como ROM-base. As melhorias que ela já contém estão marcadas e bloqueadas. As opções adicionais abaixo são independentes e ficam salvas no projeto.</p>
+    <div class="card"><div class="sectionbar"><label style="display:flex;gap:10px;align-items:center"><input type="checkbox" id="isssdBackpassRule" aria-describedby="isssdBackpassDescription"> <strong>Impedir que usuário burle recuo ao goleiro.</strong></label></div>
+    <p id="isssdBackpassDescription">Não deixa que o usuário com goleiro semiautomático segure a bola com as mãos após recuo de outro jogador de sua equipe.</p>
+    <label for="isssdBackpassPunishment">Punição pelo recuo</label>
+    <select id="isssdBackpassPunishment" disabled><option value="penalty">Pênalti</option><option value="free-kick">Tiro livre direto dentro da área</option></select>
+    <p>Ao agarrar um recuo proibido, o goleiro segura a bola por cerca de meio segundo antes da punição escolhida. O tiro livre é cobrado no local da infração, inclusive dentro da área. Se a bola estiver mais perto da linha de fundo que a marca do pênalti, a barreira fica sobre a linha do gol. Dominar com os pés continua permitido. Desmarcada, a opção mantém o comportamento original.</p>
+    <p>Ao salvar a ROM, inclua a fase <strong>12 · Melhorias de Jogo</strong>.</p></div>
+    <div class="card"><div class="sectionbar"><h3>Permitir que o goleiro seja batedor de faltas e/ou escanteios</h3></div>
+    <label style="display:flex;gap:10px;margin:12px 0"><input type="checkbox" id="isssdGoalkeeperFreeKickTaker"><span>Permitir goleiro como batedor de faltas</span></label>
+    <label style="display:flex;gap:10px;margin:12px 0"><input type="checkbox" id="isssdGoalkeeperCornerKickTaker"><span>Permitir goleiro como batedor de escanteios</span></label>
+    <p>Escolha o goleiro como batedor oficial na tela de Substituições, acessível pelo menu antes da partida ou durante a pausa. Cada opção libera apenas o tipo de cobrança marcado.</p>
+    <p>Ao salvar a ROM, inclua a fase <strong>12 · Melhorias de Jogo</strong>.</p></div>
+    <div class="card"><div class="sectionbar"><h3>Incluídas na Plus · separação futura</h3></div><p>Presentes na base Plus. Serão opções independentes quando houver suporte à base Deluxe.</p>
+    ${Object.entries(includedLabels).map(([id,label])=>`<label style="display:flex;gap:10px;margin:12px 0"><input type="checkbox" checked disabled data-plus-included="${id}"><span>${label}</span></label>`).join('')}</div>
+    <div class="card"><div class="sectionbar"><h3>Planejadas · indisponíveis</h3></div>
+    <label style="display:flex;gap:10px;margin:12px 0"><input type="checkbox" disabled><span>Impedir defesa da bola durante o replay do pênalti</span></label>
+    <label style="display:flex;gap:10px;margin:12px 0"><input type="checkbox" disabled><span>Usar Deluxe original como base e aplicar somente as opções escolhidas</span></label></div>`;
+   existingPage.parentElement.appendChild(page);
+   page.querySelector('#isssdBackpassRule').checked=selected;
+   page.querySelector('#isssdBackpassRule').addEventListener('change',e=>{selected=e.target.checked;page.querySelector('#isssdBackpassPunishment').disabled=!selected;window.studioUpdateBadge?.();});
+   const choice=page.querySelector('#isssdBackpassPunishment');choice.value=punishment;choice.disabled=!selected;choice.addEventListener('change',e=>{punishment=e.target.value;window.studioUpdateBadge?.();});
+   for(const [key,id]of Object.entries(takerBoxes)){const input=page.querySelector('#'+id);input.checked=takers[key];input.addEventListener('change',e=>{takers[key]=e.target.checked;window.studioUpdateBadge?.();});}
+   btn.addEventListener('click',e=>{
+     e.preventDefault();e.stopImmediatePropagation();
+     for(const p of document.querySelectorAll('.page')){p.classList.toggle('active',p===page);p.style.removeProperty('display');}
+     for(const b of document.querySelectorAll('.navbtn[data-page]'))b.classList.toggle('active',b===btn);
+     window.scrollTo?.({top:0,left:0,behavior:'instant'});
+     const content=document.querySelector('.content');if(content)content.scrollTop=0;
+   },true);
+ }
+ const previousFinalize=window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__;
+ window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__=function(project){
+   const out=(typeof previousFinalize==='function'?previousFinalize(project):project)||project;
+   if(out?.state?.semantic)out.state.semantic.specialRulesV1=getState();return out;
+ };
+ const previousRestore=window.__ISSSD_GIT_REAPPLY_PROJECT_STATE__;
+ window.__ISSSD_GIT_REAPPLY_PROJECT_STATE__=function(project){
+   const result=typeof previousRestore==='function'?previousRestore(project):true;
+   setState(project?.state?.semantic);return result;
+ };
+ const priorApply=window.studioApplyProjectWithBase;
+ if(typeof priorApply==='function')window.studioApplyProjectWithBase=async function(project,...args){
+   const previous=getState();try{const result=await priorApply.call(this,project,...args);setState(project?.state?.semantic);return result;}
+   catch(error){setState({specialRulesV1:previous});throw error;}
+ };
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
+ window.ISSSDSpecialRules={getState,restore:setState};
+})();
