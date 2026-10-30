@@ -9,5 +9,6 @@ export function seedMenuOamCacheFixture(base){
  }
  base.set([0xD2,0x57],0x111F4);base.set([0xDE,0xD7],0x111F9);
  for(const [i,pc]of [0x175EE,0x175F0,0x175F2,...Array.from({length:11},(_,i)=>0x174F4+i*2)].entries()){const v=i<3?0x57D2+i*4:0x57DE+(i-3)*2;base.set([v&255,v>>8],pc);}
+ base.set([0xD6,0x57],0x32A56);base.set([0xDA,0x57],0x32A62);
  return base;
 }

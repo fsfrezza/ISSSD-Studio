@@ -67,11 +67,13 @@ test('normal-match penalty names never overwrite any live ball animation plane i
 });
 
 
-test('substitution object planes and all fourteen frame pointers stay outside expanded team names across cached screen returns',()=>{
+test('substitution object planes, static frames and both blinking taker frames stay outside expanded team names across cached screen returns',()=>{
  const memory=hooks(),cache=memory.slice(cpu(SQUAD_OAM_CACHE_SLOT),cpu(SQUAD_OAM_CACHE_SLOT)+SQUAD_OAM_PLANE*4);
  assert.ok(SQUAD_OAM_DEST>=0x5876+MENU_OAM_PLANE_SIZE);
  assert.ok(SQUAD_OAM_DEST+SQUAD_OAM_PLANE<=0x5FF8);
  for(const pc of SQUAD_OAM_POINTERS){const pointer=word(memory,cpu(pc));assert.ok(pointer>=SQUAD_OAM_DEST&&pointer<SQUAD_OAM_DEST+SQUAD_OAM_PLANE);}
+ assert.equal(word(memory,cpu(0x32A56)),SQUAD_OAM_DEST+4,'corner taker blink uses relocated frame');
+ assert.equal(word(memory,cpu(0x32A62)),SQUAD_OAM_DEST+8,'free-kick taker blink uses relocated frame');
  for(let visit=0;visit<3;visit++){
   for(let plane=0;plane<4;plane++)memory.fill(0xDB,0x7E5280+plane*0x2000,0x7E5FF6+plane*0x2000);
   memory.set([0x80,0x52],0x7E5FFA);

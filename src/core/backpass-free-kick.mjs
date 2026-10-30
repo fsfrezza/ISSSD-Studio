@@ -1,4 +1,6 @@
-// Validated backpass free kick v2: native pose reset and goal-line wall.
+import {DEFENSE_WALL,DEFENSE_CENTER,DEFENSE_KEEPER,backpassDefenseWall,backpassDefenseCenter,backpassDefenseKeeper} from './backpass-defense.mjs';
+// Keep the approved v2 generator intact; Editor exports add the scoped v3
+// lateral defense hooks after its native pose reset and goal-line wall.
 // Native flow: A4:DD45 -> 84:E4A7 -> 84:E4FE -> 84:DA2B.
 import {buildExperimentalBackpassFreeKick,BACKPASS_STATE,BACKPASS_STATE_MAGIC,experimentalBackpassHooks} from './experimental-backpass-penalty.mjs';
 import {writeFinalSnesChecksum} from './plus-export-finalizer.mjs';
@@ -29,18 +31,22 @@ export function backpassWallMark(){
  c.label('store');e(0x8F,...long(NEAR_GOAL));c.label('mark');e(0xA9,0xCC,0xBA,0x8F,...long(WALL_MARKER),0xA9,0,0,0x8F,...long(0x19D0),0x22,0x45,0xDD,0xA4,0x6B);
  return c.finish();
 }
-export function backpassWallArrival(){
+export function backpassWallArrival({lateralSnap=false}={}){
  const c=code(),e=(...v)=>c.put(...v);
  e(0x08,0x48,0xDA,0x5A,0xAF,...long(WALL_MARKER),0xC9,0xCC,0xBA);c.branch(0xD0,'restore');
  e(0xAF,...long(0xC2),0xC9,5,0);c.branch(0xD0,'restore');
  e(0xAF,...long(NEAR_GOAL));c.branch(0xF0,'restore');
  // Native arrival accepts a tolerance around the target. Put the actual feet
  // on the line before initializing the wall's standing action.
+ if(lateralSnap){
+  e(0xAF,...long(0x11F2),0x38,0xEF,...long(0x12D8),0x18,0x69,23,0,0xC9,47,0);c.branch(0x90,'snapX');
+  e(0xA5,0x52,0x85,0x2C);c.label('snapX');
+ }
  e(0xA5,0x50,0x85,0x2A,0xA9,0,0,0x85,6,0x85,0x0A,0x22,0xAF,0xE1,0x80);
  c.label('restore');e(0x7A,0xFA,0x68,0x28,0xA9,0x78,4,0x22,0x44,0x85,0x84,0x5C,0x8A,0xAF,0x84);return c.finish();
 }
 
-export function buildBackpassFreeKickRom(base){
+export function buildBackpassFreeKickV2Rom(base){
  const rom=buildExperimentalBackpassFreeKick(base),native=[0xA8,0xAD,0xC0,0,0xF0,5];
  if(native.some((v,i)=>base[offset(0x84E4FE)+i]!==v))throw Error('Native wall target routine differs');
  for(let p=0x3FFE00;p<0x400000;p++)if(rom[p]!==255)throw Error('Wall experiment reservation occupied');
@@ -66,9 +72,23 @@ export function buildBackpassFreeKickRom(base){
  writeFinalSnesChecksum(rom);return rom;
 }
 
-export const BACKPASS_FREE_KICK_RANGES=Object.freeze([
+export const BACKPASS_FREE_KICK_V2_RANGES=Object.freeze([
  ...experimentalBackpassHooks({punishment:'free-kick'}).writes.map(([off,bytes])=>[off,off===0x3FF000?0x400000:off+bytes.length]),
  [offset(0x84E4FE),offset(0x84E4FE)+6],
  [offset(0x84AF84),offset(0x84AF84)+6],
  [0x7FD8,0x7FD9],
 ]);
+
+export function buildBackpassFreeKickRom(base){
+ const rom=buildBackpassFreeKickV2Rom(base);
+ if([0x18,0x6D,0xD8,0x12,0x85,0x52].some((v,i)=>base[offset(0x84E578)+i]!==v))throw Error('Native keeper target routine differs');
+ for(const [address,data,capacity] of [[DEFENSE_WALL,backpassDefenseWall(),0x180],[DEFENSE_CENTER,backpassDefenseCenter(),0x60],[DEFENSE_KEEPER,backpassDefenseKeeper(),0x180]]){
+  if(data.length>capacity||rom.slice(offset(address),offset(address)+data.length).some(v=>v!==255))throw Error('Backpass defense reservation occupied');
+  rom.set(data,offset(address));
+ }
+ rom.set(backpassWallArrival({lateralSnap:true}),offset(WALL_ARRIVAL));
+ rom.set([0x5C,...long(DEFENSE_WALL),0xEA,0xEA],offset(0x84E4FE));
+ rom.set([0x5C,...long(DEFENSE_KEEPER),0xEA,0xEA],offset(0x84E578));
+ writeFinalSnesChecksum(rom);return rom;
+}
+export const BACKPASS_FREE_KICK_RANGES=Object.freeze([...BACKPASS_FREE_KICK_V2_RANGES,[offset(0x84E578),offset(0x84E578)+6]]);

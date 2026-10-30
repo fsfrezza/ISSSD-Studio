@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {buildBackpassFreeKickRom,BACKPASS_FREE_KICK_RANGES} from '../src/core/backpass-free-kick.mjs';
+import {buildBackpassFreeKickRom,BACKPASS_FREE_KICK_RANGES,buildBackpassFreeKickV2Rom,BACKPASS_FREE_KICK_V2_RANGES} from '../src/core/backpass-free-kick.mjs';
 import {gameImprovementsWriter,GAME_IMPROVEMENT_RANGES} from '../src/core/game-improvements.mjs';
 import {goalkeeperSetPieceWrites} from '../src/core/goalkeeper-set-pieces.mjs';
 import {experimentalBackpassHooks,buildExperimentalBackpassPenalty} from '../src/core/experimental-backpass-penalty.mjs';
@@ -12,7 +12,7 @@ import {buildPlusProjectRom} from '../src/core/project-build.mjs';
 // The native signature fixture is shared with the ROM validator, not a ROM.
 const source=readFileSync(new URL('../src/core/experimental-backpass-penalty.mjs',import.meta.url),'utf8');
 const signatures=Function('return '+source.split('const signatures=')[1].split(';\nexport function')[0])();
-function fixture(){const base=seedCursorTextFixture(makePlusTacticalFixture());for(const [a,bytes]of signatures)base.set(bytes,((a>>16)&127)*0x8000+(a&0x7FFF));for(const [a,bytes]of [[0xA4DD45,[0x20,0x4C,0xE0,0x0B,0xAD,0xC6,0,0x5B,0x22,0x78,0xD9,0x80]],[0x84E4FE,[0xA8,0xAD,0xC0,0,0xF0,5]],[0x84AF84,[0xA9,0x78,4,0x20,0x4E,0x85]],[0xA4DD51,[0x2B,0xB0,3,0x4C,0x9F,0xDE]],[0x848544,[0x20,0x4E,0x85,0x6B]],[0x85EECE,[0xA2,0,0,0x22,0xC5,0xF8,0x85,0x8E,0xA6,0,0x6B]]])base.set(bytes,((a>>16)&127)*0x8000+(a&32767));return base;}
+function fixture(){const base=seedCursorTextFixture(makePlusTacticalFixture());for(const [a,bytes]of signatures)base.set(bytes,((a>>16)&127)*0x8000+(a&0x7FFF));for(const [a,bytes]of [[0x84E578,[0x18,0x6D,0xD8,0x12,0x85,0x52]],[0xA4DD45,[0x20,0x4C,0xE0,0x0B,0xAD,0xC6,0,0x5B,0x22,0x78,0xD9,0x80]],[0x84E4FE,[0xA8,0xAD,0xC0,0,0xF0,5]],[0x84AF84,[0xA9,0x78,4,0x20,0x4E,0x85]],[0xA4DD51,[0x2B,0xB0,3,0x4C,0x9F,0xDE]],[0x848544,[0x20,0x4E,0x85,0x6B]],[0x85EECE,[0xA2,0,0,0x22,0xC5,0xF8,0x85,0x8E,0xA6,0,0x6B]]])base.set(bytes,((a>>16)&127)*0x8000+(a&32767));return base;}
 const state=enabled=>({specialRulesV1:{schema:'isssd-special-rules-v1',goalkeeperBackpassNoHands:enabled}});
 const project=enabled=>({state:{patchesCompact:[],semantic:state(enabled)}});
 test('disabled and unselected improvement leave all ROM bytes unchanged',()=>{
@@ -78,8 +78,8 @@ test('Editor cumulative export equals approved standalone free kick plus mandato
  assert.deepEqual(generated,expected);assert.deepEqual(manifest.unassignedLegacyRanges,[]);
 });
 
-test('integrated free-kick bytes match the independently approved v2 ROM fingerprint',async()=>{
- const {createHash}=await import('node:crypto'),rom=buildBackpassFreeKickRom(fixture()),hash=createHash('sha256');
- for(const[start,end]of BACKPASS_FREE_KICK_RANGES){const addr=Buffer.alloc(8);addr.writeUInt32LE(start);addr.writeUInt32LE(end,4);hash.update(addr);hash.update(rom.subarray(start,end));}
+test('approved standalone v2 bytes remain available without changing its fingerprint',async()=>{
+ const {createHash}=await import('node:crypto'),rom=buildBackpassFreeKickV2Rom(fixture()),hash=createHash('sha256');
+ for(const[start,end]of BACKPASS_FREE_KICK_V2_RANGES){const addr=Buffer.alloc(8);addr.writeUInt32LE(start);addr.writeUInt32LE(end,4);hash.update(addr);hash.update(rom.subarray(start,end));}
  assert.equal(hash.digest('hex'),'e1f06e81fed77271fb13685c72c4ef271983953102b903b382ae429836b34dc1');
 });
