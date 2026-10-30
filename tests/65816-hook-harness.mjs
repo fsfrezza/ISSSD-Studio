@@ -27,7 +27,7 @@ export function executeHook(memory,entry,initial={},nativeCalls=new Set()){
   case 0xE8:r.x=nz((r.x+1)&65535);break;
   case 0xBB:r.x=nz(r.y);break;case 0xAA:r.x=nz(r.a);break;case 0xA8:r.y=nz(r.a);break;
   case 0x8A:r.a=nz(r.x);break;case 0x98:r.a=nz(r.y);break;
-  case 0xD8:r.p&=~8;break;case 0x38:r.p|=1;break;case 0x49:r.a=nz(r.a^word());break;case 0x29:r.a=nz(r.a&word());break;case 0xEB:r.a=nz((r.a>>8)|(r.a<<8&65535));break;case 0x0A:r.p=(r.p&~1)|(r.a>>15);r.a=nz(r.a<<1&65535);break;case 0x63:adc(read16(r.s+byte()));break;case 0xE9:adc(word()^65535);break;case 0x82:{const d=word();pc+=d&32768?d-65536:d;break;}case 0x18:r.p&=~1;break;case 0x69:adc(word());break;case 0x6F:adc(read16(long()));break;
+  case 0xD8:r.p&=~8;break;case 0x38:r.p|=1;break;case 0x49:r.a=nz(r.a^word());break;case 0x29:r.a=nz(r.a&word());break;case 0xEB:r.a=nz((r.a>>8)|(r.a<<8&65535));break;case 0x0A:r.p=(r.p&~1)|(r.a>>15);r.a=nz(r.a<<1&65535);break;case 0x63:adc(read16(r.s+byte()));break;case 0xE9:adc(word()^65535);break;case 0xEF:adc(read16(long())^65535);break;case 0x82:{const d=word();pc+=d&32768?d-65536:d;break;}case 0x18:r.p&=~1;break;case 0x69:adc(word());break;case 0x6F:adc(read16(long()));break;
   case 0x09:r.a=nz(r.a|word());break;case 0x05:r.a=nz(r.a|read16(r.dp+byte()));break;
   case 0x4A:r.p=(r.p&~1)|(r.a&1);r.a=nz(r.a>>1);break;
   case 0x54:{const dest=byte()<<16,source=byte()<<16,n=r.a+1;for(let i=0;i<n;i++)memory[dest+((r.y+i)&65535)]=memory[source+((r.x+i)&65535)];r.x=(r.x+n)&65535;r.y=(r.y+n)&65535;r.a=65535;r.db=dest>>16;break;}

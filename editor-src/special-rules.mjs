@@ -30,7 +30,7 @@
     <p id="isssdBackpassDescription">Não deixa que o usuário com goleiro semiautomático segure a bola com as mãos após recuo de outro jogador de sua equipe.</p>
     <label for="isssdBackpassPunishment">Punição pelo recuo</label>
     <select id="isssdBackpassPunishment" disabled><option value="penalty">Pênalti</option><option value="free-kick">Tiro livre direto dentro da área</option></select>
-    <p>Ao agarrar um recuo proibido, o goleiro segura a bola por cerca de meio segundo antes da punição escolhida. O tiro livre é cobrado no local da infração, inclusive dentro da área. Dominar com os pés continua permitido. Desmarcada, a opção mantém o comportamento original.</p>
+    <p>Ao agarrar um recuo proibido, o goleiro segura a bola por cerca de meio segundo antes da punição escolhida. O tiro livre é cobrado no local da infração, inclusive dentro da área. Se a bola estiver mais perto da linha de fundo que a marca do pênalti, a barreira fica sobre a linha do gol. Dominar com os pés continua permitido. Desmarcada, a opção mantém o comportamento original.</p>
     <p>Ao salvar a ROM, inclua a fase <strong>12 · Melhorias de Jogo</strong>.</p></div>
     <div class="card"><div class="sectionbar"><h3>Permitir que o goleiro seja batedor de faltas e/ou escanteios</h3></div>
     <label style="display:flex;gap:10px;margin:12px 0"><input type="checkbox" id="isssdGoalkeeperFreeKickTaker"><span>Permitir goleiro como batedor de faltas</span></label>

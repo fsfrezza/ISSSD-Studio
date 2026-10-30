@@ -67,3 +67,41 @@ coexistência/conflito. A montagem real do DOM e a mudança do select até a
 finalização do projeto também foram verificadas. O teste de emulador cobre
 um estado preparado, conforme descrito acima; não substitui uma rodada
 manual em todas as situações de partida.
+
+## Versão v2 aprovada e integração definitiva
+
+O usuário aprovou `ISSSD-Recuo-Tiro-Livre-v2.sfc`, SHA-256
+`3d22305653c0c535fb2f0616e20943622e36f4ef8e135573a87dfc860d878bc1`.
+A implementação foi movida sem mudar seus bytes para
+`src/core/backpass-free-kick.mjs`; o gerador experimental reexporta esse código.
+
+A v2 corrige a corrupção gráfica reproduzida com o goleiro visível: a saída da
+posse com as mãos agora usa a ação nativa zero, que reinicializa os descritores,
+em vez de saltar direto à ação 0010 com a pose anterior ainda carregada.
+O pênalti validado anteriormente permanece intocado.
+
+Se a bola estiver a menos de 0100 unidades da linha de fundo (distância nativa
+da marca do pênalti), todos os destinos longitudinais da barreira vão para a
+linha do gol. O hook de chegada 84:AF84 também posiciona os pés exatamente no
+destino, eliminando a tolerância que permitia parar dentro do gol. Ambos os
+lados foram testados, com seis jogadores chegando à linha em cada lado.
+
+A fase 12 agora possui também os hooks 84:E4FE e 84:AF84 e todo o bloco
+FF:F000–FFFF. O writer aplica a variante completa; a exportação cumulativa não
+pode omitir os helpers novos. Desmarcada, não aplica esses hooks.
+
+Verificação real de exportação: o runtime da aba foi extraído do HTML servido,
+montado no DOM, usado para marcar tiro livre, salvar/reabrir o estado e enviar
+o projeto ao endpoint HTTP utilizado pelo Editor. O ZIP retornou status
+complete e zero ranges não classificados. Os 14 trechos da regra são idênticos
+aos da ROM aprovada. A ROM completa tem 558 bytes diferentes: preparação
+obrigatória de expansão/táticas do Studio (incluindo sua assinatura) e checksum.
+Construir essa infraestrutura e sobrepor a regra aprovada reproduz exatamente,
+byte por byte, os 4 MiB exportados. A ROM extraída do ZIP também concluiu o
+cenário de goleiro visível no Snes9x, sem a corrupção anterior.
+
+O mesmo endpoint exportou o projeto canônico completo com FK e CK habilitados.
+Todos os trechos do recuo continuaram idênticos. A máscara 03 e o filtro 65816
+extraídos da ROM final liberaram o goleiro nos dois seletores. Iniciando uma
+partida nova dessa ROM completa no Snes9x, o cenário de goleiro visível concluiu
+a cobrança e retornou ao jogo sem a corrupção reproduzida anteriormente.
