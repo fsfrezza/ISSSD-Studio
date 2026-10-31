@@ -10,8 +10,8 @@ html=html.replace(new RegExp('<script id="'+marker+'">[\\s\\S]*?<\\/script>\\s*'
 const runtime=String.raw`<script id="isssd-expand-dedup-v1">
 (function(){
  'use strict';
- const normalize=s=>String(s||'').trim().replace(/\\s+/g,' ').toLocaleLowerCase('pt-BR');
- const generic=/^(?:expandir|recolher) todos(?:\\s*[.!])?$/;
+ const normalize=s=>String(s||'').trim().replace(/\s+/g,' ').toLocaleLowerCase('pt-BR');
+ const generic=/^(?:expandir|recolher) todos(?:\s*[.!])?$/;
  const top=document.getElementById('studioAllExpandTop');
  if(!top)return;
  const actions=['button','[role="button"]','input[type="button"]'].join(',');
