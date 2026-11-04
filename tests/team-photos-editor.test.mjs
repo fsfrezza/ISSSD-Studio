@@ -1,0 +1,24 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import vm from 'node:vm';
+import fs from 'node:fs';
+import {validateTeamPhotos} from '../src/core/team-photos.mjs';
+const runtime=fs.readFileSync(new URL('../editor-src/team-photos.mjs',import.meta.url),'utf8');
+test('photo UI preserves independent uploads across JSON reopen and rolls back a failed import',async()=>{
+ let fail=false;
+ const window={ISSSDTeamPhotos:{validateTeamPhotos},studioApplyProjectWithBase:async()=>{if(fail)throw Error('load failed');return true;},__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__:p=>({...p,state:{semantic:{prior:true}}})};
+ vm.runInNewContext(runtime,{window,document:{readyState:'loading',addEventListener(){}}});
+ const photo={pixels:Array(6144).fill(3),palette:Array(16).fill(31)},project={state:{semantic:{teamPhotosV1:{schema:'isssd-team-photos-v1',version:1,teams:{30:photo}}}}};
+ await window.studioApplyProjectWithBase(project);
+ const saved=window.__ISSSD_GIT_FINALIZE_PROJECT_OBJECT__({state:{semantic:{}}});
+ assert.equal(saved.state.semantic.prior,true);
+ assert.equal(JSON.stringify(saved.state.semantic.teamPhotosV1),JSON.stringify(project.state.semantic.teamPhotosV1));
+ saved.state.semantic.teamPhotosV1.teams[30].pixels[0]=4;
+ assert.equal(window.__ISSSD_TEAM_PHOTOS_EDITOR__.snapshot().teams[30].pixels[0],3);
+ fail=true;await assert.rejects(window.studioApplyProjectWithBase({state:{semantic:{}}}),/load failed/);
+ assert.equal(window.__ISSSD_TEAM_PHOTOS_EDITOR__.snapshot().teams[30].pixels[0],3);
+ fail=false;await window.studioApplyProjectWithBase(JSON.parse(JSON.stringify(project)));
+ assert.equal(window.__ISSSD_TEAM_PHOTOS_EDITOR__.snapshot().teams[30].pixels[0],3);
+ await window.studioApplyProjectWithBase({state:{semantic:{}}});
+ assert.equal(Object.keys(window.__ISSSD_TEAM_PHOTOS_EDITOR__.snapshot().teams).length,0);
+});

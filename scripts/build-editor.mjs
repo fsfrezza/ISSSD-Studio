@@ -22,6 +22,9 @@ const generatedMarkers=['ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE','isssd-git-controlle
 if(generatedMarkers.some(m=>fs.readFileSync(source,'utf8').includes(m)))throw new Error('Baseline contém build gerado; .editor-vendor foi preservado.');
 
 let html=repairSectionHeadings(fs.readFileSync(source,'utf8'));
+// A zero-delay timer can run while the following preparation script is still parsing.
+html=html.replace(' studioUpdateBadge();\n studioRefreshProjectPreparation();\n},0);', ' studioUpdateBadge();\n if(typeof studioRefreshProjectPreparation===\'function\')studioRefreshProjectPreparation();else document.addEventListener(\'DOMContentLoaded\',()=>studioRefreshProjectPreparation(),{once:true});\n},0);');
+
 // Replace only the generated appearance UI; the private baseline stays immutable.
 const appearanceCore='const CUSTOM_HAIR_MANUAL_FRAMES='+JSON.stringify(loadPlayerHairFiles(root).frames)+';\n'+fs.readFileSync(path.join(root,'src/core/player-appearance.mjs'),'utf8').replace("import {CUSTOM_HAIR_MANUAL_FRAMES} from './player-hair-manual.mjs';",'');
 const appearanceExports=[...appearanceCore.matchAll(/^export (?:const|function) (\w+)/gm)].map(m=>m[1]);
@@ -29,10 +32,11 @@ const appearanceEngine='window.ISSSDPlayerAppearanceCore=(()=>{\n'+appearanceCor
 const spriteCatalog=fs.readFileSync(path.join(root,'src/core/player-body-catalog.mjs'),'utf8').replace(/^export /gm,'');
 const originalHairCatalog=fs.readFileSync(path.join(root,'src/core/player-original-hair.mjs'),'utf8').replace(/^export /gm,'');
 const baldCatalog=fs.readFileSync(path.join(root,'src/core/player-bald-base-data.mjs'),'utf8').replace(/^export /gm,'');
+const goalkeeperCatalog=fs.readFileSync(path.join(root,'src/core/goalkeeper-pose-catalog.mjs'),'utf8').replace(/^export /gm,'');
 const poseCatalog=fs.readFileSync(path.join(root,'src/core/player-pose-catalog.mjs'),'utf8').replace(/^export /gm,'');
 const spriteSource=fs.readFileSync(path.join(root,'src/core/player-sprite-editor.mjs'),'utf8').replace(/\r\n?/g,'\n').split('export function playerSpriteWriter')[0].replace(/^import .*;\n/gm,'').replace(/^export \{[^}]+\};\n/gm,'');
 const spriteExports=[...spriteSource.matchAll(/^export (?:const|function) (\w+)/gm)].map(m=>m[1]);
-const spriteEngine='window.ISSSDPlayerSpriteCore=(()=>{\n'+spriteCatalog+'\n'+baldCatalog+'\n'+originalHairCatalog+'\n'+poseCatalog+'\nconst decodeNativeHairTile=(...a)=>window.ISSSDPlayerAppearanceCore.decodeNativeHairTile(...a);\n'+spriteSource.replace(/^export /gm,'')+'\nreturn {PLAYER_BODY_CATALOG,PLAYER_POSE_CATALOG,'+spriteExports.join(',')+'};})();\n';
+const spriteEngine='window.ISSSDPlayerSpriteCore=(()=>{\n'+spriteCatalog+'\n'+baldCatalog+'\n'+originalHairCatalog+'\n'+poseCatalog+'\n'+goalkeeperCatalog+'\nconst decodeNativeHairTile=(...a)=>window.ISSSDPlayerAppearanceCore.decodeNativeHairTile(...a);\n'+spriteSource.replace(/^export /gm,'')+'\nreturn {PLAYER_BODY_CATALOG,PLAYER_POSE_CATALOG,'+spriteExports.join(',')+'};})();\n';
 const appearanceRuntime=appearanceEngine+spriteEngine+fs.readFileSync(path.join(root,'editor-src/player-appearance.mjs'),'utf8')+'\n'+fs.readFileSync(path.join(root,'editor-src/player-sprite-editor.mjs'),'utf8');
 const appearanceStart=html.indexOf('const HAIR_NAMES=['),appearanceEnd=html.indexOf('renderEmbeddedAssetManifest();',appearanceStart);
 if(appearanceStart<0||appearanceEnd<0)throw Error('Aparência: bloco original não encontrado.');
@@ -63,16 +67,22 @@ html=html.replaceAll("'goalkeepers':'Uniformes dos goleiros'","'uniforms':'Unifo
  .replaceAll("if(id==='goalkeepers')ds.goalkeeperPalettesV1=clone(ss.goalkeeperPalettesV1)","if(id==='uniforms')ds.uniformsV1=clone(ss.uniformsV1);else if(id==='goalkeepers')ds.goalkeeperPalettesV1=clone(ss.goalkeeperPalettesV1)")
  .replace(" add('goalkeepers','Uniformes dos goleiros'"," add('uniforms','Uniformes de linha · cores e desenhos',studioProjectChangeHasValues(sem.uniformsV1),x=>delete x.uniformsV1);\n add('goalkeepers','Paletas dos goleiros · aparência e uniforme'");
 // Optional gameplay choices participate in selective project open/save.
-html=html.replaceAll("'uniforms':'Uniformes de linha · cores e desenhos'","'game-improvements':'Melhorias de Jogo','uniforms':'Uniformes de linha · cores e desenhos'")
+html=html.replaceAll("'uniforms':'Uniformes de linha · cores e desenhos'","'game-improvements':'Correções e Melhorias','uniforms':'Uniformes de linha · cores e desenhos'")
  .replaceAll("'uniforms':sem.uniformsV1||null","'game-improvements':sem.specialRulesV1||null,'uniforms':sem.uniformsV1||null")
  .replaceAll("if(id==='uniforms')delete sem.uniformsV1","if(id==='game-improvements')delete sem.specialRulesV1;else if(id==='uniforms')delete sem.uniformsV1")
  .replaceAll("if(id==='uniforms')ds.uniformsV1=clone(ss.uniformsV1)","if(id==='game-improvements')ds.specialRulesV1=clone(ss.specialRulesV1);else if(id==='uniforms')ds.uniformsV1=clone(ss.uniformsV1)")
- .replace(" add('uniforms','Uniformes de linha · cores e desenhos'"," add('game-improvements','Melhorias de Jogo',['goalkeeperBackpassNoHands','goalkeeperFreeKickTaker','goalkeeperCornerKickTaker'].some(key=>sem.specialRulesV1?.[key]===true),x=>delete x.specialRulesV1);\n add('uniforms','Uniformes de linha · cores e desenhos'");
-html=html.replaceAll("'game-improvements':'Melhorias de Jogo'","'stadiums':'Estádios','player-colors':'Pele e cabelo por jogador','game-improvements':'Melhorias de Jogo'")
+ .replace(" add('uniforms','Uniformes de linha · cores e desenhos'"," add('game-improvements','Correções e Melhorias',['goalkeeperBackpassNoHands','goalkeeperFreeKickTaker','goalkeeperCornerKickTaker'].some(key=>sem.specialRulesV1?.[key]===true),x=>delete x.specialRulesV1);\n add('uniforms','Uniformes de linha · cores e desenhos'");
+html=html.replaceAll("'game-improvements':'Correções e Melhorias'","'stadiums':'Estádios','player-colors':'Pele e cabelo por jogador','game-improvements':'Correções e Melhorias'")
  .replaceAll("'game-improvements':sem.specialRulesV1||null","'stadiums':sem.stadiumsV1||null,'player-colors':sem.playerColorsV1||null,'game-improvements':sem.specialRulesV1||null")
  .replaceAll("if(id==='game-improvements')delete sem.specialRulesV1","if(id==='stadiums')delete sem.stadiumsV1;else if(id==='player-colors')delete sem.playerColorsV1;else if(id==='game-improvements')delete sem.specialRulesV1")
  .replaceAll("if(id==='game-improvements')ds.specialRulesV1=clone(ss.specialRulesV1)","if(id==='stadiums')ds.stadiumsV1=clone(ss.stadiumsV1);else if(id==='player-colors')ds.playerColorsV1=clone(ss.playerColorsV1);else if(id==='game-improvements')ds.specialRulesV1=clone(ss.specialRulesV1)")
- .replace(" add('game-improvements','Melhorias de Jogo'"," add('stadiums','Estádios',studioProjectChangeHasValues(sem.stadiumsV1?.stadiums),x=>delete x.stadiumsV1);\n add('player-colors','Pele e cabelo por jogador',studioProjectChangeHasValues(sem.playerColorsV1?.players),x=>delete x.playerColorsV1);\n add('game-improvements','Melhorias de Jogo'");
+ .replace(" add('game-improvements','Correções e Melhorias'"," add('stadiums','Estádios',studioProjectChangeHasValues(sem.stadiumsV1?.stadiums),x=>delete x.stadiumsV1);\n add('player-colors','Pele e cabelo por jogador',studioProjectChangeHasValues(sem.playerColorsV1?.players),x=>delete x.playerColorsV1);\n add('game-improvements','Correções e Melhorias'");
+const photoSource=fs.readFileSync(path.join(root,'src/core/team-photos.mjs'),'utf8').replace(/^import .*;\n/gm,'');
+const photoExports=[...photoSource.matchAll(/^export (?:const|function) (\w+)/gm)].map(m=>m[1]);
+const lzSource=fs.readFileSync(path.join(root,'src/core/konami-lz.mjs'),'utf8').replace(/^export /gm,'');
+const planesSource=fs.readFileSync(path.join(root,'src/core/plus-graphical-labels.mjs'),'utf8').match(/export function transformLabelPlanes[\s\S]*?\n}/)[0].replace('export ','');
+const photoRuntime='window.ISSSDTeamPhotos=(()=>{'+lzSource+'\n'+planesSource+'\n'+photoSource.replace(/^export /gm,'')+'\nreturn {'+photoExports.join(',')+'};})();\n'+fs.readFileSync(path.join(root,'editor-src/team-photos.mjs'),'utf8');
+
 const marker='ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE';
 html=html.replace(/<!--\s*ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE\s*-->\s*/g,'')
  .replace(/<style\s+id=["']isssd-git-visual-bridge-overrides["'][^>]*>[\s\S]*?<\/style>\s*/g,'')
@@ -177,7 +187,7 @@ html=html.replace(expansionAnchor,()=>expansionRuntime+'\n'+expansionAnchor);
 const stadiumSource=fs.readFileSync(path.join(root,'src/core/stadiums.mjs'),'utf8').replace(/^export /gm,'');
 const stadiumRuntime='window.ISSSDStadiums=(()=>{'+stadiumSource+';return{STADIUMS,readStadiums,validateStadiums};})();\n'+fs.readFileSync(path.join(root,'editor-src/stadiums-editor.mjs'),'utf8');
 const specialRulesRuntime=fs.readFileSync(path.join(root,'editor-src/special-rules.mjs'),'utf8')+'\n'+colorRuntime+'\n'+stadiumRuntime;
-const v11='const TEXT_LANGUAGE_PRESETS='+JSON.stringify(languagePresets)+';\n'+(fs.existsSync(v11File)?fs.readFileSync(v11File,'utf8'):'')+'\n'+additionalRuntime+'\n'+teamNameRuntime+'\n'+soundsRuntime+'\n'+goalkeeperRuntime+'\n'+uniformRuntime+'\n'+specialRulesRuntime;
+const v11='const TEXT_LANGUAGE_PRESETS='+JSON.stringify(languagePresets)+';\n'+(fs.existsSync(v11File)?fs.readFileSync(v11File,'utf8'):'')+'\n'+additionalRuntime+'\n'+teamNameRuntime+'\n'+soundsRuntime+'\n'+goalkeeperRuntime+'\n'+uniformRuntime+'\n'+specialRulesRuntime+'\n'+photoRuntime;
 try{new Function(js);new Function(v11)}catch(e){throw new Error('Build interrompido: JavaScript Git inválido: '+e.message)}
 const patch=`\n<!-- ${marker} -->\n<style id="isssd-git-visual-bridge-overrides">\n${css}\n</style>\n<script type="module" id="isssd-git-visual-bridge-runtime">\n${js}\n</script>\n<script type="module" id="isssd-git-project-import-v11">\n${v11}\n</script>\n<script id="isssd-text-navigation">\n(()=>{const ADDITIONAL_TEXT_SECTIONS=${JSON.stringify(additionalSections)};\n${textNavigationRuntime}\n})();\n</script>\n`;
 if(html.includes('</body>'))html=html.replace('</body>',()=>patch+'\n</body>');else html+=patch;

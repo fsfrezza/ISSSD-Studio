@@ -14,7 +14,7 @@ test('special rule saves and restores the same semantic key',()=>{
   assert.match(script,/const KEY='goalkeeperBackpassNoHands'/);
   assert.match(script,/specialRulesV1=getState\(\)/);
   assert.match(script,/setState\(project\?\.state\?\.semantic\)/);
-  assert.match(script,/Melhorias de Jogo/);
+  assert.match(script,/Correções e Melhorias/);
 });
 test('pipeline applies optional validated improvements',()=>{
  const pipeline=readFileSync(new URL('../src/core/plus-build-pipeline.mjs',import.meta.url),'utf8');

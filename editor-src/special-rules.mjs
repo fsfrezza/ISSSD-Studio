@@ -22,21 +22,22 @@
    const ref=document.querySelector('.navbtn[data-page="dashboard"]')||document.querySelector('.navbtn[data-page]');
    const existingPage=document.querySelector('.page');if(!ref||!existingPage)return;
    const btn=ref.cloneNode(false);btn.id='isssdSpecialRulesNav';btn.type='button';btn.dataset.page='game-improvements';
-   btn.innerHTML='<span class="navico" aria-hidden="true">✦</span><span>Melhorias de Jogo</span>';
+   btn.innerHTML='<span class="navico" aria-hidden="true">✦</span><span>Correções e Melhorias</span>';
    btn.classList.remove('active');ref.after(btn);
    const page=document.createElement('section');page.id='page-game-improvements';page.className='page';
-   page.innerHTML=`<h2>Melhorias de Jogo</h2><p>A Plus continua como ROM-base. As melhorias que ela já contém estão marcadas e bloqueadas. As opções adicionais abaixo são independentes e ficam salvas no projeto.</p>
+   page.innerHTML=`<h2>Correções e Melhorias</h2><p>A Plus continua como ROM-base. As melhorias que ela já contém estão marcadas e bloqueadas. As opções adicionais abaixo são independentes e ficam salvas no projeto.</p>
     <div class="card"><div class="sectionbar"><label style="display:flex;gap:10px;align-items:center"><input type="checkbox" id="isssdBackpassRule" aria-describedby="isssdBackpassDescription"> <strong>Impedir que usuário burle recuo ao goleiro.</strong></label></div>
     <p id="isssdBackpassDescription">Não deixa que o usuário com goleiro semiautomático segure a bola com as mãos após recuo de outro jogador de sua equipe.</p>
     <label for="isssdBackpassPunishment">Punição pelo recuo</label>
-    <select id="isssdBackpassPunishment" disabled><option value="penalty">Pênalti</option><option value="free-kick">Tiro livre direto dentro da área</option></select>
+    <select id="isssdBackpassPunishment" disabled><option value="penalty">Pênalti</option><option value="free-kick" disabled>Tiro livre direto dentro da área · em testes</option></select>
+    <p class="note info" id="isssdBackpassExperimental">Tiro livre por recuo temporariamente indisponível no Editor. A escolha de projetos antigos é preservada, mas sua exportação fica bloqueada até a aprovação da ROM de teste.</p>
     <p>Ao agarrar um recuo proibido, o goleiro segura a bola por cerca de meio segundo antes da punição escolhida. O tiro livre é cobrado no local da infração, inclusive dentro da área. Se a bola estiver mais perto da linha de fundo que a marca do pênalti, a barreira fica sobre a linha do gol. Dominar com os pés continua permitido. Desmarcada, a opção mantém o comportamento original.</p>
-    <p>Ao salvar a ROM, inclua a fase <strong>12 · Melhorias de Jogo</strong>.</p></div>
+    <p>Ao salvar a ROM, inclua a fase <strong>12 · Correções e Melhorias</strong>.</p></div>
     <div class="card"><div class="sectionbar"><h3>Permitir que o goleiro seja batedor de faltas e/ou escanteios</h3></div>
     <label style="display:flex;gap:10px;margin:12px 0"><input type="checkbox" id="isssdGoalkeeperFreeKickTaker"><span>Permitir goleiro como batedor de faltas</span></label>
     <label style="display:flex;gap:10px;margin:12px 0"><input type="checkbox" id="isssdGoalkeeperCornerKickTaker"><span>Permitir goleiro como batedor de escanteios</span></label>
     <p>Escolha o goleiro como batedor oficial na tela de Substituições, acessível pelo menu antes da partida ou durante a pausa. Cada opção libera apenas o tipo de cobrança marcado.</p>
-    <p>Ao salvar a ROM, inclua a fase <strong>12 · Melhorias de Jogo</strong>.</p></div>
+    <p>Ao salvar a ROM, inclua a fase <strong>12 · Correções e Melhorias</strong>.</p></div>
     <div class="card"><div class="sectionbar"><h3>Incluídas na Plus · separação futura</h3></div><p>Presentes na base Plus. Serão opções independentes quando houver suporte à base Deluxe.</p>
     ${Object.entries(includedLabels).map(([id,label])=>`<label style="display:flex;gap:10px;margin:12px 0"><input type="checkbox" checked disabled data-plus-included="${id}"><span>${label}</span></label>`).join('')}</div>
     <div class="card"><div class="sectionbar"><h3>Planejadas · indisponíveis</h3></div>
@@ -45,7 +46,7 @@
    existingPage.parentElement.appendChild(page);
    page.querySelector('#isssdBackpassRule').checked=selected;
    page.querySelector('#isssdBackpassRule').addEventListener('change',e=>{selected=e.target.checked;page.querySelector('#isssdBackpassPunishment').disabled=!selected;window.studioUpdateBadge?.();});
-   const choice=page.querySelector('#isssdBackpassPunishment');choice.value=punishment;choice.disabled=!selected;choice.addEventListener('change',e=>{punishment=e.target.value;window.studioUpdateBadge?.();});
+   const choice=page.querySelector('#isssdBackpassPunishment');choice.value=punishment;choice.disabled=!selected;choice.addEventListener('change',e=>{if(e.target.value==='free-kick'){choice.value=punishment;return;}punishment=e.target.value;window.studioUpdateBadge?.();});
    for(const [key,id]of Object.entries(takerBoxes)){const input=page.querySelector('#'+id);input.checked=takers[key];input.addEventListener('change',e=>{takers[key]=e.target.checked;window.studioUpdateBadge?.();});}
    btn.addEventListener('click',e=>{
      e.preventDefault();e.stopImmediatePropagation();

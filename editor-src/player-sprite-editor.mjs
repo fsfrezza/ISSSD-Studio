@@ -33,6 +33,7 @@ function setupPlayerSpriteEditor(){
  function filter(){const previous=by('spriteBody').value,q=by('spriteSearch').value.toLowerCase();by('spriteBody').innerHTML='';for(const r of engine.PLAYER_BODY_CATALOG)if((r.name+' '+r.id).toLowerCase().includes(q)){const o=document.createElement('option');o.value=r.id;o.textContent=r.name+' · '+r.id+(r.mounted?' · montado':'');by('spriteBody').append(o);}if([...by('spriteBody').options].some(o=>o.value===previous))by('spriteBody').value=previous;}
  filter();by('spriteSearch').oninput=()=>{stash();filter();if(by('spriteBody').value)load();};for(const id of ['spriteKind','spriteStyle','spriteFrame','spriteBody'])by(id).onchange=load;
  by('spritePlay').onclick=()=>{if(playerSpriteAnimation!==null){stopPlayerSpriteAnimation();by('spritePlay').textContent='Animar movimento';drawReference();return;}if(session.sequence.length<2)return;by('spritePlay').textContent='Parar animação';playerSpriteAnimation=setInterval(()=>{if(!by('appearanceDialog').open||by('spriteWorkspace').hidden){stopPlayerSpriteAnimation();by('spritePlay').textContent='Animar movimento';return;}session.tick=(session.tick+1)%session.sequence.length;drawReference(session.sequence[session.tick]);},140);};
+ session.openHair=style=>{by('spriteKind').value='hair';by('spriteStyle').value=String(style);by('spriteFrame').value=String(nativeAppearanceFrame);by('spriteWorkspace').hidden=false;load();};
  by('spriteOpen').onclick=()=>{by('spriteWorkspace').hidden=!by('spriteWorkspace').hidden;if(!by('spriteWorkspace').hidden)load();else stopPlayerSpriteAnimation();};
  const remember=()=>{session.undo.push(session.frame.pixels.slice());if(session.undo.length>100)session.undo.shift();session.redo=[];};
  function paint(e){if(!session.frame)return;const c=by('spriteCanvas'),r=c.getBoundingClientRect(),x=Math.floor((e.clientX-r.left)/r.width*c.width),y=Math.floor((e.clientY-r.top)/r.height*c.height);if(x<0||x>=c.width||y<0||y>=c.height)return;const at=y*c.width+x,a=session.frame.pixels,tool=by('spriteTool').value;
@@ -55,4 +56,12 @@ function setupPlayerSpriteEditor(){
   status('Os 24 quadros de Original e Cascão foram restaurados para os PNGs atuais. Salve o projeto e gere novamente a ROM.');
  }catch(e){status(e.message);}};
  by('spriteRestore').onclick=()=>{try{const state=JSON.parse(JSON.stringify(window.__ISSSD_TEAMS_PROJECT_OVERLAY_V1__||studioTeamsV3Snapshot()));state.spriteEdits=engine.restorePlayerSprite(state.spriteEdits,session.ref);if(!window.__ISSSD_TEAMS_SEMANTIC_HYDRATE_V1__(state))throw Error('Não foi possível restaurar.');session.drafts.delete(key(session.ref));session.frame=null;load();if(typeof studioUpdateBadge==='function')studioUpdateBadge();status('Quadro restaurado no projeto. Salve para guardar.');renderHairGallery();}catch(e){status(e.message);}};
+}
+
+function openPlayerHairEditor(style){
+ if(!playerSpriteSession)setupPlayerSpriteEditor();
+ let dialog=document.getElementById('hairPixelDialog');
+ if(!dialog){dialog=document.createElement('dialog');dialog.id='hairPixelDialog';dialog.className='hair-pixel-dialog';dialog.innerHTML='<div class="modalhead"><h2 id="hairPixelTitle">Editar cabelo</h2><button type="button" class="btn" id="hairPixelClose">Voltar à aparência</button></div><div id="hairPixelContent"></div>';document.body.append(dialog);document.getElementById('hairPixelClose').onclick=()=>dialog.close();dialog.addEventListener('close',()=>{stopPlayerSpriteAnimation();const workspace=document.getElementById('spriteWorkspace'),anchor=document.getElementById('hairPixelAnchor');if(anchor&&workspace){anchor.after(workspace);workspace.hidden=true;}});}
+ const workspace=document.getElementById('spriteWorkspace');if(!document.getElementById('hairPixelAnchor')){const anchor=document.createElement('span');anchor.id='hairPixelAnchor';workspace.before(anchor);}
+ document.getElementById('hairPixelContent').append(workspace);document.getElementById('hairPixelTitle').textContent='Editar · '+nativeAppearanceCore.hairStyleLabel(style);playerSpriteSession.openHair(style);dialog.showModal();
 }

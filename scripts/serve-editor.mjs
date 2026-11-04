@@ -1,3 +1,4 @@
+import {assertEditorReleasedRules} from '../src/core/editor-release-policy.mjs';
 import{initializeIndependentTeams}from'./initialize-independent-teams.mjs';
 import{independentTeamLabelsNeedRecovery}from'../src/core/independent-teams.mjs';
 import{assertCurrentEditorFeatures}from'./lib/editor-feature-readiness.mjs';
@@ -92,6 +93,7 @@ function buildPostedProject(req,res){
    const payload=JSON.parse(buffer.toString('utf8'));
    const project=payload?.project;
    if(!project||typeof project!=='object'||Array.isArray(project))throw new TypeError('Projeto .issdproj inválido ou ausente');
+   assertEditorReleasedRules(project,{selectedAreas:payload.cumulative===true?payload.selectedAreas:null});
    const diagnostic=payload?.diagnostic===true;
    const base=Uint8Array.from(fs.readFileSync(defaultPlusRomPath));
    const hairAssets=installPlayerHairFiles(root);
@@ -109,7 +111,7 @@ function buildPostedProject(req,res){
      const pendingReport=pendingTextExportReport(manifest.pendingTextChanges);
      if(pendingReport)zip.add('TEXTOS-PENDENTES.txt',Buffer.from(pendingReport));
      zip.add('indice.json',Buffer.from(JSON.stringify(manifest,null,2)+'\n'));
-     zip.add('LEIA-ME.txt',Buffer.from('ROMs cumulativas das fases marcadas, em ordem fixa:\n01 Infraestrutura; 02 Metadados; 03 Tela Inicial; 04 Menu Principal; 05 Pré-Partida; 06 Textos de Estratégias; 07 Seleção de equipes; 08 Jogadores; 09 Formações; 10 Textos durante a partida; 11 Sons; 12 Melhorias de Jogo.\nFases desmarcadas não são aplicadas nem geram ROM. Lacunas na numeração são intencionais.\nA preparação de 4 MiB/individualização é obrigatória em todos os arquivos.\nConsulte indice.json para fases selecionadas, alterações e dados legados sem área confirmada.\n'+(pendingReport?'ATENÇÃO: '+manifest.pendingTextChanges.length+' novos textos NÃO foram aplicados. Consulte TEXTOS-PENDENTES.txt.\n':'')));
+     zip.add('LEIA-ME.txt',Buffer.from('ROMs cumulativas das fases marcadas, em ordem fixa:\n01 Infraestrutura; 02 Metadados; 03 Tela Inicial; 04 Menu Principal; 05 Pré-Partida; 06 Textos de Estratégias; 07 Seleção de equipes; 08 Jogadores; 09 Formações; 10 Textos durante a partida; 11 Sons; 12 Correções e Melhorias.\nFases desmarcadas não são aplicadas nem geram ROM. Lacunas na numeração são intencionais.\nA preparação de 4 MiB/individualização é obrigatória em todos os arquivos.\nConsulte indice.json para fases selecionadas, alterações e dados legados sem área confirmada.\n'+(pendingReport?'ATENÇÃO: '+manifest.pendingTextChanges.length+' novos textos NÃO foram aplicados. Consulte TEXTOS-PENDENTES.txt.\n':'')));
      zip.finish();
      res.writeHead(200,{'Content-Type':'application/zip','Content-Length':fs.statSync(zipPath).size,'Cache-Control':'no-store','X-ISSSD-Builder':'plus-build-pipeline-v1','X-ISSSD-Mirrors':'ok','X-ISSSD-Archive':'cumulative-v1','X-ISSSD-ROM-Count':String(manifest.entries.length),'X-ISSSD-Pending-Text-Count':String(manifest.pendingTextChanges.length),'X-ISSSD-Export-Status':manifest.allSelectedChangesApplied?'complete':'partial'});
      const stream=fs.createReadStream(zipPath);res.on('close',()=>stream.destroy());stream.on('close',cleanup);stream.on('error',()=>res.destroy()).pipe(res);return;
