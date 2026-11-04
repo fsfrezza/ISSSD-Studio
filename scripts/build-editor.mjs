@@ -77,7 +77,7 @@ html=html.replaceAll("'game-improvements':'Correções e Melhorias'","'stadiums'
  .replaceAll("if(id==='game-improvements')delete sem.specialRulesV1","if(id==='stadiums')delete sem.stadiumsV1;else if(id==='player-colors')delete sem.playerColorsV1;else if(id==='game-improvements')delete sem.specialRulesV1")
  .replaceAll("if(id==='game-improvements')ds.specialRulesV1=clone(ss.specialRulesV1)","if(id==='stadiums')ds.stadiumsV1=clone(ss.stadiumsV1);else if(id==='player-colors')ds.playerColorsV1=clone(ss.playerColorsV1);else if(id==='game-improvements')ds.specialRulesV1=clone(ss.specialRulesV1)")
  .replace(" add('game-improvements','Correções e Melhorias'"," add('stadiums','Estádios',studioProjectChangeHasValues(sem.stadiumsV1?.stadiums),x=>delete x.stadiumsV1);\n add('player-colors','Pele e cabelo por jogador',studioProjectChangeHasValues(sem.playerColorsV1?.players),x=>delete x.playerColorsV1);\n add('game-improvements','Correções e Melhorias'");
-const photoSource=fs.readFileSync(path.join(root,'src/core/team-photos.mjs'),'utf8').replace(/^import .*;\n/gm,'');
+const photoSource=fs.readFileSync(path.join(root,'src/core/team-photos.mjs'),'utf8').replace(/\r\n?/g,'\n').replace(/^import .*;\n/gm,'');
 const photoExports=[...photoSource.matchAll(/^export (?:const|function) (\w+)/gm)].map(m=>m[1]);
 const lzSource=fs.readFileSync(path.join(root,'src/core/konami-lz.mjs'),'utf8').replace(/^export /gm,'');
 const planesSource=fs.readFileSync(path.join(root,'src/core/plus-graphical-labels.mjs'),'utf8').match(/export function transformLabelPlanes[\s\S]*?\n}/)[0].replace('export ','');
