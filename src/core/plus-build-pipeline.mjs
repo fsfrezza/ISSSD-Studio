@@ -1,3 +1,7 @@
+import {centerPlusPlayerNames} from './player-name-centering.mjs';
+import {plusTeamPhotosWriter} from './plus-team-photos.mjs';
+import {stadiumsWriter} from './stadiums.mjs';
+import {gameImprovementsWriter} from './game-improvements.mjs';
 import{plusIndependentTeamsWriter}from'./plus-independent-teams.mjs';
 import{plusPlayerCloseupWriter}from'./plus-player-closeup.mjs';
 import{plusPauseMenuWriter}from'./plus-pause-menu.mjs';
@@ -81,6 +85,7 @@ export function createPlusBuildStages({baseRom,patches=[],extraWriters=[],writeC
     },
     {id:'04b-player-sprites',kind:'semantic',run:(work,state)=>playerSpriteWriter(work,state,baseRom,selectedAreas)},
     {id:'04c-bald-player-base',kind:'semantic',run:(work,state)=>plusBaldPlayerBaseWriter(work,state,baseRom,selectedAreas)},
+    {id:'04c-stadiums',kind:'semantic',run:(work,state)=>stadiumsWriter(work,state,baseRom,selectedAreas)},
     {id:'04c-team-uniforms',kind:'semantic',run:(work,state)=>plusUniformsWriter(work,state,baseRom,selectedAreas)},
     {id:'04c-goalkeeper-palettes',kind:'semantic',run:(work,state)=>plusGoalkeeperPalettesWriter(work,state,baseRom,selectedAreas)},
     {id:'04c-custom-hair',kind:'semantic',run:(work,state)=>plusCustomHairWriter(work,state,baseRom,selectedAreas)},
@@ -127,6 +132,7 @@ export function createPlusBuildStages({baseRom,patches=[],extraWriters=[],writeC
       id:'07d-main-menu-text',kind:'semantic',when:state=>!!selectedAreas?.includes('menu-principal')&&state.plusMainMenu?.nativeCommitted===true,
       run:(work,state)=>plusMainMenuWriter(work,state),
     },
+    {id:'07e-team-photos',kind:'semantic',run:(work,state)=>plusTeamPhotosWriter(work,state,baseRom,selectedAreas)},
     {id:'07e-team-names',kind:'semantic',run:(work,state)=>plusTeamNamesWriter(work,state,baseRom,selectedAreas)},
     {id:'07e-team-group-identity',kind:'semantic',when:!!selectedAreas?.includes('selecao-equipes'),run:(work,state)=>plusGroupIdentityWriter(work,state,baseRom,selectedAreas)},
     {id:'07e-team-group-titles',kind:'semantic',when:!!selectedAreas?.includes('selecao-equipes'),run:(work,state)=>plusGroupTitlesWriter(work,state,baseRom,selectedAreas)},
@@ -146,7 +152,11 @@ export function createPlusBuildStages({baseRom,patches=[],extraWriters=[],writeC
     run:(work,state)=>writer(work,state),
   }));
 
+  stages.push({id:'09-center-player-names',kind:'semantic',when:!selectedAreas||selectedAreas.includes('jogadores'),run:(work,state)=>centerPlusPlayerNames(work,state)});
+
   stages.push({id:'09-independent-teams',kind:'semantic',run:(work,state)=>plusIndependentTeamsWriter(work,state,baseRom,selectedAreas)});
+
+  stages.push({id:'09-game-improvements',kind:'semantic',run:(work,state)=>gameImprovementsWriter(work,state,baseRom,selectedAreas)});
 
   // Esta é a mesma regra de integridade que foi validada na ROM corrigida
   // manualmente: ao final de TODAS as etapas semânticas, as cópias runtime

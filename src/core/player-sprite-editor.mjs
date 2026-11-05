@@ -1,3 +1,4 @@
+import {GOALKEEPER_POSE_CATALOG} from './goalkeeper-pose-catalog.mjs';
 import {ORIGINAL_HAIR_FRAMES} from './player-original-hair.mjs';
 import {BALD_BODY_PIXEL_INDICES} from './player-bald-base-data.mjs';
 import {PLAYER_POSE_CATALOG} from './player-pose-catalog.mjs';
@@ -77,6 +78,31 @@ export function readBaldHeadTile(rom,frame,edits){
  const draw=v=>renderPlayerReference(rom,ref,{...edits,hair:{...edits?.hair,['15:'+frame]:Array(64).fill(v)}},{pose,style:15});
  const a=draw(14),b=draw(15),base=draw(0),changed=a.pixels.flatMap((v,i)=>v!==b.pixels[i]?[i]:[]),x=Math.min(...changed.map(i=>i%a.width)),y=Math.min(...changed.map(i=>Math.floor(i/a.width)));
  return Array.from({length:64},(_,i)=>base.pixels[(y+(i>>3))*a.width+x+(i&7)]);
+}
+// Five native source orientations plus horizontal mirrors, as used by the game.
+// Overlay frame selection stays tied to the pose record; it is never a direction ID.
+export function uniformDirectionalViews(rom,edits,jersey,{step=0}={}){
+ const directions=[['N','Costas','Up',false],['NE','Diagonal de costas · direita','DiagonalUp',false],['E','Direita','Side',false],['SE','Diagonal de frente · direita','DiagonalDown',false],['S','Frente','Down',false],['SW','Diagonal de frente · esquerda','DiagonalDown',true],['W','Esquerda','Side',true],['NW','Diagonal de costas · esquerda','DiagonalUp',true]];
+ return directions.map(([id,label,prefix,mirrored])=>{
+  const first=[...records.values()].find(r=>r.name===prefix+'_Running1');
+  const initial=PLAYER_POSE_CATALOG.find(p=>p.body===first.id),sequence=playerReferenceSequence(initial),pose=sequence[((step%sequence.length)+sequence.length)%sequence.length];
+  const view=renderPlayerReference(rom,{kind:'body',id:pose.body},edits,{pose,style:14,jersey});
+  if(mirrored)view.pixels=view.pixels.map((_,i)=>view.pixels[Math.floor(i/view.width)*view.width+view.width-1-i%view.width]);
+  return{...view,id,label,mirrored};
+ });
+}
+// Goalkeepers use their own native bodies, including their integrated head.
+export function goalkeeperDirectionalViews(rom,{step=0}={}){
+ const directions=[['N','Costas','Up',false],['NE','Diagonal de costas · direita','DiagonalUp',false],['E','Direita','Side',false],['SE','Diagonal de frente · direita','DiagonalDown',false],['S','Frente','Down',false],['SW','Diagonal de frente · esquerda','DiagonalDown',true],['W','Esquerda','Side',true],['NW','Diagonal de costas · esquerda','DiagonalUp',true]],signed=v=>v>=128?v-256:v;
+ return directions.map(([id,label,prefix,mirrored])=>{
+  const record=GOALKEEPER_POSE_CATALOG.find(r=>r.name===prefix+'_Running'+(((step%8)+8)%8+1));if(!record)return{id,label,available:false};
+  const p=record.pc,q=p+2+record.top;if((rom[p]|rom[p+1]<<8)!==record.top||(rom[q]|rom[q+1]<<8)!==record.bottom)throw Error('Quadro de goleiro incompatível: '+record.name);
+  const raw=new Uint8Array(record.top+record.bottom);raw.set(rom.slice(p+2,q));raw.set(rom.slice(q+2,q+2+record.bottom),record.top);
+  const supported=t=>t<record.top/32||(t>=16&&t<16+record.bottom/32),objects=record.objects.filter(o=>supported(o[2])),ox=o=>signed(o[0])-(o[3]&16?8:4),oy=o=>signed(o[1])-(o[3]&16?8:4);
+  const x=Math.min(...objects.map(ox)),y=Math.min(...objects.map(oy)),width=Math.max(...objects.map(o=>ox(o)+(o[3]&16?16:8)))-x,height=Math.max(...objects.map(o=>oy(o)+(o[3]&16?16:8)))-y,pixels=Array(width*height).fill(0);
+  for(const o of objects.slice().reverse()){const size=o[3]&16?16:8;for(let yy=0;yy<size;yy++)for(let xx=0;xx<size;xx++){const sx=o[3]&64?size-1-xx:xx,sy=o[3]&128?size-1-yy:yy,t=o[2]+(sy>>3)*16+(sx>>3);if(!supported(t))continue;const tile=t<16?t:record.top/32+t-16,v=tilePixels(raw,tile)[(sy&7)*8+(sx&7)];if(v)pixels[(oy(o)-y+yy)*width+ox(o)-x+xx]=v;}}
+  return{id,label,available:true,width,height,pixels:mirrored?pixels.map((_,i)=>pixels[Math.floor(i/width)*width+width-1-i%width]):pixels,name:record.name,mirrored};
+ });
 }
 export function playerSpriteWriter(rom,state,base,selectedAreas=null){
  if(selectedAreas&&!selectedAreas.includes('jogadores'))return rom;const edits=state?.teamsV1?.spriteEdits;if(!edits)return rom;

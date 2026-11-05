@@ -115,3 +115,15 @@ export function migrateBaldAppearanceTeams(state){
  }
  return out;
 }
+
+export function appearanceColorLabel(colors){
+ const lum=v=>{const c=[0,5,10].map(s=>v>>s&31);return(c[0]*.2126+c[1]*.7152+c[2]*.0722)/31;};
+ const skin=lum(colors[5]??colors[4]),h=colors[1]??0,l=lum(h),r=h&31,g=h>>5&31,b=h>>10&31;
+ const hair=l<.12?'preto':l>.75&&Math.max(r,g,b)-Math.min(r,g,b)<5?'branco/grisalho':r>b*1.4&&g>b*1.2&&l>.4?'loiro':r>g*1.5?'ruivo':'castanho';
+ return 'Pele '+(skin>.78?'clara':skin>.5?'morena':'escura')+' · cabelo '+hair;
+}
+export function appearanceSkinRamp(hex){
+ if(!/^#[0-9a-f]{6}$/i.test(hex))throw Error('Cor de pele inválida.');
+ const c=[1,3,5].map(p=>parseInt(hex.slice(p,p+2),16));
+ return [.45,.65,.85,1].map(k=>c.reduce((v,n,i)=>v|(Math.round(n/255*31*k)<<(i*5)),0));
+}

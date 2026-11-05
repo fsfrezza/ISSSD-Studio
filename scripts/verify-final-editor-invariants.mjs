@@ -1,4 +1,5 @@
 import {isRetiredTeamExpansion} from '../src/core/retired-team-expansion.mjs';
+import {parse} from 'acorn';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import {spawnSync} from 'node:child_process';
@@ -9,6 +10,24 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const htmlPath=path.join(root,'editor','ISSSD-Studio.html');
 if(!fs.existsSync(htmlPath))throw new Error('Verificação final: editor gerado não encontrado: '+htmlPath);
 const html=fs.readFileSync(htmlPath,'utf8');
+// The ROM is closure-private. A syntactically valid module can still abort
+// when it tries to wrap renderExpansion from outside that closure.
+let expansionBindings=0,navigationBootstraps=0;
+for(const match of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)){
+ if(/id="isssd-text-navigation"/.test(match[1]))navigationBootstraps++;
+ if(!match[2].includes('const original=renderExpansion;'))continue;
+ const tree=parse(match[2],{ecmaVersion:'latest',sourceType:/type="module"/.test(match[1])?'module':'script'});
+ function visit(node,ancestors=[]){
+  if(!node||typeof node!=='object')return;
+  if(node.type==='VariableDeclarator'&&node.id?.name==='original'&&node.init?.name==='renderExpansion'){
+   if(!ancestors.some(a=>/Function/.test(a.type)&&a.body?.body?.some(b=>b.type==='FunctionDeclaration'&&b.id?.name==='renderExpansion')))throw Error('Verificação final: estado de expansão fora do escopo da ROM; interromperia o menu de textos.');
+   expansionBindings++;
+  }
+  for(const value of Object.values(node))if(Array.isArray(value))value.forEach(v=>visit(v,[...ancestors,node]));else if(value&&typeof value==='object')visit(value,[...ancestors,node]);
+ }
+ visit(tree);
+}
+if(expansionBindings!==1||navigationBootstraps!==1)throw Error('Verificação final: inicialização independente de expansão/textos ausente ou duplicada.');
 if(!html.includes('id="isssd-independent-teams"')||!html.includes('__ISSSD_INDEPENDENT_TEAMS_EDITOR__'))throw Error('Verificação final: editor das equipes independentes ausente.');
 if(!html.includes('__ISSSD_INSTALL_UNIFIED_TEAM_CORE__')||html.includes("p.className='card gg-panel'"))throw Error('Verificação final: equipes independentes precisam usar os controles normais.');
 if(isRetiredTeamExpansion(html))throw new Error('Verificação final: extensão antiga ainda presente no Editor.');

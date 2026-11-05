@@ -1,3 +1,4 @@
+import {applyAppearanceChoice} from './player-color-catalog.mjs';
 import{konamiLzDecompress}from'./konami-lz.mjs';
 import{transformLabelPlanes}from'./plus-graphical-labels.mjs';
 import{readNativeAppearancePalettes,decodeNativeHairTile}from'./player-appearance.mjs';
@@ -81,7 +82,7 @@ export function plusPlayerCloseupWriter(rom,state,base,selectedAreas=null){
   const native=readNativeAppearancePalettes(rom,team),players=state.teamsV1?.teams?.[team]?.players??[];
   for(let slot=0;slot<20;slot++){
    const at=playerOffset(team,slot),raw=rom[at+6],hair=raw&15,palette=raw>>4&1,p=players.find(p=>p.slot===slot+1);let colors=native.palettes[palette];
-   const keeper=rom[at+4]>>4===1;if(keeper){const k=state.goalkeeperPalettesV1?.players?.[team+':'+(p?.baseSlot??slot+1)]?.colors??defaultGoalkeeperPalette(base,team);colors=[0,k[0],k[1],mix(k[1],k[2],0.5),k[2],k[3],k[4]];}
+   const keeper=rom[at+4]>>4===1;const plan=state.__playerColorPlans?.[team];if(plan&&!keeper)colors=applyAppearanceChoice(colors,plan.combinations[plan.assignments[slot+1]]);if(keeper){const k=state.goalkeeperPalettesV1?.players?.[team+':'+(p?.baseSlot??slot+1)]?.colors??defaultGoalkeeperPalette(base,team);colors=[0,k[0],k[1],mix(k[1],k[2],0.5),k[2],k[3],k[4]];}
    const key=team*20+slot;palettes.set(closeupPalette(colors).flatMap(word),key*32);
    const h=keeper?14:hair,changed=h>0&&edits.hair?.[h+':3']?.some((v,i)=>v!==decodeNativeHairTile(base,h,3)[i]);
    styles.set(word((h===0||h>=14||changed?0x8000:0)|h),key*2);

@@ -15,7 +15,9 @@ export const STADIUM_RESTORE_SIZE=0x80;
 export const SQUAD_OAM_CACHE_SLOT=0x3E7600,SQUAD_OAM_CACHE_SIZE=0x200;
 export const SQUAD_RESTORE_SLOT=0x3E7800,SQUAD_RESTORE_SIZE=0x100;
 export const SQUAD_OAM_DEST=0x5EB2,SQUAD_OAM_PLANE=116;
-export const SQUAD_OAM_POINTERS=Object.freeze([0x175EE,0x175F0,0x175F2,...Array.from({length:11},(_,i)=>0x174F4+i*2)]);
+// Include the immediate frame operands used by 86:AA50/AA5C while the
+// corner/free-kick taker blinks, as well as the static frame tables.
+export const SQUAD_OAM_POINTERS=Object.freeze([0x175EE,0x175F0,0x175F2,...Array.from({length:11},(_,i)=>0x174F4+i*2),0x32A56,0x32A62]);
 export const TEAM_NAME_HOOK_SLOT=0x3E3000;
 export const TEAM_NAME_HOOK_SIZE=0x200;
 export const TEAM_NAME_POINTER_READS=Object.freeze([0x1BA5B,0x1BA86,0x2A995,0x2A9CB,0x2C754,0x2D156,0x2D6AF,0x2E99F,0x364A0,0x5668E,0x566B1,0x566D4,0x566F7,0x5671A,0x5673D,0x59908,0x5FFCE,0x5FFD4,0x5FFE0,0x122046,0x1244E0]);
