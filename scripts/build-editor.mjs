@@ -1,3 +1,4 @@
+import {preparePlayerPanel} from '../src/ui/prepare-player-panel.mjs';
 import {repairSectionHeadings} from '../src/ui/repair-section-headings.mjs';
 import {loadPlayerHairFiles} from '../src/platform/player-hair-files.mjs';
 import {SOUND_SLOTS} from '../src/core/sound-slots.mjs';
@@ -29,14 +30,7 @@ for(const id of ['expansion-only-v1622-ui','expansion-only-v1622-marker']){
  html=html.replace(script,'');
 }
 if(html.includes('plusExpansionOnlyCard')||html.includes('plusExpansionOnlyBtn'))throw new Error('Build interrompido: diagnóstico manual de expansão ainda está presente.');
-// This export inspects the loaded ROM. Explain its purpose without obsolete
-// candidate-address warnings or ROM bank details in the normal player UI.
-html=html.replace('Exporta os bytes atuais do jogador. Na ROM-base Plus, o banco 0x150000 foi validado; Brasil slots 3–8 (índices 2–7) também possuem espelho em 0x78C6–0x78EF. Não altera a ROM.',
- 'Gera um arquivo técnico para investigar dados incorretos deste jogador. Inclui os bytes da ROM carregada e os valores exibidos no Editor. Não altera a ROM nem substitui Exportar jogador.');
-html=html.replace('assumedAttrOffset:hx(ao)','attrOffset:hx(ao)');
-html=html.replace('O endereço de atributos é apenas candidato e não deve ser escrito até validação no Plus.',
- 'Diagnóstico de leitura: os bytes pertencem à ROM carregada; os valores interpretados pertencem ao estado atual do jogador no Editor. Este arquivo não altera a ROM e não é destinado à importação de jogadores.');
-
+html=preparePlayerPanel(html);
 
 // A zero-delay timer can run while the following preparation script is still parsing.
 html=html.replace(' studioUpdateBadge();\n studioRefreshProjectPreparation();\n},0);', ' studioUpdateBadge();\n if(typeof studioRefreshProjectPreparation===\'function\')studioRefreshProjectPreparation();else document.addEventListener(\'DOMContentLoaded\',()=>studioRefreshProjectPreparation(),{once:true});\n},0);');
@@ -53,7 +47,7 @@ const poseCatalog=fs.readFileSync(path.join(root,'src/core/player-pose-catalog.m
 const spriteSource=fs.readFileSync(path.join(root,'src/core/player-sprite-editor.mjs'),'utf8').replace(/\r\n?/g,'\n').split('export function playerSpriteWriter')[0].replace(/^import .*;\n/gm,'').replace(/^export \{[^}]+\};\n/gm,'');
 const spriteExports=[...spriteSource.matchAll(/^export (?:const|function) (\w+)/gm)].map(m=>m[1]);
 const spriteEngine='window.ISSSDPlayerSpriteCore=(()=>{\n'+spriteCatalog+'\n'+baldCatalog+'\n'+originalHairCatalog+'\n'+poseCatalog+'\n'+goalkeeperCatalog+'\nconst decodeNativeHairTile=(...a)=>window.ISSSDPlayerAppearanceCore.decodeNativeHairTile(...a);\n'+spriteSource.replace(/^export /gm,'')+'\nreturn {PLAYER_BODY_CATALOG,PLAYER_POSE_CATALOG,'+spriteExports.join(',')+'};})();\n';
-const appearanceRuntime=appearanceEngine+spriteEngine+fs.readFileSync(path.join(root,'editor-src/player-appearance.mjs'),'utf8')+'\n'+fs.readFileSync(path.join(root,'editor-src/player-sprite-editor.mjs'),'utf8');
+const appearanceRuntime=appearanceEngine+spriteEngine+fs.readFileSync(path.join(root,'editor-src/player-appearance.mjs'),'utf8')+'\n'+fs.readFileSync(path.join(root,'editor-src/player-sprite-editor.mjs'),'utf8')+'\n'+fs.readFileSync(path.join(root,'editor-src/selected-player-views.mjs'),'utf8');
 const appearanceStart=html.indexOf('const HAIR_NAMES=['),appearanceEnd=html.indexOf('renderEmbeddedAssetManifest();',appearanceStart);
 if(appearanceStart<0||appearanceEnd<0)throw Error('Aparência: bloco original não encontrado.');
 html=html.slice(0,appearanceStart)+appearanceRuntime+'\n'+html.slice(appearanceEnd);
