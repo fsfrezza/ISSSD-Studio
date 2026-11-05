@@ -22,6 +22,14 @@ const generatedMarkers=['ISSSD_GIT_AUTOMATED_VISUAL_BRIDGE','isssd-git-controlle
 if(generatedMarkers.some(m=>fs.readFileSync(source,'utf8').includes(m)))throw new Error('Baseline contém build gerado; .editor-vendor foi preservado.');
 
 let html=repairSectionHeadings(fs.readFileSync(source,'utf8'));
+// Retire the manual expansion diagnostic at its source: no card, listeners or
+// delayed callback survives in the generated Editor. Keep mandatory preparation.
+for(const id of ['expansion-only-v1622-ui','expansion-only-v1622-marker']){
+ const script=new RegExp('<script\\b[^>]*\\bid=["\']'+id+'["\'][^>]*>[\\s\\S]*?<\\/script>','gi');
+ html=html.replace(script,'');
+}
+if(html.includes('plusExpansionOnlyCard')||html.includes('plusExpansionOnlyBtn'))throw new Error('Build interrompido: diagnóstico manual de expansão ainda está presente.');
+
 // A zero-delay timer can run while the following preparation script is still parsing.
 html=html.replace(' studioUpdateBadge();\n studioRefreshProjectPreparation();\n},0);', ' studioUpdateBadge();\n if(typeof studioRefreshProjectPreparation===\'function\')studioRefreshProjectPreparation();else document.addEventListener(\'DOMContentLoaded\',()=>studioRefreshProjectPreparation(),{once:true});\n},0);');
 

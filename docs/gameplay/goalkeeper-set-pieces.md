@@ -57,3 +57,25 @@ ROMs reais foram geradas pelo Build Pipeline para FK, CK e ambos, junto à
 regra do recuo. No Snes9x, eventos controlados de falta e escanteio concluíram
 sem quadros de linha indevidos e com retorno do goleiro ao gol. Os testes
 controlados complementam a aprovação visual da versão experimental.
+
+## Caminhada de falta aprovada (v2)
+
+Ao marcar `goalkeeperFreeKickTaker`, o writer inclui automaticamente a composição
+v2 aprovada pelo usuário em 05/11/2026. Os 40 quadros alinham as pernas à cintura
+fixa, preservando tronco, braços, bola, cadência e velocidade de deslocamento.
+Não há nova opção nem migração do projeto. Somente escanteios habilitados
+continuam produzindo os bytes v7 anteriores.
+
+`goalkeeper-free-kick-carry-data.mjs` guarda os trechos aprovados, separados do
+recurso v7. Os gráficos continuam nos mesmos slots FE:A000..FF:C443. A tabela
+OAM fica em FF:EE00..EEFF; o seletor FF:E900 usa a mesma guarda de goleiro e
+estado 0588 dos leitores de gráficos. Fora desse estado, mantém o caminho nativo.
+O layout comum reutiliza 88:F8D9; os outros três ficam em 88:F970..F9D2,
+pois 88:F900..F960 pertence às fotos de equipes no Editor e 88:F9E0 em diante
+contém tabelas nativas. Os ponteiros foram
+atualizados sem mudar os pixels nem os offsets dos layouts aprovados.
+
+Os testes conferem o SHA-256 dos 40 blocos aprovados, executam o seletor 65816
+nas 64 combinações de direção/fase, verificam estados de escanteio e jogadores
+de linha, e combinam fotos e cobrança em ambas as ordens. Novas reservas
+participam da classificação cumulativa e da verificação atômica de conflitos.

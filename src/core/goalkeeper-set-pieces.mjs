@@ -1,4 +1,5 @@
 import {GOALKEEPER_SET_PIECE_PATCHES} from './goalkeeper-set-piece-data.mjs';
+import {GOALKEEPER_FREE_KICK_CARRY_PATCHES} from './goalkeeper-free-kick-carry-data.mjs';
 import {baldPointerHelper} from './plus-bald-player-base.mjs';
 
 const bytes=hex=>Uint8Array.from(hex.match(/../g)||[],v=>parseInt(v,16));
@@ -6,16 +7,22 @@ const same=(rom,pc,data)=>data.every((v,i)=>(pc+i<rom.length?rom[pc+i]:255)===v)
 const cpu=pc=>0x808000|((pc>>15)<<16)|(pc&32767);
 const long=n=>[n&255,n>>8&255,n>>16&255];
 export const GOALKEEPER_TAKER_KEYS=Object.freeze(['goalkeeperFreeKickTaker','goalkeeperCornerKickTaker']);
-export const GOALKEEPER_TAKER_RANGES=Object.freeze(GOALKEEPER_SET_PIECE_PATCHES.map(p=>[p.pc,p.pc+p.hex.length/2]));
+export const GOALKEEPER_TAKER_RANGES=Object.freeze([...GOALKEEPER_SET_PIECE_PATCHES,...GOALKEEPER_FREE_KICK_CARRY_PATCHES].map(p=>[p.pc,p.pc+p.hex.length/2]));
 export const GOALKEEPER_SHARED_BODY_HOOKS=Object.freeze([0x266FB,0x26706]);
 export function goalkeeperSetPieceWrites(options={}){
  const mask=(options.goalkeeperFreeKickTaker===true?1:0)|(options.goalkeeperCornerKickTaker===true?2:0);
  if(!mask)return [];
- return GOALKEEPER_SET_PIECE_PATCHES.map(p=>({pc:p.pc,original:p.original===null?new Uint8Array(p.hex.length/2).fill(255):bytes(p.original),data:p.pc===0x3FED80?Uint8Array.of(mask):bytes(p.hex)}));
+ const patches=new Map(GOALKEEPER_SET_PIECE_PATCHES.map(p=>[p.pc,p]));
+ if(mask&1)for(const p of GOALKEEPER_FREE_KICK_CARRY_PATCHES){
+  const previous=patches.get(p.pc);
+  patches.set(p.pc,{...p,original:previous?.original??null});
+ }
+ return [...patches.values()].map(p=>({pc:p.pc,original:p.original===null?new Uint8Array(p.hex.length/2).fill(255):bytes(p.original),data:p.pc===0x3FED80?Uint8Array.of(mask):bytes(p.hex)}));
 }
 
 // Disassembly: 86:AB4F rejects roster zero; menu state 3=FK and 4=CK.
-// Runtime/body changes are the approved v7. Carry data uses FE:A000..FF:C443,
+// Runtime/body changes use v7 plus the user-approved v2 FK carry composition.
+// Carry data uses FE:A000..FF:C443; FK OAM uses 88:F970..F9D2,
 // outside Studio's text, menu, appearance, and backpass reservations.
 export function goalkeeperSetPiecesWriter(work,options,base){
  const writes=goalkeeperSetPieceWrites(options);if(!writes.length)return work;
