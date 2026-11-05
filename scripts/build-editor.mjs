@@ -29,6 +29,14 @@ for(const id of ['expansion-only-v1622-ui','expansion-only-v1622-marker']){
  html=html.replace(script,'');
 }
 if(html.includes('plusExpansionOnlyCard')||html.includes('plusExpansionOnlyBtn'))throw new Error('Build interrompido: diagnóstico manual de expansão ainda está presente.');
+// This export inspects the loaded ROM. Explain its purpose without obsolete
+// candidate-address warnings or ROM bank details in the normal player UI.
+html=html.replace('Exporta os bytes atuais do jogador. Na ROM-base Plus, o banco 0x150000 foi validado; Brasil slots 3–8 (índices 2–7) também possuem espelho em 0x78C6–0x78EF. Não altera a ROM.',
+ 'Gera um arquivo técnico para investigar dados incorretos deste jogador. Inclui os bytes da ROM carregada e os valores exibidos no Editor. Não altera a ROM nem substitui Exportar jogador.');
+html=html.replace('assumedAttrOffset:hx(ao)','attrOffset:hx(ao)');
+html=html.replace('O endereço de atributos é apenas candidato e não deve ser escrito até validação no Plus.',
+ 'Diagnóstico de leitura: os bytes pertencem à ROM carregada; os valores interpretados pertencem ao estado atual do jogador no Editor. Este arquivo não altera a ROM e não é destinado à importação de jogadores.');
+
 
 // A zero-delay timer can run while the following preparation script is still parsing.
 html=html.replace(' studioUpdateBadge();\n studioRefreshProjectPreparation();\n},0);', ' studioUpdateBadge();\n if(typeof studioRefreshProjectPreparation===\'function\')studioRefreshProjectPreparation();else document.addEventListener(\'DOMContentLoaded\',()=>studioRefreshProjectPreparation(),{once:true});\n},0);');
