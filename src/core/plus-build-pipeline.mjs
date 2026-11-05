@@ -1,3 +1,4 @@
+import {centerPlusPlayerNames} from './player-name-centering.mjs';
 import {plusTeamPhotosWriter} from './plus-team-photos.mjs';
 import {stadiumsWriter} from './stadiums.mjs';
 import {gameImprovementsWriter} from './game-improvements.mjs';
@@ -150,6 +151,8 @@ export function createPlusBuildStages({baseRom,patches=[],extraWriters=[],writeC
     kind:'semantic',
     run:(work,state)=>writer(work,state),
   }));
+
+  stages.push({id:'09-center-player-names',kind:'semantic',when:!selectedAreas||selectedAreas.includes('jogadores'),run:(work,state)=>centerPlusPlayerNames(work,state)});
 
   stages.push({id:'09-independent-teams',kind:'semantic',run:(work,state)=>plusIndependentTeamsWriter(work,state,baseRom,selectedAreas)});
 

@@ -1,3 +1,4 @@
+import {centeredRosterNames} from './player-name-centering.mjs';
 import {applyAppearanceChoice} from './player-color-catalog.mjs';
 import{stableFieldFlag}from'./field-flag-colors.mjs';
 import{independentFlagPixels}from'./independent-team-fields.mjs';
@@ -111,7 +112,7 @@ export function plusIndependentTeamsWriter(input,state,base,selectedAreas=null){
  // The native player bank has room for four added normal records, previously unused.
  for(const id of GG_TEAM_IDS){const d=data[id];const count=Array.from({length:11},(_,i)=>d.attributes[i*7+6]&15).filter(h=>h>0&&h<14).length;if(count>3)throw Error('Equipe GG '+id+': até três titulares podem usar os cabelos nativos 1–13.');const attrs=Uint8Array.from(d.attributes);for(let i=0;i<20;i++)if(attrs[i*7+4]>>4===1)attrs[i*7+6]&=240;rom.set(attrs,0x150000+id*140);}
  // All sixty name records are copied to a private bank with a complete pointer table.
- const nameData=new Uint8Array(60*160);for(let id=0;id<60;id++){if(data[id])nameData.set(data[id].names,id*160);else{const p=readWord(rom,0x38138+id*2);nameData.set(rom.slice(0x170000+p,0x170000+p+160),id*160);}}
+ const nameData=new Uint8Array(60*160);for(let id=0;id<60;id++){if(data[id])nameData.set(state.playerNameAlignment==='center'?centeredRosterNames(data[id].names):data[id].names,id*160);else{const p=readWord(rom,0x38138+id*2);nameData.set(rom.slice(0x170000+p,0x170000+p+160),id*160);}}
  const names=table(nameData),namePointers=table(Uint8Array.from(Array.from({length:60},(_,i)=>word((cpu(names)&65535)+i*160)).flat()));redirectLong(0x878138,namePointers);
  for(const at of[0x4F48,0x4F6B]){if(base[at]!==0x54||base[at+1]!==0x7E||base[at+2]!==0xAF)throw Error('Cópia nativa de nomes divergente.');rom[at+2]=cpu(names)>>16;}
  // These comparisons dispatched IDs >= 56 to linked all-star rosters.

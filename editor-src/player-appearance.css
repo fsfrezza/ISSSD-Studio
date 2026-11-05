@@ -24,3 +24,5 @@
 #hairPixelDialog canvas{image-rendering:pixelated;background:repeating-conic-gradient(#26394b 0% 25%,#30465a 0% 50%) 50%/12px 12px}#hairPixelDialog [hidden]{display:none!important}
 
 .player-roster-selectors{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:end}.player-roster-selectors label{display:flex;flex-direction:column;gap:8px;min-width:0}.player-roster-selectors select{width:100%;min-width:0}.selected-player-views{display:flex;justify-content:space-evenly;gap:12px;flex-wrap:wrap;margin:12px 0}.selected-player-views figure{margin:0;text-align:center;min-width:96px;flex:1}.selected-player-views canvas{width:160px;max-width:100%;height:auto;image-rendering:pixelated;background:#203041;border-radius:8px}.selected-player-views figcaption{margin-top:6px;font-weight:600}@media(max-width:520px){.player-roster-selectors{grid-template-columns:1fr}.selected-player-views canvas{width:112px}}
+
+#page-players #pName,#page-players #playerSelect,#page-players #playerSelect option{text-align:center}#page-players .namepreview{justify-content:center}
