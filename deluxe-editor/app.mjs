@@ -4,8 +4,10 @@ import {NATIVE_SCREEN_TEXT_FIELDS,CURSOR_HELP_FIELDS,readStadiums,readNativeFiel
 import {encodeCursorText} from '../src/core/cursor-text-codec.mjs';
 import {DELUXE_MENU_SECTIONS,encodeNativeMenuField} from '../src/core/deluxe-menu-text.mjs';
 import {PLUS_MAIN_MENU_IDS,PLUS_MAIN_MENU_ORIGINAL,deluxeMainMenuPreview} from '../src/core/deluxe-main-menu.mjs';
+import {SOUND_SLOTS,originalSound,selectedSound,soundEntry,decodeBrrPreview} from '../src/core/deluxe-sounds.mjs';
 const $=id=>document.getElementById(id);
 let file=null,project=null,opening=0;
+let audioContext=null,audioSource=null;
 function status(value){$('status').textContent=value;}
 function download(data,name,type){const url=URL.createObjectURL(new Blob([data],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 function render(){
@@ -13,8 +15,9 @@ function render(){
   for(const id of ['menuScale','menuSelection','resetMenu'])$(id).disabled=!project;
   if(!project){$('menuPreview').getContext('2d').clearRect(0,0,256,224);$('menuStatus').textContent='';}
   $('title').value='';$('title').disabled=!project;$('resetTitle').disabled=!project;
-  if(!project)return;
+  if(!project){renderSounds();return;}
   const {rom}=splitRom(file);
+  renderSounds();
   renderNative(rom);
   renderMainMenu(rom);
   for(const item of PLUS_STRATEGY_TEXTS){
@@ -110,3 +113,37 @@ function renderMainMenu(){
 $('menuScale').oninput=()=>updateMenu('scale',Number($('menuScale').value));
 $('menuSelection').onchange=drawMenu;
 $('resetMenu').onclick=()=>{delete project.changes.mainMenu;render();};
+
+function stopAudio(){if(audioSource){audioSource.stop();audioSource=null;}}
+function renderSounds(){
+ stopAudio();
+ for(const id of ['soundSelection','soundRate','soundFile','playOriginal','playSound','stopSound','downloadSound','resetSound'])$(id).disabled=!project;
+ if(!project){$('soundSelection').replaceChildren();$('soundInfo').textContent='';$('soundStatus').textContent='';return;}
+ const previous=$('soundSelection').value;$('soundSelection').replaceChildren();
+ for(const s of SOUND_SLOTS){const option=document.createElement('option');option.value=s.id;option.textContent=(s.kind==='voice'?'Voz · ':'Efeito · ')+s.id.replace(/([a-z])([A-Z])/g,'$1 $2');$('soundSelection').append(option);}
+ $('soundSelection').value=SOUND_SLOTS.some(s=>s.id===previous)?previous:SOUND_SLOTS[0].id;updateSoundInfo();
+}
+function updateSoundInfo(){
+ if(!project)return;const id=$('soundSelection').value,base=splitRom(file).rom,original=originalSound(base,id),current=selectedSound(base,id,project.changes.sounds);
+ $('soundInfo').textContent=current.length+' de '+original.length+' bytes · '+(project.changes.sounds?.[id]?'amostra substituída':'original');
+}
+async function playAudio(original){
+ try{stopAudio();const base=splitRom(file).rom,id=$('soundSelection').value,bytes=original?originalSound(base,id):selectedSound(base,id,project.changes.sounds),samples=decodeBrrPreview(bytes);
+ const Context=window.AudioContext??window.webkitAudioContext;if(!Context)throw Error('Reprodução não suportada neste navegador');
+ audioContext??=new Context();await audioContext.resume();const buffer=audioContext.createBuffer(1,samples.length,Number($('soundRate').value));buffer.copyToChannel(samples,0);audioSource=audioContext.createBufferSource();audioSource.buffer=buffer;audioSource.connect(audioContext.destination);audioSource.start();$('soundStatus').textContent='Reproduzindo prévia aproximada.';
+ }catch(error){$('soundStatus').textContent=error.message;}
+}
+$('soundSelection').onchange=()=>{stopAudio();updateSoundInfo();$('soundStatus').textContent='';};
+$('playOriginal').onclick=()=>playAudio(true);$('playSound').onclick=()=>playAudio(false);$('stopSound').onclick=stopAudio;
+$('soundFile').onchange=async()=>{
+ const current=file,p=project,id=$('soundSelection').value;
+ try{const selected=$('soundFile').files[0];if(!selected)return;const base=splitRom(current).rom,limit=originalSound(base,id).length;
+ if(selected.size>limit)throw Error('Amostra excede o espaço original de '+limit+' bytes');
+ const bytes=new Uint8Array(await selected.arrayBuffer()),entry=soundEntry(base,id,bytes);
+ if(file!==current||project!==p)return;
+ const original=originalSound(base,id);if(bytes.length===original.length&&bytes.every((b,i)=>b===original[i]))delete project.changes.sounds?.[id];else (project.changes.sounds??={})[id]=entry;
+ updateSoundInfo();$('soundStatus').textContent='Amostra pronta. Salve o projeto ou gere a ROM para aplicar.';
+ }catch(error){$('soundStatus').textContent=error.message;}finally{$('soundFile').value='';}
+};
+$('downloadSound').onclick=()=>{try{const id=$('soundSelection').value;download(selectedSound(splitRom(file).rom,id,project.changes.sounds),id+'.brr','application/octet-stream');}catch(error){$('soundStatus').textContent=error.message;}};
+$('resetSound').onclick=()=>{stopAudio();delete project.changes.sounds?.[$('soundSelection').value];updateSoundInfo();$('soundStatus').textContent='Amostra original restaurada.';};

@@ -99,4 +99,6 @@ segmentos nativos. Seis campos com relocation ou efeitos de layout foram excluí
 Também foi migrada a edição dos oito nomes e tamanho global do menu principal,
 reutilizando o renderer Plus dentro dos cinco blocos nativos. A prévia é de
 tipografia com cores e seleção ilustrativas; navegação e exibição no emulador
-continuam pendentes. Os demais candidatos desta auditoria continuam pendentes.
+continuam pendentes. A aba de sons/vozes também foi migrada: 74 slots BRR, substituição restrita,
+exportação e prévia aproximada. Reprodução no emulador permanece pendente.
+Os demais candidatos desta auditoria continuam pendentes.

@@ -107,3 +107,26 @@ test('ROM real: menu principal usa os cinco blocos nativos, prévia coincide com
   p.changes.mainMenu=value;await assert.rejects(buildDeluxeProject(input,p));assert.deepEqual(input,snapshot);
  }
 });
+
+test('BRR: decodificação sem filtro, sinal e tamanho de um bloco',async()=>{
+ const {decodeBrrPreview}=await import('../src/core/deluxe-sounds.mjs');
+ const block=Uint8Array.of(0x11,...Array(8).fill(0x78)),pcm=decodeBrrPreview(block);
+ assert.equal(pcm.length,16);assert.equal(pcm[0],14/32768);assert.equal(pcm[1],-16/32768);
+});
+test('ROM real: 74 amostras restauram exatamente e substituições preservam o restante',{skip:!fixture},async()=>{
+ const {SOUND_SLOTS,originalSound,soundEntry,decodeBrrPreview}=await import('../src/core/deluxe-sounds.mjs');
+ const file=new Uint8Array(fs.readFileSync(fixture)),snapshot=file.slice(),base=splitRom(file).rom,p=await createDeluxeProject(file);
+ assert.equal(SOUND_SLOTS.length,74);
+ p.changes.sounds=Object.fromEntries(SOUND_SLOTS.map(s=>[s.id,soundEntry(base,s.id,originalSound(base,s.id))]));
+ assert.deepEqual((await buildDeluxeProject(file,p)).rom,file);
+ for(const s of SOUND_SLOTS){const bytes=originalSound(base,s.id);assert.ok(decodeBrrPreview(bytes).every(Number.isFinite));bytes[1]^=0x11;p.changes.sounds[s.id]=soundEntry(base,s.id,bytes);}
+ const out=splitRom((await buildDeluxeProject(file,JSON.parse(JSON.stringify(p)))).rom).rom,allowed=new Set(SOUND_SLOTS.map(s=>s.pc+1));
+ for(let i=0;i<base.length;i++)if(base[i]!==out[i])assert.ok(allowed.has(i)||(i>=0x7fdc&&i<0x7fe0),'unexpected write '+i.toString(16));
+ for(const s of SOUND_SLOTS)assert.equal(out[s.pc+1],base[s.pc+1]^0x11);
+ assert.deepEqual(file,snapshot);delete p.changes.sounds;assert.deepEqual((await buildDeluxeProject(file,p)).rom,file);
+ const id=SOUND_SLOTS[0].id;
+ assert.throws(()=>soundEntry(base,id,Uint8Array.of(0,0,0)),/final/);
+ assert.throws(()=>soundEntry(base,id,Uint8Array.of(0xf1,...Array(8).fill(0))),/cabeçalho/);
+ assert.throws(()=>soundEntry(base,id,new Uint8Array(originalSound(base,id).length+9)),/capacidade/);
+ p.changes.sounds={unknown:{source:'custom',brrBase64:'AQAAAAAAAAAA'}};await assert.rejects(buildDeluxeProject(file,p),/desconhecido/);
+});

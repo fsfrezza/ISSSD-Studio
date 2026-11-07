@@ -12,6 +12,10 @@ Além das oito estratégias, a entrada Deluxe agora permite editar:
   recordes, passwords, cenários e créditos, organizados em 20 seções.
   Foram excluídos seis campos que exigem relocation ou ajustes de layout.
 - Título interno da ROM.
+- Sons e vozes: 74 slots, prévia BRR aproximada, importação/exportação BRR,
+  persistência no projeto e restauração da amostra original.
+  A substituição é limitada ao comprimento do primeiro fluxo BRR original
+  terminado, sem usar possível conteúdo vizinho da alocação.
 - Oito nomes do menu principal, tamanho global dos textos e prévia estática
   da tipografia/seleção. O menu é regenerado nos cinco blocos nativos pelo
   renderer existente da Plus. Combinações que excedem espaço são rejeitadas.
@@ -130,3 +134,20 @@ ISSSD_DELUXE_ROM=/caminho/Deluxe.smc npm run test:deluxe
 $env:ISSSD_DELUXE_ROM = 'C:\caminho\Deluxe.smc'
 npm run test:deluxe
 ```
+
+
+## Etapa de áudio
+
+A aba Sons e vozes reutiliza `SOUND_SLOTS` e o writer BRR da Plus. A camada Deluxe
+restringe cada substituição ao comprimento da amostra original, preservando todos
+os bytes posteriores. Não há conversão de MP3/WAV ou presets de outra ROM nesta
+etapa. Uma importação BRR com dados depois do bloco final é rejeitada.
+
+A prévia decodifica os filtros BRR e reproduz uma passagem pela amostra, em taxa
+selecionável (8/16/32 kHz). Não simula pitch do driver, interpolação gaussiana,
+ADSR, eco ou loops. A taxa de prévia não altera a ROM nem o projeto.
+Não houve escuta em navegador real ou reprodução no emulador nesta entrega.
+
+Os 12 testes da suíte Deluxe passaram com a ROM anexada, incluindo todas as 74
+amostras: identidade com originais explícitos, alterações restritas e restauração,
+decodificação finita, rejeição de BRR inválido e fluxo de importação pelo controle.

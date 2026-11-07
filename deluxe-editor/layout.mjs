@@ -4,6 +4,7 @@ const pages={
  texts:['Textos','Edite as frases do jogo, organizadas por tela.'],
  cursor:['Cursor','Personalize as instruções dos controles e da seleção de jogadores.'],
  stadiums:['Estádios','Ajuste as cores das paletas dos oito estádios originais.'],
+ sounds:['Sons e vozes','Ouça, substitua e restaure as amostras de áudio.'],
  improvements:['Melhorias','Recursos opcionais para o Deluxe.'],
 };
 const panels=[...document.querySelectorAll('[data-panel]')],buttons=[...document.querySelectorAll('[data-page]')];
