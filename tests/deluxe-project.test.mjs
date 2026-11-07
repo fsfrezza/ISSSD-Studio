@@ -141,3 +141,21 @@ test('ROM real: referência Galvão individual e lote cabem e não alteram dados
  for(let i=0;i<base.length;i++)if(base[i]!==output[i])assert.ok((i>=0x7fdc&&i<0x7fe0)||allowed.some(([a,b])=>i>=a&&i<b));
  const bad=structuredClone(reference);delete bad.samples[SOUND_SLOTS.at(-1).id];assert.throws(()=>galvaoSoundChoices(base,bad),/ausente/);
 });
+
+test('ROM real: avisos do treino e estatísticas passam nos preflights Plus e escrevem somente regiões declaradas',{skip:!fixture},async()=>{
+ const {TRAINING_HUD_FIELDS,MATCH_STATISTICS_FIELDS}=await import('../src/core/deluxe-match-texts.mjs');
+ const {TRAINING_HUD_REGIONS}=await import('../src/core/plus-training-hud.mjs'),{MATCH_STATISTICS_REGIONS}=await import('../src/core/plus-match-statistics.mjs');
+ const file=new Uint8Array(fs.readFileSync(fixture)),snapshot=file.slice(),base=splitRom(file).rom,p=await createDeluxeProject(file);
+ for(const [id,fields]of [['trainingHud',TRAINING_HUD_FIELDS],['matchStatistics',MATCH_STATISTICS_FIELDS]])p.changes[id]=Object.fromEntries(fields.map(f=>[f[0],f[1]]));
+ assert.deepEqual((await buildDeluxeProject(file,p)).rom,file);
+ for(const [id,fields]of [['trainingHud',TRAINING_HUD_FIELDS],['matchStatistics',MATCH_STATISTICS_FIELDS]])p.changes[id]=Object.fromEntries(fields.map(f=>[f[0],f[2]]));
+ const output=await buildDeluxeProject(file,JSON.parse(JSON.stringify(p))),out=splitRom(output.rom).rom;
+ assert.equal(output.rom.length,file.length);assert.equal(output.expanded,false);assert.deepEqual(file,snapshot);assert.ok(output.diff.changedBytes>1000);
+ const ranges=[...TRAINING_HUD_REGIONS,...MATCH_STATISTICS_REGIONS,[0x7fdc,0x7fe0]];
+ for(let i=0;i<base.length;i++)if(base[i]!==out[i])assert.ok(ranges.some(([a,b])=>i>=a&&i<b),'unexpected write '+i.toString(16));
+ assert.equal(out.reduce((s,b)=>(s+b)&65535,0),out[0x7fde]|out[0x7fdf]<<8);
+ for(const bad of [{trainingHud:{bad:'A'}},{matchStatistics:{shots:''}},{trainingHud:{start:'Z'}},{matchStatistics:{shots:'A'.repeat(100)}}]){
+  const trial=await createDeluxeProject(file);Object.assign(trial.changes,bad);await assert.rejects(buildDeluxeProject(file,trial));assert.deepEqual(file,snapshot);
+ }
+ delete p.changes.trainingHud;delete p.changes.matchStatistics;assert.deepEqual((await buildDeluxeProject(file,p)).rom,file);
+});

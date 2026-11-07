@@ -186,3 +186,23 @@ de atualizar o projeto. As escolhas são embutidas no projeto com source galvao.
 Não é necessário carregar ROM doadora. Música e áudio fora do catálogo não são
 transplantados. Testes cobrem os dois controles, persistência, carregamento do
 JSON pelo servidor e escritas restritas aos fluxos de áudio/checksum.
+
+
+## Avisos do treino e estatísticas
+
+Migrados 8 campos do HUD de treino/desafio e 10 rótulos de estatísticas/histórico
+de gols. Os writers e descritores de bcd70db são reutilizados, com validação
+estrita das chaves semânticas no projeto Deluxe. O leitor do alfabeto nativo
+usa o mesmo mapa de fontes já incorporado ao catálogo de menus Deluxe.
+
+Os campos ficam na aba Textos, em seções recolhíveis. Manter os valores originais
+não aplica patches. Alterações preservam a base e são reaplicadas a cada geração.
+O treino usa reserva nativa e ajusta referências; estatísticas usa fonte nativa,
+reservas e hooks já implementados no Plus. Todos os preflights passaram no Deluxe
+USA anexado; não houve alteração de endereços/hook assembly nesta migração.
+
+16 testes passaram, incluindo os conjuntos portugueses completos, escritas
+restritas às regiões declaradas pelos writers, checksum, rejeição de campos ou
+textos inválidos e restauração exata. Nenhuma expansão foi necessária.
+A exibição no treino, no intervalo, no fim e no histórico ainda precisa ser
+conferida em emulador; igualdade de dados não comprova execução de todos os fluxos.

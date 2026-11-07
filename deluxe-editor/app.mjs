@@ -6,13 +6,14 @@ import {DELUXE_MENU_SECTIONS,encodeNativeMenuField} from '../src/core/deluxe-men
 import {PLUS_MAIN_MENU_IDS,PLUS_MAIN_MENU_ORIGINAL,deluxeMainMenuPreview} from '../src/core/deluxe-main-menu.mjs';
 import {SOUND_SLOTS,originalSound,selectedSound,soundEntry,decodeBrrPreview,galvaoSoundChoices} from '../src/core/deluxe-sounds.mjs';
 import {GAME_AUDIO_RATE,prepareAudio,encodeBrr,pcmToWav} from '../src/core/audio-conversion.mjs';
+import {TRAINING_HUD_FIELDS,MATCH_STATISTICS_FIELDS,encodeTrainingHud,renderMatchStatistics} from '../src/core/deluxe-match-texts.mjs';
 const $=id=>document.getElementById(id);
 let file=null,project=null,opening=0;
 let audioContext=null,audioSource=null;
 function status(value){$('status').textContent=value;}
 function download(data,name,type){const url=URL.createObjectURL(new Blob([data],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 function render(){
-  for(const id of ['texts','stadiums','nativeTexts','cursorHelp','menuTexts','mainMenu'])$(id).replaceChildren();
+  for(const id of ['texts','stadiums','nativeTexts','cursorHelp','menuTexts','mainMenu','trainingHud','matchStatistics'])$(id).replaceChildren();
   for(const id of ['menuScale','menuSelection','resetMenu'])$(id).disabled=!project;
   if(!project){$('menuPreview').getContext('2d').clearRect(0,0,256,224);$('menuStatus').textContent='';}
   $('title').value='';$('title').disabled=!project;$('resetTitle').disabled=!project;
@@ -20,6 +21,7 @@ function render(){
   const {rom}=splitRom(file);
   renderSounds();
   renderNative(rom);
+  renderMatchTexts(rom);
   renderMainMenu(rom);
   for(const item of PLUS_STRATEGY_TEXTS){
     const label=document.createElement('label');label.textContent=item.label;
@@ -182,3 +184,11 @@ $('playGalvao').onclick=async()=>{
  const buffer=audioContext.createBuffer(1,samples.length,Number($('soundRate').value));buffer.copyToChannel(samples,0);audioSource=audioContext.createBufferSource();audioSource.buffer=buffer;audioSource.connect(audioContext.destination);audioSource.start();$('soundStatus').textContent='Reproduzindo prévia do Galvão.';
  }catch(error){$('soundStatus').textContent=error.message;}
 };
+
+function renderMatchTexts(rom){
+ for(const [section,fields]of [['trainingHud',TRAINING_HUD_FIELDS],['matchStatistics',MATCH_STATISTICS_FIELDS]]){
+  for(const f of fields){const [id,original]=f;
+   textControl($(section),{label:original,value:project.changes[section]?.[id]??original,original,validate:v=>{if(section==='trainingHud')encodeTrainingHud(f,v);else renderMatchStatistics({[id]:v},rom);},onChange:v=>updateChange(section,id,v,original)});
+  }
+ }
+}

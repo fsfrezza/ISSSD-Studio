@@ -101,4 +101,7 @@ reutilizando o renderer Plus dentro dos cinco blocos nativos. A prévia é de
 tipografia com cores e seleção ilustrativas; navegação e exibição no emulador
 continuam pendentes. A aba de sons/vozes também foi migrada: 74 slots BRR, substituição restrita,
 exportação e prévia aproximada. Reprodução no emulador permanece pendente.
+Também foram migrados os oito avisos de treino e os dez rótulos de estatísticas/
+histórico, passando pelos preflights completos dos writers Plus na ROM Deluxe.
+A validação no emulador desses fluxos continua pendente.
 Os demais candidatos desta auditoria continuam pendentes.
