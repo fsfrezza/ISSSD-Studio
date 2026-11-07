@@ -2,12 +2,13 @@ import {createDeluxeProject,buildDeluxeProject,IMPROVEMENTS,splitRom} from '../s
 import {PLUS_STRATEGY_TEXTS,readPlusStrategyText} from '../src/core/plus-strategy-text.mjs';
 import {NATIVE_SCREEN_TEXT_FIELDS,CURSOR_HELP_FIELDS,readStadiums,readNativeField,readCursorHelp,encodeNativeField} from '../src/core/deluxe-native-fields.mjs';
 import {encodeCursorText} from '../src/core/cursor-text-codec.mjs';
+import {DELUXE_MENU_SECTIONS,encodeNativeMenuField} from '../src/core/deluxe-menu-text.mjs';
 const $=id=>document.getElementById(id);
 let file=null,project=null,opening=0;
 function status(value){$('status').textContent=value;}
 function download(data,name,type){const url=URL.createObjectURL(new Blob([data],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 function render(){
-  for(const id of ['texts','stadiums','nativeTexts','cursorHelp'])$(id).replaceChildren();
+  for(const id of ['texts','stadiums','nativeTexts','cursorHelp','menuTexts'])$(id).replaceChildren();
   $('title').value='';$('title').disabled=!project;$('resetTitle').disabled=!project;
   if(!project)return;
   const {rom}=splitRom(file);
@@ -48,6 +49,18 @@ const bgrToHex=v=>'#'+[0,5,10].map(shift=>Math.round(((v>>shift)&31)*255/31).toS
 const hexToBgr=hex=>[1,3,5].reduce((v,at,i)=>v|(Math.round(parseInt(hex.slice(at,at+2),16)*31/255)<<(i*5)),0);
 function renderNative(rom){
  $('title').value=project.changes.internalTitle??project.base.title;
+ for(const section of DELUXE_MENU_SECTIONS){
+  const details=document.createElement('details'),summary=document.createElement('summary');summary.textContent=section.title+' · '+section.fields.length+' campos';details.append(summary);$('menuTexts').append(details);
+  for(const f of section.fields){
+   const original=f[1],segments=f[3].pool.segments;
+   textControl(details,{label:(f[3].label??f[0])+' · '+segments.map(s=>s.original.length).join('/')+' células',value:project.changes.menuTexts?.[section.id]?.[f[0]]??original,original,multiline:segments.length>1,validate:v=>encodeNativeMenuField(f,v),onChange:v=>{
+    const menus=project.changes.menuTexts??={},entries=menus[section.id]??={};
+    if(v===original)delete entries[f[0]];else entries[f[0]]=v;
+    if(!Object.keys(entries).length)delete menus[section.id];
+    if(!Object.keys(menus).length)delete project.changes.menuTexts;
+   }});
+  }
+ }
  for(const f of NATIVE_SCREEN_TEXT_FIELDS){
   const original=readNativeField(rom,f);
   textControl($('nativeTexts'),{label:f.name+' · até '+f.capacity+' caracteres',value:project.changes.nativeTexts?.[f.pc]??original,original,validate:v=>encodeNativeField(v,f),onChange:v=>updateChange('nativeTexts',String(f.pc),v,original)});

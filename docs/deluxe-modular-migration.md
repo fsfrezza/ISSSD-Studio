@@ -8,13 +8,18 @@ Além das oito estratégias, a entrada Deluxe agora permite editar:
 - 20 textos nativos independentes. Cinco outros labels auditados fazem parte dos
   blocos de ajuda do Cursor e são editados somente dentro desses blocos.
 - 14 blocos de ajuda textual do Cursor, com o codec e descritores do Plus.
+- 133 textos adicionais de menus, opções, competições, treino, desafios,
+  recordes, passwords, cenários e créditos, organizados em 20 seções.
+  Foram excluídos seis campos que exigem relocation ou ajustes de layout.
 - Título interno da ROM.
 
 Todos possuem restauração dos valores originais. As mudanças são salvas no projeto
 e reaplicadas na geração. Projetos Deluxe da etapa anterior continuam aceitos.
-Não há expansão nem patches de gameplay novos nesta entrega.
+Os 133 textos usam os mesmos segmentos e encoder do Plus, com gravação somente
+no espaço original. Os defaults não são traduzidos automaticamente: o usuário
+escolhe quais textos alterar. Não há expansão nem patches de gameplay novos nesta entrega.
 
-Validação: 20 testes passaram com a ROM anexada, incluindo escritas restritas,
+Validação: 21 testes passaram com a ROM anexada, incluindo escritas restritas,
 checksum, rejeição de entradas inválidas e fluxo de controles abrir/editar/salvar/
 reabrir/exportar/restaurar em um DOM de teste. Não houve teste visual em navegador
 real nem teste de gameplay em emulador nesta etapa.

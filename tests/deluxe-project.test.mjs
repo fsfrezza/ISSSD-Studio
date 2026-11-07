@@ -59,3 +59,30 @@ test('ROM real: rejeita campos, glifos, tamanhos e paletas inválidos sem modifi
  const cases=[['nativeTexts',{'1':'A'}],['nativeTexts',{[NATIVE_SCREEN_TEXT_FIELDS[0].pc]:'A'.repeat(200)}],['nativeTexts',{[NATIVE_SCREEN_TEXT_FIELDS[0].pc]:'A!'}],['cursorHelp',{bad:'A'}],['cursorHelp',{[CURSOR_HELP_FIELDS[0][0]]:'A'.repeat(1000)}],['stadiums',{'8':Array(16).fill(0)}],['stadiums',{'0':Array(16).fill(32768)}],['stadiums',{'0':[1]}]];
  for(const [key,value]of cases){const project=await createDeluxeProject(input);project.changes[key]=value;await assert.rejects(buildDeluxeProject(input,project));assert.deepEqual(input,snapshot);}
 });
+
+test('ROM real: 133 textos de menus editam somente segmentos nativos e restauram sem resíduos',{skip:!fixture},async()=>{
+ const {DELUXE_MENU_SECTIONS,encodeNativeMenuField}=await import('../src/core/deluxe-menu-text.mjs');
+ const input=new Uint8Array(fs.readFileSync(fixture)),snapshot=input.slice(),base=splitRom(input).rom;
+ const project=await createDeluxeProject(input),regions=[];
+ assert.equal(DELUXE_MENU_SECTIONS.reduce((n,s)=>n+s.fields.length,0),133);
+ project.changes.menuTexts=Object.fromEntries(DELUXE_MENU_SECTIONS.map(s=>[s.id,Object.fromEntries(s.fields.map(f=>[f[0],'A']))]));
+ for(const section of DELUXE_MENU_SECTIONS)for(const f of section.fields){
+  assert.ok(!f[3].pool.relocation);
+  const original=encodeNativeMenuField(f,f[1]);
+  for(const [i,segment]of f[3].pool.segments.entries()){
+   assert.deepEqual(base.slice(segment.pc,segment.pc+segment.original.length),original[i],section.id+'/'+f[0]);
+   regions.push([segment.pc,segment.pc+segment.original.length]);
+  }
+ }
+ const reloaded=JSON.parse(JSON.stringify(project)),result=await buildDeluxeProject(input,reloaded),out=splitRom(result.rom).rom;
+ for(const s of DELUXE_MENU_SECTIONS)for(const f of s.fields){const bytes=encodeNativeMenuField(f,'A');f[3].pool.segments.forEach((seg,i)=>assert.deepEqual(out.slice(seg.pc,seg.pc+seg.original.length),bytes[i]));}
+ assert.equal(result.rom.length,input.length);assert.deepEqual(splitRom(result.rom).header,splitRom(input).header);
+ regions.push([0x7fdc,0x7fe0]);
+ for(let i=0;i<base.length;i++)if(base[i]!==out[i])assert.ok(regions.some(([start,end])=>i>=start&&i<end),'unexpected write '+i.toString(16));
+ assert.equal(out.reduce((s,b)=>(s+b)&65535,0),out[0x7fde]|out[0x7fdf]<<8);assert.deepEqual(input,snapshot);
+ reloaded.changes.menuTexts=Object.fromEntries(DELUXE_MENU_SECTIONS.map(s=>[s.id,Object.fromEntries(s.fields.map(f=>[f[0],f[1]]))]));
+ assert.deepEqual((await buildDeluxeProject(input,reloaded)).rom,input);
+ for(const invalid of [{missing:{}},{'stadium-native':{data_87cad3:'TEST'}},{'options-native':[]},{[DELUXE_MENU_SECTIONS[0].id]:{[DELUXE_MENU_SECTIONS[0].fields[0][0]]:'A'.repeat(1000)}}]){
+  reloaded.changes.menuTexts=invalid;await assert.rejects(buildDeluxeProject(input,reloaded));assert.deepEqual(input,snapshot);
+ }
+});

@@ -94,4 +94,6 @@ Foram migrados o editor de cores dos oito estádios, 20 textos nativos independe
 14 blocos de ajuda do Cursor e o controle de título interno. Os cinco labels nativos
 restantes se sobrepõem aos blocos de ajuda: a edição fica exclusivamente no bloco
 completo, evitando escritores concorrentes na mesma região.
+Também foram migrados 133 dos 139 campos adicionais de menus, preservando os
+segmentos nativos. Seis campos com relocation ou efeitos de layout foram excluídos.
 Os demais candidatos desta auditoria continuam pendentes.
