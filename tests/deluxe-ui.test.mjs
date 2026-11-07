@@ -15,7 +15,7 @@ test('UI handlers: abrir, editar, salvar projeto, reabrir, exportar e restaurar'
   addEventListener(name,fn){this.listeners[name]=fn;}
   click(){if(this.tag==='a')downloads.push({name:this.download,blob:blobs.get(this.href)});}
  }
- const ids=Object.fromEntries(['rom','status','texts','stadiums','nativeTexts','cursorHelp','title','resetTitle','save','load','export','improvements','menuTexts','mainMenu','menuScale','menuSelection','resetMenu','menuPreview','menuStatus','soundSelection','soundRate','soundFile','playOriginal','playSound','stopSound','downloadSound','resetSound','soundInfo','soundStatus','downloadWav','resetAllSounds','playGalvao','useGalvao','allGalvao','trainingHud','matchStatistics','playFb96','useFb96','allFb96','titleTexts','titlePalettes','titleLogoPreview','titleLogoInfo','titleLogoFile','exportTitleLogo','resetTitleLogo','titleLogoStatus'].map(id=>[id,new Element(id)]));
+ const ids=Object.fromEntries(['rom','status','texts','stadiums','nativeTexts','cursorHelp','title','resetTitle','save','load','export','improvements','menuTexts','mainMenu','menuScale','menuSelection','resetMenu','menuPreview','menuStatus','soundSelection','soundRate','soundFile','playOriginal','playSound','stopSound','downloadSound','resetSound','soundInfo','soundStatus','downloadWav','resetAllSounds','playGalvao','useGalvao','allGalvao','trainingHud','matchStatistics','playFb96','useFb96','allFb96','titleTexts','titlePalettes','titleLogoPreview','titleLogoInfo','titleLogoFile','exportTitleLogo','resetTitleLogo','titleLogoStatus','titleComposite','titleLayerPreview','titleLayer','titleLayerFile','exportTitleLayer','resetTitleLayer','titleLayerX','titleLayerY','titleLayerScale','applyTitleTransform','titleLayerInfo','titleLayerStatus'].map(id=>[id,new Element(id)]));
  const downloads=[],blobs=new Map();let serial=0;
  const previous={bitmap:globalThis.createImageBitmap,fetch:globalThis.fetch,window:globalThis.window,document:globalThis.document,create:URL.createObjectURL,revoke:URL.revokeObjectURL};
  globalThis.document={getElementById:id=>ids[id],createElement:tag=>new Element(tag),createTextNode:text=>text};
@@ -25,6 +25,10 @@ test('UI handlers: abrir, editar, salvar projeto, reabrir, exportar e restaurar'
   const file=new Uint8Array(fs.readFileSync(fixture));
   ids.rom.files=[{arrayBuffer:async()=>file.buffer}];await ids.rom.onchange();
   assert.equal(ids.export.disabled,false);assert.equal(ids.nativeTexts.children.length,20);assert.equal(ids.cursorHelp.children.length,14);assert.equal(ids.stadiums.children.length,8);assert.equal(ids.menuTexts.children.length,20);assert.equal(ids.mainMenu.children.length,8);assert.equal(ids.titlePalettes.children.length,4);
+  ids.titleLayer.value='photos';ids.titleLayer.onchange();
+  globalThis.createImageBitmap=async()=>({width:256,height:104,close(){}});ids.titleLayerFile.files=[{}];await ids.titleLayerFile.onchange();assert.match(ids.titleLayerStatus.textContent,/convertida/);
+  await ids.resetTitleLayer.onclick();assert.match(ids.titleLayerStatus.textContent,/restaurada/);
+  ids.titleLayerX.value='1000';ids.titleLayerY.value='0';ids.titleLayerScale.value='100';await ids.applyTitleTransform.onclick();assert.match(ids.titleLayerStatus.textContent,/ultrapassa/);
   globalThis.createImageBitmap=async()=>({width:176,height:65,close(){}});ids.titleLogoFile.files=[{}];await ids.titleLogoFile.onchange();assert.match(ids.titleLogoStatus.textContent,/convertido/);
   const footer=ids.titleTexts.children[0].children[0];footer.value='@1995KONAMI';footer.listeners.input();assert.equal(ids.trainingHud.children.length,8);assert.equal(ids.matchStatistics.children.length,10);
   const training=ids.trainingHud.children[1].children[0];training.value='TEMPO';training.listeners.input();

@@ -280,3 +280,13 @@ o roundtrip e recusa se exceder os 2766 bytes nativos, sem expansão automática
 20 testes passaram: leitura do ponteiro Deluxe, identidade, importação por UI
 simulada, restauração, regiões restritas e reabertura. A imagem de prévia original
 foi inspecionada. A exibição da ROM modificada no emulador permanece pendente.
+
+### Tela inicial: camadas nativas e composição protegida
+
+- Bola e faixa usam os descritores de gráficos e mapas da própria Deluxe; fotos usam seu descritor e o mapa estático da captura já utilizada pelo Plus. O mapa das fotos representa um quadro da abertura, sem simular animação.
+- Importação e exportação PNG/WebP de bola, faixa, fotos e letreiro, com quantização para as paletas nativas. Fotos preservam a conversão planar da rotina do jogo. Restauração individual preserva as outras camadas.
+- Prévia conjunta estática de 256 × 224 com os quatro elementos gráficos; rodapé e animações não são simulados nesta prévia.
+- Compositor com deslocamento em pixels e escala, materializados nos gráficos salvos no projeto e na ROM. Trabalha dentro da área nativa de cada camada, sem modificar mapas, rotinas ou ampliar a ROM. As transformações são cumulativas; restaurar recomeça do original.
+- Limitação relevante: vários pixels compartilham tiles. Muitas transformações livres são incompatíveis com esse compartilhamento e são recusadas integralmente, com a edição anterior preservada. Não há alocação de novos tiles nem promessa de posicionamento livre em toda a tela. Liberar essas operações exige uma etapa adicional de reorganização dos mapas e orçamento de tiles.
+- Todas as importações/composições passam pela geração completa antes de entrar no projeto: conflito de pixels, saída da área e excesso do bloco comprimido original bloqueiam a aplicação. Nenhuma expansão automática para 4 MB foi introduzida.
+- Validação: 23 testes com ROM Deluxe real, incluindo integridade sem alterações, reabertura de projeto, fotos planares, regiões de escrita, proteção de camadas compartilhadas e handlers da interface. Prévia conjunta conferida visualmente a partir dos pixels decodificados. Teste de execução no emulador e inspeção da interface em navegador permanecem pendentes.

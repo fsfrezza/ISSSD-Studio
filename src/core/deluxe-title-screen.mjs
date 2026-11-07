@@ -1,3 +1,4 @@
+import {applyTitleBackground} from './deluxe-title-background.mjs';
 import {applyTitleLogo} from './deluxe-title-logo.mjs';
 export const TITLE_PALETTES=Object.freeze([
  {id:'ball',label:'Bola',pc:0x4C2B4},{id:'stripe',label:'Faixa',pc:0x4C292},{id:'logo',label:'Letreiro',pc:0x4C318},{id:'text',label:'Textos',pc:0x4C2D6},
@@ -19,7 +20,7 @@ export function readTitlePalettes(base){return TITLE_PALETTES.map(p=>({...p,colo
 export function applyDeluxeTitleScreen(out,base,value){
  if(value===undefined)return out;
  const object=v=>v&&typeof v==='object'&&!Array.isArray(v);
- if(!object(value)||Object.keys(value).some(k=>!['texts','palettes','logoTiles'].includes(k)))throw Error('Tela inicial: seção inválida');
+ if(!object(value)||Object.keys(value).some(k=>!['texts','palettes','logoTiles','backgroundTiles','photoTiles'].includes(k)))throw Error('Tela inicial: seção inválida');
  const texts=value.texts??{},palettes=value.palettes??{},writes=[];
  if(!object(texts)||!object(palettes))throw Error('Tela inicial: dados inválidos');
  for(const [id,v]of Object.entries(texts)){
@@ -33,6 +34,7 @@ export function applyDeluxeTitleScreen(out,base,value){
   if(!Array.isArray(colors)||colors.length!==16||colors.some(c=>!Number.isInteger(c)||c<0||c>32767))throw Error('Paleta inicial inválida');
   colors.forEach((c,i)=>writes.push([p.pc+i*2,c&255],[p.pc+i*2+1,c>>8]));
  }
+ applyTitleBackground(out,base,value);
  applyTitleLogo(out,base,value.logoTiles);
  for(const [at,v]of writes)out[at]=v;return out;
 }

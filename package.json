@@ -25,6 +25,6 @@
     "discover:emulator:windows": "powershell -ExecutionPolicy Bypass -File scripts/discover-mesen-state-windows.ps1",
     "discover:emulator:cross-rom:windows": "powershell -ExecutionPolicy Bypass -File scripts/discover-mesen-cross-rom-windows.ps1",
     "serve:deluxe": "node scripts/serve-deluxe.mjs",
-    "test:deluxe": "node --test tests/deluxe-project.test.mjs tests/deluxe-ui.test.mjs tests/deluxe-server.test.mjs tests/deluxe-layout.test.mjs tests/audio-conversion.test.mjs"
+    "test:deluxe": "node --test tests/deluxe-project.test.mjs tests/deluxe-ui.test.mjs tests/deluxe-server.test.mjs tests/deluxe-layout.test.mjs tests/audio-conversion.test.mjs tests/deluxe-title-background.test.mjs"
   }
 }

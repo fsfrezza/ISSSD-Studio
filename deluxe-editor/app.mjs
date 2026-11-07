@@ -1,3 +1,4 @@
+import {TITLE_LAYERS,titleBackgroundPixels,importTitleBackground,titleCompositePixels,transformTitleLayer} from '../src/core/deluxe-title-background.mjs';
 import {createDeluxeProject,buildDeluxeProject,IMPROVEMENTS,splitRom} from '../src/core/deluxe-project.mjs';
 import {PLUS_STRATEGY_TEXTS,readPlusStrategyText} from '../src/core/plus-strategy-text.mjs';
 import {NATIVE_SCREEN_TEXT_FIELDS,CURSOR_HELP_FIELDS,readStadiums,readNativeField,readCursorHelp,encodeNativeField} from '../src/core/deluxe-native-fields.mjs';
@@ -19,8 +20,8 @@ function render(){
   for(const id of ['menuScale','menuSelection','resetMenu'])$(id).disabled=!project;
   if(!project){$('menuPreview').getContext('2d').clearRect(0,0,256,224);$('menuStatus').textContent='';}
   $('title').value='';$('title').disabled=!project;$('resetTitle').disabled=!project;
-  for(const id of ['titleLogoFile','exportTitleLogo','resetTitleLogo'])$(id).disabled=!project;
-  if(!project){$('titleLogoPreview').getContext('2d').clearRect(0,0,256,224);renderSounds();return;}
+  for(const id of ['titleLogoFile','exportTitleLogo','resetTitleLogo','titleLayer','titleLayerFile','exportTitleLayer','resetTitleLayer','titleLayerX','titleLayerY','titleLayerScale','applyTitleTransform'])$(id).disabled=!project;
+  if(!project){for(const id of ['titleComposite','titleLayerPreview'])$(id).getContext('2d').clearRect(0,0,256,224);$('titleLayerStatus').textContent='';$('titleLayerInfo').textContent='';$('titleLogoPreview').getContext('2d').clearRect(0,0,256,224);renderSounds();return;}
   const {rom}=splitRom(file);
   renderSounds();
   renderTitleScreen(rom);
@@ -224,6 +225,7 @@ function renderTitleScreen(rom){
 function drawTitleLogo(){
  if(!project)return;const preview=titleLogoPixels(splitRom(file).rom,project.changes.titleScreen),canvas=$('titleLogoPreview');canvas.width=preview.width;canvas.height=preview.height;
  const context=canvas.getContext('2d'),image=context.createImageData(preview.width,preview.height);image.data.set(preview.rgba);context.putImageData(image,0,0);
+ drawTitleComposition();
  $('titleLogoInfo').textContent=preview.width+' × '+preview.height+' pixels. Transparência e paleta do letreiro são preservadas. A estrutura de sprites original limita a área editável.';
 }
 $('titleLogoFile').onchange=async()=>{
@@ -235,3 +237,15 @@ $('titleLogoFile').onchange=async()=>{
 };
 $('exportTitleLogo').onclick=()=>{try{$('titleLogoPreview').toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='Letreiro-Deluxe.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);},'image/png');}catch(error){$('titleLogoStatus').textContent=error.message;}};
 $('resetTitleLogo').onclick=()=>{delete project.changes.titleScreen?.logoTiles;drawTitleLogo();$('titleLogoStatus').textContent='Letreiro original restaurado.';};
+
+function selectedTitleLayer(){return $('titleLayer').value||'ball';}
+function layerImage(base,id,changes){return id==='logo'?titleLogoPixels(base,changes):titleBackgroundPixels(base,id,changes);}
+function drawTitleCanvas(id,p){const c=$(id);c.width=p.width;c.height=p.height;const ctx=c.getContext('2d'),im=ctx.createImageData(p.width,p.height);im.data.set(p.rgba);ctx.putImageData(im,0,0);}
+function drawTitleComposition(){if(!project)return;const base=splitRom(file).rom,changes=project.changes.titleScreen??{},id=selectedTitleLayer(),p=layerImage(base,id,changes);drawTitleCanvas('titleComposite',titleCompositePixels(base,changes));drawTitleCanvas('titleLayerPreview',p);$('titleLayerInfo').textContent=p.width+' × '+p.height+' pixels. Use PNG/WebP deste tamanho. Cores convertidas para a paleta nativa; conflitos e excesso de espaço bloqueiam a aplicação.';}
+function titleLayerKey(id){return id==='logo'?'logoTiles':id==='photos'?'photoTiles':'backgroundTiles';}
+async function commitTitleLayer(p,current,id,image){const base=splitRom(current).rom,changes=p.changes.titleScreen??{},raw=id==='logo'?importTitleLogo(base,changes,image.rgba,image.width,image.height):importTitleBackground(base,id,changes,image.rgba,image.width,image.height),trial=structuredClone(p),key=titleLayerKey(id);(trial.changes.titleScreen??={})[key]=Array.from(raw);await buildDeluxeProject(current,trial);if(project!==p||file!==current)return false;(project.changes.titleScreen??={})[key]=Array.from(raw);drawTitleLogo();$('titleLayerStatus').textContent='Camada convertida e validada para gravação na ROM. Salve o projeto ou gere a ROM.';return true;}
+$('titleLayer').onchange=()=>{for(const [id,v]of [['titleLayerX',0],['titleLayerY',0],['titleLayerScale',100]])$(id).value=v;$('titleLayerStatus').textContent='';drawTitleComposition();};
+$('titleLayerFile').onchange=async()=>{const p=project,current=file,id=selectedTitleLayer();let bitmap;try{const f=$('titleLayerFile').files[0];if(!f)return;bitmap=await createImageBitmap(f);const expected=layerImage(splitRom(current).rom,id,p.changes.titleScreen??{});if(bitmap.width!==expected.width||bitmap.height!==expected.height)throw Error('Use uma imagem de '+expected.width+' × '+expected.height+' pixels');const c=document.createElement('canvas');c.width=bitmap.width;c.height=bitmap.height;const ctx=c.getContext('2d');ctx.drawImage(bitmap,0,0);await commitTitleLayer(p,current,id,{width:c.width,height:c.height,rgba:ctx.getImageData(0,0,c.width,c.height).data});}catch(e){$('titleLayerStatus').textContent=e.message;}finally{bitmap?.close();$('titleLayerFile').value='';}};
+$('applyTitleTransform').onclick=async()=>{const p=project,current=file,id=selectedTitleLayer();try{const image=layerImage(splitRom(current).rom,id,p.changes.titleScreen??{}),next=transformTitleLayer(image,{x:Number($('titleLayerX').value),y:Number($('titleLayerY').value),scale:Number($('titleLayerScale').value)});if(await commitTitleLayer(p,current,id,next)){ $('titleLayerX').value=0;$('titleLayerY').value=0;$('titleLayerScale').value=100;}}catch(e){$('titleLayerStatus').textContent=e.message;}};
+$('exportTitleLayer').onclick=()=>{try{$('titleLayerPreview').toBlob(blob=>{if(blob)download(blob,'Deluxe-'+selectedTitleLayer()+'.png','image/png');},'image/png');}catch(e){$('titleLayerStatus').textContent=e.message;}};
+$('resetTitleLayer').onclick=async()=>{if(!project)return;const p=project,current=file,id=selectedTitleLayer(),changes=structuredClone(p.changes.titleScreen??{}),key=titleLayerKey(id);delete changes[key];try{if(await commitTitleLayer(p,current,id,layerImage(splitRom(current).rom,id,changes)))$('titleLayerStatus').textContent='Camada original restaurada; as demais camadas foram preservadas.';}catch(e){$('titleLayerStatus').textContent=e.message;}};
