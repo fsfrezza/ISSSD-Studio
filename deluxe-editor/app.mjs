@@ -63,7 +63,7 @@ function renderNative(rom){
   const details=document.createElement('details'),summary=document.createElement('summary');summary.textContent=section.title+' · '+section.fields.length+' campos';details.append(summary);$('menuTexts').append(details);
   for(const f of section.fields){
    const original=f[1],segments=f[3].pool.segments;
-   textControl(details,{label:(f[3].label??f[0])+' · '+segments.map(s=>s.original.length).join('/')+' células',value:project.changes.menuTexts?.[section.id]?.[f[0]]??original,original,multiline:segments.length>1,validate:v=>encodeNativeMenuField(f,v),onChange:v=>{
+   textControl(details,{label:(f[3].label??f[0])+' · '+segments.map(s=>f[3].pool.capacity??s.original.length).join('/')+' células',value:project.changes.menuTexts?.[section.id]?.[f[0]]??original,original,multiline:segments.length>1,validate:v=>encodeNativeMenuField(f,v),onChange:v=>{
     const menus=project.changes.menuTexts??={},entries=menus[section.id]??={};
     if(v===original)delete entries[f[0]];else entries[f[0]]=v;
     if(!Object.keys(entries).length)delete menus[section.id];

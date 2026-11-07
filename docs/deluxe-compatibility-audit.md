@@ -105,3 +105,8 @@ Também foram migrados os oito avisos de treino e os dez rótulos de estatístic
 histórico, passando pelos preflights completos dos writers Plus na ROM Deluxe.
 A validação no emulador desses fluxos continua pendente.
 Os demais candidatos desta auditoria continuam pendentes.
+
+
+Os seis campos especiais antes adiados também foram migrados, elevando o catálogo
+de menus de 133 para 139 campos. As realocações e posições do Plus passaram pelos
+preflights na ROM Deluxe original e mantêm os 2 MB. Exibição no emulador pendente.

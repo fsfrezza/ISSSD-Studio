@@ -60,14 +60,15 @@ test('ROM real: rejeita campos, glifos, tamanhos e paletas inválidos sem modifi
  for(const [key,value]of cases){const project=await createDeluxeProject(input);project.changes[key]=value;await assert.rejects(buildDeluxeProject(input,project));assert.deepEqual(input,snapshot);}
 });
 
-test('ROM real: 133 textos de menus editam somente segmentos nativos e restauram sem resíduos',{skip:!fixture},async()=>{
+test('ROM real: 139 textos de menus editam somente segmentos nativos e restauram sem resíduos',{skip:!fixture},async()=>{
  const {DELUXE_MENU_SECTIONS,encodeNativeMenuField}=await import('../src/core/deluxe-menu-text.mjs');
  const input=new Uint8Array(fs.readFileSync(fixture)),snapshot=input.slice(),base=splitRom(input).rom;
  const project=await createDeluxeProject(input),regions=[];
- assert.equal(DELUXE_MENU_SECTIONS.reduce((n,s)=>n+s.fields.length,0),133);
+ assert.equal(DELUXE_MENU_SECTIONS.reduce((n,s)=>n+s.fields.length,0),139);
  project.changes.menuTexts=Object.fromEntries(DELUXE_MENU_SECTIONS.map(s=>[s.id,Object.fromEntries(s.fields.map(f=>[f[0],'A']))]));
  for(const section of DELUXE_MENU_SECTIONS)for(const f of section.fields){
-  assert.ok(!f[3].pool.relocation);
+  const relocation=f[3].pool.relocation;
+  if(relocation)regions.push([relocation.pc,relocation.pc+f[3].pool.capacity],[relocation.ref,relocation.ref+2],[relocation.ref+4,relocation.ref+5]);
   const original=encodeNativeMenuField(f,f[1]);
   for(const [i,segment]of f[3].pool.segments.entries()){
    assert.deepEqual(base.slice(segment.pc,segment.pc+segment.original.length),original[i],section.id+'/'+f[0]);
@@ -75,14 +76,14 @@ test('ROM real: 133 textos de menus editam somente segmentos nativos e restauram
   }
  }
  const reloaded=JSON.parse(JSON.stringify(project)),result=await buildDeluxeProject(input,reloaded),out=splitRom(result.rom).rom;
- for(const s of DELUXE_MENU_SECTIONS)for(const f of s.fields){const bytes=encodeNativeMenuField(f,'A');f[3].pool.segments.forEach((seg,i)=>assert.deepEqual(out.slice(seg.pc,seg.pc+seg.original.length),bytes[i]));}
+ for(const s of DELUXE_MENU_SECTIONS)for(const f of s.fields){const bytes=encodeNativeMenuField(f,'A');f[3].pool.segments.forEach((seg,i)=>assert.deepEqual(out.slice(f[3].pool.relocation?.pc??seg.pc,(f[3].pool.relocation?.pc??seg.pc)+bytes[i].length),bytes[i]));}
  assert.equal(result.rom.length,input.length);assert.deepEqual(splitRom(result.rom).header,splitRom(input).header);
- regions.push([0x7fdc,0x7fe0]);
+ regions.push([0x7fdc,0x7fe0],[0x3B1BE,0x3B1C0],[0x3448F,0x34491],[0x3BE05,0x3BE07]);
  for(let i=0;i<base.length;i++)if(base[i]!==out[i])assert.ok(regions.some(([start,end])=>i>=start&&i<end),'unexpected write '+i.toString(16));
  assert.equal(out.reduce((s,b)=>(s+b)&65535,0),out[0x7fde]|out[0x7fdf]<<8);assert.deepEqual(input,snapshot);
  reloaded.changes.menuTexts=Object.fromEntries(DELUXE_MENU_SECTIONS.map(s=>[s.id,Object.fromEntries(s.fields.map(f=>[f[0],f[1]]))]));
  assert.deepEqual((await buildDeluxeProject(input,reloaded)).rom,input);
- for(const invalid of [{missing:{}},{'stadium-native':{data_87cad3:'TEST'}},{'options-native':[]},{[DELUXE_MENU_SECTIONS[0].id]:{[DELUXE_MENU_SECTIONS[0].fields[0][0]]:'A'.repeat(1000)}}]){
+ for(const invalid of [{missing:{}},{'stadium-native':{unknown:'TEST'}},{'options-native':[]},{[DELUXE_MENU_SECTIONS[0].id]:{[DELUXE_MENU_SECTIONS[0].fields[0][0]]:'A'.repeat(1000)}}]){
   reloaded.changes.menuTexts=invalid;await assert.rejects(buildDeluxeProject(input,reloaded));assert.deepEqual(input,snapshot);
  }
 });
@@ -158,4 +159,18 @@ test('ROM real: avisos do treino e estatísticas passam nos preflights Plus e es
   const trial=await createDeluxeProject(file);Object.assign(trial.changes,bad);await assert.rejects(buildDeluxeProject(file,trial));assert.deepEqual(file,snapshot);
  }
  delete p.changes.trainingHud;delete p.changes.matchStatistics;assert.deepEqual((await buildDeluxeProject(file,p)).rom,file);
+});
+
+test('ROM real: seis textos especiais realocam rótulos e ajustam posições como no Plus',{skip:!fixture},async()=>{
+ const {SPECIAL_MENU_FIELDS}=await import('../src/core/deluxe-special-menu-fields.mjs');
+ const {applyDeluxeMenuTexts,encodeNativeMenuField}=await import('../src/core/deluxe-menu-text.mjs');
+ const file=new Uint8Array(fs.readFileSync(fixture)),base=splitRom(file).rom,p=await createDeluxeProject(file);
+ const translations={data_87cad3:'ESTADIO',data_87df39:'LIVRE',data_87df3d:'DEFESA',data_87df52:'FALTA',data_87df5b:'GOLEIRO',data_87df61:'MODO'};
+ p.changes.menuTexts={};for(const {section,field}of SPECIAL_MENU_FIELDS)(p.changes.menuTexts[section]??={})[field[0]]=translations[field[0]];
+ const result=await buildDeluxeProject(file,JSON.parse(JSON.stringify(p))),out=splitRom(result.rom).rom;
+ assert.equal(result.rom.length,file.length);assert.equal(result.expanded,false);
+ for(const {field:f}of SPECIAL_MENU_FIELDS){const r=f[3].pool.relocation;if(!r)continue;const expected=encodeNativeMenuField(f,translations[f[0]])[0];assert.equal(out[r.ref]|out[r.ref+1]<<8,r.pc&65535);assert.equal(out[r.ref+4],expected.length);assert.deepEqual(out.slice(r.pc,r.pc+expected.length),expected);assert.deepEqual(out.slice(f[3].pool.segments[0].pc,f[3].pool.segments[0].pc+f[1].length),base.slice(f[3].pool.segments[0].pc,f[3].pool.segments[0].pc+f[1].length));}
+ for(const [at,value]of [[0x3BDBB,0x010D],[0x3BDC1,0x016D],[0x3BDC7,0x0108],[0x3BDCD,0x0168],[0x3B1BE,0x0128],[0x3448F,0x0131]])assert.equal(out[at]|out[at+1]<<8,value);
+ const target=base.slice();target[0x3FBA0]=0;const snapshot=target.slice();assert.throws(()=>applyDeluxeMenuTexts(target,base,p.changes.menuTexts),/reserva ocupada/);assert.deepEqual(target,snapshot);
+ p.changes.menuTexts={};for(const {section,field}of SPECIAL_MENU_FIELDS)(p.changes.menuTexts[section]??={})[field[0]]=field[1];assert.deepEqual((await buildDeluxeProject(file,p)).rom,file);
 });

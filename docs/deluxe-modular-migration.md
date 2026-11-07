@@ -8,9 +8,10 @@ Além das oito estratégias, a entrada Deluxe agora permite editar:
 - 20 textos nativos independentes. Cinco outros labels auditados fazem parte dos
   blocos de ajuda do Cursor e são editados somente dentro desses blocos.
 - 14 blocos de ajuda textual do Cursor, com o codec e descritores do Plus.
-- 133 textos adicionais de menus, opções, competições, treino, desafios,
+- 139 textos adicionais de menus, opções, competições, treino, desafios,
   recordes, passwords, cenários e créditos, organizados em 20 seções.
-  Foram excluídos seis campos que exigem relocation ou ajustes de layout.
+  Os seis campos especiais agora usam as realocações e ajustes de layout
+  verificados no Plus e preflightados no Deluxe.
 - Título interno da ROM.
 - Sons e vozes: 74 slots, prévia BRR aproximada, importação/exportação BRR,
   persistência no projeto e restauração da amostra original.
@@ -206,3 +207,18 @@ restritas às regiões declaradas pelos writers, checksum, rejeição de campos 
 textos inválidos e restauração exata. Nenhuma expansão foi necessária.
 A exibição no treino, no intervalo, no fim e no histórico ainda precisa ser
 conferida em emulador; igualdade de dados não comprova execução de todos os fluxos.
+
+
+## Seis campos especiais de menus
+
+Liberados STADIUM, FREE, DEFENSE, FREE KICK, KEEPER e MODE nas seções existentes.
+As três realocações usam reservas nativas de 8 bytes em 0x3FBA0/0x3FBA8/0x3FBB0,
+sem expandir a ROM. Os ponteiros e comprimentos das referências são verificados
+antes da escrita. O rótulo do estádio troca as posições previstas e MODO aplica
+as quatro posições do seletor; nomes alterados do treino usam o ajuste de
+sufixos do writer Plus. Nenhuma rotina assembly nova foi criada.
+
+17 testes da suíte Deluxe passaram. Incluem todos os 139 campos, os seis textos
+especiais em português, ponteiros/comprimentos/posições, recusa de reserva ocupada
+sem escrita parcial, restauração exata e checksum. A exibição no jogo permanece
+pendente de teste em emulador.
