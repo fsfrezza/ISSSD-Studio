@@ -174,3 +174,15 @@ test('ROM real: seis textos especiais realocam rótulos e ajustam posições com
  const target=base.slice();target[0x3FBA0]=0;const snapshot=target.slice();assert.throws(()=>applyDeluxeMenuTexts(target,base,p.changes.menuTexts),/reserva ocupada/);assert.deepEqual(target,snapshot);
  p.changes.menuTexts={};for(const {section,field}of SPECIAL_MENU_FIELDS)(p.changes.menuTexts[section]??={})[field[0]]=field[1];assert.deepEqual((await buildDeluxeProject(file,p)).rom,file);
 });
+
+test('ROM real: FB96 individual e lote preservam as amostras do Plus sem reconversão',{skip:!fixture},async()=>{
+ const {fb96SoundChoices,SOUND_SLOTS,selectedSound}=await import('../src/core/deluxe-sounds.mjs');
+ const reference=JSON.parse(fs.readFileSync(new URL('../deluxe-editor/fb96-samples.json',import.meta.url))),file=new Uint8Array(fs.readFileSync(fixture)),base=splitRom(file).rom,p=await createDeluxeProject(file);
+ assert.equal(Object.keys(fb96SoundChoices(base,reference,[SOUND_SLOTS[0].id])).length,1);
+ p.changes.sounds=fb96SoundChoices(base,reference);assert.equal(Object.keys(p.changes.sounds).length,74);
+ const output=splitRom((await buildDeluxeProject(file,JSON.parse(JSON.stringify(p)))).rom).rom,allowed=[];
+ for(const s of SOUND_SLOTS){assert.equal(p.changes.sounds[s.id].source,'fb96');const bytes=selectedSound(base,s.id,p.changes.sounds);assert.deepEqual(bytes,Uint8Array.from(Buffer.from(reference.samples[s.id],'base64')));assert.deepEqual(output.slice(s.pc,s.pc+bytes.length),bytes);allowed.push([s.pc,s.pc+bytes.length]);}
+ for(let i=0;i<base.length;i++)if(base[i]!==output[i])assert.ok((i>=0x7fdc&&i<0x7fe0)||allowed.some(([a,b])=>i>=a&&i<b));
+ delete p.changes.sounds;assert.deepEqual((await buildDeluxeProject(file,p)).rom,file);
+ assert.throws(()=>fb96SoundChoices(base,{...reference,source:'Galvao'}),/inválida/);
+});

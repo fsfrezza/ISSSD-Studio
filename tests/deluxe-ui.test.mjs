@@ -15,7 +15,7 @@ test('UI handlers: abrir, editar, salvar projeto, reabrir, exportar e restaurar'
   addEventListener(name,fn){this.listeners[name]=fn;}
   click(){if(this.tag==='a')downloads.push({name:this.download,blob:blobs.get(this.href)});}
  }
- const ids=Object.fromEntries(['rom','status','texts','stadiums','nativeTexts','cursorHelp','title','resetTitle','save','load','export','improvements','menuTexts','mainMenu','menuScale','menuSelection','resetMenu','menuPreview','menuStatus','soundSelection','soundRate','soundFile','playOriginal','playSound','stopSound','downloadSound','resetSound','soundInfo','soundStatus','downloadWav','resetAllSounds','playGalvao','useGalvao','allGalvao','trainingHud','matchStatistics'].map(id=>[id,new Element(id)]));
+ const ids=Object.fromEntries(['rom','status','texts','stadiums','nativeTexts','cursorHelp','title','resetTitle','save','load','export','improvements','menuTexts','mainMenu','menuScale','menuSelection','resetMenu','menuPreview','menuStatus','soundSelection','soundRate','soundFile','playOriginal','playSound','stopSound','downloadSound','resetSound','soundInfo','soundStatus','downloadWav','resetAllSounds','playGalvao','useGalvao','allGalvao','trainingHud','matchStatistics','playFb96','useFb96','allFb96'].map(id=>[id,new Element(id)]));
  const downloads=[],blobs=new Map();let serial=0;
  const previous={fetch:globalThis.fetch,window:globalThis.window,document:globalThis.document,create:URL.createObjectURL,revoke:URL.revokeObjectURL};
  globalThis.document={getElementById:id=>ids[id],createElement:tag=>new Element(tag),createTextNode:text=>text};
@@ -33,8 +33,8 @@ test('UI handlers: abrir, editar, salvar projeto, reabrir, exportar e restaurar'
   globalThis.window={AudioContext:class {async decodeAudioData(){const samples=Float32Array.from({length:1030},(_,i)=>.3*Math.sin(i/8));return {numberOfChannels:1,sampleRate:10300,getChannelData:()=>samples};}}};
   ids.soundFile.files=[{name:'voz.wav',size:30000,arrayBuffer:async()=>new ArrayBuffer(16)}];await ids.soundFile.onchange();assert.match(ids.soundStatus.textContent,/Sem acelerar a fala/);
   ids.downloadWav.onclick();assert.equal(downloads.at(-1).name,'ItsABigKick1.wav');
-  const reference=JSON.parse(fs.readFileSync(new URL('../deluxe-editor/galvao-samples.json',import.meta.url)));globalThis.fetch=async()=>({ok:true,json:async()=>reference});
-  await ids.useGalvao.onclick();assert.match(ids.soundInfo.textContent,/Galvão/);await ids.allGalvao.onclick();assert.match(ids.soundStatus.textContent,/74/);
+  const reference=JSON.parse(fs.readFileSync(new URL('../deluxe-editor/galvao-samples.json',import.meta.url)));globalThis.fetch=async url=>({ok:true,json:async()=>url.includes('fb96')?JSON.parse(fs.readFileSync(new URL('../deluxe-editor/fb96-samples.json',import.meta.url))):reference});
+  await ids.useGalvao.onclick();assert.match(ids.soundInfo.textContent,/Galvão/);await ids.allGalvao.onclick();assert.match(ids.soundStatus.textContent,/74/);await ids.useFb96.onclick();assert.match(ids.soundInfo.textContent,/FB96/);await ids.allFb96.onclick();assert.match(ids.soundStatus.textContent,/FB96 aplicado aos 74/);
   ids.title.value='DELUXE UI TEST';ids.title.oninput();
   const text=ids.nativeTexts.children[0].children[0];text.value='TESTE';text.listeners.input();assert.equal(text.validationMessage,'');
   const color=ids.stadiums.children[0].children[1].children[0].children[0];color.value='#ff0000';color.oninput();

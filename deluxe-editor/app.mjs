@@ -4,7 +4,7 @@ import {NATIVE_SCREEN_TEXT_FIELDS,CURSOR_HELP_FIELDS,readStadiums,readNativeFiel
 import {encodeCursorText} from '../src/core/cursor-text-codec.mjs';
 import {DELUXE_MENU_SECTIONS,encodeNativeMenuField} from '../src/core/deluxe-menu-text.mjs';
 import {PLUS_MAIN_MENU_IDS,PLUS_MAIN_MENU_ORIGINAL,deluxeMainMenuPreview} from '../src/core/deluxe-main-menu.mjs';
-import {SOUND_SLOTS,originalSound,selectedSound,soundEntry,decodeBrrPreview,galvaoSoundChoices} from '../src/core/deluxe-sounds.mjs';
+import {SOUND_SLOTS,originalSound,selectedSound,soundEntry,decodeBrrPreview,galvaoSoundChoices,fb96SoundChoices} from '../src/core/deluxe-sounds.mjs';
 import {GAME_AUDIO_RATE,prepareAudio,encodeBrr,pcmToWav} from '../src/core/audio-conversion.mjs';
 import {TRAINING_HUD_FIELDS,MATCH_STATISTICS_FIELDS,encodeTrainingHud,renderMatchStatistics} from '../src/core/deluxe-match-texts.mjs';
 const $=id=>document.getElementById(id);
@@ -120,7 +120,7 @@ $('resetMenu').onclick=()=>{delete project.changes.mainMenu;render();};
 function stopAudio(){if(audioSource){audioSource.stop();audioSource=null;}}
 function renderSounds(){
  stopAudio();
- for(const id of ['soundSelection','soundRate','soundFile','playOriginal','playSound','stopSound','downloadSound','downloadWav','resetSound','resetAllSounds','playGalvao','useGalvao','allGalvao'])$(id).disabled=!project;
+ for(const id of ['soundSelection','soundRate','soundFile','playOriginal','playSound','stopSound','downloadSound','downloadWav','resetSound','resetAllSounds','playGalvao','useGalvao','allGalvao','playFb96','useFb96','allFb96'])$(id).disabled=!project;
  if(!project){$('soundSelection').replaceChildren();$('soundInfo').textContent='';$('soundStatus').textContent='';return;}
  const previous=$('soundSelection').value;$('soundSelection').replaceChildren();
  for(const s of SOUND_SLOTS){const option=document.createElement('option');option.value=s.id;option.textContent=(s.kind==='voice'?'Voz · ':'Efeito · ')+s.id.replace(/([a-z])([A-Z])/g,'$1 $2');$('soundSelection').append(option);}
@@ -128,7 +128,7 @@ function renderSounds(){
 }
 function updateSoundInfo(){
  if(!project)return;const id=$('soundSelection').value,base=splitRom(file).rom,original=originalSound(base,id),current=selectedSound(base,id,project.changes.sounds);
- $('soundInfo').textContent=current.length+' de '+original.length+' bytes · '+(project.changes.sounds?.[id]?.source==='galvao'?'Galvão':project.changes.sounds?.[id]?'amostra substituída':'original');
+ $('soundInfo').textContent=current.length+' de '+original.length+' bytes · '+(project.changes.sounds?.[id]?.source==='fb96'?'FB96':project.changes.sounds?.[id]?.source==='galvao'?'Galvão':project.changes.sounds?.[id]?'amostra substituída':'original');
 }
 async function playAudio(original){
  try{stopAudio();const base=splitRom(file).rom,id=$('soundSelection').value,bytes=original?originalSound(base,id):selectedSound(base,id,project.changes.sounds),samples=decodeBrrPreview(bytes);
@@ -163,27 +163,34 @@ $('resetSound').onclick=()=>{stopAudio();delete project.changes.sounds?.[$('soun
 $('downloadWav').onclick=()=>{try{const id=$('soundSelection').value,samples=decodeBrrPreview(selectedSound(splitRom(file).rom,id,project.changes.sounds));download(pcmToWav(samples),id+'.wav','audio/wav');}catch(error){$('soundStatus').textContent=error.message;}};
 $('resetAllSounds').onclick=()=>{stopAudio();delete project.changes.sounds;updateSoundInfo();$('soundStatus').textContent='Todos os sons originais foram restaurados.';};
 
-let galvaoReferencePromise=null;
-async function galvaoReference(){
- if(!galvaoReferencePromise)galvaoReferencePromise=fetch('/deluxe-editor/galvao-samples.json').then(async response=>{if(!response.ok)throw Error('Não foi possível carregar os sons do Galvão');return response.json();}).catch(error=>{galvaoReferencePromise=null;throw error;});
- return galvaoReferencePromise;
-}
-async function useGalvao(all){
- const current=file,p=project,id=$('soundSelection').value;
- try{const reference=await galvaoReference(),base=splitRom(current).rom,values=galvaoSoundChoices(base,reference,all?undefined:[id]);
- if(project!==p||file!==current)return;
- stopAudio();project.changes.sounds={...project.changes.sounds,...values};updateSoundInfo();$('soundStatus').textContent=all?'Galvão aplicado aos 74 sons catalogados. Salve o projeto ou gere a ROM.':'Galvão aplicado ao som selecionado. Salve o projeto ou gere a ROM.';
- }catch(error){$('soundStatus').textContent=error.message;}
-}
-$('useGalvao').onclick=()=>useGalvao(false);$('allGalvao').onclick=()=>useGalvao(true);
-$('playGalvao').onclick=async()=>{
- const p=project,current=file,id=$('soundSelection').value;
- try{const reference=await galvaoReference();if(project!==p||file!==current)return;stopAudio();
- const choices=galvaoSoundChoices(splitRom(current).rom,reference,[id]),samples=decodeBrrPreview(selectedSound(splitRom(current).rom,id,choices));
- const Context=window.AudioContext??window.webkitAudioContext;if(!Context)throw Error('Reprodução não suportada neste navegador');audioContext??=new Context();await audioContext.resume();
- const buffer=audioContext.createBuffer(1,samples.length,Number($('soundRate').value));buffer.copyToChannel(samples,0);audioSource=audioContext.createBufferSource();audioSource.buffer=buffer;audioSource.connect(audioContext.destination);audioSource.start();$('soundStatus').textContent='Reproduzindo prévia do Galvão.';
- }catch(error){$('soundStatus').textContent=error.message;}
+const soundPresets={
+ galvao:{label:'Galvão',file:'galvao-samples.json',choices:galvaoSoundChoices},
+ fb96:{label:'FB96',file:'fb96-samples.json',choices:fb96SoundChoices},
 };
+const presetPromises={};
+async function soundReference(source){
+ const preset=soundPresets[source];
+ if(!presetPromises[source])presetPromises[source]=fetch('/deluxe-editor/'+preset.file).then(async response=>{if(!response.ok)throw Error('Não foi possível carregar '+preset.label);return response.json();}).catch(error=>{delete presetPromises[source];throw error;});
+ return presetPromises[source];
+}
+async function applySoundPreset(source,all){
+ const current=file,p=project,id=$('soundSelection').value,preset=soundPresets[source];
+ try{const reference=await soundReference(source),base=splitRom(current).rom,values=preset.choices(base,reference,all?undefined:[id]);
+ if(project!==p||file!==current)return;
+ stopAudio();project.changes.sounds={...project.changes.sounds,...values};updateSoundInfo();$('soundStatus').textContent=preset.label+(all?' aplicado aos 74 sons catalogados.':' aplicado ao som selecionado.')+' Salve o projeto ou gere a ROM.';
+ }catch(error){$('soundStatus').textContent=error.message;}
+}
+async function previewSoundPreset(source){
+ const p=project,current=file,id=$('soundSelection').value,preset=soundPresets[source];
+ try{const reference=await soundReference(source);if(project!==p||file!==current)return;stopAudio();
+ const choices=preset.choices(splitRom(current).rom,reference,[id]),samples=decodeBrrPreview(selectedSound(splitRom(current).rom,id,choices));
+ const Context=window.AudioContext??window.webkitAudioContext;if(!Context)throw Error('Reprodução não suportada neste navegador');audioContext??=new Context();await audioContext.resume();
+ const buffer=audioContext.createBuffer(1,samples.length,Number($('soundRate').value));buffer.copyToChannel(samples,0);audioSource=audioContext.createBufferSource();audioSource.buffer=buffer;audioSource.connect(audioContext.destination);audioSource.start();$('soundStatus').textContent='Reproduzindo prévia '+preset.label+'.';
+ }catch(error){$('soundStatus').textContent=error.message;}
+}
+for(const [source,suffix]of [['galvao','Galvao'],['fb96','Fb96']]){
+ $('use'+suffix).onclick=()=>applySoundPreset(source,false);$('all'+suffix).onclick=()=>applySoundPreset(source,true);$('play'+suffix).onclick=()=>previewSoundPreset(source);
+}
 
 function renderMatchTexts(rom){
  for(const [section,fields]of [['trainingHud',TRAINING_HUD_FIELDS],['matchStatistics',MATCH_STATISTICS_FIELDS]]){

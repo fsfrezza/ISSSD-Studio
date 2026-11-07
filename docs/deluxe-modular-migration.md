@@ -142,7 +142,7 @@ npm run test:deluxe
 A aba Sons e vozes reutiliza `SOUND_SLOTS` e o writer BRR da Plus. A camada Deluxe
 restringe cada substituição ao comprimento da amostra original, preservando todos
 os bytes posteriores. A importação agora aceita os formatos decodificáveis pelo Web Audio do navegador
-(MP3/WAV e outros conforme suporte local), além de BRR. O preset Galvão do Editor Plus foi incorporado; o preset FB96 continua pendente. Uma importação BRR com dados depois do bloco final é rejeitada.
+(MP3/WAV e outros conforme suporte local), além de BRR. O preset Galvão do Editor Plus foi incorporado; o preset FB96 também está disponível. Uma importação BRR com dados depois do bloco final é rejeitada.
 
 A prévia decodifica os filtros BRR e reproduz uma passagem pela amostra, em taxa
 selecionável (8/10,3/16/32 kHz; padrão 10,3 kHz). Não simula pitch do driver, interpolação gaussiana,
@@ -222,3 +222,15 @@ sufixos do writer Plus. Nenhuma rotina assembly nova foi criada.
 especiais em português, ponteiros/comprimentos/posições, recusa de reserva ocupada
 sem escrita parcial, restauração exata e checksum. A exibição no jogo permanece
 pendente de teste em emulador.
+
+
+## Preset FB96
+
+As referências `project-data/fb96-sound-references.json` da branch Plus bcd70db
+foram incorporadas sem alterar seus bytes. O Deluxe oferece prévia, aplicação
+individual e aplicação em lote dos 74 sons catalogados, incluindo efeitos.
+Todos os fluxos cabem nos comprimentos originais do Deluxe. As escolhas ficam
+embutidas no projeto com source fb96, sem precisar de ROM doadora na reabertura.
+18 testes passaram, incluindo comparação exata com as referências Plus, lote,
+restauração, preservação de bytes vizinhos, controles da UI e entrega pelo HTTP.
+A reprodução no emulador ainda precisa de conferência manual.
