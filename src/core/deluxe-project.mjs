@@ -1,5 +1,6 @@
 import {PLUS_STRATEGY_TEXTS, encodePlusStrategyText, readPlusStrategyText} from './plus-strategy-text.mjs';
 import {encodeInternalRomTitle, readInternalRomTitle} from './plus-rom-meta.mjs';
+import {applyDeluxeMainMenu} from './deluxe-main-menu.mjs';
 import {applyDeluxeMenuTexts} from './deluxe-menu-text.mjs';
 import {applyDeluxeNativeChanges} from './deluxe-native-fields.mjs';
 import {diffRanges} from './rom-integrity.mjs';
@@ -48,7 +49,7 @@ export async function buildDeluxeProject(file,project){
   const base=await identifyDeluxe(file);
   keys(project,['schema','version','base','changes'],'projeto');
   if(project.schema!==DELUXE_SCHEMA||project.version!==1||project.base?.sha256!==base.sha256||project.base?.id!==base.id)throw new Error('Projeto não pertence à base Deluxe original');
-  keys(project.changes,['strategyTexts','internalTitle','improvements','nativeTexts','cursorHelp','stadiums','menuTexts'],'alterações');
+  keys(project.changes,['strategyTexts','internalTitle','improvements','nativeTexts','cursorHelp','stadiums','menuTexts','mainMenu'],'alterações');
   const changes=project.changes;
   if(!Array.isArray(changes.improvements))throw new Error('Lista de melhorias inválida');
   if(changes.improvements.length)throw new Error('Melhorias ainda sem patch validado: '+changes.improvements.join(', '));
@@ -64,6 +65,7 @@ export async function buildDeluxeProject(file,project){
   }
   applyDeluxeNativeChanges(out,rom,changes);
   applyDeluxeMenuTexts(out,rom,changes.menuTexts);
+  applyDeluxeMainMenu(out,rom,changes.mainMenu);
   if(Object.hasOwn(changes,'internalTitle')){
     if(typeof changes.internalTitle!=='string')throw new TypeError('Título deve ser string');
     out.set(encodeInternalRomTitle(changes.internalTitle),0x7fc0);

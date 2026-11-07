@@ -12,6 +12,9 @@ Além das oito estratégias, a entrada Deluxe agora permite editar:
   recordes, passwords, cenários e créditos, organizados em 20 seções.
   Foram excluídos seis campos que exigem relocation ou ajustes de layout.
 - Título interno da ROM.
+- Oito nomes do menu principal, tamanho global dos textos e prévia estática
+  da tipografia/seleção. O menu é regenerado nos cinco blocos nativos pelo
+  renderer existente da Plus. Combinações que excedem espaço são rejeitadas.
 
 Todos possuem restauração dos valores originais. As mudanças são salvas no projeto
 e reaplicadas na geração. Projetos Deluxe da etapa anterior continuam aceitos.
@@ -19,10 +22,17 @@ Os 133 textos usam os mesmos segmentos e encoder do Plus, com gravação somente
 no espaço original. Os defaults não são traduzidos automaticamente: o usuário
 escolhe quais textos alterar. Não há expansão nem patches de gameplay novos nesta entrega.
 
-Validação: 21 testes passaram com a ROM anexada, incluindo escritas restritas,
+Validação: 44 testes passaram com a ROM anexada, incluindo escritas restritas,
 checksum, rejeição de entradas inválidas e fluxo de controles abrir/editar/salvar/
-reabrir/exportar/restaurar em um DOM de teste. Não houve teste visual em navegador
-real nem teste de gameplay em emulador nesta etapa.
+reabrir/exportar/restaurar em um DOM de teste. A imagem de prévia foi inspecionada durante o desenvolvimento; não houve teste
+visual em navegador real nem teste de gameplay em emulador nesta etapa.
+A prévia usa cores ilustrativas e destaque estático sobre a tipografia BG; não
+simula as paletas, os sprites animados nem a navegação do jogo. Antes de editar,
+ela mostra a fonte do editor com os nomes originais; exportar sem edições continua
+preservando os gráficos e o arquivo original inteiro.
+O tamanho inicial de edição é 80, que cabe com os nomes originais. Alguns textos
+e tamanhos maiores ultrapassam os blocos nativos: nesses casos o Editor mostra
+o erro e não gera a ROM; não expande nem realoca silenciosamente.
 
 ## Registro da etapa inicial
 

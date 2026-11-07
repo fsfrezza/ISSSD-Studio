@@ -86,3 +86,24 @@ test('ROM real: 133 textos de menus editam somente segmentos nativos e restauram
   reloaded.changes.menuTexts=invalid;await assert.rejects(buildDeluxeProject(input,reloaded));assert.deepEqual(input,snapshot);
  }
 });
+
+test('ROM real: menu principal usa os cinco blocos nativos, prévia coincide com exportação e restauração é exata',{skip:!fixture},async()=>{
+ const {deluxeMainMenuPreview,planDeluxeMainMenu,PLUS_MAIN_MENU_ORIGINAL}=await import('../src/core/deluxe-main-menu.mjs');
+ const {PLUS_MAIN_MENU_REGIONS}=await import('../src/core/plus-main-menu-renderer.mjs');
+ const input=new Uint8Array(fs.readFileSync(fixture)),snapshot=input.slice(),base=splitRom(input).rom,p=await createDeluxeProject(input);
+ p.changes.mainMenu={texts:{openGame:'AMISTOSO'},scale:80};
+ const plan=planDeluxeMainMenu(p.changes.mainMenu);assert.equal(plan.regions.length,5);
+ const result=await buildDeluxeProject(input,JSON.parse(JSON.stringify(p))),out=splitRom(result.rom).rom;
+ assert.equal(result.rom.length,input.length);assert.deepEqual(input,snapshot);
+ const ranges=Object.values(PLUS_MAIN_MENU_REGIONS).map(r=>[r.pc,r.pc+(r.capacity??r.length)]);ranges.push([0x7fdc,0x7fe0]);
+ for(let i=0;i<base.length;i++)if(base[i]!==out[i])assert.ok(ranges.some(([a,b])=>i>=a&&i<b),'unexpected write '+i.toString(16));
+ for(let i=0;i<8;i++){
+  const preview=deluxeMainMenuPreview(base,p.changes.mainMenu,i),encoded=deluxeMainMenuPreview(out,undefined,i,true);
+  assert.deepEqual(preview.pixels,encoded.pixels);assert.ok(preview.pixels.some(v=>v>=16));
+ }
+ assert.notDeepEqual(deluxeMainMenuPreview(base,p.changes.mainMenu,0).pixels,deluxeMainMenuPreview(base,p.changes.mainMenu,1).pixels);
+ p.changes.mainMenu={texts:{openGame:PLUS_MAIN_MENU_ORIGINAL.openGame},scale:80};assert.deepEqual((await buildDeluxeProject(input,p)).rom,input);
+ for(const value of [{texts:{openGame:'AMISTOSO'},scale:115},{texts:{openGame:'!'}},{texts:{bad:'A'}},{texts:{openGame:''}},{texts:{},scale:NaN},{texts:{},composition:{} }]){
+  p.changes.mainMenu=value;await assert.rejects(buildDeluxeProject(input,p));assert.deepEqual(input,snapshot);
+ }
+});

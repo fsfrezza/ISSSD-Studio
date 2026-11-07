@@ -3,16 +3,20 @@ import {PLUS_STRATEGY_TEXTS,readPlusStrategyText} from '../src/core/plus-strateg
 import {NATIVE_SCREEN_TEXT_FIELDS,CURSOR_HELP_FIELDS,readStadiums,readNativeField,readCursorHelp,encodeNativeField} from '../src/core/deluxe-native-fields.mjs';
 import {encodeCursorText} from '../src/core/cursor-text-codec.mjs';
 import {DELUXE_MENU_SECTIONS,encodeNativeMenuField} from '../src/core/deluxe-menu-text.mjs';
+import {PLUS_MAIN_MENU_IDS,PLUS_MAIN_MENU_ORIGINAL,deluxeMainMenuPreview} from '../src/core/deluxe-main-menu.mjs';
 const $=id=>document.getElementById(id);
 let file=null,project=null,opening=0;
 function status(value){$('status').textContent=value;}
 function download(data,name,type){const url=URL.createObjectURL(new Blob([data],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 function render(){
-  for(const id of ['texts','stadiums','nativeTexts','cursorHelp','menuTexts'])$(id).replaceChildren();
+  for(const id of ['texts','stadiums','nativeTexts','cursorHelp','menuTexts','mainMenu'])$(id).replaceChildren();
+  for(const id of ['menuScale','menuSelection','resetMenu'])$(id).disabled=!project;
+  if(!project){$('menuPreview').getContext('2d').clearRect(0,0,256,224);$('menuStatus').textContent='';}
   $('title').value='';$('title').disabled=!project;$('resetTitle').disabled=!project;
   if(!project)return;
   const {rom}=splitRom(file);
   renderNative(rom);
+  renderMainMenu(rom);
   for(const item of PLUS_STRATEGY_TEXTS){
     const label=document.createElement('label');label.textContent=item.label;
     const input=document.createElement('input');input.type='text';input.maxLength=21;
@@ -79,3 +83,30 @@ function renderNative(rom){
 }
 $('title').oninput=()=>{if($('title').value===project.base.title)delete project.changes.internalTitle;else project.changes.internalTitle=$('title').value;};
 $('resetTitle').onclick=()=>{delete project.changes.internalTitle;render();};
+
+function updateMenu(id,value){
+ const menu=project.changes.mainMenu??={texts:{},scale:80};
+ if(id==='scale')menu.scale=value;
+ else if(value===PLUS_MAIN_MENU_ORIGINAL[id])delete menu.texts[id];else menu.texts[id]=value;
+ if(!Object.keys(menu.texts).length&&menu.scale===80)delete project.changes.mainMenu;
+ drawMenu();
+}
+function drawMenu(){
+ if(!project)return;
+ try{
+  const preview=deluxeMainMenuPreview(splitRom(file).rom,project.changes.mainMenu,Number($('menuSelection').value||0));
+  const context=$('menuPreview').getContext('2d'),frame=context.createImageData(256,224);
+  preview.pixels.forEach((v,i)=>{const color=v===17?[255,218,90]:v>=16?[8,14,27]:v?[168,201,242]:[8,14,27];frame.data.set([...color,255],i*4);});context.putImageData(frame,0,0);
+  $('menuStatus').textContent=preview.regions.length?'Prévia atualizada. O menu cabe no espaço original.':'Menu original preservado.';
+ }catch(error){$('menuPreview').getContext('2d').clearRect(0,0,256,224);$('menuStatus').textContent='Menu não pode ser gerado: '+error.message;}
+}
+function renderMainMenu(){
+ $('menuSelection').replaceChildren();
+ PLUS_MAIN_MENU_IDS.forEach((id,i)=>{const option=document.createElement('option');option.value=String(i);option.textContent=PLUS_MAIN_MENU_ORIGINAL[id];$('menuSelection').append(option);
+  textControl($('mainMenu'),{label:PLUS_MAIN_MENU_ORIGINAL[id],value:project.changes.mainMenu?.texts?.[id]??PLUS_MAIN_MENU_ORIGINAL[id],original:PLUS_MAIN_MENU_ORIGINAL[id],multiline:true,validate:()=>{},onChange:value=>updateMenu(id,value)});
+ });
+ $('menuSelection').value='0';$('menuScale').value=project.changes.mainMenu?.scale??80;drawMenu();
+}
+$('menuScale').oninput=()=>updateMenu('scale',Number($('menuScale').value));
+$('menuSelection').onchange=drawMenu;
+$('resetMenu').onclick=()=>{delete project.changes.mainMenu;render();};

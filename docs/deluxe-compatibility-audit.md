@@ -96,4 +96,7 @@ restantes se sobrepõem aos blocos de ajuda: a edição fica exclusivamente no b
 completo, evitando escritores concorrentes na mesma região.
 Também foram migrados 133 dos 139 campos adicionais de menus, preservando os
 segmentos nativos. Seis campos com relocation ou efeitos de layout foram excluídos.
-Os demais candidatos desta auditoria continuam pendentes.
+Também foi migrada a edição dos oito nomes e tamanho global do menu principal,
+reutilizando o renderer Plus dentro dos cinco blocos nativos. A prévia é de
+tipografia com cores e seleção ilustrativas; navegação e exibição no emulador
+continuam pendentes. Os demais candidatos desta auditoria continuam pendentes.
