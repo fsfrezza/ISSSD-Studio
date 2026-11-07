@@ -1,0 +1,9 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>ISSSD Studio · Deluxe</title>
+<style>body{font:16px system-ui;background:#101724;color:#edf3ff;max-width:1000px;margin:40px auto;padding:0 24px}h1{font-size:28px}section{background:#1b2639;padding:24px;margin:20px 0;border-radius:12px}input,button{font:inherit;padding:9px;border-radius:5px}button{cursor:pointer}label{display:block;margin:14px 0}label input[type=text]{display:block;width:90%;margin-top:5px}small{color:#b9c8e2}#status{white-space:pre-wrap}button:disabled{opacity:.5}</style>
+<h1>ISSSD Studio · Deluxe</h1><p>Base original, alterações opcionais. Migração em desenvolvimento.</p>
+<section><h2>Abrir ROM</h2><input id="rom" type="file" accept=".smc,.sfc"><p id="status" role="status">Selecione o Deluxe original (USA). A ROM não é enviada a um servidor.</p></section>
+<section><h2>Projeto</h2><button id="save" disabled>Salvar projeto</button> <label>Reabrir projeto <input id="load" type="file" accept=".json,.issdproj" disabled></label><button id="export" disabled>Gerar ROM</button></section>
+<section><h2>Textos · Estratégias</h2><small>Primeiro recurso migrado: oito textos com o mesmo endereço e conteúdo nas duas bases.</small><div id="texts"></div></section>
+<section><h2>Melhorias</h2><p>As opções serão liberadas conforme os patches forem mapeados e validados no Deluxe.</p><div id="improvements"></div></section>
+<section><h2>Próximas migrações</h2><p>Grupos, equipes, jogadores, táticas, uniformes e demais telas serão incorporados gradativamente. Ainda não estão disponíveis nesta entrada.</p></section>
+<script type="module" src="./app.mjs"></script></html>

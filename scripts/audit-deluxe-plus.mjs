@@ -1,0 +1,12 @@
+import fs from 'node:fs';
+import {createHash} from 'node:crypto';
+import {splitRom,identifyDeluxe} from '../src/core/deluxe-project.mjs';
+import {PLUS_BASELINE} from '../src/core/plus-baseline.mjs';
+const [originalPath,plusPath]=process.argv.slice(2);
+if(!originalPath||!plusPath)throw new Error('Uso: node scripts/audit-deluxe-plus.mjs <Deluxe> <Plus>');
+const originalFile=new Uint8Array(fs.readFileSync(originalPath));await identifyDeluxe(originalFile);
+const original=splitRom(originalFile).rom,plus=splitRom(new Uint8Array(fs.readFileSync(plusPath))).rom;
+const sha=rom=>createHash('sha256').update(rom).digest('hex');
+if(sha(plus)!==PLUS_BASELINE.sha256)throw new Error('Referência Plus diferente do baseline do Editor');
+const ranges=[['Textos de estratégias',248014,160],['Banco de jogadores usado pela Plus',0x150000,7840],['Tabela de grupos usada pela Plus',0xe7f2,64],['Ponteiros táticos usados pela Plus',0x5fdd0,114]];
+console.log(JSON.stringify({deluxe:sha(original),plus:sha(plus),ranges:ranges.map(([name,offset,length])=>{let equalBytes=0;for(let i=0;i<length;i++)if(original[offset+i]===plus[offset+i])equalBytes++;return {name,offset,length,equalBytes,identical:equalBytes===length};})},null,2));
