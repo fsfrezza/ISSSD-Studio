@@ -1,7 +1,7 @@
 <!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>ISSSD Studio · Deluxe</title>
 <style>body{font:16px system-ui;background:#101724;color:#edf3ff;max-width:1000px;margin:40px auto;padding:0 24px}h1{font-size:28px}textarea{font:inherit;padding:9px;width:90%;background:#edf3ff;color:#101724}details{margin:16px 0}summary{cursor:pointer}input[type=color]{width:52px;height:40px;padding:3px} .palette{display:flex;flex-wrap:wrap;gap:10px}.palette label{margin:0}section{background:#1b2639;padding:24px;margin:20px 0;border-radius:12px}input,button{font:inherit;padding:9px;border-radius:5px}button{cursor:pointer}label{display:block;margin:14px 0}label input[type=text]{display:block;width:90%;margin-top:5px}small{color:#b9c8e2}#status{white-space:pre-wrap}button:disabled{opacity:.5}</style>
 <h1>ISSSD Studio · Deluxe</h1><p>Base original, alterações opcionais. Migração em desenvolvimento.</p>
-<section><h2>Abrir ROM</h2><input id="rom" type="file" accept=".smc,.sfc"><p id="status" role="status">Selecione o Deluxe original (USA). A ROM não é enviada a um servidor.</p></section>
+<section><h2>Abrir ROM</h2><input id="rom" type="file" accept=".smc,.sfc" disabled><p id="status" role="status">Selecione o Deluxe original (USA). A ROM não é enviada a um servidor.</p></section>
 <section><h2>Projeto</h2><button id="save" disabled>Salvar projeto</button> <label>Reabrir projeto <input id="load" type="file" accept=".json,.issdproj" disabled></label><button id="export" disabled>Gerar ROM</button></section>
 <section><h2>Menu principal</h2><p>Edite os oito nomes. A prévia usa a fonte do editor e cores ilustrativas. O menu original permanece intacto até você aplicar uma edição.</p><div id="mainMenu"></div><label>Tamanho dos textos <input id="menuScale" type="number" min="80" max="160" step="1" value="80" disabled></label><label>Opção selecionada na prévia <select id="menuSelection" disabled></select></label><canvas id="menuPreview" width="256" height="224" style="width:512px;max-width:100%;image-rendering:pixelated;background:#080e1b" aria-label="Prévia do menu principal"></canvas><p id="menuStatus" role="status"></p><button id="resetMenu" disabled>Restaurar menu original</button></section>
 <section><h2>Metadados</h2><label>Título interno da ROM (até 21 caracteres ASCII)<input id="title" type="text" maxlength="21" disabled></label><button id="resetTitle" disabled>Restaurar título original</button></section>
@@ -12,4 +12,13 @@
 <section><h2>Textos · Estratégias</h2><small>Primeiro recurso migrado: oito textos com o mesmo endereço e conteúdo nas duas bases.</small><div id="texts"></div></section>
 <section><h2>Melhorias</h2><p>As opções serão liberadas conforme os patches forem mapeados e validados no Deluxe.</p><div id="improvements"></div></section>
 <section><h2>Próximas migrações</h2><p>Grupos, equipes, jogadores, táticas, uniformes e demais telas serão incorporados gradativamente. Ainda não estão disponíveis nesta entrada.</p></section>
-<script type="module" src="./app.mjs"></script></html>
+<script type="module">
+const status=document.getElementById('status');
+status.textContent='Carregando o Editor…';
+import('/deluxe-editor/app.mjs').then(()=>{
+ document.getElementById('rom').disabled=false;
+ status.textContent='Selecione o Deluxe original (USA). A ROM não é enviada a um servidor.';
+}).catch(error=>{
+ status.textContent='Falha ao carregar o Editor: '+error.message+'. Reinicie o servidor e atualize a página com Ctrl+F5.';
+});
+</script></html>
