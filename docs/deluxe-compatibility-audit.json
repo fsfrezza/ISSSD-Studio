@@ -1,0 +1,2731 @@
+{
+  "schema": "isssd-deluxe-compatibility-audit-v1",
+  "reference": "bcd70db961bc13d5ff17e8492a9f969202f7d2e1",
+  "main": "d1d13b64fa5b222a7bb2c3c7487edbaa9419ac0c",
+  "deluxe": "d2fe66c1ce66c65ce14e478c94be2e616f9e2cad374b5783a6a64d3c1a99cfa9",
+  "plus": "ca2d73b226ab252649d4c9c35bb6b81937586d908c1d9dc9d447db7babfaad0a",
+  "scope": "Comparação estática e validadores; não é validação de gameplay ou habilitação automática.",
+  "rows": [
+    {
+      "id": "strategies",
+      "category": "Textos",
+      "source": "plus-strategy-text",
+      "evidence": [
+        {
+          "pc": 248014,
+          "length": 160,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 160
+        }
+      ],
+      "note": "Codec já reutilizado no Deluxe."
+    },
+    {
+      "id": "metadata",
+      "category": "Metadados",
+      "source": "plus-rom-meta",
+      "evidence": [
+        {
+          "pc": 32704,
+          "length": 21,
+          "inBounds": true,
+          "identical": false,
+          "equalBytes": 5
+        }
+      ],
+      "note": "O título difere por conteúdo; campo SNES e codec são compartilhados."
+    },
+    {
+      "id": "players",
+      "category": "Jogadores",
+      "source": "plus-player",
+      "evidence": [
+        {
+          "pc": 1376256,
+          "length": 7840,
+          "inBounds": true,
+          "identical": false,
+          "equalBytes": 54
+        }
+      ],
+      "note": "Banco relocacionado na Plus; não copiar writer nem espelhos de integridade."
+    },
+    {
+      "id": "player-names",
+      "category": "Jogadores",
+      "source": "plus-player-name",
+      "evidence": [
+        {
+          "pc": 229688,
+          "length": 112,
+          "inBounds": true,
+          "identical": false,
+          "equalBytes": 1
+        },
+        {
+          "pc": 1540096,
+          "length": 8960,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 8960
+        }
+      ],
+      "note": "Resolver banco e contagem original antes de reutilizar o codec."
+    },
+    {
+      "id": "groups",
+      "category": "Grupos",
+      "source": "plus-groups",
+      "evidence": [
+        {
+          "pc": 59378,
+          "length": 64,
+          "inBounds": true,
+          "identical": false,
+          "equalBytes": 4
+        }
+      ],
+      "note": "Tabela Plus não pode ser presumida válida no Deluxe."
+    },
+    {
+      "id": "tactics",
+      "category": "Táticas",
+      "source": "plus-tactics-address",
+      "evidence": [
+        {
+          "pc": 392656,
+          "length": 114,
+          "inBounds": true,
+          "identical": false,
+          "equalBytes": 0
+        }
+      ],
+      "note": "Tabela Plus ausente no endereço examinado do Deluxe."
+    },
+    {
+      "id": "main-menu",
+      "category": "Textos / telas",
+      "source": "plus-main-menu-renderer",
+      "evidence": [
+        {
+          "pc": 983040,
+          "length": 1628,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 1628
+        },
+        {
+          "pc": 1005739,
+          "length": 2413,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 2413
+        },
+        {
+          "pc": 1141200,
+          "length": 337,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 337
+        },
+        {
+          "pc": 794552,
+          "length": 284,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 284
+        },
+        {
+          "pc": 95146,
+          "length": 32,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 32
+        }
+      ],
+      "note": "Comparar assets e ponteiros; igualdade não prova todos os caminhos de execução."
+    },
+    {
+      "id": "stadiums",
+      "category": "Estádios",
+      "source": "stadiums",
+      "evidence": [
+        {
+          "pc": 35006,
+          "length": 7,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 7
+        },
+        {
+          "pc": 299898,
+          "length": 34,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 34
+        },
+        {
+          "pc": 35035,
+          "length": 7,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 7
+        },
+        {
+          "pc": 301024,
+          "length": 34,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 34
+        },
+        {
+          "pc": 35043,
+          "length": 7,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 7
+        },
+        {
+          "pc": 302044,
+          "length": 34,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 34
+        },
+        {
+          "pc": 35051,
+          "length": 7,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 7
+        },
+        {
+          "pc": 302574,
+          "length": 34,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 34
+        },
+        {
+          "pc": 35059,
+          "length": 7,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 7
+        },
+        {
+          "pc": 304166,
+          "length": 34,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 34
+        },
+        {
+          "pc": 35074,
+          "length": 7,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 7
+        },
+        {
+          "pc": 304792,
+          "length": 34,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 34
+        },
+        {
+          "pc": 35089,
+          "length": 7,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 7
+        },
+        {
+          "pc": 305316,
+          "length": 34,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 34
+        },
+        {
+          "pc": 35097,
+          "length": 7,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 7
+        },
+        {
+          "pc": 305880,
+          "length": 34,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 34
+        }
+      ],
+      "note": "Executados os mesmos validadores estruturais nas duas bases.",
+      "validation": {
+        "deluxe": {
+          "passed": true,
+          "count": 8
+        },
+        "plus": {
+          "passed": true,
+          "count": 8
+        }
+      }
+    },
+    {
+      "id": "uniforms",
+      "category": "Uniformes",
+      "source": "team-uniforms",
+      "evidence": [
+        {
+          "pc": 380880,
+          "length": 4,
+          "inBounds": true,
+          "identical": false,
+          "equalBytes": 3
+        },
+        {
+          "pc": 157697,
+          "length": 4,
+          "inBounds": true,
+          "identical": false,
+          "equalBytes": 2
+        },
+        {
+          "pc": 64748,
+          "length": 112,
+          "inBounds": true,
+          "identical": false,
+          "equalBytes": 0
+        },
+        {
+          "pc": 66164,
+          "length": 228,
+          "inBounds": true,
+          "identical": false,
+          "equalBytes": 11
+        },
+        {
+          "pc": 804308,
+          "length": 8192,
+          "inBounds": true,
+          "identical": false,
+          "equalBytes": 7858
+        }
+      ],
+      "note": "Validator de uniformes e tabela reserva usam pressupostos da Plus (57 entradas).",
+      "validation": {
+        "deluxe": {
+          "passed": false,
+          "error": "Tabelas de uniformes Plus divergentes."
+        },
+        "plus": {
+          "passed": true,
+          "mapping": {
+            "palette": 66164,
+            "layouts": 64748
+          }
+        }
+      }
+    },
+    {
+      "id": "native-screen-text",
+      "category": "Textos",
+      "source": "plus-native-screen-text",
+      "evidence": [
+        {
+          "pc": 247287,
+          "length": 6,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 6
+        },
+        {
+          "pc": 247297,
+          "length": 11,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 11
+        },
+        {
+          "pc": 248007,
+          "length": 7,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 7
+        },
+        {
+          "pc": 248175,
+          "length": 6,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 6
+        },
+        {
+          "pc": 248186,
+          "length": 8,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 8
+        },
+        {
+          "pc": 248197,
+          "length": 6,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 6
+        },
+        {
+          "pc": 248208,
+          "length": 7,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 7
+        },
+        {
+          "pc": 248221,
+          "length": 6,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 6
+        },
+        {
+          "pc": 248232,
+          "length": 7,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 7
+        },
+        {
+          "pc": 248252,
+          "length": 4,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 4
+        },
+        {
+          "pc": 248272,
+          "length": 9,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 9
+        },
+        {
+          "pc": 248283,
+          "length": 4,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 4
+        },
+        {
+          "pc": 248292,
+          "length": 8,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 8
+        },
+        {
+          "pc": 248303,
+          "length": 8,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 8
+        },
+        {
+          "pc": 248327,
+          "length": 6,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 6
+        },
+        {
+          "pc": 248334,
+          "length": 2,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 2
+        },
+        {
+          "pc": 248339,
+          "length": 10,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 10
+        },
+        {
+          "pc": 248391,
+          "length": 4,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 4
+        },
+        {
+          "pc": 248397,
+          "length": 4,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 4
+        },
+        {
+          "pc": 248403,
+          "length": 4,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 4
+        },
+        {
+          "pc": 248790,
+          "length": 6,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 6
+        },
+        {
+          "pc": 248903,
+          "length": 6,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 6
+        },
+        {
+          "pc": 249127,
+          "length": 6,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 6
+        },
+        {
+          "pc": 249268,
+          "length": 6,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 6
+        },
+        {
+          "pc": 249775,
+          "length": 6,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 6
+        }
+      ],
+      "note": "Comparação por campo; campos diferentes exigem revisão individual."
+    },
+    {
+      "id": "native-menu-text",
+      "category": "Textos",
+      "source": "plus-native-menu-text",
+      "fields": [
+        {
+          "section": "team-selection-native",
+          "id": "data_87c5cd",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "squad-native",
+          "id": "data_87c60c",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "handicap-native",
+          "id": "data_87c811",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "handicap-native",
+          "id": "data_87c875",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "handicap-native",
+          "id": "data_87c884",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "strategies-native",
+          "id": "data_87c8ba",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "strategies-native",
+          "id": "data_87ca1d",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "player-count-native",
+          "id": "data_87ca25",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "stadium-native",
+          "id": "data_87ca36",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "stadium-native",
+          "id": "data_87ca57",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "stadium-native",
+          "id": "data_87ca67",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "stadium-native",
+          "id": "data_87ca77",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "stadium-native",
+          "id": "data_87ca80",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "stadium-native",
+          "id": "data_87ca9b",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "stadium-native",
+          "id": "data_87cad3",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": true
+        },
+        {
+          "section": "match-options-native",
+          "id": "data_87cada",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "controls-help-native",
+          "id": "data_87d2ec",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "controls-help-native",
+          "id": "data_87d3cc",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "controls-help-native",
+          "id": "data_87d4ac",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "controls-help-native",
+          "id": "data_87d539",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "controls-help-native",
+          "id": "data_87d5e2",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "controls-help-native",
+          "id": "data_87d6c3",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "results-native",
+          "id": "data_87d73a",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "results-native",
+          "id": "data_87d75a",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "results-native",
+          "id": "data_87d769",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "competitions-native",
+          "id": "data_87d7a7",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "competitions-native",
+          "id": "data_87d7aa",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "competitions-native",
+          "id": "data_87d7ad",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "competitions-native",
+          "id": "data_87d7b2",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "competitions-native",
+          "id": "data_87d7b6",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "competitions-native",
+          "id": "data_87d7ba",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "competitions-native",
+          "id": "data_87d7bd",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "competitions-native",
+          "id": "data_87d7c2",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "competitions-native",
+          "id": "data_87d7c7",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "competitions-native",
+          "id": "data_87d892",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "competitions-native",
+          "id": "data_87d8a2",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "competitions-native",
+          "id": "data_87d8c4",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "competitions-native",
+          "id": "data_87d91c",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "competitions-native",
+          "id": "data_87d92a",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "penalties-native",
+          "id": "data_87daa2",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "penalties-native",
+          "id": "data_87dad2",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "penalties-native",
+          "id": "data_87db02",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "endings-native",
+          "id": "data_87db40",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "endings-native",
+          "id": "data_87db54",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "endings-native",
+          "id": "data_87db68",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "endings-native",
+          "id": "data_87db92",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "endings-native",
+          "id": "data_87dbb8",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "endings-native",
+          "id": "data_87dbda",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "endings-native",
+          "id": "data_87dbfe",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "endings-native",
+          "id": "data_87dc24",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "endings-native",
+          "id": "data_87dc4a",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "endings-native",
+          "id": "data_87dc82",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "endings-native",
+          "id": "data_87dcba",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "rules-native",
+          "id": "data_87dd89",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "rules-native",
+          "id": "data_87dd8d",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "rules-native",
+          "id": "data_87dd98",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "rules-native",
+          "id": "data_87dda0",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "rules-native",
+          "id": "data_87dda6",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "rules-native",
+          "id": "data_87ddaf",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "options-native",
+          "id": "data_87dde8",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "options-native",
+          "id": "data_87ddf2",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "options-native",
+          "id": "data_87de03",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "options-native",
+          "id": "data_87de08",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "options-native",
+          "id": "data_87de0e",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "options-native",
+          "id": "data_87de12",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "training-native",
+          "id": "data_87de77",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "training-native",
+          "id": "data_87de80",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "training-native",
+          "id": "data_87de89",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "training-native",
+          "id": "data_87dee1",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "training-native",
+          "id": "data_87df39",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": true
+        },
+        {
+          "section": "training-native",
+          "id": "data_87df3d",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "training-native",
+          "id": "data_87df52",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "training-native",
+          "id": "data_87df5b",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": true
+        },
+        {
+          "section": "training-native",
+          "id": "data_87df61",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "training-native",
+          "id": "data_87df65",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "training-native",
+          "id": "data_87df6c",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "training-native",
+          "id": "data_87df73",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "training-native",
+          "id": "data_87dfb7",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "training-native",
+          "id": "data_87e808",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "training-native",
+          "id": "data_87e880",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "training-native",
+          "id": "data_87e8f8",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "training-native",
+          "id": "data_87e970",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "training-native",
+          "id": "data_87df88",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "challenge-native",
+          "id": "data_87dfbe",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "challenge-native",
+          "id": "data_87dfe8",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "challenge-native",
+          "id": "data_87e0c8",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "challenge-native",
+          "id": "data_87e1a8",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "challenge-native",
+          "id": "data_87e288",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "challenge-native",
+          "id": "data_87e368",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "challenge-native",
+          "id": "data_87e448",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "records-native",
+          "id": "data_87e9e8",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "records-native",
+          "id": "data_87e9f5",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "records-native",
+          "id": "data_87ea09",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "records-native",
+          "id": "data_87ea1c",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "records-native",
+          "id": "data_87ea30",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "records-native",
+          "id": "data_87ea8a",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "records-native",
+          "id": "data_87eada",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "records-native",
+          "id": "data_87eb2a",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "records-native",
+          "id": "data_87eb7a",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "records-native",
+          "id": "data_87ebca",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "records-native",
+          "id": "data_87ec1a",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "records-native",
+          "id": "data_87ecaf",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "password-native",
+          "id": "data_87edbd",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "password-native",
+          "id": "data_87edd6",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87ee15",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87ee3b",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87ee73",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87eeab",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87eee3",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87ef1b",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87ef53",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87ef8b",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87efc3",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87effb",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87f033",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87f06b",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87f0a3",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87f12d",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87f1c9",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87f265",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87f301",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87f39d",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87f439",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87f4d5",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87f571",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87f60d",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87f6a9",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87f745",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87f7e1",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87f8dc",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87f900",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87f928",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87f938",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87f93a",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87f93e",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87f945",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87f95a",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "scenario-native",
+          "id": "data_87f966",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        },
+        {
+          "section": "credits-native",
+          "id": "data_87f990",
+          "matchesDeluxe": true,
+          "matchesPlus": true,
+          "relocation": false
+        }
+      ],
+      "note": "Verifica conteúdo esperado pelo writer. Não cobre referências, reposicionamentos e reservas extras."
+    },
+    {
+      "id": "cursor-help",
+      "category": "Cursor",
+      "source": "plus-cursor-text",
+      "fields": [
+        {
+          "id": "pageHelp",
+          "pc": 248619,
+          "matchesDeluxe": true,
+          "matchesPlus": true
+        },
+        {
+          "id": "typeIntro",
+          "pc": 248676,
+          "matchesDeluxe": true,
+          "matchesPlus": true
+        },
+        {
+          "id": "typeAHelp",
+          "pc": 248789,
+          "matchesDeluxe": true,
+          "matchesPlus": true
+        },
+        {
+          "id": "typeBHelp",
+          "pc": 248902,
+          "matchesDeluxe": true,
+          "matchesPlus": true
+        },
+        {
+          "id": "typeCHelp",
+          "pc": 249126,
+          "matchesDeluxe": true,
+          "matchesPlus": true
+        },
+        {
+          "id": "typeDHelp",
+          "pc": 249267,
+          "matchesDeluxe": true,
+          "matchesPlus": true
+        },
+        {
+          "id": "areaIntro",
+          "pc": 249408,
+          "matchesDeluxe": true,
+          "matchesPlus": true
+        },
+        {
+          "id": "areaHelp",
+          "pc": 249549,
+          "matchesDeluxe": true,
+          "matchesPlus": true
+        },
+        {
+          "id": "areaAHelp",
+          "pc": 249774,
+          "matchesDeluxe": true,
+          "matchesPlus": true
+        },
+        {
+          "id": "areaBHelp",
+          "pc": 249915,
+          "matchesDeluxe": true,
+          "matchesPlus": true
+        },
+        {
+          "id": "areaCHelp",
+          "pc": 250056,
+          "matchesDeluxe": true,
+          "matchesPlus": true
+        },
+        {
+          "id": "cursorAutoHelp",
+          "pc": 250197,
+          "matchesDeluxe": true,
+          "matchesPlus": true
+        },
+        {
+          "id": "cursorManualHelp",
+          "pc": 250338,
+          "matchesDeluxe": true,
+          "matchesPlus": true
+        },
+        {
+          "id": "keeperHelp",
+          "pc": 250451,
+          "matchesDeluxe": true,
+          "matchesPlus": true
+        }
+      ],
+      "note": "Ajuda textual somente; labels gráficos do Cursor exigem auditoria separada."
+    },
+    {
+      "id": "sounds",
+      "category": "Sons",
+      "source": "plus-sounds",
+      "slots": [
+        {
+          "id": "ItsABigKick1",
+          "pc": 1605634,
+          "length": 7911,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 7911,
+          "deluxeBrrLength": 7911,
+          "plusBrrLength": 7911
+        },
+        {
+          "id": "OverTheBar1",
+          "pc": 1613547,
+          "length": 6777,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 6777,
+          "deluxeBrrLength": 6777,
+          "plusBrrLength": 6777
+        },
+        {
+          "id": "AmazingKick",
+          "pc": 1620326,
+          "length": 7452,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 7452,
+          "deluxeBrrLength": 7452,
+          "plusBrrLength": 7452
+        },
+        {
+          "id": "Interception",
+          "pc": 1627780,
+          "length": 5769,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 5769,
+          "deluxeBrrLength": 5769,
+          "plusBrrLength": 5769
+        },
+        {
+          "id": "HeShoots1",
+          "pc": 1633551,
+          "length": 4842,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 4842,
+          "deluxeBrrLength": 4842,
+          "plusBrrLength": 4842
+        },
+        {
+          "id": "GoodLob2",
+          "pc": 1638402,
+          "length": 3960,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 3960,
+          "deluxeBrrLength": 3960,
+          "plusBrrLength": 3960
+        },
+        {
+          "id": "TimeUp",
+          "pc": 1642364,
+          "length": 3645,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 3645,
+          "deluxeBrrLength": 3645,
+          "plusBrrLength": 3645
+        },
+        {
+          "id": "TitleScreenNameDrop",
+          "pc": 1646011,
+          "length": 22806,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 22806,
+          "deluxeBrrLength": 1800,
+          "plusBrrLength": 1800
+        },
+        {
+          "id": "PenaltyKick",
+          "pc": 1671170,
+          "length": 4905,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 4905,
+          "deluxeBrrLength": 4905,
+          "plusBrrLength": 4905
+        },
+        {
+          "id": "NiceDummy1",
+          "pc": 1676077,
+          "length": 5031,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 5031,
+          "deluxeBrrLength": 5031,
+          "plusBrrLength": 5031
+        },
+        {
+          "id": "UnknownIntroSample",
+          "pc": 1681110,
+          "length": 22824,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 22824,
+          "deluxeBrrLength": 1062,
+          "plusBrrLength": 1062
+        },
+        {
+          "id": "NoFoul",
+          "pc": 1703938,
+          "length": 7416,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 7416,
+          "deluxeBrrLength": 7416,
+          "plusBrrLength": 7416
+        },
+        {
+          "id": "OwnGoal",
+          "pc": 1711356,
+          "length": 7920,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 7920,
+          "deluxeBrrLength": 7920,
+          "plusBrrLength": 7920
+        },
+        {
+          "id": "ItsOneOnOne",
+          "pc": 1719278,
+          "length": 7200,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 7200,
+          "deluxeBrrLength": 7200,
+          "plusBrrLength": 7200
+        },
+        {
+          "id": "OhNo",
+          "pc": 1726480,
+          "length": 4653,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 4653,
+          "deluxeBrrLength": 4653,
+          "plusBrrLength": 4653
+        },
+        {
+          "id": "LongBall1",
+          "pc": 1731135,
+          "length": 5553,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 5553,
+          "deluxeBrrLength": 5553,
+          "plusBrrLength": 5553
+        },
+        {
+          "id": "MatchDraw",
+          "pc": 1736706,
+          "length": 6309,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 6309,
+          "deluxeBrrLength": 6309,
+          "plusBrrLength": 6309
+        },
+        {
+          "id": "PastThePost1",
+          "pc": 1743017,
+          "length": 5778,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 5778,
+          "deluxeBrrLength": 5778,
+          "plusBrrLength": 5778
+        },
+        {
+          "id": "DogBark",
+          "pc": 1748797,
+          "length": 1575,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 1575,
+          "deluxeBrrLength": 1575,
+          "plusBrrLength": 1575
+        },
+        {
+          "id": "Explosion",
+          "pc": 1750374,
+          "length": 1935,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 1935,
+          "deluxeBrrLength": 1935,
+          "plusBrrLength": 1935
+        },
+        {
+          "id": "GoalKick",
+          "pc": 1752311,
+          "length": 4161,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 4161,
+          "deluxeBrrLength": 4158,
+          "plusBrrLength": 4158
+        },
+        {
+          "id": "OffSide",
+          "pc": 1756474,
+          "length": 4815,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 4815,
+          "deluxeBrrLength": 4815,
+          "plusBrrLength": 4815
+        },
+        {
+          "id": "IncredibleControl",
+          "pc": 1761291,
+          "length": 8181,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 8181,
+          "deluxeBrrLength": 8181,
+          "plusBrrLength": 8181
+        },
+        {
+          "id": "GoodClearance",
+          "pc": 1770778,
+          "length": 7038,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 7038,
+          "deluxeBrrLength": 7038,
+          "plusBrrLength": 7038
+        },
+        {
+          "id": "Kickoff",
+          "pc": 1777818,
+          "length": 4539,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 4539,
+          "deluxeBrrLength": 4536,
+          "plusBrrLength": 4536
+        },
+        {
+          "id": "BlockedShot",
+          "pc": 1782359,
+          "length": 5463,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 5463,
+          "deluxeBrrLength": 5463,
+          "plusBrrLength": 5463
+        },
+        {
+          "id": "ThrewBall",
+          "pc": 1791143,
+          "length": 5238,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 5238,
+          "deluxeBrrLength": 5238,
+          "plusBrrLength": 5238
+        },
+        {
+          "id": "GoodTouch",
+          "pc": 1796383,
+          "length": 5850,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 5850,
+          "deluxeBrrLength": 5850,
+          "plusBrrLength": 5850
+        },
+        {
+          "id": "YouWin",
+          "pc": 1805414,
+          "length": 7209,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 7209,
+          "deluxeBrrLength": 7209,
+          "plusBrrLength": 7209
+        },
+        {
+          "id": "KeepAFumble",
+          "pc": 1812625,
+          "length": 7659,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 7659,
+          "deluxeBrrLength": 7659,
+          "plusBrrLength": 7659
+        },
+        {
+          "id": "FreeKick1",
+          "pc": 1820286,
+          "length": 4986,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 4986,
+          "deluxeBrrLength": 4986,
+          "plusBrrLength": 4986
+        },
+        {
+          "id": "Corner",
+          "pc": 1825274,
+          "length": 3321,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 3321,
+          "deluxeBrrLength": 3321,
+          "plusBrrLength": 3321
+        },
+        {
+          "id": "GreatCross",
+          "pc": 1828597,
+          "length": 6399,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 6399,
+          "deluxeBrrLength": 6399,
+          "plusBrrLength": 6399
+        },
+        {
+          "id": "Foul",
+          "pc": 1835010,
+          "length": 4374,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 4374,
+          "deluxeBrrLength": 4374,
+          "plusBrrLength": 4374
+        },
+        {
+          "id": "Final",
+          "pc": 1839386,
+          "length": 5211,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 5211,
+          "deluxeBrrLength": 5211,
+          "plusBrrLength": 5211
+        },
+        {
+          "id": "GOOOOOOOOOOOOOAAAAAALLLLLL",
+          "pc": 1849657,
+          "length": 1755,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 1755,
+          "deluxeBrrLength": 1755,
+          "plusBrrLength": 1755
+        },
+        {
+          "id": "GoodBowl",
+          "pc": 1851703,
+          "length": 4428,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 4428,
+          "deluxeBrrLength": 4428,
+          "plusBrrLength": 4428
+        },
+        {
+          "id": "Semifinal",
+          "pc": 1856133,
+          "length": 5769,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 5769,
+          "deluxeBrrLength": 5769,
+          "plusBrrLength": 5769
+        },
+        {
+          "id": "Replay",
+          "pc": 1861992,
+          "length": 4671,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 4671,
+          "deluxeBrrLength": 4671,
+          "plusBrrLength": 4671
+        },
+        {
+          "id": "YellowCard",
+          "pc": 1867778,
+          "length": 6345,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 6345,
+          "deluxeBrrLength": 6345,
+          "plusBrrLength": 6345
+        },
+        {
+          "id": "GoodHeader1",
+          "pc": 1874125,
+          "length": 4608,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 4608,
+          "deluxeBrrLength": 4608,
+          "plusBrrLength": 4608
+        },
+        {
+          "id": "Unused",
+          "pc": 1878735,
+          "length": 2889,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 2889,
+          "deluxeBrrLength": 2889,
+          "plusBrrLength": 2889
+        },
+        {
+          "id": "GoGo",
+          "pc": 1881626,
+          "length": 6192,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 6192,
+          "deluxeBrrLength": 6192,
+          "plusBrrLength": 6192
+        },
+        {
+          "id": "PlayerChange",
+          "pc": 1887820,
+          "length": 6051,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 6051,
+          "deluxeBrrLength": 6048,
+          "plusBrrLength": 6048
+        },
+        {
+          "id": "DirtyPlayRef",
+          "pc": 1893873,
+          "length": 6660,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 6660,
+          "deluxeBrrLength": 6660,
+          "plusBrrLength": 6660
+        },
+        {
+          "id": "YouLose",
+          "pc": 1900546,
+          "length": 5625,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 5625,
+          "deluxeBrrLength": 5625,
+          "plusBrrLength": 5625
+        },
+        {
+          "id": "HesOff",
+          "pc": 1906173,
+          "length": 5295,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 5295,
+          "deluxeBrrLength": 5292,
+          "plusBrrLength": 5292
+        },
+        {
+          "id": "OneTwo",
+          "pc": 1911561,
+          "length": 5094,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 5094,
+          "deluxeBrrLength": 5094,
+          "plusBrrLength": 5094
+        },
+        {
+          "id": "GreatSave1",
+          "pc": 1916657,
+          "length": 7164,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 7164,
+          "deluxeBrrLength": 7164,
+          "plusBrrLength": 7164
+        },
+        {
+          "id": "Goal",
+          "pc": 1926215,
+          "length": 7092,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 7092,
+          "deluxeBrrLength": 7092,
+          "plusBrrLength": 7092
+        },
+        {
+          "id": "GoodCharge",
+          "pc": 1933314,
+          "length": 5832,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 5832,
+          "deluxeBrrLength": 5832,
+          "plusBrrLength": 5832
+        },
+        {
+          "id": "GreatSave2",
+          "pc": 1939148,
+          "length": 6642,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 6642,
+          "deluxeBrrLength": 6642,
+          "plusBrrLength": 6642
+        },
+        {
+          "id": "Yes",
+          "pc": 1945792,
+          "length": 4077,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 4077,
+          "deluxeBrrLength": 4077,
+          "plusBrrLength": 4077
+        },
+        {
+          "id": "GoodLob1",
+          "pc": 1949871,
+          "length": 4527,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 4527,
+          "deluxeBrrLength": 4527,
+          "plusBrrLength": 4527
+        },
+        {
+          "id": "NiceDummy2",
+          "pc": 1954400,
+          "length": 5391,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 5391,
+          "deluxeBrrLength": 5391,
+          "plusBrrLength": 5391
+        },
+        {
+          "id": "InjuryTime",
+          "pc": 1959793,
+          "length": 6273,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 6273,
+          "deluxeBrrLength": 6273,
+          "plusBrrLength": 6273
+        },
+        {
+          "id": "GreatTackle2",
+          "pc": 1966082,
+          "length": 6408,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 6408,
+          "deluxeBrrLength": 6408,
+          "plusBrrLength": 6408
+        },
+        {
+          "id": "FreeKick2",
+          "pc": 1972492,
+          "length": 5679,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 5679,
+          "deluxeBrrLength": 5679,
+          "plusBrrLength": 5679
+        },
+        {
+          "id": "OnTheVolley",
+          "pc": 1978173,
+          "length": 5193,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 5193,
+          "deluxeBrrLength": 5193,
+          "plusBrrLength": 5193
+        },
+        {
+          "id": "RedCard",
+          "pc": 1983368,
+          "length": 7290,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 7290,
+          "deluxeBrrLength": 7290,
+          "plusBrrLength": 7290
+        },
+        {
+          "id": "ItsABigKick2",
+          "pc": 1990660,
+          "length": 8181,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 8181,
+          "deluxeBrrLength": 8181,
+          "plusBrrLength": 8181
+        },
+        {
+          "id": "GreatPunch1",
+          "pc": 2009902,
+          "length": 6705,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 6705,
+          "deluxeBrrLength": 6705,
+          "plusBrrLength": 6705
+        },
+        {
+          "id": "GreatTackle1",
+          "pc": 2016609,
+          "length": 5094,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 5094,
+          "deluxeBrrLength": 5094,
+          "plusBrrLength": 5094
+        },
+        {
+          "id": "HalfTime",
+          "pc": 2021705,
+          "length": 4593,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 4593,
+          "deluxeBrrLength": 4590,
+          "plusBrrLength": 4590
+        },
+        {
+          "id": "CornerKick",
+          "pc": 2026300,
+          "length": 5310,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 5310,
+          "deluxeBrrLength": 5310,
+          "plusBrrLength": 5310
+        },
+        {
+          "id": "GreatPunch2",
+          "pc": 2031618,
+          "length": 6210,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 6210,
+          "deluxeBrrLength": 6210,
+          "plusBrrLength": 6210
+        },
+        {
+          "id": "HeShoots2",
+          "pc": 2037830,
+          "length": 5184,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 5184,
+          "deluxeBrrLength": 5184,
+          "plusBrrLength": 5184
+        },
+        {
+          "id": "Intersection",
+          "pc": 2043016,
+          "length": 5517,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 5517,
+          "deluxeBrrLength": 5517,
+          "plusBrrLength": 5517
+        },
+        {
+          "id": "PastThePost2",
+          "pc": 2048535,
+          "length": 5445,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 5445,
+          "deluxeBrrLength": 5445,
+          "plusBrrLength": 5445
+        },
+        {
+          "id": "LongBall2",
+          "pc": 2053982,
+          "length": 5490,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 5490,
+          "deluxeBrrLength": 5490,
+          "plusBrrLength": 5490
+        },
+        {
+          "id": "ThrowIn",
+          "pc": 2059474,
+          "length": 4725,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 4725,
+          "deluxeBrrLength": 4725,
+          "plusBrrLength": 4725
+        },
+        {
+          "id": "DownTheWay",
+          "pc": 2064386,
+          "length": 5805,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 5805,
+          "deluxeBrrLength": 5805,
+          "plusBrrLength": 5805
+        },
+        {
+          "id": "OverTheBar2",
+          "pc": 2070193,
+          "length": 6003,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 6003,
+          "deluxeBrrLength": 6003,
+          "plusBrrLength": 6003
+        },
+        {
+          "id": "GoodHeader2",
+          "pc": 2076198,
+          "length": 4752,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 4752,
+          "deluxeBrrLength": 4752,
+          "plusBrrLength": 4752
+        }
+      ],
+      "note": "Slots de amostras; não comprova identidade do instrumento/evento nem referências no driver de som."
+    },
+    {
+      "id": "photos",
+      "category": "Fotos",
+      "source": "plus-team-photos",
+      "evidence": [
+        {
+          "pc": 2359296,
+          "length": 196608,
+          "inBounds": false,
+          "identical": false
+        },
+        {
+          "pc": 293120,
+          "length": 97,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 97
+        },
+        {
+          "pc": 195680,
+          "length": 8,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 8
+        },
+        {
+          "pc": 176032,
+          "length": 4,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 4
+        }
+      ],
+      "note": "Regiões de escrita do writer atual, incluindo reservas e hooks; inspecionar dependências antes de migrar."
+    },
+    {
+      "id": "closeup",
+      "category": "Aparência",
+      "source": "plus-player-closeup",
+      "evidence": [
+        {
+          "pc": 2850816,
+          "length": 65536,
+          "inBounds": false,
+          "identical": false
+        },
+        {
+          "pc": 2916352,
+          "length": 10240,
+          "inBounds": false,
+          "identical": false
+        },
+        {
+          "pc": 364280,
+          "length": 4,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 4
+        },
+        {
+          "pc": 365263,
+          "length": 6,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 6
+        }
+      ],
+      "note": "Regiões de escrita do writer atual, incluindo reservas e hooks; inspecionar dependências antes de migrar."
+    },
+    {
+      "id": "pause",
+      "category": "Textos / pausa",
+      "source": "plus-pause-menu",
+      "evidence": [
+        {
+          "pc": 1189565,
+          "length": 2,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 2
+        },
+        {
+          "pc": 1189574,
+          "length": 2,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 2
+        },
+        {
+          "pc": 1189611,
+          "length": 4,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 4
+        },
+        {
+          "pc": 1189771,
+          "length": 6,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 6
+        },
+        {
+          "pc": 4098048,
+          "length": 768,
+          "inBounds": false,
+          "identical": false
+        },
+        {
+          "pc": 4124672,
+          "length": 32,
+          "inBounds": false,
+          "identical": false
+        }
+      ],
+      "note": "Regiões de escrita do writer atual, incluindo reservas e hooks; inspecionar dependências antes de migrar."
+    },
+    {
+      "id": "announcements",
+      "category": "Textos / partida",
+      "source": "plus-match-announcements",
+      "evidence": [
+        {
+          "pc": 4063232,
+          "length": 1536,
+          "inBounds": false,
+          "identical": false
+        },
+        {
+          "pc": 1590272,
+          "length": 1024,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 1024
+        },
+        {
+          "pc": 73784,
+          "length": 21,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 21
+        },
+        {
+          "pc": 849347,
+          "length": 1184,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 1184
+        },
+        {
+          "pc": 1142145,
+          "length": 993,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 993
+        },
+        {
+          "pc": 387062,
+          "length": 334,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 334
+        },
+        {
+          "pc": 374531,
+          "length": 10,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 10
+        },
+        {
+          "pc": 374573,
+          "length": 4,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 4
+        },
+        {
+          "pc": 4076544,
+          "length": 2048,
+          "inBounds": false,
+          "identical": false
+        },
+        {
+          "pc": 1208819,
+          "length": 13,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 13
+        },
+        {
+          "pc": 1208832,
+          "length": 13,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 13
+        },
+        {
+          "pc": 1208845,
+          "length": 13,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 13
+        },
+        {
+          "pc": 1208858,
+          "length": 13,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 13
+        }
+      ],
+      "note": "Regiões de escrita do writer atual, incluindo reservas e hooks; inspecionar dependências antes de migrar."
+    },
+    {
+      "id": "statistics",
+      "category": "Textos / pós-jogo",
+      "source": "plus-match-statistics",
+      "evidence": [
+        {
+          "pc": 1602560,
+          "length": 128,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 128
+        },
+        {
+          "pc": 369606,
+          "length": 4,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 4
+        },
+        {
+          "pc": 1591296,
+          "length": 2048,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 2048
+        },
+        {
+          "pc": 97120,
+          "length": 23,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 23
+        },
+        {
+          "pc": 369500,
+          "length": 2,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 2
+        },
+        {
+          "pc": 61931,
+          "length": 154,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 154
+        },
+        {
+          "pc": 59493,
+          "length": 6,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 6
+        },
+        {
+          "pc": 59501,
+          "length": 6,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 6
+        },
+        {
+          "pc": 20107,
+          "length": 92,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 92
+        }
+      ],
+      "note": "Regiões de escrita do writer atual, incluindo reservas e hooks; inspecionar dependências antes de migrar."
+    },
+    {
+      "id": "training-hud",
+      "category": "Treino",
+      "source": "plus-training-hud",
+      "evidence": [
+        {
+          "pc": 63923,
+          "length": 150,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 150
+        },
+        {
+          "pc": 1182356,
+          "length": 3,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 3
+        },
+        {
+          "pc": 1181926,
+          "length": 3,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 3
+        },
+        {
+          "pc": 1181936,
+          "length": 3,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 3
+        },
+        {
+          "pc": 1182081,
+          "length": 3,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 3
+        },
+        {
+          "pc": 1182225,
+          "length": 3,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 3
+        },
+        {
+          "pc": 1182312,
+          "length": 3,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 3
+        },
+        {
+          "pc": 1182442,
+          "length": 3,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 3
+        },
+        {
+          "pc": 1182514,
+          "length": 3,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 3
+        },
+        {
+          "pc": 1182179,
+          "length": 3,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 3
+        },
+        {
+          "pc": 1182296,
+          "length": 3,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 3
+        },
+        {
+          "pc": 1182491,
+          "length": 3,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 3
+        },
+        {
+          "pc": 1182235,
+          "length": 3,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 3
+        },
+        {
+          "pc": 1182265,
+          "length": 3,
+          "inBounds": true,
+          "identical": true,
+          "equalBytes": 3
+        }
+      ],
+      "note": "Regiões de escrita do writer atual, incluindo reservas e hooks; inspecionar dependências antes de migrar."
+    }
+  ]
+}
