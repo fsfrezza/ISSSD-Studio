@@ -8,6 +8,7 @@ import {SOUND_SLOTS,originalSound,selectedSound,soundEntry,decodeBrrPreview,galv
 import {GAME_AUDIO_RATE,prepareAudio,encodeBrr,pcmToWav} from '../src/core/audio-conversion.mjs';
 import {TRAINING_HUD_FIELDS,MATCH_STATISTICS_FIELDS,encodeTrainingHud,renderMatchStatistics} from '../src/core/deluxe-match-texts.mjs';
 import {TITLE_TEXT_FIELDS,TITLE_SUPPORTED_CHARACTERS,readTitleText,validateTitleText,readTitlePalettes} from '../src/core/deluxe-title-screen.mjs';
+import {titleLogoPixels,importTitleLogo} from '../src/core/deluxe-title-logo.mjs';
 const $=id=>document.getElementById(id);
 let file=null,project=null,opening=0;
 let audioContext=null,audioSource=null;
@@ -18,7 +19,8 @@ function render(){
   for(const id of ['menuScale','menuSelection','resetMenu'])$(id).disabled=!project;
   if(!project){$('menuPreview').getContext('2d').clearRect(0,0,256,224);$('menuStatus').textContent='';}
   $('title').value='';$('title').disabled=!project;$('resetTitle').disabled=!project;
-  if(!project){renderSounds();return;}
+  for(const id of ['titleLogoFile','exportTitleLogo','resetTitleLogo'])$(id).disabled=!project;
+  if(!project){$('titleLogoPreview').getContext('2d').clearRect(0,0,256,224);renderSounds();return;}
   const {rom}=splitRom(file);
   renderSounds();
   renderTitleScreen(rom);
@@ -208,12 +210,28 @@ function titleChange(kind,id,value,original){
  if(!Object.keys(items).length)delete title[kind];if(!Object.keys(title).length)delete project.changes.titleScreen;
 }
 function renderTitleScreen(rom){
+ drawTitleLogo();
  for(const f of TITLE_TEXT_FIELDS){const original=readTitleText(rom,f);textControl($('titleTexts'),{label:f.label+' · até '+f.count+' letras',value:project.changes.titleScreen?.texts?.[f.id]??original,original,validate:v=>validateTitleText(v,f),onChange:v=>titleChange('texts',f.id,v,original)});}
  const hint=document.createElement('p');hint.className='hint';hint.textContent='Caracteres da fonte original: '+TITLE_SUPPORTED_CHARACTERS+'. Espaços são permitidos.';$('titleTexts').append(hint);
  for(const p of readTitlePalettes(rom)){
   const details=document.createElement('details'),summary=document.createElement('summary');summary.textContent=p.label;details.append(summary);const palette=document.createElement('div');palette.className='palette';details.append(palette);
   const colors=(project.changes.titleScreen?.palettes?.[p.id]??p.colors).slice();
-  colors.forEach((v,i)=>{const label=document.createElement('label');label.textContent=String(i+1);const input=document.createElement('input');input.type='color';input.value=bgrToHex(v);input.setAttribute('aria-label',p.label+' cor '+(i+1));input.oninput=()=>{colors[i]=hexToBgr(input.value);titleChange('palettes',p.id,colors.slice(),p.colors);};label.append(input);palette.append(label);});
+  colors.forEach((v,i)=>{const label=document.createElement('label');label.textContent=String(i+1);const input=document.createElement('input');input.type='color';input.value=bgrToHex(v);input.setAttribute('aria-label',p.label+' cor '+(i+1));input.oninput=()=>{colors[i]=hexToBgr(input.value);titleChange('palettes',p.id,colors.slice(),p.colors);drawTitleLogo();};label.append(input);palette.append(label);});
   const reset=document.createElement('button');reset.textContent='Restaurar cores originais';reset.onclick=()=>{titleChange('palettes',p.id,p.colors,p.colors);render();};details.append(reset);$('titlePalettes').append(details);
  }
 }
+
+function drawTitleLogo(){
+ if(!project)return;const preview=titleLogoPixels(splitRom(file).rom,project.changes.titleScreen),canvas=$('titleLogoPreview');canvas.width=preview.width;canvas.height=preview.height;
+ const context=canvas.getContext('2d'),image=context.createImageData(preview.width,preview.height);image.data.set(preview.rgba);context.putImageData(image,0,0);
+ $('titleLogoInfo').textContent=preview.width+' × '+preview.height+' pixels. Transparência e paleta do letreiro são preservadas. A estrutura de sprites original limita a área editável.';
+}
+$('titleLogoFile').onchange=async()=>{
+ const p=project,current=file;let bitmap;
+ try{const selected=$('titleLogoFile').files[0];if(!selected)return;bitmap=await createImageBitmap(selected);const expected=titleLogoPixels(splitRom(current).rom,p.changes.titleScreen);if(bitmap.width!==expected.width||bitmap.height!==expected.height)throw Error('Use uma imagem de '+expected.width+' × '+expected.height+' pixels');const canvas=document.createElement('canvas');canvas.width=bitmap.width;canvas.height=bitmap.height;const context=canvas.getContext('2d');context.drawImage(bitmap,0,0);
+ const tiles=importTitleLogo(splitRom(current).rom,p.changes.titleScreen??{},context.getImageData(0,0,canvas.width,canvas.height).data,canvas.width,canvas.height),trial=structuredClone(p);(trial.changes.titleScreen??={}).logoTiles=Array.from(tiles);await buildDeluxeProject(current,trial);
+ if(project!==p||file!==current)return;(project.changes.titleScreen??={}).logoTiles=Array.from(tiles);drawTitleLogo();$('titleLogoStatus').textContent='Letreiro convertido. Salve o projeto ou gere a ROM.';
+ }catch(error){$('titleLogoStatus').textContent=error.message;}finally{bitmap?.close();$('titleLogoFile').value='';}
+};
+$('exportTitleLogo').onclick=()=>{try{$('titleLogoPreview').toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='Letreiro-Deluxe.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);},'image/png');}catch(error){$('titleLogoStatus').textContent=error.message;}};
+$('resetTitleLogo').onclick=()=>{delete project.changes.titleScreen?.logoTiles;drawTitleLogo();$('titleLogoStatus').textContent='Letreiro original restaurado.';};

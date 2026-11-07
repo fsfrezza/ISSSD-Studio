@@ -252,3 +252,31 @@ Ainda não foram migrados compositor, upload de imagens, camadas gráficas,
 posicionamento livre ou prévia completa da abertura.
 19 testes passaram: paletas, rodapés, regiões alteradas, checksum, restauração
 e persistência pela UI simulada. Não houve teste de exibição no emulador.
+
+
+## Gráficos comuns da abertura — letreiro
+
+Comparação dos fluxos descomprimidos das duas ROMs anexas:
+
+| Camada | Deluxe PC | Plus PC | Tamanho bruto | Conteúdo igual |
+|---|---|---|---:|---|
+| Bola/faixa | 0x150000 | 0x50000 | 5344 | Sim |
+| Fotos | 0x12CB7F | 0x12CB7F | 14848 | Sim |
+| Letreiro | 0x150F56 | 0x365AB | 3840 | Sim |
+| Fonte | 0x13E154 | 0x13E154 | 992 | Sim |
+
+Esta etapa implementa somente o letreiro. O endereço é resolvido pelo descritor
+LoROM em 0x1198B; nenhum endereço de assets Plus é aplicado diretamente ao Deluxe.
+A prévia recompõe os tiles com o layout de 31 objetos usado no Editor Plus e
+a paleta do letreiro lida da ROM (ou alterada no projeto). Não é emulação da
+animação e não é a prévia completa da abertura.
+
+PNG/WebP de 176×65 é convertido à paleta existente, respeitando transparência.
+Pixels compartilhados conflitantes ou fora da cobertura dos sprites são recusados.
+Não se altera a composição/OAM. O PNG exportado sem edições, reimportado, mantém
+os tiles exatamente. A gravação recomprime apenas o stream do letreiro, verifica
+o roundtrip e recusa se exceder os 2766 bytes nativos, sem expansão automática.
+
+20 testes passaram: leitura do ponteiro Deluxe, identidade, importação por UI
+simulada, restauração, regiões restritas e reabertura. A imagem de prévia original
+foi inspecionada. A exibição da ROM modificada no emulador permanece pendente.

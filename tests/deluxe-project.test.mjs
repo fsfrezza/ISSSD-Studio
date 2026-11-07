@@ -203,3 +203,16 @@ test('ROM real: tela inicial altera quatro paletas e dois rodapés, com restaura
  for(const value of [{texts:{license:'J'}},{texts:{bad:'A'}},{palettes:{ball:[1]}},{texts:{license:'A'.repeat(19)}}]){p.changes.titleScreen=value;await assert.rejects(buildDeluxeProject(file,p));}
  delete p.changes.titleScreen;assert.deepEqual((await buildDeluxeProject(file,p)).rom,file);
 });
+
+test('ROM real: letreiro usa ponteiro Deluxe, roundtrip PNG sem mudança e gravação restrita',{skip:!fixture},async()=>{
+ const {readTitleLogo,titleLogoPixels,importTitleLogo}=await import('../src/core/deluxe-title-logo.mjs');
+ const file=new Uint8Array(fs.readFileSync(fixture)),base=splitRom(file).rom,p=await createDeluxeProject(file),native=readTitleLogo(base),preview=titleLogoPixels(base);
+ assert.equal(native.pc,0x150f56);assert.equal(preview.width,176);assert.equal(preview.height,65);assert.ok(preview.rgba.some(v=>v!==0));
+ const unchanged=importTitleLogo(base,{},preview.rgba,preview.width,preview.height);assert.deepEqual(unchanged,native.tiles);p.changes.titleScreen={logoTiles:Array.from(unchanged)};assert.deepEqual((await buildDeluxeProject(file,p)).rom,file);
+ const cleared=importTitleLogo(base,{},new Uint8ClampedArray(preview.rgba.length),preview.width,preview.height);assert.notDeepEqual(cleared,native.tiles);p.changes.titleScreen.logoTiles=Array.from(cleared);
+ const result=await buildDeluxeProject(file,JSON.parse(JSON.stringify(p))),out=splitRom(result.rom).rom;assert.deepEqual(readTitleLogo(out).tiles,cleared);assert.equal(result.rom.length,file.length);
+ for(let i=0;i<base.length;i++)if(base[i]!==out[i])assert.ok((i>=native.pc&&i<native.pc+native.capacity)||(i>=0x7fdc&&i<0x7fe0),'unexpected write '+i.toString(16));
+ assert.throws(()=>importTitleLogo(base,{},preview.rgba,1,1),/176/);
+ p.changes.titleScreen.logoTiles=[1];await assert.rejects(buildDeluxeProject(file,p),/tiles/);
+ delete p.changes.titleScreen;assert.deepEqual((await buildDeluxeProject(file,p)).rom,file);
+});
