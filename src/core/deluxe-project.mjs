@@ -1,5 +1,6 @@
 import {PLUS_STRATEGY_TEXTS, encodePlusStrategyText, readPlusStrategyText} from './plus-strategy-text.mjs';
 import {encodeInternalRomTitle, readInternalRomTitle} from './plus-rom-meta.mjs';
+import {applyDeluxeNativeChanges} from './deluxe-native-fields.mjs';
 import {diffRanges} from './rom-integrity.mjs';
 
 export const DELUXE_SHA256='d2fe66c1ce66c65ce14e478c94be2e616f9e2cad374b5783a6a64d3c1a99cfa9';
@@ -46,7 +47,7 @@ export async function buildDeluxeProject(file,project){
   const base=await identifyDeluxe(file);
   keys(project,['schema','version','base','changes'],'projeto');
   if(project.schema!==DELUXE_SCHEMA||project.version!==1||project.base?.sha256!==base.sha256||project.base?.id!==base.id)throw new Error('Projeto não pertence à base Deluxe original');
-  keys(project.changes,['strategyTexts','internalTitle','improvements'],'alterações');
+  keys(project.changes,['strategyTexts','internalTitle','improvements','nativeTexts','cursorHelp','stadiums'],'alterações');
   const changes=project.changes;
   if(!Array.isArray(changes.improvements))throw new Error('Lista de melhorias inválida');
   if(changes.improvements.length)throw new Error('Melhorias ainda sem patch validado: '+changes.improvements.join(', '));
@@ -60,6 +61,7 @@ export async function buildDeluxeProject(file,project){
     if(texts[item.id]!==readPlusStrategyText(rom,item.id))
       out.set(encodePlusStrategyText(texts[item.id]).bytes,item.pc);
   }
+  applyDeluxeNativeChanges(out,rom,changes);
   if(Object.hasOwn(changes,'internalTitle')){
     if(typeof changes.internalTitle!=='string')throw new TypeError('Título deve ser string');
     out.set(encodeInternalRomTitle(changes.internalTitle),0x7fc0);

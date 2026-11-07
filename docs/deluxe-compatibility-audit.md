@@ -86,3 +86,12 @@ O script usa uma cópia temporária do código do ref Git, verifica os hashes da
 ROMs e remove o diretório temporário ao terminar. O JSON contém somente hashes,
 endereços, contagens e resultados de validação: não inclui ROMs, amostras ou assets.
 A saída detalhada desta execução está em `deluxe-compatibility-audit.json`.
+
+
+## Implementação posterior à auditoria
+
+Foram migrados o editor de cores dos oito estádios, 20 textos nativos independentes,
+14 blocos de ajuda do Cursor e o controle de título interno. Os cinco labels nativos
+restantes se sobrepõem aos blocos de ajuda: a edição fica exclusivamente no bloco
+completo, evitando escritores concorrentes na mesma região.
+Os demais candidatos desta auditoria continuam pendentes.

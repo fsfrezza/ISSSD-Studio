@@ -1,4 +1,27 @@
-# Deluxe modular: etapa inicial
+# Deluxe modular: migração incremental
+
+## Recursos atualmente disponíveis
+
+Além das oito estratégias, a entrada Deluxe agora permite editar:
+
+- Paletas de 16 cores dos oito estádios, usando o reader/writer do Plus.
+- 20 textos nativos independentes. Cinco outros labels auditados fazem parte dos
+  blocos de ajuda do Cursor e são editados somente dentro desses blocos.
+- 14 blocos de ajuda textual do Cursor, com o codec e descritores do Plus.
+- Título interno da ROM.
+
+Todos possuem restauração dos valores originais. As mudanças são salvas no projeto
+e reaplicadas na geração. Projetos Deluxe da etapa anterior continuam aceitos.
+Não há expansão nem patches de gameplay novos nesta entrega.
+
+Validação: 20 testes passaram com a ROM anexada, incluindo escritas restritas,
+checksum, rejeição de entradas inválidas e fluxo de controles abrir/editar/salvar/
+reabrir/exportar/restaurar em um DOM de teste. Não houve teste visual em navegador
+real nem teste de gameplay em emulador nesta etapa.
+
+## Registro da etapa inicial
+
+O texto abaixo descreve a primeira entrega, antes das migrações acima.
 
 Branch: `feature/deluxe-modular-editor`, baseada integralmente na `main`
 `d1d13b6`. O Editor Plus e seus comandos existentes foram preservados.
