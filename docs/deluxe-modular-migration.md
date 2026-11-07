@@ -140,14 +140,34 @@ npm run test:deluxe
 
 A aba Sons e vozes reutiliza `SOUND_SLOTS` e o writer BRR da Plus. A camada Deluxe
 restringe cada substituição ao comprimento da amostra original, preservando todos
-os bytes posteriores. Não há conversão de MP3/WAV ou presets de outra ROM nesta
-etapa. Uma importação BRR com dados depois do bloco final é rejeitada.
+os bytes posteriores. A importação agora aceita os formatos decodificáveis pelo Web Audio do navegador
+(MP3/WAV e outros conforme suporte local), além de BRR. Presets de áudio de
+outras ROMs não foram incorporados nesta etapa. Uma importação BRR com dados depois do bloco final é rejeitada.
 
 A prévia decodifica os filtros BRR e reproduz uma passagem pela amostra, em taxa
-selecionável (8/16/32 kHz). Não simula pitch do driver, interpolação gaussiana,
+selecionável (8/10,3/16/32 kHz; padrão 10,3 kHz). Não simula pitch do driver, interpolação gaussiana,
 ADSR, eco ou loops. A taxa de prévia não altera a ROM nem o projeto.
 Não houve escuta em navegador real ou reprodução no emulador nesta entrega.
 
 Os 12 testes da suíte Deluxe passaram com a ROM anexada, incluindo todas as 74
 amostras: identidade com originais explícitos, alterações restritas e restauração,
 decodificação finita, rejeição de BRR inválido e fluxo de importação pelo controle.
+
+
+### Conversões integradas
+
+O fluxo do `editor-src/sounds-editor.mjs` da Plus (bcd70db) foi analisado:
+Web Audio → mono → remoção de silêncio → normalização → 10300 Hz → BRR.
+O engine legado `window.ISSSDSounds` referenciado pelo Plus não está versionado
+neste checkout. O Deluxe ganhou um codec autocontido, com seleção de filtro e
+escala por bloco BRR, em vez de depender desse engine externo.
+
+Importações de áudio passam pelo mesmo fluxo funcional. Não há aceleração para
+caber: o encoder recusa quando os blocos necessários excedem o fluxo BRR original.
+BRR já convertido é aceito sem reconversão. A saída pode ser exportada em BRR
+ou WAV PCM mono a 10300 Hz. A prévia e o WAV não emulam ADSR, eco ou pitch do jogo.
+
+14 testes passaram: conversão estéreo/mono, taxa e duração, silêncio, limite sem
+aceleração, SNR acima de 20 dB em seno, cabeçalho WAV, importação pela UI com
+Web Audio simulado, persistência e preservação da ROM. A decodificação MP3/WAV
+real no navegador e a reprodução no emulador ainda precisam de teste manual.

@@ -15,9 +15,9 @@ test('UI handlers: abrir, editar, salvar projeto, reabrir, exportar e restaurar'
   addEventListener(name,fn){this.listeners[name]=fn;}
   click(){if(this.tag==='a')downloads.push({name:this.download,blob:blobs.get(this.href)});}
  }
- const ids=Object.fromEntries(['rom','status','texts','stadiums','nativeTexts','cursorHelp','title','resetTitle','save','load','export','improvements','menuTexts','mainMenu','menuScale','menuSelection','resetMenu','menuPreview','menuStatus','soundSelection','soundRate','soundFile','playOriginal','playSound','stopSound','downloadSound','resetSound','soundInfo','soundStatus'].map(id=>[id,new Element(id)]));
+ const ids=Object.fromEntries(['rom','status','texts','stadiums','nativeTexts','cursorHelp','title','resetTitle','save','load','export','improvements','menuTexts','mainMenu','menuScale','menuSelection','resetMenu','menuPreview','menuStatus','soundSelection','soundRate','soundFile','playOriginal','playSound','stopSound','downloadSound','resetSound','soundInfo','soundStatus','downloadWav','resetAllSounds'].map(id=>[id,new Element(id)]));
  const downloads=[],blobs=new Map();let serial=0;
- const previous={document:globalThis.document,create:URL.createObjectURL,revoke:URL.revokeObjectURL};
+ const previous={window:globalThis.window,document:globalThis.document,create:URL.createObjectURL,revoke:URL.revokeObjectURL};
  globalThis.document={getElementById:id=>ids[id],createElement:tag=>new Element(tag),createTextNode:text=>text};
  URL.createObjectURL=blob=>{const id='blob:test'+serial++;blobs.set(id,blob);return id;};URL.revokeObjectURL=()=>{};
  try{
@@ -28,6 +28,9 @@ test('UI handlers: abrir, editar, salvar projeto, reabrir, exportar e restaurar'
   const mainField=ids.mainMenu.children[0].children[0];mainField.value='AMISTOSO';mainField.listeners.input();assert.match(ids.menuStatus.textContent,/cabe no espaço/);
   const menuField=ids.menuTexts.children[0].children[1].children[0];menuField.value='TIME';menuField.listeners.input();
   const silence=Uint8Array.of(1,...Array(8).fill(0));ids.soundFile.files=[{size:9,arrayBuffer:async()=>silence.buffer}];await ids.soundFile.onchange();assert.match(ids.soundInfo.textContent,/substituída/);
+  globalThis.window={AudioContext:class {async decodeAudioData(){const samples=Float32Array.from({length:1030},(_,i)=>.3*Math.sin(i/8));return {numberOfChannels:1,sampleRate:10300,getChannelData:()=>samples};}}};
+  ids.soundFile.files=[{name:'voz.wav',size:30000,arrayBuffer:async()=>new ArrayBuffer(16)}];await ids.soundFile.onchange();assert.match(ids.soundStatus.textContent,/Sem acelerar a fala/);
+  ids.downloadWav.onclick();assert.equal(downloads.at(-1).name,'ItsABigKick1.wav');
   ids.title.value='DELUXE UI TEST';ids.title.oninput();
   const text=ids.nativeTexts.children[0].children[0];text.value='TESTE';text.listeners.input();assert.equal(text.validationMessage,'');
   const color=ids.stadiums.children[0].children[1].children[0].children[0];color.value='#ff0000';color.oninput();
@@ -39,5 +42,5 @@ test('UI handlers: abrir, editar, salvar projeto, reabrir, exportar e restaurar'
   ids.resetTitle.onclick();assert.notEqual(ids.title.value,'DELUXE UI TEST');
   const field=ids.nativeTexts.children[0];field.children[0].value='!';field.children[0].listeners.input();const count=downloads.length;await ids.export.onclick();assert.equal(downloads.length,count);assert.match(ids.status.textContent,/A–Z/);
   field.children[1].onclick();assert.equal(field.children[0].validationMessage,'');
- }finally{globalThis.document=previous.document;URL.createObjectURL=previous.create;URL.revokeObjectURL=previous.revoke;}
+ }finally{globalThis.window=previous.window;globalThis.document=previous.document;URL.createObjectURL=previous.create;URL.revokeObjectURL=previous.revoke;}
 });

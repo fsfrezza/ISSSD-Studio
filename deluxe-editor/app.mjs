@@ -5,6 +5,7 @@ import {encodeCursorText} from '../src/core/cursor-text-codec.mjs';
 import {DELUXE_MENU_SECTIONS,encodeNativeMenuField} from '../src/core/deluxe-menu-text.mjs';
 import {PLUS_MAIN_MENU_IDS,PLUS_MAIN_MENU_ORIGINAL,deluxeMainMenuPreview} from '../src/core/deluxe-main-menu.mjs';
 import {SOUND_SLOTS,originalSound,selectedSound,soundEntry,decodeBrrPreview} from '../src/core/deluxe-sounds.mjs';
+import {GAME_AUDIO_RATE,prepareAudio,encodeBrr,pcmToWav} from '../src/core/audio-conversion.mjs';
 const $=id=>document.getElementById(id);
 let file=null,project=null,opening=0;
 let audioContext=null,audioSource=null;
@@ -117,7 +118,7 @@ $('resetMenu').onclick=()=>{delete project.changes.mainMenu;render();};
 function stopAudio(){if(audioSource){audioSource.stop();audioSource=null;}}
 function renderSounds(){
  stopAudio();
- for(const id of ['soundSelection','soundRate','soundFile','playOriginal','playSound','stopSound','downloadSound','resetSound'])$(id).disabled=!project;
+ for(const id of ['soundSelection','soundRate','soundFile','playOriginal','playSound','stopSound','downloadSound','downloadWav','resetSound','resetAllSounds'])$(id).disabled=!project;
  if(!project){$('soundSelection').replaceChildren();$('soundInfo').textContent='';$('soundStatus').textContent='';return;}
  const previous=$('soundSelection').value;$('soundSelection').replaceChildren();
  for(const s of SOUND_SLOTS){const option=document.createElement('option');option.value=s.id;option.textContent=(s.kind==='voice'?'Voz · ':'Efeito · ')+s.id.replace(/([a-z])([A-Z])/g,'$1 $2');$('soundSelection').append(option);}
@@ -138,12 +139,24 @@ $('playOriginal').onclick=()=>playAudio(true);$('playSound').onclick=()=>playAud
 $('soundFile').onchange=async()=>{
  const current=file,p=project,id=$('soundSelection').value;
  try{const selected=$('soundFile').files[0];if(!selected)return;const base=splitRom(current).rom,limit=originalSound(base,id).length;
- if(selected.size>limit)throw Error('Amostra excede o espaço original de '+limit+' bytes');
- const bytes=new Uint8Array(await selected.arrayBuffer()),entry=soundEntry(base,id,bytes);
+ let bytes,info;
+ if(selected.name?.toLowerCase().endsWith('.brr')||!selected.name){
+  if(selected.size>limit)throw Error('Amostra excede o espaço original de '+limit+' bytes');
+  bytes=new Uint8Array(await selected.arrayBuffer());info='Arquivo BRR importado.';
+ }else{
+  const Context=window.AudioContext??window.webkitAudioContext;if(!Context)throw Error('Conversão de áudio indisponível neste navegador');
+  audioContext??=new Context();$('soundStatus').textContent='Convertendo áudio…';
+  const decoded=await audioContext.decodeAudioData(await selected.arrayBuffer()),prepared=prepareAudio(Array.from({length:decoded.numberOfChannels},(_,i)=>decoded.getChannelData(i)),decoded.sampleRate);
+  bytes=encodeBrr(prepared.samples,limit);info=selected.name+' · '+prepared.originalDuration.toFixed(2)+' s → '+prepared.duration.toFixed(2)+' s após remover silêncio · '+bytes.length+'/'+limit+' bytes BRR. Sem acelerar a fala.';
+ }
+ const entry=soundEntry(base,id,bytes);
  if(file!==current||project!==p)return;
  const original=originalSound(base,id);if(bytes.length===original.length&&bytes.every((b,i)=>b===original[i]))delete project.changes.sounds?.[id];else (project.changes.sounds??={})[id]=entry;
- updateSoundInfo();$('soundStatus').textContent='Amostra pronta. Salve o projeto ou gere a ROM para aplicar.';
+ updateSoundInfo();$('soundStatus').textContent=info+' Salve o projeto ou gere a ROM para aplicar.';
  }catch(error){$('soundStatus').textContent=error.message;}finally{$('soundFile').value='';}
 };
 $('downloadSound').onclick=()=>{try{const id=$('soundSelection').value;download(selectedSound(splitRom(file).rom,id,project.changes.sounds),id+'.brr','application/octet-stream');}catch(error){$('soundStatus').textContent=error.message;}};
 $('resetSound').onclick=()=>{stopAudio();delete project.changes.sounds?.[$('soundSelection').value];updateSoundInfo();$('soundStatus').textContent='Amostra original restaurada.';};
+
+$('downloadWav').onclick=()=>{try{const id=$('soundSelection').value,samples=decodeBrrPreview(selectedSound(splitRom(file).rom,id,project.changes.sounds));download(pcmToWav(samples),id+'.wav','audio/wav');}catch(error){$('soundStatus').textContent=error.message;}};
+$('resetAllSounds').onclick=()=>{stopAudio();delete project.changes.sounds;updateSoundInfo();$('soundStatus').textContent='Todos os sons originais foram restaurados.';};
