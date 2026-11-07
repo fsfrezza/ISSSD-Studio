@@ -234,3 +234,21 @@ embutidas no projeto com source fb96, sem precisar de ROM doadora na reabertura.
 18 testes passaram, incluindo comparação exata com as referências Plus, lote,
 restauração, preservação de bytes vizinhos, controles da UI e entrega pelo HTTP.
 A reprodução no emulador ainda precisa de conferência manual.
+
+
+## Tela inicial — primeira etapa
+
+A aba Tela inicial permite editar quatro paletas de 16 cores (bola, faixa,
+letreiro e textos) e os rodapés copyright/licença. Endereços e bytes foram
+comparados nas ROMs Deluxe e Plus: quatro paletas idênticas (32 bytes cada)
+e os mesmos registros de objetos (116 e 72 bytes). Mapeamento obtido no HTML
+Plus fornecido pelo usuário: TITLE_PALETTES, TITLE_GLYPHS e titleWriteMetaText.
+
+Os textos usam somente os glifos já presentes na fonte original e são
+centralizados com passo de 8 px quando alterados; slots excedentes são ocultados.
+Não são gerados glifos estendidos. Valores originais preservam a ROM exatamente.
+Cada controle permite restauração e os dados viajam no projeto Deluxe.
+Ainda não foram migrados compositor, upload de imagens, camadas gráficas,
+posicionamento livre ou prévia completa da abertura.
+19 testes passaram: paletas, rodapés, regiões alteradas, checksum, restauração
+e persistência pela UI simulada. Não houve teste de exibição no emulador.

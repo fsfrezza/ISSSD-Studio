@@ -15,7 +15,7 @@ test('UI handlers: abrir, editar, salvar projeto, reabrir, exportar e restaurar'
   addEventListener(name,fn){this.listeners[name]=fn;}
   click(){if(this.tag==='a')downloads.push({name:this.download,blob:blobs.get(this.href)});}
  }
- const ids=Object.fromEntries(['rom','status','texts','stadiums','nativeTexts','cursorHelp','title','resetTitle','save','load','export','improvements','menuTexts','mainMenu','menuScale','menuSelection','resetMenu','menuPreview','menuStatus','soundSelection','soundRate','soundFile','playOriginal','playSound','stopSound','downloadSound','resetSound','soundInfo','soundStatus','downloadWav','resetAllSounds','playGalvao','useGalvao','allGalvao','trainingHud','matchStatistics','playFb96','useFb96','allFb96'].map(id=>[id,new Element(id)]));
+ const ids=Object.fromEntries(['rom','status','texts','stadiums','nativeTexts','cursorHelp','title','resetTitle','save','load','export','improvements','menuTexts','mainMenu','menuScale','menuSelection','resetMenu','menuPreview','menuStatus','soundSelection','soundRate','soundFile','playOriginal','playSound','stopSound','downloadSound','resetSound','soundInfo','soundStatus','downloadWav','resetAllSounds','playGalvao','useGalvao','allGalvao','trainingHud','matchStatistics','playFb96','useFb96','allFb96','titleTexts','titlePalettes'].map(id=>[id,new Element(id)]));
  const downloads=[],blobs=new Map();let serial=0;
  const previous={fetch:globalThis.fetch,window:globalThis.window,document:globalThis.document,create:URL.createObjectURL,revoke:URL.revokeObjectURL};
  globalThis.document={getElementById:id=>ids[id],createElement:tag=>new Element(tag),createTextNode:text=>text};
@@ -24,7 +24,8 @@ test('UI handlers: abrir, editar, salvar projeto, reabrir, exportar e restaurar'
   await import('../deluxe-editor/app.mjs?ui-test');
   const file=new Uint8Array(fs.readFileSync(fixture));
   ids.rom.files=[{arrayBuffer:async()=>file.buffer}];await ids.rom.onchange();
-  assert.equal(ids.export.disabled,false);assert.equal(ids.nativeTexts.children.length,20);assert.equal(ids.cursorHelp.children.length,14);assert.equal(ids.stadiums.children.length,8);assert.equal(ids.menuTexts.children.length,20);assert.equal(ids.mainMenu.children.length,8);assert.equal(ids.trainingHud.children.length,8);assert.equal(ids.matchStatistics.children.length,10);
+  assert.equal(ids.export.disabled,false);assert.equal(ids.nativeTexts.children.length,20);assert.equal(ids.cursorHelp.children.length,14);assert.equal(ids.stadiums.children.length,8);assert.equal(ids.menuTexts.children.length,20);assert.equal(ids.mainMenu.children.length,8);assert.equal(ids.titlePalettes.children.length,4);
+  const footer=ids.titleTexts.children[0].children[0];footer.value='@1995KONAMI';footer.listeners.input();assert.equal(ids.trainingHud.children.length,8);assert.equal(ids.matchStatistics.children.length,10);
   const training=ids.trainingHud.children[1].children[0];training.value='TEMPO';training.listeners.input();
   const stats=ids.matchStatistics.children[0].children[0];stats.value='CHUTES';stats.listeners.input();assert.equal(ids.soundSelection.children.length,74);assert.match(ids.menuStatus.textContent,/original preservado/);
   const mainField=ids.mainMenu.children[0].children[0];mainField.value='AMISTOSO';mainField.listeners.input();assert.match(ids.menuStatus.textContent,/cabe no espaço/);
@@ -38,7 +39,7 @@ test('UI handlers: abrir, editar, salvar projeto, reabrir, exportar e restaurar'
   ids.title.value='DELUXE UI TEST';ids.title.oninput();
   const text=ids.nativeTexts.children[0].children[0];text.value='TESTE';text.listeners.input();assert.equal(text.validationMessage,'');
   const color=ids.stadiums.children[0].children[1].children[0].children[0];color.value='#ff0000';color.oninput();
-  await ids.save.onclick();const project=JSON.parse(await downloads.at(-1).blob.text());assert.equal(project.changes.internalTitle,'DELUXE UI TEST');assert.equal(project.changes.trainingHud.time,'TEMPO');assert.equal(project.changes.matchStatistics.shots,'CHUTES');assert.ok(project.changes.sounds.ItsABigKick1);assert.equal(Object.keys(project.changes.sounds).length,74);assert.equal(project.changes.mainMenu.texts.openGame,'AMISTOSO');assert.equal(project.changes.menuTexts['team-selection-native'].data_87c5cd,'TIME');assert.equal(project.changes.stadiums['0'][0],31);
+  await ids.save.onclick();const project=JSON.parse(await downloads.at(-1).blob.text());assert.equal(project.changes.internalTitle,'DELUXE UI TEST');assert.equal(project.changes.titleScreen.texts.copyright,'@1995KONAMI');assert.equal(project.changes.trainingHud.time,'TEMPO');assert.equal(project.changes.matchStatistics.shots,'CHUTES');assert.ok(project.changes.sounds.ItsABigKick1);assert.equal(Object.keys(project.changes.sounds).length,74);assert.equal(project.changes.mainMenu.texts.openGame,'AMISTOSO');assert.equal(project.changes.menuTexts['team-selection-native'].data_87c5cd,'TIME');assert.equal(project.changes.stadiums['0'][0],31);
   ids.load.files=[{text:async()=>JSON.stringify(project)}];await ids.load.onchange();assert.equal(ids.title.value,'DELUXE UI TEST');assert.equal(ids.menuTexts.children[0].children[1].children[0].value,'TIME');assert.equal(ids.nativeTexts.children[0].children[0].value,'TESTE');
   await ids.export.onclick();const output=new Uint8Array(await downloads.at(-1).blob.arrayBuffer());assert.equal(output.length,file.length);assert.equal(readStadiums(splitRom(output).rom)[0].colors[0],31);
   ids.resetSound.onclick();assert.match(ids.soundInfo.textContent,/original/);

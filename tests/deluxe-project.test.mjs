@@ -186,3 +186,20 @@ test('ROM real: FB96 individual e lote preservam as amostras do Plus sem reconve
  delete p.changes.sounds;assert.deepEqual((await buildDeluxeProject(file,p)).rom,file);
  assert.throws(()=>fb96SoundChoices(base,{...reference,source:'Galvao'}),/inválida/);
 });
+
+test('ROM real: tela inicial altera quatro paletas e dois rodapés, com restauração exata',{skip:!fixture},async()=>{
+ const {TITLE_PALETTES,TITLE_TEXT_FIELDS,readTitlePalettes,readTitleText}=await import('../src/core/deluxe-title-screen.mjs');
+ const file=new Uint8Array(fs.readFileSync(fixture)),snapshot=file.slice(),base=splitRom(file).rom,p=await createDeluxeProject(file);
+ p.changes.titleScreen={texts:Object.fromEntries(TITLE_TEXT_FIELDS.map(f=>[f.id,readTitleText(base,f)])),palettes:Object.fromEntries(readTitlePalettes(base).map(p=>[p.id,p.colors]))};
+ assert.deepEqual((await buildDeluxeProject(file,p)).rom,file);
+ p.changes.titleScreen.texts={copyright:'@1995KONAMI',license:'BYNINTENDO'};
+ p.changes.titleScreen.palettes=Object.fromEntries(readTitlePalettes(base).map(p=>[p.id,p.colors.map(c=>c^31)]));
+ const result=await buildDeluxeProject(file,JSON.parse(JSON.stringify(p))),out=splitRom(result.rom).rom;
+ for(const f of TITLE_TEXT_FIELDS)assert.equal(readTitleText(out,f),p.changes.titleScreen.texts[f.id]);
+ for(const palette of readTitlePalettes(out))assert.deepEqual(palette.colors,p.changes.titleScreen.palettes[palette.id]);
+ const allowed=[...TITLE_PALETTES.map(p=>[p.pc,p.pc+32]),...TITLE_TEXT_FIELDS.map(f=>[f.pc-2,f.pc-2+f.count*4]),[0x7fdc,0x7fe0]];
+ for(let i=0;i<base.length;i++)if(base[i]!==out[i])assert.ok(allowed.some(([a,b])=>i>=a&&i<b),'unexpected write '+i.toString(16));
+ assert.deepEqual(file,snapshot);assert.equal(file.length,result.rom.length);assert.equal(out.reduce((s,b)=>(s+b)&65535,0),out[0x7fde]|out[0x7fdf]<<8);
+ for(const value of [{texts:{license:'J'}},{texts:{bad:'A'}},{palettes:{ball:[1]}},{texts:{license:'A'.repeat(19)}}]){p.changes.titleScreen=value;await assert.rejects(buildDeluxeProject(file,p));}
+ delete p.changes.titleScreen;assert.deepEqual((await buildDeluxeProject(file,p)).rom,file);
+});

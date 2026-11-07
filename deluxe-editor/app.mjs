@@ -7,19 +7,21 @@ import {PLUS_MAIN_MENU_IDS,PLUS_MAIN_MENU_ORIGINAL,deluxeMainMenuPreview} from '
 import {SOUND_SLOTS,originalSound,selectedSound,soundEntry,decodeBrrPreview,galvaoSoundChoices,fb96SoundChoices} from '../src/core/deluxe-sounds.mjs';
 import {GAME_AUDIO_RATE,prepareAudio,encodeBrr,pcmToWav} from '../src/core/audio-conversion.mjs';
 import {TRAINING_HUD_FIELDS,MATCH_STATISTICS_FIELDS,encodeTrainingHud,renderMatchStatistics} from '../src/core/deluxe-match-texts.mjs';
+import {TITLE_TEXT_FIELDS,TITLE_SUPPORTED_CHARACTERS,readTitleText,validateTitleText,readTitlePalettes} from '../src/core/deluxe-title-screen.mjs';
 const $=id=>document.getElementById(id);
 let file=null,project=null,opening=0;
 let audioContext=null,audioSource=null;
 function status(value){$('status').textContent=value;}
 function download(data,name,type){const url=URL.createObjectURL(new Blob([data],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 function render(){
-  for(const id of ['texts','stadiums','nativeTexts','cursorHelp','menuTexts','mainMenu','trainingHud','matchStatistics'])$(id).replaceChildren();
+  for(const id of ['texts','stadiums','nativeTexts','cursorHelp','menuTexts','mainMenu','trainingHud','matchStatistics','titleTexts','titlePalettes'])$(id).replaceChildren();
   for(const id of ['menuScale','menuSelection','resetMenu'])$(id).disabled=!project;
   if(!project){$('menuPreview').getContext('2d').clearRect(0,0,256,224);$('menuStatus').textContent='';}
   $('title').value='';$('title').disabled=!project;$('resetTitle').disabled=!project;
   if(!project){renderSounds();return;}
   const {rom}=splitRom(file);
   renderSounds();
+  renderTitleScreen(rom);
   renderNative(rom);
   renderMatchTexts(rom);
   renderMainMenu(rom);
@@ -197,5 +199,21 @@ function renderMatchTexts(rom){
   for(const f of fields){const [id,original]=f;
    textControl($(section),{label:original,value:project.changes[section]?.[id]??original,original,validate:v=>{if(section==='trainingHud')encodeTrainingHud(f,v);else renderMatchStatistics({[id]:v},rom);},onChange:v=>updateChange(section,id,v,original)});
   }
+ }
+}
+
+function titleChange(kind,id,value,original){
+ const title=project.changes.titleScreen??={},items=title[kind]??={};
+ if(JSON.stringify(value)===JSON.stringify(original))delete items[id];else items[id]=value;
+ if(!Object.keys(items).length)delete title[kind];if(!Object.keys(title).length)delete project.changes.titleScreen;
+}
+function renderTitleScreen(rom){
+ for(const f of TITLE_TEXT_FIELDS){const original=readTitleText(rom,f);textControl($('titleTexts'),{label:f.label+' · até '+f.count+' letras',value:project.changes.titleScreen?.texts?.[f.id]??original,original,validate:v=>validateTitleText(v,f),onChange:v=>titleChange('texts',f.id,v,original)});}
+ const hint=document.createElement('p');hint.className='hint';hint.textContent='Caracteres da fonte original: '+TITLE_SUPPORTED_CHARACTERS+'. Espaços são permitidos.';$('titleTexts').append(hint);
+ for(const p of readTitlePalettes(rom)){
+  const details=document.createElement('details'),summary=document.createElement('summary');summary.textContent=p.label;details.append(summary);const palette=document.createElement('div');palette.className='palette';details.append(palette);
+  const colors=(project.changes.titleScreen?.palettes?.[p.id]??p.colors).slice();
+  colors.forEach((v,i)=>{const label=document.createElement('label');label.textContent=String(i+1);const input=document.createElement('input');input.type='color';input.value=bgrToHex(v);input.setAttribute('aria-label',p.label+' cor '+(i+1));input.oninput=()=>{colors[i]=hexToBgr(input.value);titleChange('palettes',p.id,colors.slice(),p.colors);};label.append(input);palette.append(label);});
+  const reset=document.createElement('button');reset.textContent='Restaurar cores originais';reset.onclick=()=>{titleChange('palettes',p.id,p.colors,p.colors);render();};details.append(reset);$('titlePalettes').append(details);
  }
 }
