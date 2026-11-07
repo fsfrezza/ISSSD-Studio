@@ -141,8 +141,7 @@ npm run test:deluxe
 A aba Sons e vozes reutiliza `SOUND_SLOTS` e o writer BRR da Plus. A camada Deluxe
 restringe cada substituição ao comprimento da amostra original, preservando todos
 os bytes posteriores. A importação agora aceita os formatos decodificáveis pelo Web Audio do navegador
-(MP3/WAV e outros conforme suporte local), além de BRR. Presets de áudio de
-outras ROMs não foram incorporados nesta etapa. Uma importação BRR com dados depois do bloco final é rejeitada.
+(MP3/WAV e outros conforme suporte local), além de BRR. O preset Galvão do Editor Plus foi incorporado; o preset FB96 continua pendente. Uma importação BRR com dados depois do bloco final é rejeitada.
 
 A prévia decodifica os filtros BRR e reproduz uma passagem pela amostra, em taxa
 selecionável (8/10,3/16/32 kHz; padrão 10,3 kHz). Não simula pitch do driver, interpolação gaussiana,
@@ -171,3 +170,19 @@ ou WAV PCM mono a 10300 Hz. A prévia e o WAV não emulam ADSR, eco ou pitch do 
 aceleração, SNR acima de 20 dB em seno, cabeçalho WAV, importação pela UI com
 Web Audio simulado, persistência e preservação da ROM. A decodificação MP3/WAV
 real no navegador e a reprodução no emulador ainda precisam de teste manual.
+
+
+### Referência Galvão
+
+As 74 amostras foram extraídas sem reconversão do banco `REF_GA` embutido no
+Editor Plus ISSSD-Studio(20261024-004651).html fornecido pelo usuário.
+Cada fluxo foi limitado pelo END BRR; o banco completo não foi incorporado.
+68 amostras diferem da ROM original, seis são idênticas. Todas cabem no
+comprimento original dos respectivos fluxos Deluxe.
+
+A aba permite ouvir Galvão, aplicar na amostra selecionada ou aplicar em todos
+os 74 slots catalogados (incluindo efeitos). O lote inteiro é validado antes
+de atualizar o projeto. As escolhas são embutidas no projeto com source galvao.
+Não é necessário carregar ROM doadora. Música e áudio fora do catálogo não são
+transplantados. Testes cobrem os dois controles, persistência, carregamento do
+JSON pelo servidor e escritas restritas aos fluxos de áudio/checksum.

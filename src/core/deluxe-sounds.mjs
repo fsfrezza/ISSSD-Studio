@@ -13,7 +13,7 @@ export function applyDeluxeSounds(out,base,values){
  if(values===undefined)return out;
  if(!values||typeof values!=='object'||Array.isArray(values))throw Error('Sons: seção inválida');
  for(const [id,entry]of Object.entries(values)){
-  if(!entry||Object.keys(entry).some(k=>!['source','brrBase64'].includes(k))||entry.source!=='custom')throw Error('Sons: registro inválido');
+  if(!entry||Object.keys(entry).some(k=>!['source','brrBase64'].includes(k))||!['custom','galvao'].includes(entry.source))throw Error('Sons: registro inválido');
   const next=soundBytes(entry,slotFor(id));
   if(next.length>originalSound(base,id).length)throw Error('Som '+id+': excede o espaço da amostra original');
  }
@@ -37,4 +37,14 @@ export function decodeBrrPreview(bytes){
   }
  }
  return out;
+}
+
+export function galvaoSoundChoices(base,reference,ids=SOUND_SLOTS.map(s=>s.id)){
+ if(reference?.schema!=='isssd-galvao-reference-v1'||!reference.samples||typeof reference.samples!=='object')throw Error('Referência Galvão inválida');
+ const values={};
+ for(const id of ids){slotFor(id);const data=reference.samples[id];if(typeof data!=='string'||!/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(data))throw Error('Referência Galvão ausente ou inválida: '+id);
+  values[id]={...soundEntry(base,id,Uint8Array.from(atob(data),c=>c.charCodeAt(0))),source:'galvao'};
+ }
+ // All entries are validated before callers change the project.
+ return values;
 }

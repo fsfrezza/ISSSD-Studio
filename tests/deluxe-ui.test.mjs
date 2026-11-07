@@ -15,9 +15,9 @@ test('UI handlers: abrir, editar, salvar projeto, reabrir, exportar e restaurar'
   addEventListener(name,fn){this.listeners[name]=fn;}
   click(){if(this.tag==='a')downloads.push({name:this.download,blob:blobs.get(this.href)});}
  }
- const ids=Object.fromEntries(['rom','status','texts','stadiums','nativeTexts','cursorHelp','title','resetTitle','save','load','export','improvements','menuTexts','mainMenu','menuScale','menuSelection','resetMenu','menuPreview','menuStatus','soundSelection','soundRate','soundFile','playOriginal','playSound','stopSound','downloadSound','resetSound','soundInfo','soundStatus','downloadWav','resetAllSounds'].map(id=>[id,new Element(id)]));
+ const ids=Object.fromEntries(['rom','status','texts','stadiums','nativeTexts','cursorHelp','title','resetTitle','save','load','export','improvements','menuTexts','mainMenu','menuScale','menuSelection','resetMenu','menuPreview','menuStatus','soundSelection','soundRate','soundFile','playOriginal','playSound','stopSound','downloadSound','resetSound','soundInfo','soundStatus','downloadWav','resetAllSounds','playGalvao','useGalvao','allGalvao'].map(id=>[id,new Element(id)]));
  const downloads=[],blobs=new Map();let serial=0;
- const previous={window:globalThis.window,document:globalThis.document,create:URL.createObjectURL,revoke:URL.revokeObjectURL};
+ const previous={fetch:globalThis.fetch,window:globalThis.window,document:globalThis.document,create:URL.createObjectURL,revoke:URL.revokeObjectURL};
  globalThis.document={getElementById:id=>ids[id],createElement:tag=>new Element(tag),createTextNode:text=>text};
  URL.createObjectURL=blob=>{const id='blob:test'+serial++;blobs.set(id,blob);return id;};URL.revokeObjectURL=()=>{};
  try{
@@ -31,10 +31,12 @@ test('UI handlers: abrir, editar, salvar projeto, reabrir, exportar e restaurar'
   globalThis.window={AudioContext:class {async decodeAudioData(){const samples=Float32Array.from({length:1030},(_,i)=>.3*Math.sin(i/8));return {numberOfChannels:1,sampleRate:10300,getChannelData:()=>samples};}}};
   ids.soundFile.files=[{name:'voz.wav',size:30000,arrayBuffer:async()=>new ArrayBuffer(16)}];await ids.soundFile.onchange();assert.match(ids.soundStatus.textContent,/Sem acelerar a fala/);
   ids.downloadWav.onclick();assert.equal(downloads.at(-1).name,'ItsABigKick1.wav');
+  const reference=JSON.parse(fs.readFileSync(new URL('../deluxe-editor/galvao-samples.json',import.meta.url)));globalThis.fetch=async()=>({ok:true,json:async()=>reference});
+  await ids.useGalvao.onclick();assert.match(ids.soundInfo.textContent,/Galvão/);await ids.allGalvao.onclick();assert.match(ids.soundStatus.textContent,/74/);
   ids.title.value='DELUXE UI TEST';ids.title.oninput();
   const text=ids.nativeTexts.children[0].children[0];text.value='TESTE';text.listeners.input();assert.equal(text.validationMessage,'');
   const color=ids.stadiums.children[0].children[1].children[0].children[0];color.value='#ff0000';color.oninput();
-  await ids.save.onclick();const project=JSON.parse(await downloads.at(-1).blob.text());assert.equal(project.changes.internalTitle,'DELUXE UI TEST');assert.ok(project.changes.sounds.ItsABigKick1);assert.equal(project.changes.mainMenu.texts.openGame,'AMISTOSO');assert.equal(project.changes.menuTexts['team-selection-native'].data_87c5cd,'TIME');assert.equal(project.changes.stadiums['0'][0],31);
+  await ids.save.onclick();const project=JSON.parse(await downloads.at(-1).blob.text());assert.equal(project.changes.internalTitle,'DELUXE UI TEST');assert.ok(project.changes.sounds.ItsABigKick1);assert.equal(Object.keys(project.changes.sounds).length,74);assert.equal(project.changes.mainMenu.texts.openGame,'AMISTOSO');assert.equal(project.changes.menuTexts['team-selection-native'].data_87c5cd,'TIME');assert.equal(project.changes.stadiums['0'][0],31);
   ids.load.files=[{text:async()=>JSON.stringify(project)}];await ids.load.onchange();assert.equal(ids.title.value,'DELUXE UI TEST');assert.equal(ids.menuTexts.children[0].children[1].children[0].value,'TIME');assert.equal(ids.nativeTexts.children[0].children[0].value,'TESTE');
   await ids.export.onclick();const output=new Uint8Array(await downloads.at(-1).blob.arrayBuffer());assert.equal(output.length,file.length);assert.equal(readStadiums(splitRom(output).rom)[0].colors[0],31);
   ids.resetSound.onclick();assert.match(ids.soundInfo.textContent,/original/);
@@ -42,5 +44,5 @@ test('UI handlers: abrir, editar, salvar projeto, reabrir, exportar e restaurar'
   ids.resetTitle.onclick();assert.notEqual(ids.title.value,'DELUXE UI TEST');
   const field=ids.nativeTexts.children[0];field.children[0].value='!';field.children[0].listeners.input();const count=downloads.length;await ids.export.onclick();assert.equal(downloads.length,count);assert.match(ids.status.textContent,/A–Z/);
   field.children[1].onclick();assert.equal(field.children[0].validationMessage,'');
- }finally{globalThis.window=previous.window;globalThis.document=previous.document;URL.createObjectURL=previous.create;URL.revokeObjectURL=previous.revoke;}
+ }finally{globalThis.fetch=previous.fetch;globalThis.window=previous.window;globalThis.document=previous.document;URL.createObjectURL=previous.create;URL.revokeObjectURL=previous.revoke;}
 });

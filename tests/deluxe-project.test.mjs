@@ -130,3 +130,14 @@ test('ROM real: 74 amostras restauram exatamente e substituições preservam o r
  assert.throws(()=>soundEntry(base,id,new Uint8Array(originalSound(base,id).length+9)),/capacidade/);
  p.changes.sounds={unknown:{source:'custom',brrBase64:'AQAAAAAAAAAA'}};await assert.rejects(buildDeluxeProject(file,p),/desconhecido/);
 });
+
+test('ROM real: referência Galvão individual e lote cabem e não alteram dados vizinhos',{skip:!fixture},async()=>{
+ const {galvaoSoundChoices,SOUND_SLOTS,selectedSound}=await import('../src/core/deluxe-sounds.mjs');
+ const reference=JSON.parse(fs.readFileSync(new URL('../deluxe-editor/galvao-samples.json',import.meta.url))),file=new Uint8Array(fs.readFileSync(fixture)),base=splitRom(file).rom,p=await createDeluxeProject(file);
+ const single=galvaoSoundChoices(base,reference,[SOUND_SLOTS[0].id]);assert.equal(Object.keys(single).length,1);
+ p.changes.sounds=galvaoSoundChoices(base,reference);assert.equal(Object.keys(p.changes.sounds).length,74);
+ const output=splitRom((await buildDeluxeProject(file,JSON.parse(JSON.stringify(p)))).rom).rom,allowed=[];
+ for(const slot of SOUND_SLOTS){const bytes=selectedSound(base,slot.id,p.changes.sounds);assert.deepEqual(output.slice(slot.pc,slot.pc+bytes.length),bytes);allowed.push([slot.pc,slot.pc+bytes.length]);}
+ for(let i=0;i<base.length;i++)if(base[i]!==output[i])assert.ok((i>=0x7fdc&&i<0x7fe0)||allowed.some(([a,b])=>i>=a&&i<b));
+ const bad=structuredClone(reference);delete bad.samples[SOUND_SLOTS.at(-1).id];assert.throws(()=>galvaoSoundChoices(base,bad),/ausente/);
+});
