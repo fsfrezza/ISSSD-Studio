@@ -1,24 +1,32 @@
-<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>ISSSD Studio · Deluxe</title>
-<style>body{font:16px system-ui;background:#101724;color:#edf3ff;max-width:1000px;margin:40px auto;padding:0 24px}h1{font-size:28px}textarea{font:inherit;padding:9px;width:90%;background:#edf3ff;color:#101724}details{margin:16px 0}summary{cursor:pointer}input[type=color]{width:52px;height:40px;padding:3px} .palette{display:flex;flex-wrap:wrap;gap:10px}.palette label{margin:0}section{background:#1b2639;padding:24px;margin:20px 0;border-radius:12px}input,button{font:inherit;padding:9px;border-radius:5px}button{cursor:pointer}label{display:block;margin:14px 0}label input[type=text]{display:block;width:90%;margin-top:5px}small{color:#b9c8e2}#status{white-space:pre-wrap}button:disabled{opacity:.5}</style>
-<h1>ISSSD Studio · Deluxe</h1><p>Base original, alterações opcionais. Migração em desenvolvimento.</p>
-<section><h2>Abrir ROM</h2><input id="rom" type="file" accept=".smc,.sfc" disabled><p id="status" role="status">Selecione o Deluxe original (USA). A ROM não é enviada a um servidor.</p></section>
-<section><h2>Projeto</h2><button id="save" disabled>Salvar projeto</button> <label>Reabrir projeto <input id="load" type="file" accept=".json,.issdproj" disabled></label><button id="export" disabled>Gerar ROM</button></section>
-<section><h2>Menu principal</h2><p>Edite os oito nomes. A prévia usa a fonte do editor e cores ilustrativas. O menu original permanece intacto até você aplicar uma edição.</p><div id="mainMenu"></div><label>Tamanho dos textos <input id="menuScale" type="number" min="80" max="160" step="1" value="80" disabled></label><label>Opção selecionada na prévia <select id="menuSelection" disabled></select></label><canvas id="menuPreview" width="256" height="224" style="width:512px;max-width:100%;image-rendering:pixelated;background:#080e1b" aria-label="Prévia do menu principal"></canvas><p id="menuStatus" role="status"></p><button id="resetMenu" disabled>Restaurar menu original</button></section>
-<section><h2>Metadados</h2><label>Título interno da ROM (até 21 caracteres ASCII)<input id="title" type="text" maxlength="21" disabled></label><button id="resetTitle" disabled>Restaurar título original</button></section>
-<section><h2>Estádios · Cores</h2><p>Paletas dos oito estádios originais.</p><div id="stadiums"></div></section>
-<section><h2>Textos nativos</h2><div id="nativeTexts"></div></section>
-<section><h2>Textos de menus e competições</h2><p>Campos nativos, organizados por tela. Alterações de estrutura e regras das competições não fazem parte desta seção.</p><div id="menuTexts"></div></section>
-<section><h2>Cursor · Ajuda textual</h2><p>Edite as instruções; os nomes gráficos TYPE/AREA ainda não estão disponíveis.</p><div id="cursorHelp"></div></section>
-<section><h2>Textos · Estratégias</h2><small>Primeiro recurso migrado: oito textos com o mesmo endereço e conteúdo nas duas bases.</small><div id="texts"></div></section>
-<section><h2>Melhorias</h2><p>As opções serão liberadas conforme os patches forem mapeados e validados no Deluxe.</p><div id="improvements"></div></section>
-<section><h2>Próximas migrações</h2><p>Grupos, equipes, jogadores, táticas, uniformes e demais telas serão incorporados gradativamente. Ainda não estão disponíveis nesta entrada.</p></section>
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ISSSD Studio · Deluxe</title><link rel="stylesheet" href="/deluxe-editor/style.css"></head>
+<body>
+<aside class="sidebar"><div class="brand"><span class="brand-icon">IS</span><div>ISSSD <strong>Studio</strong><small>Deluxe · Editor de ROM</small></div></div><div class="nav-caption">EDIÇÃO</div><nav aria-label="Áreas do editor">
+<button type="button" data-page="overview" aria-current="page"><span>▦</span> Visão geral</button>
+<button type="button" data-page="menu"><span>▤</span> Menu principal</button>
+<button type="button" data-page="texts"><span>Aa</span> Textos</button>
+<button type="button" data-page="cursor"><span>↖</span> Cursor</button>
+<button type="button" data-page="stadiums"><span>◈</span> Estádios</button>
+<button type="button" data-page="improvements"><span>✧</span> Melhorias</button>
+</nav><div class="sidebar-footer">Base: Deluxe original (USA)<br><span>Alterações opcionais · 2 MB</span></div></aside>
+<div class="workspace"><header class="toolbar"><div class="file-actions"><label class="button primary" for="rom">Abrir ROM</label><input class="file-input" id="rom" type="file" accept=".smc,.sfc" disabled><label class="button" for="load">Abrir projeto</label><input class="file-input" id="load" type="file" accept=".json,.issdproj" disabled></div><div class="file-actions"><button id="save" disabled>Salvar projeto</button><button class="primary" id="export" disabled>Gerar ROM</button></div></header>
+<div id="status" class="status" role="status">Carregando o Editor…</div>
+<main><div class="page-heading"><div><div class="eyebrow">ISSSD STUDIO / DELUXE</div><h1 id="pageTitle">Visão geral</h1><p id="pageDescription">Abra a ROM original ou continue um projeto.</p></div><div class="section-actions"><button id="expandAll" type="button" title="Expandir todas as seções desta aba">Expandir tudo</button><button id="collapseAll" type="button" title="Recolher todas as seções desta aba">Recolher tudo</button></div></div>
+<section data-panel="overview"><div class="welcome"><div><span class="pill">ROM original como base</span><h2>Seu Deluxe, do seu jeito.</h2><p>Abra o Deluxe original para editar os recursos disponíveis. Salve o projeto para continuar depois ou gere uma cópia da ROM com suas alterações.</p></div><div class="welcome-mark" aria-hidden="true">IS<span>DELUXE</span></div></div>
+<details class="card" open><summary>Dados da ROM<span>Nome interno</span></summary><div class="card-body"><label>Título interno da ROM <small>Até 21 caracteres ASCII</small><input id="title" type="text" maxlength="21" disabled></label><button id="resetTitle" disabled>Restaurar título original</button></div></details>
+<details class="card"><summary>Como trabalhar<span>Abrir · editar · salvar</span></summary><div class="card-body help"><p><strong>1.</strong> Abra o Deluxe original (USA).</p><p><strong>2.</strong> Escolha uma área no menu à esquerda e faça suas edições.</p><p><strong>3.</strong> Salve o projeto para continuar depois e use Gerar ROM para testar no emulador.</p><p>Para reabrir um projeto, selecione primeiro a ROM original. Sem alterações, a geração preserva o arquivo original.</p></div></details></section>
+<section data-panel="menu" hidden><div class="menu-grid"><details class="card" open><summary>Nomes das opções<span>8 opções</span></summary><div class="card-body" id="mainMenu"></div></details><div><details class="card" open><summary>Prévia do menu</summary><div class="card-body"><div class="preview-wrap"><canvas id="menuPreview" width="256" height="224" aria-label="Prévia da tipografia do menu principal"></canvas></div><label>Opção em destaque<select id="menuSelection" disabled></select></label><label>Tamanho dos textos<input id="menuScale" type="number" min="80" max="160" step="1" value="80" disabled></label><p class="hint">Fonte do editor e cores ilustrativas. O menu original é preservado até uma edição.</p><p id="menuStatus" role="status"></p><button id="resetMenu" disabled>Restaurar menu original</button></div></details></div></div></section>
+<section data-panel="texts" hidden><details class="card" open><summary>Estratégias<span>8 frases</span></summary><div class="card-body field-grid" id="texts"></div></details><details class="card"><summary>Textos nativos<span>Pré-partida e opções</span></summary><div class="card-body field-grid" id="nativeTexts"></div></details><details class="card"><summary>Menus e competições<span>Organizados por tela</span></summary><div class="card-body nested-sections" id="menuTexts"></div></details></section>
+<section data-panel="cursor" hidden><details class="card" open><summary>Ajuda do Cursor<span>14 instruções</span></summary><div class="card-body nested-sections" id="cursorHelp"></div></details></section>
+<section data-panel="stadiums" hidden><details class="card" open><summary>Cores dos estádios<span>8 estádios originais</span></summary><div class="card-body nested-sections" id="stadiums"></div></details></section>
+<section data-panel="improvements" hidden><div class="empty-state"><span aria-hidden="true">✧</span><h2>Melhorias em preparação</h2><p>As opções serão disponibilizadas conforme forem adaptadas e validadas para o Deluxe.</p></div><div id="improvements" hidden></div></section>
+</main><footer class="page-footer">ISSSD Studio · Deluxe <span>A ROM permanece no seu navegador.</span></footer></div>
 <script type="module">
 const status=document.getElementById('status');
-status.textContent='Carregando o Editor…';
-import('/deluxe-editor/app.mjs').then(()=>{
+import('/deluxe-editor/app.mjs').then(()=>import('/deluxe-editor/layout.mjs')).then(()=>{
  document.getElementById('rom').disabled=false;
- status.textContent='Selecione o Deluxe original (USA). A ROM não é enviada a um servidor.';
+ status.textContent='Selecione o Deluxe original (USA) para começar.';
 }).catch(error=>{
  status.textContent='Falha ao carregar o Editor: '+error.message+'. Reinicie o servidor e atualize a página com Ctrl+F5.';
 });
-</script></html>
+</script></body></html>

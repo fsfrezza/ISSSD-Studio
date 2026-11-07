@@ -11,7 +11,8 @@ test('página raiz carrega o módulo real e todas as dependências pelo HTTP',{t
   const res=await fetch(origin+'/');assert.equal(res.status,200);assert.match(res.headers.get('content-type'),/text\/html/);
   const html=await res.text();const entry=html.match(/import\(['"]([^'"]+)['"]\)/)?.[1];assert.ok(entry,'bootstrap deve importar a aplicação');
   assert.match(html,/\.catch\(error/,'falha de inicialização deve aparecer na tela');
-  const queue=[new URL(entry,origin+'/').href],seen=new Set();
+  const css=await fetch(origin+'/deluxe-editor/style.css');assert.equal(css.status,200);assert.match(css.headers.get('content-type'),/text\/css/);
+  const queue=[...html.matchAll(/import\(['"]([^'"]+)['"]\)/g)].map(m=>new URL(m[1],origin+'/').href),seen=new Set();
   while(queue.length){const url=queue.shift();if(seen.has(url))continue;seen.add(url);
    const response=await fetch(url);assert.equal(response.status,200,url);assert.match(response.headers.get('content-type'),/javascript/,url);
    const js=await response.text();

@@ -13,6 +13,6 @@ http.createServer((req,res)=>{
   if(!target.startsWith(root+path.sep)){res.writeHead(403);res.end();return;}
   fs.readFile(target,(error,data)=>{
     if(error){res.writeHead(404);res.end();return;}
-    res.writeHead(200,{'Content-Type':target.endsWith('.html')?'text/html; charset=utf-8':'text/javascript; charset=utf-8','Cache-Control':'no-store'});res.end(data);
+    res.writeHead(200,{'Content-Type':target.endsWith('.html')?'text/html; charset=utf-8':target.endsWith('.css')?'text/css; charset=utf-8':'text/javascript; charset=utf-8','Cache-Control':'no-store'});res.end(data);
   });
 }).listen(port,'127.0.0.1',()=>console.log(`ISSSD Studio · Deluxe: http://127.0.0.1:${port}/`));
