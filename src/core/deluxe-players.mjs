@@ -15,7 +15,7 @@ export function deluxePlayerOffsets(base,team,player){
 export function readDeluxePlayer(base,team,player,edits={}){
  const at=deluxePlayerOffsets(base,team,player),raw=base.slice(at.record,at.record+7),record=decodePlayerRecord(raw),edit=edits[team+':'+player]??{};
  const skills=Object.fromEntries(Object.keys(PLAYER_SKILLS).map(k=>[k,edit.skills?.[k]??record[k]+1]));
- return {team,player,name:edit.name??decodeFixedPlayerName(base.slice(at.name,at.name+8)).trim(),jersey:edit.jersey??record.jersey,naturalPosition:edit.naturalPosition??record.naturalPosition,skills,appearanceRaw:record.appearanceRaw};
+ return {team,player,isGoalkeeper:player===0||player===11,name:edit.name??decodeFixedPlayerName(base.slice(at.name,at.name+8)).trim(),jersey:edit.jersey??record.jersey,naturalPosition:edit.naturalPosition??record.naturalPosition,skills,appearanceRaw:record.appearanceRaw};
 }
 function object(v,label){if(!v||typeof v!=='object'||Array.isArray(v))throw Error(label+': objeto inválido');return v;}
 export function applyDeluxePlayers(out,base,edits){
@@ -26,7 +26,7 @@ export function applyDeluxePlayers(out,base,edits){
   const [team,player]=id.split(':').map(Number),at=deluxePlayerOffsets(base,team,player),raw=base.slice(at.record,at.record+7);teams.add(team);
   if(edit.name!==undefined){if(typeof edit.name!=='string'||!edit.name.trim())throw Error('Nome de jogador vazio ou inválido');const original=decodeFixedPlayerName(base.slice(at.name,at.name+8)).trim();if(edit.name!==original)writes.push([at.name,encodeFixedPlayerName(formatPlayerName(edit.name,'center'))]);}
   if(edit.skills!==undefined){object(edit.skills,'Atributos');for(const [k,v]of Object.entries(edit.skills)){if(!Object.hasOwn(PLAYER_SKILLS,k))throw Error('Atributo desconhecido');writeSkill(raw,k,v);}}
-  if(edit.naturalPosition!==undefined)writeNaturalPosition(raw,edit.naturalPosition);
+  if(edit.naturalPosition!==undefined){const goalkeeper=player===0||player===11;if(goalkeeper&&edit.naturalPosition!==1)throw Error('A posição do goleiro é fixa');if(!goalkeeper&&edit.naturalPosition===1)throw Error('Jogadores de linha não podem virar goleiros');writeNaturalPosition(raw,edit.naturalPosition);}
   if(edit.jersey!==undefined)writeJersey(raw,edit.jersey);
   writes.push([at.record,raw]);
  }

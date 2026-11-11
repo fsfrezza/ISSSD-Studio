@@ -1,3 +1,4 @@
+import {installTitleComposer} from './title-composer.mjs';
 import {titlePhotoPixels,importTitlePhoto} from '../src/core/deluxe-title-photos.mjs';
 import {textPresetFields,applyTextPreset} from '../src/core/deluxe-text-presets.mjs';
 import {deluxeMainMenuScene} from '../src/core/deluxe-main-menu-scene.mjs';
@@ -30,8 +31,7 @@ function render(){
   for(const id of ['menuScale','menuSelection','resetMenu'])$(id).disabled=!project;
   if(!project){$('menuPreview').getContext('2d').clearRect(0,0,256,224);$('menuStatus').textContent='';}
   $('title').value='';$('title').disabled=!project;$('resetTitle').disabled=!project;
-  for(const id of ['titleLogoFile','exportTitleLogo','resetTitleLogo','titleLayer','titleLayerFile','exportTitleLayer','resetTitleLayer','titleLayerX','titleLayerY','titleLayerScale','applyTitleTransform'])$(id).disabled=!project;
-  if(!project){for(const id of ['titleComposite','titleLayerPreview'])$(id).getContext('2d').clearRect(0,0,256,224);$('titleLayerStatus').textContent='';$('titleLayerInfo').textContent='';$('titleLogoPreview').getContext('2d').clearRect(0,0,256,224);renderSounds();return;}
+  if(!project){titleComposer.render();renderSounds();return;}
   const {rom}=splitRom(file);
   renderSounds();
   renderPlayers();
@@ -51,7 +51,7 @@ $('rom').onchange=async()=>{
 };
 $('save').onclick=async()=>{try{await buildDeluxeProject(file,project);download(JSON.stringify(project,null,2),'Deluxe.issdproj','application/json');}catch(error){status(error.message);}};
 $('load').onchange=async()=>{const current=file;try{const selected=$('load').files[0];if(!selected)return;const p=JSON.parse(await selected.text());await buildDeluxeProject(current,p);if(file!==current)return;project=p;render();status('Projeto Deluxe reaberto.');}catch(error){status(error.message);}finally{$('load').value='';}};
-$('export').onclick=async()=>{try{const result=await buildDeluxeProject(file,project);download(result.rom,'Deluxe-editado.'+(project.base.headerSize?'smc':'sfc'),'application/octet-stream');status('ROM gerada · '+result.diff.changedBytes+' bytes alterados · sem expansão.'+(project.changes.structure?' Estrutura experimental: '+project.changes.structure.teams.length+' equipes; valide no emulador.':''));}catch(error){status(error.message);}};
+$('export').onclick=async()=>{try{const result=await buildDeluxeProject(file,project);download(result.rom,'Deluxe-editado.'+(project.base.headerSize?'smc':'sfc'),'application/octet-stream');status('ROM gerada · '+result.diff.changedBytes+' bytes alterados · sem expansão.'+(project.changes.structure?' Estrutura experimental: '+project.changes.structure.teams.length+' equipes; valide no emulador.':'')+(project.changes.titleComposer&&!project.changes.titleComposer.prepared?' Há um rascunho de composição não implementado.':''));}catch(error){status(error.message);}};
 
 function updateChange(section,key,value,original){
  const entries=project.changes[section]??={};
@@ -234,33 +234,7 @@ function renderTitleScreen(rom){
  }
 }
 
-function drawTitleLogo(){
- if(!project)return;const preview=titleLogoPixels(splitRom(file).rom,project.changes.titleScreen),canvas=$('titleLogoPreview');canvas.width=preview.width;canvas.height=preview.height;
- const context=canvas.getContext('2d'),image=context.createImageData(preview.width,preview.height);image.data.set(preview.rgba);context.putImageData(image,0,0);
- drawTitleComposition();
- $('titleLogoInfo').textContent=preview.width+' × '+preview.height+' pixels. Transparência e paleta do letreiro são preservadas. A estrutura de sprites original limita a área editável.';
-}
-$('titleLogoFile').onchange=async()=>{
- const p=project,current=file;let bitmap;
- try{const selected=$('titleLogoFile').files[0];if(!selected)return;bitmap=await createImageBitmap(selected);const expected=titleLogoPixels(splitRom(current).rom,p.changes.titleScreen);if(bitmap.width!==expected.width||bitmap.height!==expected.height)throw Error('Use uma imagem de '+expected.width+' × '+expected.height+' pixels');const canvas=document.createElement('canvas');canvas.width=bitmap.width;canvas.height=bitmap.height;const context=canvas.getContext('2d');context.drawImage(bitmap,0,0);
- const tiles=importTitleLogo(splitRom(current).rom,p.changes.titleScreen??{},context.getImageData(0,0,canvas.width,canvas.height).data,canvas.width,canvas.height),trial=structuredClone(p);(trial.changes.titleScreen??={}).logoTiles=Array.from(tiles);await buildDeluxeProject(current,trial);
- if(project!==p||file!==current)return;(project.changes.titleScreen??={}).logoTiles=Array.from(tiles);drawTitleLogo();$('titleLogoStatus').textContent='Letreiro convertido. Salve o projeto ou gere a ROM.';
- }catch(error){$('titleLogoStatus').textContent=error.message;}finally{bitmap?.close();$('titleLogoFile').value='';}
-};
-$('exportTitleLogo').onclick=()=>{try{$('titleLogoPreview').toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='Letreiro-Deluxe.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);},'image/png');}catch(error){$('titleLogoStatus').textContent=error.message;}};
-$('resetTitleLogo').onclick=()=>{delete project.changes.titleScreen?.logoTiles;drawTitleLogo();$('titleLogoStatus').textContent='Letreiro original restaurado.';};
-
-function selectedTitleLayer(){return $('titleLayer').value||'ball';}
-function layerImage(base,id,changes){return /^photo[1-5]$/.test(id)?titlePhotoPixels(base,id,changes):id==='logo'?titleLogoPixels(base,changes):titleBackgroundPixels(base,id,changes);}
-function drawTitleCanvas(id,p){const c=$(id);c.width=p.width;c.height=p.height;const ctx=c.getContext('2d'),im=ctx.createImageData(p.width,p.height);im.data.set(p.rgba);ctx.putImageData(im,0,0);}
-function drawTitleComposition(){if(!project)return;const base=splitRom(file).rom,changes=project.changes.titleScreen??{},id=selectedTitleLayer(),p=layerImage(base,id,changes);drawTitleCanvas('titleComposite',titleCompositePixels(base,changes));drawTitleCanvas('titleLayerPreview',p);$('titleLayerInfo').textContent=(/^photo[1-5]$/.test(id)?'Foto individual: ajuste automático ao recorte; pixels compartilhados são preservados para proteger as outras fotos. ':'')+p.width+' × '+p.height+' pixels. Use PNG/WebP deste tamanho. Cores convertidas para a paleta nativa; conflitos e excesso de espaço bloqueiam a aplicação.';}
-function titleLayerKey(id){return id==='logo'?'logoTiles':id==='photos'||/^photo[1-5]$/.test(id)?'photoTiles':'backgroundTiles';}
-async function commitTitleLayer(p,current,id,image){const base=splitRom(current).rom,changes=p.changes.titleScreen??{},raw=/^photo[1-5]$/.test(id)?importTitlePhoto(base,id,changes,image.rgba,image.width,image.height):id==='logo'?importTitleLogo(base,changes,image.rgba,image.width,image.height):importTitleBackground(base,id,changes,image.rgba,image.width,image.height),trial=structuredClone(p),key=titleLayerKey(id);(trial.changes.titleScreen??={})[key]=Array.from(raw);await buildDeluxeProject(current,trial);if(project!==p||file!==current)return false;(project.changes.titleScreen??={})[key]=Array.from(raw);drawTitleLogo();$('titleLayerStatus').textContent='Camada convertida e validada para gravação na ROM. Salve o projeto ou gere a ROM.';return true;}
-$('titleLayer').onchange=()=>{for(const [id,v]of [['titleLayerX',0],['titleLayerY',0],['titleLayerScale',100]])$(id).value=v;$('titleLayerStatus').textContent='';drawTitleComposition();};
-$('titleLayerFile').onchange=async()=>{const p=project,current=file,id=selectedTitleLayer();let bitmap;try{const f=$('titleLayerFile').files[0];if(!f)return;bitmap=await createImageBitmap(f);const expected=layerImage(splitRom(current).rom,id,p.changes.titleScreen??{});if(!/^photo[1-5]$/.test(id)&&(bitmap.width!==expected.width||bitmap.height!==expected.height))throw Error('Use uma imagem de '+expected.width+' × '+expected.height+' pixels');const c=document.createElement('canvas');c.width=expected.width;c.height=expected.height;const ctx=c.getContext('2d');ctx.drawImage(bitmap,0,0,c.width,c.height);await commitTitleLayer(p,current,id,{width:c.width,height:c.height,rgba:ctx.getImageData(0,0,c.width,c.height).data});}catch(e){$('titleLayerStatus').textContent=e.message;}finally{bitmap?.close();$('titleLayerFile').value='';}};
-$('applyTitleTransform').onclick=async()=>{const p=project,current=file,id=selectedTitleLayer();try{const image=layerImage(splitRom(current).rom,id,p.changes.titleScreen??{}),next=transformTitleLayer(image,{x:Number($('titleLayerX').value),y:Number($('titleLayerY').value),scale:Number($('titleLayerScale').value)});if(await commitTitleLayer(p,current,id,next)){ $('titleLayerX').value=0;$('titleLayerY').value=0;$('titleLayerScale').value=100;}}catch(e){$('titleLayerStatus').textContent=e.message;}};
-$('exportTitleLayer').onclick=()=>{try{$('titleLayerPreview').toBlob(blob=>{if(blob)download(blob,'Deluxe-'+selectedTitleLayer()+'.png','image/png');},'image/png');}catch(e){$('titleLayerStatus').textContent=e.message;}};
-$('resetTitleLayer').onclick=async()=>{if(!project)return;const p=project,current=file,id=selectedTitleLayer(),changes=structuredClone(p.changes.titleScreen??{}),key=titleLayerKey(id);delete changes[key];try{if(await commitTitleLayer(p,current,id,layerImage(splitRom(current).rom,id,changes)))$('titleLayerStatus').textContent='Camada original restaurada; as demais camadas foram preservadas.';}catch(e){$('titleLayerStatus').textContent=e.message;}};
+function drawTitleLogo(){titleComposer.render();}
 
 function option(parent,value,label){const o=document.createElement('option');o.value=String(value);o.textContent=label;parent.append(o);}
 function renderPlayers(){
@@ -273,7 +247,7 @@ function renderPlayers(){
  function control(label,value,type,onChange,min,max){const l=document.createElement('label'),input=document.createElement('input');l.textContent=label;input.type=type;input.value=value;if(min!==undefined)input.min=min;if(max!==undefined)input.max=max;if(type==='number')input.step=1;else input.maxLength=8;input.onchange=()=>{const ok=onChange(type==='number'?Number(input.value):input.value);if(!ok)input.value=value;};l.append(input);$('playerFields').append(l);return input;}
  control('Nome · até 8 caracteres; centralizado na ROM',p.name,'text',v=>commit(change({...project.changes.players?.[id],name:v})));
  control('Número da camisa',p.jersey,'number',v=>{try{return commit(planDeluxeJerseySwap(base,project.changes.players??{},team,player,v));}catch(e){$('playerStatus').textContent=e.message;return false;}},1,20);
- const l=document.createElement('label'),select=document.createElement('select');l.textContent='Posição natural';PLAYER_POSITIONS.forEach((label,i)=>option(select,i,label));select.value=p.naturalPosition;select.onchange=()=>{if(!commit(change({...project.changes.players?.[id],naturalPosition:Number(select.value)})))select.value=p.naturalPosition;};l.append(select);$('playerFields').append(l);
+ const l=document.createElement('label'),select=document.createElement('select');l.textContent='Posição natural';PLAYER_POSITIONS.forEach((label,i)=>{if(p.isGoalkeeper?i===1:i!==1)option(select,i,label);});select.value=p.naturalPosition;select.disabled=p.isGoalkeeper;select.onchange=()=>{if(!commit(change({...project.changes.players?.[id],naturalPosition:Number(select.value)})))select.value=p.naturalPosition;};l.append(select);$('playerFields').append(l);
  for(const [key,label]of Object.entries(PLAYER_SKILLS)){
   const next=v=>change({...project.changes.players?.[id],skills:{...project.changes.players?.[id]?.skills,[key]:v}}),input=control(label,p.skills[key],'number',v=>commit(next(v)),1,10),row=Array.from($('playerFields').children).at(-1),range=document.createElement('input');row.className='skill-field';range.type='range';range.min=1;range.max=10;range.step=1;range.value=p.skills[key];range.setAttribute('aria-label',label);input.setAttribute('aria-label',label+' valor');
   range.oninput=()=>{const v=Number(range.value);if(commit(next(v),false)){input.value=v;input.setCustomValidity('');}};input.oninput=()=>{const v=Number(input.value);if(Number.isInteger(v)&&v>=1&&v<=10){range.value=v;input.setCustomValidity('');commit(next(v),false);}else input.setCustomValidity('Use um inteiro de 1 a 10');};row.append(range);
@@ -311,3 +285,5 @@ function textPt(scope,key){if(!scope)return undefined;if(presetFile!==file){pres
 async function runTextPreset(scope,mode){const p=project,current=file,signature=JSON.stringify(p.changes);try{const next=applyTextPreset(p,splitRom(current).rom,scope,mode);await buildDeluxeProject(current,next);if(project!==p||file!==current||JSON.stringify(p.changes)!==signature){status('O projeto mudou durante a aplicação. Repita a ação.');return;}project=next;render();status(mode==='original'?'Textos originais restaurados na seção inteira.':'Português aplicado à seção inteira. Você pode editar cada texto livremente.');}catch(e){status('Nenhum texto foi aplicado: '+e.message);}}
 function addPresetButtons(host,scope){for(const [mode,label]of [['original','Restaurar todos os textos'],['portuguese','Português em todos os textos']]){const b=document.createElement('button');b.type='button';b.textContent=label;b.disabled=!project;b.onclick=()=>runTextPreset(scope,mode);host.append(b);}}
 function renderTextActions(){for(const scope of ['allTexts','texts','nativeTexts','menuTexts','trainingHud','matchStatistics','cursorHelp','mainMenu','titleTexts']){const host=$(scope+'Actions');host.replaceChildren();addPresetButtons(host,scope);}}
+
+const titleComposer=installTitleComposer({getProject:()=>project,getFile:()=>file,onStatus:status});

@@ -1,0 +1,9 @@
+# Composição e recuperação de elencos Deluxe
+
+A composição da abertura reúne elementos, prévia e propriedades na mesma seção, seguindo o Editor Plus. O título é uma camada; não há seção separada de letreiro. As cinco fotos podem ser selecionadas individualmente. O projeto guarda imagens, máscaras, transformações e seleção. Alterações na prévia só modificam gráficos da ROM após Implementar preview e validação completa. Limites nativos de cobertura, pixels compartilhados, paleta e compressão continuam aplicáveis; a interface livre não implica realocação da rotina gráfica. A ordem entre destinos gráficos distintos ainda depende das camadas nativas do jogo. O contador de VRAM é uma estimativa da prévia, não uma reserva de memória na ROM.
+
+A migração de elencos aceita backups adicionais após o caminho de saída. Quando o projeto Plus recente é esparso, recupera nomes e atributos personalizados de um backup completo. Campos explícitos recentes e bytes alterados por patches recentes têm prioridade. Equipes continuam correspondidas pela identidade do país, e jogadores pelo slot original. O relatório contabiliza campos recuperados e reparos de camisas duplicadas. O arquivo fornecido ao usuário recupera 1019 nomes e 7604 atributos. A versão anterior do projeto fica no histórico.
+
+Seletores de equipe e jogador usam duas colunas, reduzindo para uma em telas estreitas. Slots de goleiro 0 e 11 preservam sua posição. Jogadores de linha podem alternar posições de linha, sem virar goleiros. A validação também vale ao gerar ROM com projeto importado.
+
+Validação: 39 testes Deluxe com ROM original, base Plus e projetos fornecidos. Inclui recuperação de Buffon, geração dos 1080 jogadores, posições protegidas, serialização da composição e recusa de gráficos fora da cobertura nativa. Validação visual em navegador e execução desta composição no emulador permanecem pendentes.

@@ -13,7 +13,7 @@ test('Deluxe players: all 720 names and records decode with Plus codecs; native 
 });
 test('Deluxe players: composed edits, centered names, jersey swap, precise writes and exact restoration',{skip:!fixture},async()=>{
  const input=new Uint8Array(fs.readFileSync(fixture)),snapshot=input.slice(),base=splitRom(input).rom,project=await createDeluxeProject(input);
- let edits=planDeluxeJerseySwap(base,{},30,0,2);edits['30:0']={...edits['30:0'],name:'Teste',naturalPosition:6,skills:Object.fromEntries(Object.keys(PLAYER_SKILLS).map((k,i)=>[k,i%10+1]))};project.changes.players=edits;
+ let edits=planDeluxeJerseySwap(base,{},30,0,2);edits['30:0']={...edits['30:0'],name:'Teste',naturalPosition:1,skills:Object.fromEntries(Object.keys(PLAYER_SKILLS).map((k,i)=>[k,i%10+1]))};project.changes.players=edits;
  project.changes.internalTitle='DELUXE PLAYERS';const otherSlot=Array.from({length:20},(_,p)=>p).find(p=>readDeluxePlayer(base,30,p).jersey===2);const result=await buildDeluxeProject(input,JSON.parse(JSON.stringify(project))),out=splitRom(result.rom).rom,at=deluxePlayerOffsets(base,30,0),other=deluxePlayerOffsets(base,30,otherSlot);
  assert.equal(readDeluxePlayer(out,30,0).name,'Teste');assert.equal(readDeluxePlayer(out,30,0).jersey,2);assert.equal(readDeluxePlayer(out,30,otherSlot).jersey,1);assert.deepEqual(readDeluxePlayer(out,30,0).skills,edits['30:0'].skills);assert.equal(out[at.record+6],base[at.record+6]);assert.equal(out[at.name],0);
  for(let i=0;i<out.length;i++)if(out[i]!==base[i])assert.ok((i>=at.record&&i<at.record+7)||(i>=at.name&&i<at.name+8)||(i>=other.record&&i<other.record+7)||(i>=0x7fc0&&i<0x7fe0),'unexpected write '+i.toString(16));
@@ -25,3 +25,5 @@ test('Deluxe players: reject invalid data and duplicates atomically',{skip:!fixt
  const base=splitRom(new Uint8Array(fs.readFileSync(fixture))).rom;
  for(const edits of [{'36:0':{}},{'0:20':{}},{'00:0':{}},{'0:0':{name:'123456789'}},{'0:0':{name:''}},{'0:0':{skills:{speed:11}}},{'0:0':{skills:{speed:1.5}}},{'0:0':{skills:{unknown:1}}},{'0:0':{naturalPosition:7}},{'0:0':{appearanceRaw:3}},{'0:0':{jersey:2}}]){const out=base.slice();assert.throws(()=>applyDeluxePlayers(out,base,edits));assert.deepEqual(out,base);}
 });
+
+test('goalkeeper position is fixed and outfield players cannot select goalkeeper',{skip:!fixture},()=>{const base=splitRom(new Uint8Array(fs.readFileSync(fixture))).rom;for(const player of [0,11]){assert.equal(readDeluxePlayer(base,0,player).isGoalkeeper,true);assert.throws(()=>applyDeluxePlayers(base.slice(),base,{['0:'+player]:{naturalPosition:4}}),/fixa/);}for(const player of [1,10,12,19]){assert.equal(readDeluxePlayer(base,0,player).isGoalkeeper,false);assert.throws(()=>applyDeluxePlayers(base.slice(),base,{['0:'+player]:{naturalPosition:1}}),/linha/);const out=base.slice();applyDeluxePlayers(out,base,{['0:'+player]:{naturalPosition:6}});assert.equal(readDeluxePlayer(out,0,player).naturalPosition,6);}});

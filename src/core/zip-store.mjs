@@ -1,0 +1,7 @@
+const enc=new TextEncoder();
+function crc(bytes){let v=0xffffffff;for(const b of bytes){v^=b;for(let i=0;i<8;i++)v=(v>>>1)^((v&1)?0xedb88320:0);}return (v^0xffffffff)>>>0;}
+export function zipStore(files){const local=[],central=[];let offset=0,size=0;const header=(length)=>({data:new Uint8Array(length),view:null});
+ for(const file of files){const name=enc.encode(file.name),bytes=file.bytes,hash=crc(bytes),h=header(30+name.length);h.view=new DataView(h.data.buffer);const v=h.view;v.setUint32(0,0x04034b50,true);v.setUint16(4,20,true);v.setUint16(6,0x800,true);v.setUint32(14,hash,true);v.setUint32(18,bytes.length,true);v.setUint32(22,bytes.length,true);v.setUint16(26,name.length,true);h.data.set(name,30);local.push(h.data,bytes);
+ const c=header(46+name.length);c.view=new DataView(c.data.buffer);const w=c.view;w.setUint32(0,0x02014b50,true);w.setUint16(4,20,true);w.setUint16(6,20,true);w.setUint16(8,0x800,true);w.setUint32(16,hash,true);w.setUint32(20,bytes.length,true);w.setUint32(24,bytes.length,true);w.setUint16(28,name.length,true);w.setUint32(42,offset,true);c.data.set(name,46);central.push(c.data);offset+=h.data.length+bytes.length;size+=c.data.length;}
+ const end=new Uint8Array(22),v=new DataView(end.buffer);v.setUint32(0,0x06054b50,true);v.setUint16(8,files.length,true);v.setUint16(10,files.length,true);v.setUint32(12,size,true);v.setUint32(16,offset,true);const out=new Uint8Array(offset+size+22);let at=0;for(const part of [...local,...central,end]){out.set(part,at);at+=part.length;}return out;
+}
