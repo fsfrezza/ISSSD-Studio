@@ -1,3 +1,4 @@
+import {addDeluxeStructureGroup,prepareDeluxeStructure,validateDeluxeStructure} from '../src/core/deluxe-structure.mjs';
 import {readDeluxeGroups,DELUXE_GROUP_LABELS,moveDeluxeGroupTeam} from '../src/core/deluxe-groups.mjs';
 import {DELUXE_TEAMS,PLAYER_SKILLS,PLAYER_POSITIONS,readDeluxePlayer,planDeluxeJerseySwap,applyDeluxePlayers} from '../src/core/deluxe-players.mjs';
 import {TITLE_LAYERS,titleBackgroundPixels,importTitleBackground,titleCompositePixels,transformTitleLayer} from '../src/core/deluxe-title-background.mjs';
@@ -18,7 +19,7 @@ let audioContext=null,audioSource=null;
 function status(value){$('status').textContent=value;}
 function download(data,name,type){const url=URL.createObjectURL(new Blob([data],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 function render(){
-  $('resetGroups').disabled=!project;$('groupCards').replaceChildren();$('groupStatus').textContent='';
+  for(const id of ['resetGroups','addStructureGroup','resetStructure'])$(id).disabled=!project;$('groupCards').replaceChildren();$('teamCards').replaceChildren();$('groupStatus').textContent='';
   for(const id of ['playerTeam','playerSelection','resetPlayer','resetPlayerTeam'])$(id).disabled=!project;
   $('playerFields').replaceChildren();$('playerStatus').textContent='';if(!project){$('playerTeam').replaceChildren();$('playerSelection').replaceChildren();}
   for(const id of ['texts','stadiums','nativeTexts','cursorHelp','menuTexts','mainMenu','trainingHud','matchStatistics','titleTexts','titlePalettes'])$(id).replaceChildren();
@@ -31,6 +32,7 @@ function render(){
   renderSounds();
   renderPlayers();
   renderGroups();
+  renderTeams();
   renderTitleScreen(rom);
   renderNative(rom);
   renderMatchTexts(rom);
@@ -50,7 +52,7 @@ $('rom').onchange=async()=>{
 };
 $('save').onclick=async()=>{try{await buildDeluxeProject(file,project);download(JSON.stringify(project,null,2),'Deluxe.issdproj','application/json');}catch(error){status(error.message);}};
 $('load').onchange=async()=>{const current=file;try{const selected=$('load').files[0];if(!selected)return;const p=JSON.parse(await selected.text());await buildDeluxeProject(current,p);if(file!==current)return;project=p;render();status('Projeto Deluxe reaberto.');}catch(error){status(error.message);}finally{$('load').value='';}};
-$('export').onclick=async()=>{try{const result=await buildDeluxeProject(file,project);download(result.rom,'Deluxe-editado.'+(project.base.headerSize?'smc':'sfc'),'application/octet-stream');status('ROM gerada · '+result.diff.changedBytes+' bytes alterados · sem expansão.');}catch(error){status(error.message);}};
+$('export').onclick=async()=>{try{const result=await buildDeluxeProject(file,project);download(result.rom,'Deluxe-editado.'+(project.base.headerSize?'smc':'sfc'),'application/octet-stream');status('ROM gerada · '+result.diff.changedBytes+' bytes alterados · sem expansão.'+(project.changes.structure?' Estrutura experimental: '+project.changes.structure.teams.length+' equipes; valide no emulador.':''));}catch(error){status(error.message);}};
 
 function updateChange(section,key,value,original){
  const entries=project.changes[section]??={};
@@ -259,8 +261,8 @@ $('resetTitleLayer').onclick=async()=>{if(!project)return;const p=project,curren
 
 function option(parent,value,label){const o=document.createElement('option');o.value=String(value);o.textContent=label;parent.append(o);}
 function renderPlayers(){
- if(!project)return;const base=splitRom(file).rom,team=Number($('playerTeam').value)||0,player=Number($('playerSelection').value)||0;
- $('playerTeam').replaceChildren();DELUXE_TEAMS.forEach((label,i)=>option($('playerTeam'),i,label));$('playerTeam').value=team;
+ if(!project)return;const base=playerBase(),names=teamNames(),team=Math.min(Number($('playerTeam').value)||0,names.length-1),player=Number($('playerSelection').value)||0;
+ $('playerCount').textContent=names.length+' equipes · 20 jogadores';$('playerTeam').replaceChildren();names.forEach((label,i)=>option($('playerTeam'),i,label));$('playerTeam').value=team;
  $('playerSelection').replaceChildren();for(let i=0;i<20;i++){const p=readDeluxePlayer(base,team,i,project.changes.players);option($('playerSelection'),i,(i+1)+' · '+p.name+' · Nº '+p.jersey);}$('playerSelection').value=player;
  $('playerFields').replaceChildren();const p=readDeluxePlayer(base,team,player,project.changes.players),original=readDeluxePlayer(base,team,player),id=team+':'+player;
  function change(edit){const next=structuredClone(project.changes.players??{});next[id]=edit;return next;}
@@ -277,8 +279,16 @@ $('playerTeam').onchange=()=>{$('playerSelection').value=0;renderPlayers();$('pl
 $('playerSelection').onchange=()=>{renderPlayers();$('playerStatus').textContent='';};
 
 function renderGroups(){
- if(!project)return;const groups=project.changes.groups??readDeluxeGroups(splitRom(file).rom);$('groupCards').replaceChildren();
- groups.forEach((group,g)=>{const card=document.createElement('details'),summary=document.createElement('summary'),body=document.createElement('div');card.className='card';card.open=true;summary.textContent=DELUXE_GROUP_LABELS[g];body.className='card-body';card.append(summary,body);
- group.forEach((team,slot)=>{const label=document.createElement('label'),select=document.createElement('select');label.textContent='Vaga '+(slot+1);DELUXE_TEAMS.forEach((name,id)=>option(select,id,name));select.value=team;select.onchange=()=>{const wanted=Number(select.value);let fromGroup=-1,fromSlot=-1;groups.forEach((row,i)=>{const at=row.indexOf(wanted);if(at>=0){fromGroup=i;fromSlot=at;}});try{project.changes.groups=moveDeluxeGroupTeam(groups,fromGroup,fromSlot,g,slot);renderGroups();$('groupStatus').textContent='Organização aplicada ao projeto. Salve ou gere a ROM.';}catch(e){select.value=team;$('groupStatus').textContent=e.message;}};label.append(select);body.append(label);});$('groupCards').append(card);});
+ if(!project)return;const groups=project.changes.structure?.groups??project.changes.groups??readDeluxeGroups(splitRom(file).rom);$('addStructureGroup').disabled=groups.length>=9;$('groupCards').replaceChildren();
+ groups.forEach((group,g)=>{const card=document.createElement('details'),summary=document.createElement('summary'),body=document.createElement('div');card.className='card';card.open=true;summary.textContent=project.changes.structure?.labels?.[g]??DELUXE_GROUP_LABELS[g]??('GRUPO '+(g+1));body.className='card-body';card.append(summary,body);
+ if(project.changes.structure){const l=document.createElement('label'),input=document.createElement('input');l.textContent='Título no projeto e no Editor';input.value=summary.textContent;input.maxLength=32;input.onchange=()=>{if(!input.value.trim())return;project.changes.structure.labels??=groups.map((_,i)=>DELUXE_GROUP_LABELS[i]??('GRUPO '+(i+1)));project.changes.structure.labels[g]=input.value.trim();renderGroups();};l.append(input);body.append(l);}
+ group.forEach((team,slot)=>{const label=document.createElement('label'),select=document.createElement('select');label.textContent='Vaga '+(slot+1);teamNames().forEach((name,id)=>option(select,id,name));select.value=team;select.onchange=()=>{const wanted=Number(select.value);let fromGroup=-1,fromSlot=-1;groups.forEach((row,i)=>{const at=row.indexOf(wanted);if(at>=0){fromGroup=i;fromSlot=at;}});try{if(project.changes.structure){const next=structuredClone(project.changes.structure);[next.groups[fromGroup][fromSlot],next.groups[g][slot]]=[next.groups[g][slot],next.groups[fromGroup][fromSlot]];validateDeluxeStructure(next);project.changes.structure=next;}else project.changes.groups=moveDeluxeGroupTeam(groups,fromGroup,fromSlot,g,slot);renderGroups();$('groupStatus').textContent='Organização aplicada ao projeto. Salve ou gere a ROM.';}catch(e){select.value=team;$('groupStatus').textContent=e.message;}};label.append(select);body.append(label);});$('groupCards').append(card);});
 }
-$('resetGroups').onclick=()=>{delete project.changes.groups;renderGroups();$('groupStatus').textContent='Grupos originais restaurados.';};
+$('resetGroups').onclick=()=>{if(project.changes.structure){const n=project.changes.structure.teams.length;project.changes.structure.groups=[...readDeluxeGroups(splitRom(file).rom),...Array.from({length:n/6-6},(_,g)=>Array.from({length:6},(_,i)=>36+g*6+i))];}else delete project.changes.groups;renderGroups();$('groupStatus').textContent='Grupos originais restaurados.';};
+
+var structureCache;
+function teamNames(){return project?.changes.structure?.teams.map(t=>t.name)??DELUXE_TEAMS;}
+function playerBase(){const key=JSON.stringify(project.changes.structure);if(structureCache?.file!==file||structureCache?.key!==key)structureCache={file,key,base:prepareDeluxeStructure(splitRom(file).rom,project.changes.structure)};return structureCache.base;}
+function renderTeams(){if(!project)return;$('teamCards').replaceChildren();if(!project.changes.structure)return;project.changes.structure.teams.forEach((t,i)=>{const d=document.createElement('details'),summary=document.createElement('summary'),body=document.createElement('div');d.className='card';summary.textContent=(i+1)+' · '+t.name;body.className='card-body';d.append(summary,body);const label=document.createElement('label'),input=document.createElement('input');label.textContent='Nome no projeto e no Editor';input.value=t.name;input.maxLength=32;input.onchange=()=>{if(!input.value.trim()){input.value=t.name;return;}t.name=input.value.trim();renderTeams();renderGroups();renderPlayers();};label.append(input);body.append(label);if(i>=36){const l=document.createElement('label'),sel=document.createElement('select');l.textContent='Equipe-base para elenco e recursos visuais';DELUXE_TEAMS.forEach((name,id)=>option(sel,id,name));sel.value=t.sourceTeam;sel.onchange=()=>{t.sourceTeam=Number(sel.value);renderPlayers();};l.append(sel);body.append(l);}$('teamCards').append(d);});}
+$('addStructureGroup').onclick=()=>{try{project.changes.structure=addDeluxeStructureGroup(splitRom(file).rom,project.changes.structure,project.changes.groups);delete project.changes.groups;render();$('groupStatus').textContent='Estrutura experimental: '+project.changes.structure.teams.length+' equipes. Confira a ROM no emulador antes de usar.';}catch(e){$('groupStatus').textContent=e.message;}};
+$('resetStructure').onclick=()=>{delete project.changes.structure;delete project.changes.groups;for(const key of Object.keys(project.changes.players??{}))if(Number(key.split(':')[0])>=36)delete project.changes.players[key];$('playerTeam').value=0;render();$('groupStatus').textContent='Estrutura original restaurada. As edições dos 36 elencos nativos foram preservadas.';};

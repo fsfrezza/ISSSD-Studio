@@ -1,4 +1,5 @@
 const pages={
+ teams:['Equipes','Personalize as equipes da estrutura ampliada.'],
  groups:['Grupos','Organize as equipes nos grupos nativos da Deluxe.'],
  players:['Jogadores','Edite os elencos regulares originais da Deluxe.'],
  overview:['Visão geral','Abra a ROM original ou continue um projeto.'],

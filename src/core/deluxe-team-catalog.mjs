@@ -1,0 +1,2 @@
+// Native Deluxe country order; Northern Ireland and Turkey differ from Plus IDs.
+export const DELUXE_TEAMS=['Itália','Holanda','Inglaterra','Noruega','Espanha','Irlanda','Portugal','Dinamarca','Alemanha','França','Bélgica','Suécia','Romênia','Bulgária','Rússia','Suíça','Grécia','Croácia','Áustria','País de Gales','Escócia','Irlanda do Norte','República Tcheca','Polônia','Japão','Coreia do Sul','Turquia','Nigéria','Camarões','Marrocos','Brasil','Argentina','Colômbia','México','EUA','Uruguai'];

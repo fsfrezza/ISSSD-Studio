@@ -1,9 +1,12 @@
+import {structureActive,expandedPlayerOffsets} from './deluxe-structure.mjs';
 import {decodePlayerRecord,writeSkill,writeNaturalPosition,writeJersey} from './plus-player.mjs';
 import {decodeFixedPlayerName,encodeFixedPlayerName,formatPlayerName} from './plus-player-name.mjs';
-export const DELUXE_TEAMS=['Itália','Holanda','Inglaterra','Noruega','Espanha','Irlanda','Portugal','Dinamarca','Alemanha','França','Bélgica','Suécia','Romênia','Bulgária','Rússia','Suíça','Grécia','Croácia','Áustria','País de Gales','Escócia','Irlanda do Norte','República Tcheca','Polônia','Japão','Coreia do Sul','Turquia','Nigéria','Camarões','Marrocos','Brasil','Argentina','Colômbia','México','EUA','Uruguai'];
+import {DELUXE_TEAMS} from './deluxe-team-catalog.mjs';
+export {DELUXE_TEAMS};
 export const PLAYER_SKILLS={acceleration:'Arranque',speed:'Rapidez',shot:'Chute',curve:'Efeito',balance:'Firmeza',intelligence:'Inteligência',dribbling:'Drible',jump:'Pulo',energy:'Resistência'};
 export const PLAYER_POSITIONS=['Sem posição','Goleiro','Defensor','Defensor / Meio-campista','Meio-campista','Meio-campista / Atacante','Atacante'];
 export function deluxePlayerOffsets(base,team,player){
+ if(structureActive(base))return expandedPlayerOffsets(base,team,player);
  if(!Number.isInteger(team)||team<0||team>=36||!Number.isInteger(player)||player<0||player>=20)throw Error('Jogador fora dos 36 elencos regulares');
  const ptr=base[0x38138+team*2]|base[0x38139+team*2]<<8;
  if(ptr!==0x818e+team*160)throw Error('Tabela de nomes Deluxe incompatível');
@@ -18,7 +21,7 @@ function object(v,label){if(!v||typeof v!=='object'||Array.isArray(v))throw Erro
 export function applyDeluxePlayers(out,base,edits){
  if(edits===undefined)return out;object(edits,'Jogadores');const writes=[],teams=new Set();
  for(const [id,edit]of Object.entries(edits)){
-  if(!/^(?:[0-9]|[12][0-9]|3[0-5]):(?:[0-9]|1[0-9])$/.test(id))throw Error('Identificador de jogador inválido');
+  if(!/^(?:[0-9]|[1-4][0-9]|5[0-3]):(?:[0-9]|1[0-9])$/.test(id))throw Error('Identificador de jogador inválido');
   object(edit,'Jogador');if(Object.keys(edit).some(k=>!['name','jersey','naturalPosition','skills'].includes(k)))throw Error('Campo de jogador não suportado');
   const [team,player]=id.split(':').map(Number),at=deluxePlayerOffsets(base,team,player),raw=base.slice(at.record,at.record+7);teams.add(team);
   if(edit.name!==undefined){if(typeof edit.name!=='string'||!edit.name.trim())throw Error('Nome de jogador vazio ou inválido');const original=decodeFixedPlayerName(base.slice(at.name,at.name+8)).trim();if(edit.name!==original)writes.push([at.name,encodeFixedPlayerName(formatPlayerName(edit.name,'center'))]);}
