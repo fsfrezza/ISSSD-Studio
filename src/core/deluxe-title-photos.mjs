@@ -1,0 +1,14 @@
+import {titleBackgroundPixels,importTitleBackground,forEachTitleBackgroundPixel,readTitleBackground} from './deluxe-title-background.mjs';
+// Same native photo masks used by the Plus compositor. Photo 3 is in front of photo 4.
+export const TITLE_PHOTO_MASKS={photo1:[[33,139],[33,211],[79,198],[79,146]],photo2:[[73,123],[73,182],[116,180],[119,128],[102,125]],photo3:[[113,132],[114,206],[159,189],[157,144]],photo4:[[152,128],[153,175],[197,186],[199,118]],photo5:[[185,144],[230,142],[231,213],[184,192]]};
+function inside(points,x,y){let hit=false;for(let i=0,j=points.length-1;i<points.length;j=i++){const [a,b]=points[i],[c,d]=points[j];if((b>y)!==(d>y)&&x<(c-a)*(y-b)/(d-b)+a)hit=!hit;}return hit;}
+function owner(x,y){let id=null;for(const key of ['photo1','photo2','photo4','photo5','photo3'])if(inside(TITLE_PHOTO_MASKS[key],x+.5,y+.5))id=key;return id;}
+function bounds(id){const pts=TITLE_PHOTO_MASKS[id];if(!pts)throw Error('Foto desconhecida');const x=Math.min(...pts.map(p=>p[0])),y=Math.min(...pts.map(p=>p[1])),right=Math.max(...pts.map(p=>p[0]))+1,bottom=Math.max(...pts.map(p=>p[1]))+1;return {x,y,width:right-x,height:bottom-y};}
+export function titlePhotoPixels(base,id,changes={}){const all=titleBackgroundPixels(base,'photos',changes),b=bounds(id),rgba=new Uint8ClampedArray(b.width*b.height*4);for(let y=0;y<b.height;y++)for(let x=0;x<b.width;x++)if(owner(x+b.x,y+b.y)===id){const at=((y+b.y-all.y)*all.width+x+b.x-all.x)*4;rgba.set(all.rgba.slice(at,at+4),(y*b.width+x)*4);}return {...b,rgba};}
+export function importTitlePhoto(base,id,changes,rgba,width,height){const b=bounds(id);if(width!==b.width||height!==b.height||rgba.length!==width*height*4)throw Error('Foto: dimensões inválidas');const all=titleBackgroundPixels(base,'photos',changes),next=all.rgba.slice(),counts=new Map();
+ forEachTitleBackgroundPixel(base,'photos',(t,p)=>{const key=t*64+p;counts.set(key,(counts.get(key)??0)+1);});
+ const nativeChanges={...changes};delete nativeChanges.photoTiles;const nativeImage=titlePhotoPixels(base,id,nativeChanges);
+ if(nativeImage.rgba.every((v,i)=>v===rgba[i])){const raw=readTitleBackground(base,'photos',changes).raw,original=readTitleBackground(base,'photos').original;forEachTitleBackgroundPixel(base,'photos',(t,p,x,y)=>{if(counts.get(t*64+p)>1||owner(x,y)!==id)return;for(let plane=0;plane<8;plane++){const at=t*64+(plane>>1)*16+(p>>3)*2+(plane&1),bit=1<<(7-(p&7));raw[at]=(raw[at]&~bit)|(original[at]&bit);}});return raw;}
+ // Shared physical pixels are immutable for individual editing, so another photo can never be changed indirectly.
+ forEachTitleBackgroundPixel(base,'photos',(t,p,x,y)=>{if(counts.get(t*64+p)>1||owner(x,y)!==id)return;const dx=x-b.x,dy=y-b.y;if(dx<0||dy<0||dx>=width||dy>=height)return;const at=((y-all.y)*all.width+x-all.x)*4,src=(dy*width+dx)*4;next.set(rgba.slice(src,src+4),at);});
+ return importTitleBackground(base,'photos',changes,next,all.width,all.height);}
