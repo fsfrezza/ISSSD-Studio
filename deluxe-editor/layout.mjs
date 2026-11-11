@@ -1,4 +1,5 @@
 const pages={
+ players:['Jogadores','Edite os elencos regulares originais da Deluxe.'],
  overview:['Visão geral','Abra a ROM original ou continue um projeto.'],
  title:['Tela inicial','Personalize as cores e os textos do rodapé da abertura.'],
  menu:['Menu principal','Personalize os nomes e confira a tipografia na prévia.'],

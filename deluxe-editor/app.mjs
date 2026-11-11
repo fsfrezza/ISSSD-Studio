@@ -1,3 +1,4 @@
+import {DELUXE_TEAMS,PLAYER_SKILLS,PLAYER_POSITIONS,readDeluxePlayer,planDeluxeJerseySwap,applyDeluxePlayers} from '../src/core/deluxe-players.mjs';
 import {TITLE_LAYERS,titleBackgroundPixels,importTitleBackground,titleCompositePixels,transformTitleLayer} from '../src/core/deluxe-title-background.mjs';
 import {createDeluxeProject,buildDeluxeProject,IMPROVEMENTS,splitRom} from '../src/core/deluxe-project.mjs';
 import {PLUS_STRATEGY_TEXTS,readPlusStrategyText} from '../src/core/plus-strategy-text.mjs';
@@ -16,6 +17,8 @@ let audioContext=null,audioSource=null;
 function status(value){$('status').textContent=value;}
 function download(data,name,type){const url=URL.createObjectURL(new Blob([data],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 function render(){
+  for(const id of ['playerTeam','playerSelection','resetPlayer','resetPlayerTeam'])$(id).disabled=!project;
+  $('playerFields').replaceChildren();$('playerStatus').textContent='';if(!project){$('playerTeam').replaceChildren();$('playerSelection').replaceChildren();}
   for(const id of ['texts','stadiums','nativeTexts','cursorHelp','menuTexts','mainMenu','trainingHud','matchStatistics','titleTexts','titlePalettes'])$(id).replaceChildren();
   for(const id of ['menuScale','menuSelection','resetMenu'])$(id).disabled=!project;
   if(!project){$('menuPreview').getContext('2d').clearRect(0,0,256,224);$('menuStatus').textContent='';}
@@ -24,6 +27,7 @@ function render(){
   if(!project){for(const id of ['titleComposite','titleLayerPreview'])$(id).getContext('2d').clearRect(0,0,256,224);$('titleLayerStatus').textContent='';$('titleLayerInfo').textContent='';$('titleLogoPreview').getContext('2d').clearRect(0,0,256,224);renderSounds();return;}
   const {rom}=splitRom(file);
   renderSounds();
+  renderPlayers();
   renderTitleScreen(rom);
   renderNative(rom);
   renderMatchTexts(rom);
@@ -249,3 +253,22 @@ $('titleLayerFile').onchange=async()=>{const p=project,current=file,id=selectedT
 $('applyTitleTransform').onclick=async()=>{const p=project,current=file,id=selectedTitleLayer();try{const image=layerImage(splitRom(current).rom,id,p.changes.titleScreen??{}),next=transformTitleLayer(image,{x:Number($('titleLayerX').value),y:Number($('titleLayerY').value),scale:Number($('titleLayerScale').value)});if(await commitTitleLayer(p,current,id,next)){ $('titleLayerX').value=0;$('titleLayerY').value=0;$('titleLayerScale').value=100;}}catch(e){$('titleLayerStatus').textContent=e.message;}};
 $('exportTitleLayer').onclick=()=>{try{$('titleLayerPreview').toBlob(blob=>{if(blob)download(blob,'Deluxe-'+selectedTitleLayer()+'.png','image/png');},'image/png');}catch(e){$('titleLayerStatus').textContent=e.message;}};
 $('resetTitleLayer').onclick=async()=>{if(!project)return;const p=project,current=file,id=selectedTitleLayer(),changes=structuredClone(p.changes.titleScreen??{}),key=titleLayerKey(id);delete changes[key];try{if(await commitTitleLayer(p,current,id,layerImage(splitRom(current).rom,id,changes)))$('titleLayerStatus').textContent='Camada original restaurada; as demais camadas foram preservadas.';}catch(e){$('titleLayerStatus').textContent=e.message;}};
+
+function option(parent,value,label){const o=document.createElement('option');o.value=String(value);o.textContent=label;parent.append(o);}
+function renderPlayers(){
+ if(!project)return;const base=splitRom(file).rom,team=Number($('playerTeam').value)||0,player=Number($('playerSelection').value)||0;
+ $('playerTeam').replaceChildren();DELUXE_TEAMS.forEach((label,i)=>option($('playerTeam'),i,label));$('playerTeam').value=team;
+ $('playerSelection').replaceChildren();for(let i=0;i<20;i++){const p=readDeluxePlayer(base,team,i,project.changes.players);option($('playerSelection'),i,(i+1)+' · '+p.name+' · Nº '+p.jersey);}$('playerSelection').value=player;
+ $('playerFields').replaceChildren();const p=readDeluxePlayer(base,team,player,project.changes.players),original=readDeluxePlayer(base,team,player),id=team+':'+player;
+ function change(edit){const next=structuredClone(project.changes.players??{});next[id]=edit;return next;}
+ function commit(next){try{applyDeluxePlayers(base.slice(),base,next);project.changes.players=next;$('playerStatus').textContent='Alterações aplicadas ao projeto. Salve ou gere a ROM.';renderPlayers();return true;}catch(e){$('playerStatus').textContent=e.message;return false;}}
+ function control(label,value,type,onChange,min,max){const l=document.createElement('label'),input=document.createElement('input');l.textContent=label;input.type=type;input.value=value;if(min!==undefined)input.min=min;if(max!==undefined)input.max=max;if(type==='number')input.step=1;else input.maxLength=8;input.onchange=()=>{const ok=onChange(type==='number'?Number(input.value):input.value);if(!ok)input.value=value;};l.append(input);$('playerFields').append(l);return input;}
+ control('Nome · até 8 caracteres; centralizado na ROM',p.name,'text',v=>commit(change({...project.changes.players?.[id],name:v})));
+ control('Número da camisa',p.jersey,'number',v=>{try{return commit(planDeluxeJerseySwap(base,project.changes.players??{},team,player,v));}catch(e){$('playerStatus').textContent=e.message;return false;}},1,20);
+ const l=document.createElement('label'),select=document.createElement('select');l.textContent='Posição natural';PLAYER_POSITIONS.forEach((label,i)=>option(select,i,label));select.value=p.naturalPosition;select.onchange=()=>{if(!commit(change({...project.changes.players?.[id],naturalPosition:Number(select.value)})))select.value=p.naturalPosition;};l.append(select);$('playerFields').append(l);
+ for(const [key,label]of Object.entries(PLAYER_SKILLS))control(label,p.skills[key],'number',v=>commit(change({...project.changes.players?.[id],skills:{...project.changes.players?.[id]?.skills,[key]:v}})),1,10);
+ $('resetPlayer').onclick=()=>{const next=structuredClone(project.changes.players??{}),current=readDeluxePlayer(base,team,player,next);if(current.jersey!==original.jersey){const swapped=planDeluxeJerseySwap(base,next,team,player,original.jersey);delete swapped[id];commit(swapped);}else{delete next[id];commit(next);}};
+ $('resetPlayerTeam').onclick=()=>{const next=structuredClone(project.changes.players??{});for(let i=0;i<20;i++)delete next[team+':'+i];commit(next);};
+}
+$('playerTeam').onchange=()=>{$('playerSelection').value=0;renderPlayers();$('playerStatus').textContent='';};
+$('playerSelection').onchange=()=>{renderPlayers();$('playerStatus').textContent='';};
