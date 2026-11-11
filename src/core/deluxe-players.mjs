@@ -1,6 +1,6 @@
 import {decodePlayerRecord,writeSkill,writeNaturalPosition,writeJersey} from './plus-player.mjs';
 import {decodeFixedPlayerName,encodeFixedPlayerName,formatPlayerName} from './plus-player-name.mjs';
-export const DELUXE_TEAMS=['Itália','Holanda','Inglaterra','Noruega','Espanha','Irlanda','Portugal','Dinamarca','Alemanha','França','Bélgica','Suécia','Romênia','Bulgária','Rússia','Suíça','Grécia','Croácia','Áustria','País de Gales','Escócia','Turquia','República Tcheca','Polônia','Japão','Coreia do Sul','Arábia Saudita','Nigéria','Camarões','Marrocos','Brasil','Argentina','Colômbia','México','EUA','Uruguai'];
+export const DELUXE_TEAMS=['Itália','Holanda','Inglaterra','Noruega','Espanha','Irlanda','Portugal','Dinamarca','Alemanha','França','Bélgica','Suécia','Romênia','Bulgária','Rússia','Suíça','Grécia','Croácia','Áustria','País de Gales','Escócia','Irlanda do Norte','República Tcheca','Polônia','Japão','Coreia do Sul','Turquia','Nigéria','Camarões','Marrocos','Brasil','Argentina','Colômbia','México','EUA','Uruguai'];
 export const PLAYER_SKILLS={acceleration:'Arranque',speed:'Rapidez',shot:'Chute',curve:'Efeito',balance:'Firmeza',intelligence:'Inteligência',dribbling:'Drible',jump:'Pulo',energy:'Resistência'};
 export const PLAYER_POSITIONS=['Sem posição','Goleiro','Defensor','Defensor / Meio-campista','Meio-campista','Meio-campista / Atacante','Atacante'];
 export function deluxePlayerOffsets(base,team,player){

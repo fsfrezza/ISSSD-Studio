@@ -1,3 +1,4 @@
+import {readDeluxeGroups,DELUXE_GROUP_LABELS,moveDeluxeGroupTeam} from '../src/core/deluxe-groups.mjs';
 import {DELUXE_TEAMS,PLAYER_SKILLS,PLAYER_POSITIONS,readDeluxePlayer,planDeluxeJerseySwap,applyDeluxePlayers} from '../src/core/deluxe-players.mjs';
 import {TITLE_LAYERS,titleBackgroundPixels,importTitleBackground,titleCompositePixels,transformTitleLayer} from '../src/core/deluxe-title-background.mjs';
 import {createDeluxeProject,buildDeluxeProject,IMPROVEMENTS,splitRom} from '../src/core/deluxe-project.mjs';
@@ -17,6 +18,7 @@ let audioContext=null,audioSource=null;
 function status(value){$('status').textContent=value;}
 function download(data,name,type){const url=URL.createObjectURL(new Blob([data],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 function render(){
+  $('resetGroups').disabled=!project;$('groupCards').replaceChildren();$('groupStatus').textContent='';
   for(const id of ['playerTeam','playerSelection','resetPlayer','resetPlayerTeam'])$(id).disabled=!project;
   $('playerFields').replaceChildren();$('playerStatus').textContent='';if(!project){$('playerTeam').replaceChildren();$('playerSelection').replaceChildren();}
   for(const id of ['texts','stadiums','nativeTexts','cursorHelp','menuTexts','mainMenu','trainingHud','matchStatistics','titleTexts','titlePalettes'])$(id).replaceChildren();
@@ -28,6 +30,7 @@ function render(){
   const {rom}=splitRom(file);
   renderSounds();
   renderPlayers();
+  renderGroups();
   renderTitleScreen(rom);
   renderNative(rom);
   renderMatchTexts(rom);
@@ -272,3 +275,10 @@ function renderPlayers(){
 }
 $('playerTeam').onchange=()=>{$('playerSelection').value=0;renderPlayers();$('playerStatus').textContent='';};
 $('playerSelection').onchange=()=>{renderPlayers();$('playerStatus').textContent='';};
+
+function renderGroups(){
+ if(!project)return;const groups=project.changes.groups??readDeluxeGroups(splitRom(file).rom);$('groupCards').replaceChildren();
+ groups.forEach((group,g)=>{const card=document.createElement('details'),summary=document.createElement('summary'),body=document.createElement('div');card.className='card';card.open=true;summary.textContent=DELUXE_GROUP_LABELS[g];body.className='card-body';card.append(summary,body);
+ group.forEach((team,slot)=>{const label=document.createElement('label'),select=document.createElement('select');label.textContent='Vaga '+(slot+1);DELUXE_TEAMS.forEach((name,id)=>option(select,id,name));select.value=team;select.onchange=()=>{const wanted=Number(select.value);let fromGroup=-1,fromSlot=-1;groups.forEach((row,i)=>{const at=row.indexOf(wanted);if(at>=0){fromGroup=i;fromSlot=at;}});try{project.changes.groups=moveDeluxeGroupTeam(groups,fromGroup,fromSlot,g,slot);renderGroups();$('groupStatus').textContent='Organização aplicada ao projeto. Salve ou gere a ROM.';}catch(e){select.value=team;$('groupStatus').textContent=e.message;}};label.append(select);body.append(label);});$('groupCards').append(card);});
+}
+$('resetGroups').onclick=()=>{delete project.changes.groups;renderGroups();$('groupStatus').textContent='Grupos originais restaurados.';};

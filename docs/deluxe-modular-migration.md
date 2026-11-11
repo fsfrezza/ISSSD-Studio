@@ -299,3 +299,11 @@ foi inspecionada. A exibição da ROM modificada no emulador permanece pendente.
 - Projeto v1 ganha `changes.players`, objeto com chaves `equipe:jogador` (índices iniciando em zero). Apenas `name`, `jersey`, `naturalPosition` e `skills` são aceitos. Escrita validada integralmente antes de aplicar alterações; aparência permanece preservada. Projetos anteriores continuam válidos.
 - Registros especiais posteriores aos 36 elencos regulares, novos times, táticas, aparência e transferência de elencos Plus permanecem pendentes. Os 2 MB são mantidos.
 - Validação: 26 testes passaram com ROM Deluxe USA real; leitura dos 720 nomes/atributos, escrita restrita, números, rejeições, restauração exata e handlers da interface. O projeto convertido também gerou ROM antes/depois de uma edição de jogador, preservando todas as demais regiões. Execução no emulador e inspeção no navegador ainda pendentes.
+
+### Fundação dos grupos e correspondência Deluxe → Plus
+
+- A edição dos grupos passou a usar um writer comum ao projeto e à interface: `changes.groups` guarda os seis grupos nativos, com seis seleções por grupo. Trocas de vagas preservam a permutação das 36 seleções. Tabela em PC 0xDA3F; grupo especial e títulos gráficos permanecem intactos.
+- Corrigido o catálogo Deluxe: índice 21 é Irlanda do Norte (Plus 53); índice 26 é Turquia (Plus 21). A Arábia Saudita da Plus 26 não tem portador original equivalente. Os outros 34 IDs regulares coincidem. A lista usada anteriormente vinha da Plus e identificava incorretamente esses dois elencos originais.
+- `scripts/audit-deluxe-structure.mjs` compara exclusivamente as duas bases por hash e documenta os cinco consumidores confirmados da tabela de grupos. A saída em `docs/deluxe-structure-audit.json` é um inventário estático, não um patch estrutural.
+- Limite desta entrega: seis grupos e 36 equipes. A expansão para 54 equipes/nove grupos, navegação, referências de partida e recursos dos novos times continua pendente. Projetos ampliados ainda não são aceitos para geração; o convertido do usuário não recebeu uma expansão parcial.
+- Validação: 29 testes passaram com as ROMs reais, incluindo troca/restauração de grupos, preservação de regiões vizinhas, persistência via projeto, interface e correspondência entre seleções. Validação no emulador segue pendente.

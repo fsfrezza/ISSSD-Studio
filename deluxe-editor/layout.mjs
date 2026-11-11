@@ -1,4 +1,5 @@
 const pages={
+ groups:['Grupos','Organize as equipes nos grupos nativos da Deluxe.'],
  players:['Jogadores','Edite os elencos regulares originais da Deluxe.'],
  overview:['Visão geral','Abra a ROM original ou continue um projeto.'],
  title:['Tela inicial','Personalize as cores e os textos do rodapé da abertura.'],
