@@ -43,7 +43,8 @@
 const status=document.getElementById('status');
 import('/deluxe-editor/app.mjs').then(()=>import('/deluxe-editor/layout.mjs')).then(()=>{
  document.getElementById('rom').disabled=false;
- status.textContent='Selecione o Deluxe original (USA) para começar.';
+ document.getElementById('load').disabled=false;
+ status.textContent='Abra uma ROM Deluxe original (USA) ou escolha um projeto para começar.';
 }).catch(error=>{
  status.textContent='Falha ao carregar o Editor: '+error.message+'. Reinicie o servidor e atualize a página com Ctrl+F5.';
 });

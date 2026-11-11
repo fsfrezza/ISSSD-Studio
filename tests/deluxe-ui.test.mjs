@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {splitRom} from '../src/core/deluxe-project.mjs';
+import {createDeluxeProject,splitRom} from '../src/core/deluxe-project.mjs';
 import {readStadiums} from '../src/core/deluxe-native-fields.mjs';
 const fixture=process.env.ISSSD_DELUXE_ROM;
 test('UI handlers: abrir, editar, salvar projeto, reabrir, exportar e restaurar',{skip:!fixture},async()=>{
@@ -13,7 +13,7 @@ test('UI handlers: abrir, editar, salvar projeto, reabrir, exportar e restaurar'
   setAttribute(key,value){this[key]=value;}
   setCustomValidity(value){this.validationMessage=value;}
   addEventListener(name,fn){this.listeners[name]=fn;}
-  click(){if(this.tag==='a')downloads.push({name:this.download,blob:blobs.get(this.href)});}
+  click(){this.clicked=true;if(this.tag==='a')downloads.push({name:this.download,blob:blobs.get(this.href)});}
  }
  const composerIds=[...fs.readFileSync(new URL('../deluxe-editor/index.html',import.meta.url),'utf8').matchAll(/id="(titleComposer[^"]+)"/g)].map(m=>m[1]);
  const ids=Object.fromEntries([...composerIds,'rom','status','texts','stadiums','nativeTexts','cursorHelp','title','resetTitle','save','load','export','improvements','menuTexts','mainMenu','menuScale','menuSelection','resetMenu','menuPreview','menuStatus','soundSelection','soundRate','soundFile','playOriginal','playSound','stopSound','downloadSound','resetSound','soundInfo','soundStatus','downloadWav','resetAllSounds','playGalvao','useGalvao','allGalvao','trainingHud','matchStatistics','playFb96','useFb96','allFb96','titleTexts','titlePalettes','titleLogoPreview','titleLogoInfo','titleLogoFile','exportTitleLogo','resetTitleLogo','titleLogoStatus','titleComposite','titleLayerPreview','titleLayer','titleLayerFile','exportTitleLayer','resetTitleLayer','titleLayerX','titleLayerY','titleLayerScale','applyTitleTransform','titleLayerInfo','titleLayerStatus','playerTeam','playerSelection','playerFields','playerStatus','resetPlayer','resetPlayerTeam','resetGroups','groupCards','groupStatus','teamCards','addStructureGroup','resetStructure','playerCount','teamSelection','allTextsActions','textsActions','nativeTextsActions','menuTextsActions','trainingHudActions','matchStatisticsActions','cursorHelpActions','mainMenuActions','titleTextsActions'].map(id=>[id,new Element(id)]));
@@ -24,7 +24,13 @@ test('UI handlers: abrir, editar, salvar projeto, reabrir, exportar e restaurar'
  try{
   await import('../deluxe-editor/app.mjs?ui-test');
   const file=new Uint8Array(fs.readFileSync(fixture));
-  ids.rom.files=[{arrayBuffer:async()=>file.buffer}];await ids.rom.onchange();
+  ids.load.files=[{text:async()=>'{invalid'}];await ids.load.onchange();assert.ok(ids.status.textContent);assert.equal(ids.rom.clicked,undefined);
+  const initial=await createDeluxeProject(file);initial.changes.internalTitle='PROJECT FIRST';
+  ids.load.files=[{text:async()=>JSON.stringify(initial)}];await ids.load.onchange();assert.equal(ids.rom.clicked,true);assert.match(ids.status.textContent,/Escolha a ROM/);
+  ids.rom.listeners.cancel();assert.match(ids.status.textContent,/cancelada/);
+  ids.rom.files=[{arrayBuffer:async()=>new ArrayBuffer(16)}];await ids.rom.onchange();assert.match(ids.status.textContent,/aguardando a ROM correta/);
+  ids.rom.files=[{arrayBuffer:async()=>file.buffer}];await ids.rom.onchange();assert.equal(ids.title.value,'PROJECT FIRST');assert.match(ids.status.textContent,/reaberto com a ROM/);
+
   assert.equal(ids.export.disabled,false);assert.equal(ids.nativeTexts.children.length,20);assert.equal(ids.cursorHelp.children.length,14);assert.equal(ids.stadiums.children.length,8);assert.equal(ids.menuTexts.children.length,20);assert.equal(ids.mainMenu.children.length,8);assert.equal(ids.titlePalettes.children.length,4);
   assert.equal(ids.titleComposerElements.children.length,8);
   for(let i=0;i<3;i++)ids.addStructureGroup.onclick();assert.equal(ids.playerTeam.children.length,54);assert.equal(ids.groupCards.children.length,9);assert.equal(ids.addStructureGroup.disabled,true);assert.equal(ids.teamSelection.children.length,54);assert.equal(ids.teamCards.children.length,1);ids.teamSelection.value='53';ids.teamSelection.onchange();const teamName=ids.teamCards.children[0].children[0].children[0];teamName.value='Nova equipe';teamName.onchange();assert.equal(ids.teamSelection.children[53].textContent,'Nova equipe');

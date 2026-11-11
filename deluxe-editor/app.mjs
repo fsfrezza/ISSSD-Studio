@@ -6,7 +6,7 @@ import {addDeluxeStructureGroup,prepareDeluxeStructure,validateDeluxeStructure} 
 import {readDeluxeGroups,DELUXE_GROUP_LABELS,moveDeluxeGroupTeam} from '../src/core/deluxe-groups.mjs';
 import {DELUXE_TEAMS,PLAYER_SKILLS,PLAYER_POSITIONS,readDeluxePlayer,planDeluxeJerseySwap,applyDeluxePlayers} from '../src/core/deluxe-players.mjs';
 import {TITLE_LAYERS,titleBackgroundPixels,importTitleBackground,titleCompositePixels,transformTitleLayer} from '../src/core/deluxe-title-background.mjs';
-import {createDeluxeProject,buildDeluxeProject,IMPROVEMENTS,splitRom} from '../src/core/deluxe-project.mjs';
+import {createDeluxeProject,buildDeluxeProject,IMPROVEMENTS,DELUXE_SCHEMA,splitRom} from '../src/core/deluxe-project.mjs';
 import {PLUS_STRATEGY_TEXTS,readPlusStrategyText,encodePlusStrategyText} from '../src/core/plus-strategy-text.mjs';
 import {NATIVE_SCREEN_TEXT_FIELDS,CURSOR_HELP_FIELDS,readStadiums,readNativeField,readCursorHelp,encodeNativeField} from '../src/core/deluxe-native-fields.mjs';
 import {encodeCursorText} from '../src/core/cursor-text-codec.mjs';
@@ -18,7 +18,7 @@ import {TRAINING_HUD_FIELDS,MATCH_STATISTICS_FIELDS,encodeTrainingHud,renderMatc
 import {TITLE_TEXT_FIELDS,TITLE_SUPPORTED_CHARACTERS,readTitleText,validateTitleText,readTitlePalettes} from '../src/core/deluxe-title-screen.mjs';
 import {titleLogoPixels,importTitleLogo} from '../src/core/deluxe-title-logo.mjs';
 const $=id=>document.getElementById(id);
-let file=null,project=null,opening=0;
+let file=null,project=null,opening=0,pendingProject=null;
 let audioContext=null,audioSource=null;
 function status(value){$('status').textContent=value;}
 function download(data,name,type){const url=URL.createObjectURL(new Blob([data],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -46,11 +46,19 @@ function render(){
 }
 for(const item of IMPROVEMENTS){const label=document.createElement('label'),input=document.createElement('input');input.type='checkbox';input.disabled=true;label.append(input,document.createTextNode(' '+item.label+' — em mapeamento'));$('improvements').append(label);}
 $('rom').onchange=async()=>{
- const token=++opening;file=null;project=null;render();for(const id of ['save','load','export'])$(id).disabled=true;
- try{const selected=$('rom').files[0];if(!selected)return;const bytes=new Uint8Array(await selected.arrayBuffer()),p=await createDeluxeProject(bytes);if(token!==opening)return;file=bytes;project=p;render();for(const id of ['save','load','export'])$(id).disabled=false;status('Deluxe original reconhecido · 2 MB. Sem edições, a exportação preserva o arquivo inteiro.');}catch(error){if(token===opening)status(error.message);}
+ const selected=$('rom').files[0];if(!selected)return;
+ const token=++opening,pending=pendingProject;
+ try{const bytes=new Uint8Array(await selected.arrayBuffer()),p=await createDeluxeProject(bytes);if(pending)await buildDeluxeProject(bytes,pending);if(token!==opening)return;file=bytes;project=pending??p;pendingProject=null;render();for(const id of ['save','export'])$(id).disabled=false;status(pending?'Projeto Deluxe reaberto com a ROM selecionada.':'Deluxe original reconhecido · 2 MB. Sem edições, a exportação preserva o arquivo inteiro.');}catch(error){if(token===opening)status(error.message+(pending?' O projeto continua aguardando a ROM correta. Clique em Abrir ROM para tentar novamente.':''));}finally{$('rom').value='';}
 };
+$('rom').addEventListener('cancel',()=>{if(pendingProject)status('Seleção de ROM cancelada. O projeto continua aguardando; clique em Abrir ROM para continuar.');});
 $('save').onclick=async()=>{try{await buildDeluxeProject(file,project);download(JSON.stringify(project,null,2),'Deluxe.issdproj','application/json');}catch(error){status(error.message);}};
-$('load').onchange=async()=>{const current=file;try{const selected=$('load').files[0];if(!selected)return;const p=JSON.parse(await selected.text());await buildDeluxeProject(current,p);if(file!==current)return;project=p;render();status('Projeto Deluxe reaberto.');}catch(error){status(error.message);}finally{$('load').value='';}};
+$('load').onchange=async()=>{
+ const selected=$('load').files[0];if(!selected)return;const token=++opening;pendingProject=null;
+ try{const p=JSON.parse(await selected.text());if(token!==opening)return;if(p?.schema!==DELUXE_SCHEMA||p.version!==1||!p.base||!p.changes)throw Error('Selecione um projeto do Editor Deluxe válido.');
+ if(!file){pendingProject=p;status('Projeto selecionado. Escolha a ROM Deluxe original (USA) para abri-lo. Se o seletor não aparecer, clique em Abrir ROM.');$('rom').click();return;}
+ const current=file;await buildDeluxeProject(current,p);if(token!==opening||file!==current)return;project=p;render();status('Projeto Deluxe reaberto.');
+ }catch(error){if(token===opening)status(error.message);}finally{$('load').value='';}
+};
 $('export').onclick=async()=>{try{const result=await buildDeluxeProject(file,project);download(result.rom,'Deluxe-editado.'+(project.base.headerSize?'smc':'sfc'),'application/octet-stream');status('ROM gerada · '+result.diff.changedBytes+' bytes alterados · sem expansão.'+(project.changes.structure?' Estrutura experimental: '+project.changes.structure.teams.length+' equipes; valide no emulador.':'')+(project.changes.titleComposer&&!project.changes.titleComposer.prepared?' Há um rascunho de composição não implementado.':''));}catch(error){status(error.message);}};
 
 function updateChange(section,key,value,original){
