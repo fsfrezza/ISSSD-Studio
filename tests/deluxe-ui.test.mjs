@@ -45,7 +45,7 @@ test('UI handlers: abrir, editar, salvar projeto, reabrir, exportar e restaurar'
   await ids.resetPlayer.onclick();assert.match(ids.playerStatus.textContent,/aplicadas/);
   assert.equal(ids.playerFields.children[2].children[0].disabled,true);
   ids.playerSelection.value='1';ids.playerSelection.onchange();assert.ok(ids.playerFields.children[2].children[0].children.every(o=>Number(o.value)!==1));
-  globalThis.createImageBitmap=async()=>({width:176,height:65,close(){}});ids.titleComposerImageFile.files=[{}];await ids.titleComposerImageFile.onchange();await ids.titleComposerPrepareRomBtn.onclick();assert.match(ids.titleComposerRomStatus.textContent,/implementado e validado/);
+  globalThis.createImageBitmap=async()=>({width:176,height:65,close(){}});ids.titleComposerImageFile.files=[{}];await ids.titleComposerImageFile.onchange();await ids.titleComposerPrepareRomBtn.onclick();assert.match(ids.titleComposerRomStatus.textContent,/Composição implementada/);
   const footer=ids.titleTexts.children[0].children[0];footer.value='@1995KONAMI';footer.listeners.input();assert.equal(ids.trainingHud.children.length,8);assert.equal(ids.matchStatistics.children.length,10);
   const training=ids.trainingHud.children[1].children[0];training.value='TEMPO';training.listeners.input();
   const stats=ids.matchStatistics.children[0].children[0];stats.value='CHUTES';stats.listeners.input();assert.equal(ids.soundSelection.children.length,74);assert.match(ids.menuStatus.textContent,/original preservado/);

@@ -26,7 +26,7 @@ test('original title layers: native decoding, lossless import, planar encoding, 
   for(let at=0;at<base.length;at++)if(out[at]!==base[at])assert.ok((at>=s.pc&&at<s.pc+s.compressedSize)||(at>=0x7fdc&&at<0x7fe0));
   p.changes.titleScreen={};assert.deepEqual((await buildDeluxeProject(input,p)).rom,input);
   const bad=structuredClone(p);bad.changes.titleScreen[s.key]=[0];await assert.rejects(buildDeluxeProject(input,bad),/tiles inválidos/);
-  let seed=1;bad.changes.titleScreen[s.key]=Array.from({length:s.original.length},()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed>>>24;});await assert.rejects(buildDeluxeProject(input,bad),/excede espaço/);
+  let seed=1;bad.changes.titleScreen[s.key]=Array.from({length:s.original.length},()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed>>>24;});if(id==='photos'){const relocated=splitRom((await buildDeluxeProject(input,bad)).rom).rom;assert.deepEqual(readTitleBackground(relocated,id).original,Uint8Array.from(bad.changes.titleScreen[s.key]));}else await assert.rejects(buildDeluxeProject(input,bad),/excede espaço/);
   assert.throws(()=>importTitleBackground(base,id,{},new Uint8ClampedArray(4),1,1),/use/);
  }
  assert.deepEqual(input,snapshot);

@@ -21,7 +21,7 @@ export function readTitlePalettes(base){return TITLE_PALETTES.map(p=>({...p,colo
 export function applyDeluxeTitleScreen(out,base,value){
  if(value===undefined)return out;
  const object=v=>v&&typeof v==='object'&&!Array.isArray(v);
- if(!object(value)||Object.keys(value).some(k=>!['texts','palettes','logoTiles','backgroundTiles','photoTiles','fontGlyphs'].includes(k)))throw Error('Tela inicial: seção inválida');
+ if(!object(value)||Object.keys(value).some(k=>!['texts','palettes','logoTiles','backgroundTiles','photoTiles','fontGlyphs','map0','map1'].includes(k)))throw Error('Tela inicial: seção inválida');
  const texts=value.texts??{},palettes=value.palettes??{},writes=[];
  if(!object(texts)||!object(palettes))throw Error('Tela inicial: dados inválidos');
  const custom=value.fontGlyphs??{};if(!object(custom)||Object.keys(custom).length>64)throw Error('Fonte: dados inválidos');for(const [c,rows]of Object.entries(custom))if([...c].length!==1||!Array.isArray(rows)||rows.length!==8||rows.some(v=>!Number.isInteger(v)||v<0||v>255))throw Error('Fonte: glifo inválido');
