@@ -35,3 +35,5 @@
 @media(max-width:750px){.composer-grid{grid-template-columns:minmax(0,1fr)}.composer-elements{grid-template-columns:repeat(2,minmax(0,1fr))}.composer-grid>.composer-panel:last-child{grid-column:auto}.composer-grid>.composer-panel:last-child .composer-props{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 .group-fields>label:not(.group-title-field) select{margin-top:0}
+
+#pageDescription{white-space:pre-line}
