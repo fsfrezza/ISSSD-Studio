@@ -1,3 +1,4 @@
+import {TITLE_FONT_ROWS} from '../src/core/title-font-glyphs.mjs';
 import {installTitleComposer} from './title-composer.mjs';
 import {titlePhotoPixels,importTitlePhoto} from '../src/core/deluxe-title-photos.mjs';
 import {textPresetFields,applyTextPreset} from '../src/core/deluxe-text-presets.mjs';
@@ -232,8 +233,8 @@ function titleChange(kind,id,value,original){
 }
 function renderTitleScreen(rom){
  drawTitleLogo();
- for(const f of TITLE_TEXT_FIELDS){const original=readTitleText(rom,f);textControl($('titleTexts'),{scope:'titleTexts',key:f.id,label:f.label+' · até '+f.count+' letras',value:project.changes.titleScreen?.texts?.[f.id]??original,original,validate:v=>validateTitleText(v,f),onChange:v=>titleChange('texts',f.id,v,original)});}
- const hint=document.createElement('p');hint.className='hint';hint.textContent='Caracteres da fonte original: '+TITLE_SUPPORTED_CHARACTERS+'. Espaços são permitidos.';$('titleTexts').append(hint);
+ for(const f of TITLE_TEXT_FIELDS){const original=readTitleText(rom,f);textControl($('titleTexts'),{scope:'titleTexts',key:f.id,label:f.label+' · até '+f.count+' letras',value:project.changes.titleScreen?.texts?.[f.id]??original,original,validate:v=>validateTitleText(v,f),onChange:v=>{titleChange('texts',f.id,v,original);const chars=[...v.normalize('NFC').toUpperCase()];for(const c of chars){if(c===' '||TITLE_SUPPORTED_CHARACTERS.includes(c)||TITLE_FONT_ROWS[c])continue;const canvas=document.createElement('canvas');canvas.width=8;canvas.height=8;const ctx=canvas.getContext('2d');ctx.font='bold 8px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(c,4,4);const data=ctx.getImageData(0,0,8,8).data,rows=Array.from({length:8},(_,y)=>Array.from({length:8},(_,x)=>data[(y*8+x)*4+3]>48?1<<(7-x):0).reduce((a,b)=>a|b,0));const title=project.changes.titleScreen??={};(title.fontGlyphs??={})[c]=rows;}}});}
+ const hint=document.createElement('p');hint.className='hint';hint.textContent='Letras, números, acentos e símbolos são aceitos. A fonte é gerada ao salvar. Limites: 29 e 18 caracteres visíveis; até 31 caracteres diferentes nas duas linhas.';$('titleTexts').append(hint);
  for(const p of readTitlePalettes(rom)){
   const details=document.createElement('details'),summary=document.createElement('summary');summary.textContent=p.label;details.append(summary);const palette=document.createElement('div');palette.className='palette';details.append(palette);
   const colors=(project.changes.titleScreen?.palettes?.[p.id]??p.colors).slice();

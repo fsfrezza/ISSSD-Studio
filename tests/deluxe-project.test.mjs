@@ -200,7 +200,7 @@ test('ROM real: tela inicial altera quatro paletas e dois rodapés, com restaura
  const allowed=[...TITLE_PALETTES.map(p=>[p.pc,p.pc+32]),...TITLE_TEXT_FIELDS.map(f=>[f.pc-2,f.pc-2+f.count*4]),[0x7fdc,0x7fe0]];
  for(let i=0;i<base.length;i++)if(base[i]!==out[i])assert.ok(allowed.some(([a,b])=>i>=a&&i<b),'unexpected write '+i.toString(16));
  assert.deepEqual(file,snapshot);assert.equal(file.length,result.rom.length);assert.equal(out.reduce((s,b)=>(s+b)&65535,0),out[0x7fde]|out[0x7fdf]<<8);
- for(const value of [{texts:{license:'J'}},{texts:{bad:'A'}},{palettes:{ball:[1]}},{texts:{license:'A'.repeat(19)}}]){p.changes.titleScreen=value;await assert.rejects(buildDeluxeProject(file,p));}
+ for(const value of [{texts:{license:'A\nB'}},{texts:{bad:'A'}},{palettes:{ball:[1]}},{texts:{license:'A'.repeat(19)}}]){p.changes.titleScreen=value;await assert.rejects(buildDeluxeProject(file,p));}
  delete p.changes.titleScreen;assert.deepEqual((await buildDeluxeProject(file,p)).rom,file);
 });
 
