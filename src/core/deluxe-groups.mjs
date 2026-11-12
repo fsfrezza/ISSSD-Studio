@@ -1,3 +1,4 @@
+import {NATIVE_MENU_FONTS} from './deluxe-menu-fields.mjs';
 // Original USA layout; expanded Plus pages use different tables and consumers.
 export const DELUXE_GROUP_TABLE=0xda3f;
 export const DELUXE_GROUP_LABELS=['EUROPE 1','EUROPE 2','EUROPE 3','EUROPE 4','ASIA-AFRICA','N.S.AMERICA'];
@@ -16,4 +17,21 @@ export function moveDeluxeGroupTeam(groups,fromGroup,fromSlot,toGroup,toSlot){
 }
 export function applyDeluxeGroups(out,base,groups){
  if(groups===undefined)return out;readDeluxeGroups(base);validateDeluxeGroups(groups);out.set(groups.flat().map(v=>v*2),DELUXE_GROUP_TABLE);return out;
+}
+
+export function applyDeluxeGroupLabels(out,base,labels){
+ if(labels===undefined)return out;
+ if(!Array.isArray(labels)||labels.length!==6)throw Error('Nomes dos grupos: informe seis nomes');
+ for(let i=0;i<6;i++){
+  if(labels[i]===DELUXE_GROUP_LABELS[i])continue;
+  if(typeof labels[i]!=='string'||!labels[i].trim())throw Error('Nome do grupo inválido');
+  const text=labels[i].normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/\s/g,'');
+  if(text.length>8||[...text].some(c=>NATIVE_MENU_FONTS.SmallMenuText[c]===undefined))throw Error('Título do grupo: use até oito letras/números, sem contar espaços');
+  const at=0x3fc00+i*16;
+  if(base.slice(at,at+16).some(v=>v!==255)||out.slice(at,at+16).some(v=>v!==255))throw Error('Nomes dos grupos: reserva ocupada');
+  out.set([...text.padEnd(8,' ')].map(c=>NATIVE_MENU_FONTS.SmallMenuText[c]),at);
+  out.fill(0,at+8,at+16);
+  out[0x3c54f+i*2]=at&255;out[0x3c550+i*2]=at>>8&255;
+ }
+ return out;
 }

@@ -1,6 +1,6 @@
 import {validateTitleComposer} from './deluxe-title-composer.mjs';
 import {prepareDeluxeStructure} from './deluxe-structure.mjs';
-import {applyDeluxeGroups} from './deluxe-groups.mjs';
+import {applyDeluxeGroups,applyDeluxeGroupLabels} from './deluxe-groups.mjs';
 import {applyDeluxePlayers} from './deluxe-players.mjs';
 import {PLUS_STRATEGY_TEXTS, encodePlusStrategyText, readPlusStrategyText} from './plus-strategy-text.mjs';
 import {encodeInternalRomTitle, readInternalRomTitle} from './plus-rom-meta.mjs';
@@ -56,13 +56,15 @@ export async function buildDeluxeProject(file,project){
   const base=await identifyDeluxe(file);
   keys(project,['schema','version','base','changes'],'projeto');
   if(project.schema!==DELUXE_SCHEMA||project.version!==1||project.base?.sha256!==base.sha256||project.base?.id!==base.id)throw new Error('Projeto não pertence à base Deluxe original');
-  keys(project.changes,['strategyTexts','internalTitle','improvements','nativeTexts','cursorHelp','stadiums','menuTexts','mainMenu','sounds','trainingHud','matchStatistics','titleScreen','players','groups','structure','titleComposer'],'alterações');
+  keys(project.changes,['strategyTexts','internalTitle','improvements','nativeTexts','cursorHelp','stadiums','menuTexts','mainMenu','sounds','trainingHud','matchStatistics','titleScreen','players','groups','structure','titleComposer','groupLabels'],'alterações');
   const changes=project.changes;
   if(changes.titleComposer!==undefined)validateTitleComposer(changes.titleComposer);
   if(!Array.isArray(changes.improvements))throw new Error('Lista de melhorias inválida');
   if(changes.improvements.length)throw new Error('Melhorias ainda sem patch validado: '+changes.improvements.join(', '));
   const {rom,header}=splitRom(file),playerBase=prepareDeluxeStructure(rom,changes.structure),out=playerBase.slice();
   if(changes.structure&&changes.groups!==undefined)throw Error('Use os grupos da estrutura ampliada');
+  if(changes.structure&&changes.groupLabels!==undefined)throw Error('Use os nomes dos grupos da estrutura ampliada');
+  applyDeluxeGroupLabels(out,rom,changes.groupLabels);
   const texts=object(changes.strategyTexts,'textos');
   keys(texts,PLUS_STRATEGY_TEXTS.map(x=>x.id),'textos');
   for(const item of PLUS_STRATEGY_TEXTS){
