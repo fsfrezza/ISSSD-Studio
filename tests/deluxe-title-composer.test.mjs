@@ -29,3 +29,7 @@ test('personalized Plus title compiles to native ROM, preserves background shari
  p.changes.titleScreen=prior;delete p.changes.titleComposer;assert.deepEqual((await buildDeluxeProject(file,p)).rom,baseline.rom);
  const invalid=structuredClone(original.changes.titleComposer);invalid.elements.find(e=>e.role==='photo1').y=0;invalid.elements.find(e=>e.role==='photo1').clipY=0;invalid.elements.find(e=>e.role==='photo1').maskPoints=null;assert.throws(()=>prepareTitleComposer(base,prior,invalid),/fora da área/);
 });
+
+test('short footer hides unused sprites with the native sentinel and protects PRESS START glyphs',{skip:!fixture},async()=>{
+ const {createDeluxeProject,buildDeluxeProject}=await import('../src/core/deluxe-project.mjs'),{konamiLzDecompress}=await import('../src/core/konami-lz.mjs'),{TITLE_TEXT_FIELDS}=await import('../src/core/deluxe-title-screen.mjs');const file=new Uint8Array(fs.readFileSync(fixture)),base=splitRom(file).rom,p=await createDeluxeProject(file);p.changes.titleScreen={texts:{copyright:'@2026',license:'FREZZA'}};const out=splitRom((await buildDeluxeProject(file,p)).rom).rom;for(const f of TITLE_TEXT_FIELDS){const ys=Array.from({length:f.count},(_,i)=>out[f.pc-2+i*4]);assert.ok(ys.includes(127));assert.ok(!ys.includes(240));}const get=b=>{const a=b[0x1199a]|b[0x1199b]<<8|b[0x1199c]<<16;return konamiLzDecompress(b,((a>>>16)&127)*32768+(a&32767)).data;};assert.deepEqual(get(out).slice(20*32,28*32),get(base).slice(20*32,28*32));
+});

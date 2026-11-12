@@ -1,3 +1,4 @@
+import {applyDeluxeStructureNames} from './deluxe-structure-names.mjs';
 import {DELUXE_TEAMS} from './deluxe-team-catalog.mjs';
 import {readDeluxeGroups,DELUXE_GROUP_LABELS} from './deluxe-groups.mjs';
 export const STRUCTURE_LAYOUT={marker:0x1764f0,tables:0x176500,attributes:0x17bd20,names:0x185000,a4:0x126180,groupHelper:0x2ff00};
@@ -51,5 +52,6 @@ export function prepareDeluxeStructure(base,value){
  const pages=n/6;patch(0x2a566,[0xa2,6,0],[0xa2,pages,0]);patch(0x2a572,[0xa2,7,0],[0xa2,pages+1,0]);patch(0x2ac94,[0xa9,6,0],[0xa9,pages,0]);patch(0x2af92,[0xe0,43,0],[0xe0,n+7,0]);
  // Native graphic headings are aliases until their dedicated editor is migrated.
  const titles=new Uint8Array((pages+1)*2);for(let i=0;i<pages;i++)titles.set(base.slice(0x3c54f+Math.min(i,5)*2,0x3c551+Math.min(i,5)*2),i*2);titles.set(base.slice(0x3c55b,0x3c55d),pages*2);const tp=allocate(titles);longRefs(0x87c54f,cpu(tp),1);
+ applyDeluxeStructureNames(out,base,s,tp);
  reserve(L.marker,Uint8Array.from([...signature,n]));return out;
 }

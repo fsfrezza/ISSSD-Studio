@@ -64,7 +64,7 @@ test('ROM real: 139 textos de menus editam somente segmentos nativos e restauram
  const {DELUXE_MENU_SECTIONS,encodeNativeMenuField}=await import('../src/core/deluxe-menu-text.mjs');
  const input=new Uint8Array(fs.readFileSync(fixture)),snapshot=input.slice(),base=splitRom(input).rom;
  const project=await createDeluxeProject(input),regions=[];
- assert.equal(DELUXE_MENU_SECTIONS.reduce((n,s)=>n+s.fields.length,0),139);
+ assert.equal(DELUXE_MENU_SECTIONS.reduce((n,s)=>n+s.fields.length,0),145);
  project.changes.menuTexts=Object.fromEntries(DELUXE_MENU_SECTIONS.map(s=>[s.id,Object.fromEntries(s.fields.map(f=>[f[0],'A']))]));
  for(const section of DELUXE_MENU_SECTIONS)for(const f of section.fields){
   const relocation=f[3].pool.relocation;
@@ -88,15 +88,16 @@ test('ROM real: 139 textos de menus editam somente segmentos nativos e restauram
  }
 });
 
-test('ROM real: menu principal usa os cinco blocos nativos, prévia coincide com exportação e restauração é exata',{skip:!fixture},async()=>{
+test('ROM real: menu principal preserva o fundo compartilhado, prévia OBJ coincide com exportação e restauração é exata',{skip:!fixture},async()=>{
  const {deluxeMainMenuPreview,planDeluxeMainMenu,PLUS_MAIN_MENU_ORIGINAL}=await import('../src/core/deluxe-main-menu.mjs');
  const {PLUS_MAIN_MENU_REGIONS}=await import('../src/core/plus-main-menu-renderer.mjs');
  const input=new Uint8Array(fs.readFileSync(fixture)),snapshot=input.slice(),base=splitRom(input).rom,p=await createDeluxeProject(input);
  p.changes.mainMenu={texts:{openGame:'AMISTOSO'},scale:80};
- const plan=planDeluxeMainMenu(p.changes.mainMenu);assert.equal(plan.regions.length,5);
+ const plan=planDeluxeMainMenu(p.changes.mainMenu);assert.equal(plan.regions.length,3);
  const result=await buildDeluxeProject(input,JSON.parse(JSON.stringify(p))),out=splitRom(result.rom).rom;
  assert.equal(result.rom.length,input.length);assert.deepEqual(input,snapshot);
- const ranges=Object.values(PLUS_MAIN_MENU_REGIONS).map(r=>[r.pc,r.pc+(r.capacity??r.length)]);ranges.push([0x7fdc,0x7fe0]);
+ for(const id of ['background','tilemap']){const r=PLUS_MAIN_MENU_REGIONS[id];assert.deepEqual(out.slice(r.pc,r.pc+r.capacity),base.slice(r.pc,r.pc+r.capacity));}
+ const ranges=plan.regions.map(r=>[r.pc,r.pc+r.bytes.length]);ranges.push([0x7fdc,0x7fe0]);
  for(let i=0;i<base.length;i++)if(base[i]!==out[i])assert.ok(ranges.some(([a,b])=>i>=a&&i<b),'unexpected write '+i.toString(16));
  for(let i=0;i<8;i++){
   const preview=deluxeMainMenuPreview(base,p.changes.mainMenu,i),encoded=deluxeMainMenuPreview(out,undefined,i,true);

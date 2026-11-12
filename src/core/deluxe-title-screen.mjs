@@ -30,7 +30,7 @@ export function applyDeluxeTitleScreen(out,base,value){
   const f=TITLE_TEXT_FIELDS.find(f=>f.id===id);if(!f)throw Error('Texto inicial desconhecido');const text=validateTitleText(v,f);if(text===readTitleText(base,f)&&!active.some(t=>[...t].some(c=>c!==' '&&!Object.hasOwn(inverse,c))))continue;
   const rows=order(base,f),visible=rows.find(i=>base[f.pc-2+i*4]!==127&&base[f.pc-2+i*4]<224),y=base[f.pc-2+(visible??rows[0])*4],width=Math.max(0,(text.length-1)*8),left=-Math.floor(width/2);let used=0;
   for(let i=0;i<text.length;i++)if(text[i]!==' '){const row=rows[used++],at=f.pc+row*4;writes.push([at-2,y],[at-1,(left+i*8)&255],[at,fontMap[text[i]]]);}
-  for(let i=used;i<rows.length;i++)writes.push([f.pc-2+rows[i]*4,240]);
+  for(let i=used;i<rows.length;i++)writes.push([f.pc-2+rows[i]*4,127]);
  }
  for(const [id,colors]of Object.entries(palettes)){
   const p=TITLE_PALETTES.find(p=>p.id===id);if(!p)throw Error('Paleta inicial desconhecida');

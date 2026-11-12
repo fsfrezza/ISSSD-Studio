@@ -1,3 +1,4 @@
+import {DELUXE_SUBMENU_PORTUGUESE} from './deluxe-submenu-fields.mjs';
 // Portuguese inscriptions shared with the Plus catalog, restricted to supported Deluxe fields.
 export const DELUXE_PORTUGUESE_MENUS={
   "team-selection-native": {
@@ -180,3 +181,5 @@ export const DELUXE_PORTUGUESE_MENUS={
     "data_87f990": "Você é o melhor!                    KONAMI DIREITOS RESERVADOS."
   }
 };
+
+DELUXE_PORTUGUESE_MENUS['game-type-native']=DELUXE_SUBMENU_PORTUGUESE;

@@ -1,6 +1,7 @@
+import {DELUXE_SUBMENU_FIELDS} from './deluxe-submenu-fields.mjs';
 import {SPECIAL_MENU_FIELDS} from './deluxe-special-menu-fields.mjs';
 import {DELUXE_MENU_SECTIONS as BASIC_MENU_SECTIONS,NATIVE_MENU_FONTS} from './deluxe-menu-fields.mjs';
-export const DELUXE_MENU_SECTIONS=BASIC_MENU_SECTIONS.map(s=>({...s,fields:[...s.fields,...SPECIAL_MENU_FIELDS.filter(f=>f.section===s.id).map(f=>f.field)]}));
+export const DELUXE_MENU_SECTIONS=[...BASIC_MENU_SECTIONS,DELUXE_SUBMENU_FIELDS].map(s=>({...s,fields:[...s.fields,...SPECIAL_MENU_FIELDS.filter(f=>f.section===s.id).map(f=>f.field)]}));
 export function encodeNativeMenuField(field,value){
  const options=field[3],{segments,font}=options.pool,table=NATIVE_MENU_FONTS[font];
  const text=String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\r\n?/g,'\n').replace(/[‘’]/g,"'");
