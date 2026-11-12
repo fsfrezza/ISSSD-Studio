@@ -21,3 +21,13 @@ Still required before the complete target can be claimed:
 - Browser file-picker handoff when a project is opened without its ROM.
 
 The reference saved project examined was validation/project.json (54 teams, 9 groups, 1080 edited players). It is a local validation fixture, not a new baseline shipped to users.
+
+## Catalog and group selection follow-up
+
+Implemented: embedded reference catalog with 54 normal and two secret team identities (1120 reference players). Secret teams are excluded from regular six-team selection. Adding a group now opens six selectors, removes duplicate choices and requires all six selections. New teams receive their own clean Plus roster records, while existing project slots and player edits are retained. The Plus organization action enables remaining normal teams and applies the nine normal group rows by stable country ID, without resetting existing team names or player edits. These actions validate ROM generation before updating the active project.
+
+New team records can persist `plusId`; legacy records resolve through their original Deluxe project mapping. Reordering or adding teams therefore does not change the identity of earlier slots. Native graphic group labels now reuse their original pointers when moved, including labels too wide for the editable eight-character encoding.
+
+Validation: 50 tests passed, none skipped. Coverage includes arbitrary catalog selection order, duplicate/secret-team rejection, exported roster comparison, legacy saved project preservation, exact unchanged-ROM restoration, all prior title/menu tests and the six-selector UI flow.
+
+Runtime limitation remains: ROM generation still uses the existing Deluxe expansion. Full functional Plus runtime activation and independent flags/kits are not implemented by this follow-up. The two secret teams are cataloged but are not added to the normal-group workflow. No new emulator playthrough was performed.

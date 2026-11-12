@@ -1,4 +1,5 @@
 import {applyDeluxeStructureNames} from './deluxe-structure-names.mjs';
+import {DELUXE_PROJECT_TO_PLUS} from './deluxe-team-identity.mjs';
 import {DELUXE_TEAMS} from './deluxe-team-catalog.mjs';
 import {readDeluxeGroups,DELUXE_GROUP_LABELS} from './deluxe-groups.mjs';
 export const STRUCTURE_LAYOUT={marker:0x1764f0,tables:0x176500,attributes:0x17bd20,names:0x185000,a4:0x126180,groupHelper:0x2ff00};
@@ -15,12 +16,13 @@ export function expandedPlayerOffsets(base,team,player){
 export function validateDeluxeStructure(s){
  if(!s||s.schema!=='isssd-deluxe-structure-v1'||s.experimental!==true||Object.keys(s).some(k=>!['schema','experimental','teams','groups','labels'].includes(k)))throw Error('Estrutura experimental inválida');
  const n=s.teams?.length;if(![42,48,54].includes(n))throw Error('Estrutura: use 42, 48 ou 54 equipes, em grupos completos');
- for(let i=0;i<n;i++){const t=s.teams[i];if(!t||Object.keys(t).some(k=>!['name','sourceTeam'].includes(k))||typeof t.name!=='string'||!t.name.trim()||t.name.length>32||!Number.isInteger(t.sourceTeam)||t.sourceTeam<0||t.sourceTeam>=36)throw Error('Equipe estrutural inválida');if(i<36&&t.sourceTeam!==i)throw Error('As identidades das 36 equipes nativas devem ser preservadas');}
+ for(let i=0;i<n;i++){const t=s.teams[i];if(!t||Object.keys(t).some(k=>!['name','sourceTeam','plusId'].includes(k))||typeof t.name!=='string'||!t.name.trim()||t.name.length>32||!Number.isInteger(t.sourceTeam)||t.sourceTeam<0||t.sourceTeam>=36)throw Error('Equipe estrutural inválida');if(i<36&&t.sourceTeam!==i)throw Error('As identidades das 36 equipes nativas devem ser preservadas');}
+ const identities=s.teams.map((t,i)=>t.plusId??DELUXE_PROJECT_TO_PLUS[i]);if(identities.some((id,i)=>!Number.isInteger(id)||id<0||id>=54||i<36&&id!==DELUXE_PROJECT_TO_PLUS[i])||new Set(identities).size!==n)throw Error('Identidades Plus inválidas ou repetidas');
  if(!Array.isArray(s.groups)||s.groups.length!==n/6||s.groups.some(g=>!Array.isArray(g)||g.length!==6))throw Error('Grupos estruturais inválidos');if(s.labels!==undefined&&(!Array.isArray(s.labels)||s.labels.length!==n/6||s.labels.some(v=>typeof v!=='string'||!v.trim()||v.length>32)))throw Error('Rótulos de grupos inválidos');const all=s.groups.flat();if(all.some(v=>!Number.isInteger(v)||v<0||v>=n)||new Set(all).size!==n)throw Error('Cada equipe deve aparecer uma vez nos grupos');return s;
 }
-export function addDeluxeStructureGroup(base,current=null,nativeGroups=null){
+export function addDeluxeStructureGroup(base,current=null,nativeGroups=null,addedTeams=null){
  const s=current?structuredClone(validateDeluxeStructure(current)):{schema:'isssd-deluxe-structure-v1',experimental:true,labels:DELUXE_GROUP_LABELS.slice(),teams:DELUXE_TEAMS.map((name,sourceTeam)=>({name,sourceTeam})),groups:(nativeGroups??readDeluxeGroups(base)).map(g=>g.slice())};
- const first=s.teams.length;if(first>=54)throw Error('Limite atual: 54 equipes');for(let i=0;i<6;i++)s.teams.push({name:'Equipe '+(first+i+1),sourceTeam:30});s.groups.push(Array.from({length:6},(_,i)=>first+i));if(s.labels)s.labels.push('GRUPO '+s.groups.length);return validateDeluxeStructure(s);
+ const first=s.teams.length;if(first>=54)throw Error('Limite atual: 54 equipes');if(addedTeams!==null&&(!Array.isArray(addedTeams)||addedTeams.length!==6))throw Error('Escolha seis equipes');for(let i=0;i<6;i++)s.teams.push(addedTeams?structuredClone(addedTeams[i]):{name:'Equipe '+(first+i+1),sourceTeam:30});s.groups.push(Array.from({length:6},(_,i)=>first+i));if(s.labels)s.labels.push('GRUPO '+s.groups.length);return validateDeluxeStructure(s);
 }
 export function prepareDeluxeStructure(base,value){
  if(value===undefined)return base.slice();const s=validateDeluxeStructure(value),n=s.teams.length,runtime=n+7,bound=n*2,upper=runtime*2,challenge=(n+6)*2,out=base.slice(),L=STRUCTURE_LAYOUT;

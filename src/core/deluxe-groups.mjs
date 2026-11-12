@@ -23,7 +23,7 @@ export function applyDeluxeGroupLabels(out,base,labels){
  if(labels===undefined)return out;
  if(!Array.isArray(labels)||labels.length!==6)throw Error('Nomes dos grupos: informe seis nomes');
  for(let i=0;i<6;i++){
-  if(labels[i]===DELUXE_GROUP_LABELS[i])continue;
+  const native=DELUXE_GROUP_LABELS.indexOf(labels[i]);if(native>=0){out.set(base.slice(0x3c54f+native*2,0x3c551+native*2),0x3c54f+i*2);continue;}
   if(typeof labels[i]!=='string'||!labels[i].trim())throw Error('Nome do grupo inválido');
   const text=labels[i].normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/\s/g,'');
   if(text.length>8||[...text].some(c=>NATIVE_MENU_FONTS.SmallMenuText[c]===undefined))throw Error('Título do grupo: use até oito letras/números, sem contar espaços');

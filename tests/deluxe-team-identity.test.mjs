@@ -16,6 +16,7 @@ test('new Deluxe project remains exact; group swaps and names survive generation
  assert.equal(deluxeGroupView(base,p).length,6);assert.deepEqual((await buildDeluxeProject(file,p)).rom,file);
  const next=swapDeluxeProjectGroups(base,p,0,5);assert.deepEqual(p,snapshot);
  assert.deepEqual(deluxeGroupView(base,next)[5],deluxeGroupView(base,p)[0]);
+ await buildDeluxeProject(file,next);
  next.changes.groupLabels[0]='GRUPO A';
  const built=await buildDeluxeProject(file,JSON.parse(JSON.stringify(next))),out=splitRom(built.rom).rom;
  assert.notDeepEqual(out.slice(0xda3f,0xda3f+36),base.slice(0xda3f,0xda3f+36));

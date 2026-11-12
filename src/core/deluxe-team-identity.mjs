@@ -7,16 +7,16 @@ export const DELUXE_PROJECT_TO_PLUS=Object.freeze([
  ...DELUXE_TO_PLUS_TEAM,
  ...Array.from({length:54},(_,id)=>id).filter(id=>!DELUXE_TO_PLUS_TEAM.includes(id))
 ]);
-export function deluxeTeamIdentity(slot){
+export function deluxeTeamIdentity(slot,structure){
  if(!Number.isInteger(slot)||slot<0||slot>=54)throw Error('Identidade de equipe inválida');
- const plusId=DELUXE_PROJECT_TO_PLUS[slot];
+ const plusId=structure?.teams[slot]?.plusId??DELUXE_PROJECT_TO_PLUS[slot];
  return {plusId,deluxeId:DELUXE_TO_PLUS_TEAM.indexOf(plusId)>=0?DELUXE_TO_PLUS_TEAM.indexOf(plusId):null,projectSlot:slot};
 }
 export function deluxeGroupView(base,project){
  const structure=project.changes.structure;
  const groups=structure?.groups??project.changes.groups??readDeluxeGroups(base);
  const labels=structure?.labels??project.changes.groupLabels??DELUXE_GROUP_LABELS;
- return groups.map((row,g)=>({name:labels[g]??'GRUPO '+(g+1),teams:row.map(slot=>({...deluxeTeamIdentity(slot),name:structure?.teams[slot]?.name??DELUXE_TEAMS[slot]}))}));
+ return groups.map((row,g)=>({name:labels[g]??'GRUPO '+(g+1),teams:row.map(slot=>({...deluxeTeamIdentity(slot,structure),name:structure?.teams[slot]?.name??DELUXE_TEAMS[slot]}))}));
 }
 export function swapDeluxeProjectGroups(base,project,from,to){
  const view=deluxeGroupView(base,project);
