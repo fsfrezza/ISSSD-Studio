@@ -19,7 +19,8 @@ test('UI handlers: abrir, editar, salvar projeto, reabrir, exportar e restaurar'
  const ids=Object.fromEntries([...composerIds,'rom','status','texts','stadiums','nativeTexts','cursorHelp','title','resetTitle','save','load','export','improvements','menuTexts','mainMenu','menuScale','menuSelection','resetMenu','menuPreview','menuStatus','soundSelection','soundRate','soundFile','playOriginal','playSound','stopSound','downloadSound','resetSound','soundInfo','soundStatus','downloadWav','resetAllSounds','playGalvao','useGalvao','allGalvao','trainingHud','matchStatistics','playFb96','useFb96','allFb96','titleTexts','titlePalettes','titleLogoPreview','titleLogoInfo','titleLogoFile','exportTitleLogo','resetTitleLogo','titleLogoStatus','titleComposite','titleLayerPreview','titleLayer','titleLayerFile','exportTitleLayer','resetTitleLayer','titleLayerX','titleLayerY','titleLayerScale','applyTitleTransform','titleLayerInfo','titleLayerStatus','playerTeam','playerSelection','playerFields','playerStatus','resetPlayer','resetPlayerTeam','resetGroups','groupCards','groupStatus','teamCards','addStructureGroup','resetStructure','playerCount','teamSelection','allTextsActions','textsActions','nativeTextsActions','menuTextsActions','trainingHudActions','matchStatisticsActions','cursorHelpActions','mainMenuActions','titleTextsActions'].map(id=>[id,new Element(id)]));
  const downloads=[],blobs=new Map();let serial=0;
  const previous={bitmap:globalThis.createImageBitmap,fetch:globalThis.fetch,window:globalThis.window,document:globalThis.document,create:URL.createObjectURL,revoke:URL.revokeObjectURL};
- globalThis.document={getElementById:id=>ids[id],createElement:tag=>new Element(tag),createTextNode:text=>text};
+ const pageEvents={};
+ globalThis.document={addEventListener:(name,fn)=>pageEvents[name]=fn,getElementById:id=>ids[id],createElement:tag=>new Element(tag),createTextNode:text=>text};
  URL.createObjectURL=blob=>{const id='blob:test'+serial++;blobs.set(id,blob);return id;};URL.revokeObjectURL=()=>{};
  try{
   await import('../deluxe-editor/app.mjs?ui-test');
@@ -71,6 +72,11 @@ test('UI handlers: abrir, editar, salvar projeto, reabrir, exportar e restaurar'
   ids.texts.children[0].children[2].onclick();assert.match(ids.texts.children[0].children[0].value,/TODOS/);
   await ids.allTextsActions.children[1].onclick();assert.match(ids.status.textContent,/seção inteira/);assert.equal(ids.nativeTexts.children[0].children[0].value,'ELEJA');assert.equal(ids.matchStatistics.children[0].children[0].value,'CHUTES');
   await ids.allTextsActions.children[0].onclick();assert.match(ids.status.textContent,/seção inteira/);assert.equal(ids.matchStatistics.children[0].children[0].value,'SHOTS');
+
+  if(process.env.ISSSD_TITLE_PROJECT){const real=fs.readFileSync(process.env.ISSSD_TITLE_PROJECT,'utf8');ids.load.files=[{text:async()=>real}];await ids.load.onchange();assert.equal(ids.status.textContent,'Projeto Deluxe reaberto.');assert.equal(ids.titleComposerElements.children.length,8);assert.equal(ids.titlePalettes.children.length,4);assert.ok(ids.titleTexts.children.length>=2);}
+
+  for(let i=0;i<3;i++)pageEvents['deluxe:title-screen-open']();assert.equal(ids.titlePalettes.children.length,4);assert.equal(ids.titleTexts.children.length,3);assert.equal(ids.titleComposerElements.children.length,8);
+  const context=ids.titleComposerCanvas.getContext;ids.titleComposerCanvas.getContext=()=>{throw Error('preview test failure');};pageEvents['deluxe:title-screen-open']();assert.equal(ids.titlePalettes.children.length,4);assert.equal(ids.titleTexts.children.length,3);assert.match(ids.titleComposerRomStatus.textContent,/preview test failure/);ids.titleComposerCanvas.getContext=context;pageEvents['deluxe:title-screen-open']();assert.equal(ids.titleComposerElements.children.length,8);
 
 
  }finally{globalThis.createImageBitmap=previous.bitmap;globalThis.fetch=previous.fetch;globalThis.window=previous.window;globalThis.document=previous.document;URL.createObjectURL=previous.create;URL.revokeObjectURL=previous.revoke;}

@@ -232,7 +232,7 @@ function titleChange(kind,id,value,original){
  if(!Object.keys(items).length)delete title[kind];if(!Object.keys(title).length)delete project.changes.titleScreen;
 }
 function renderTitleScreen(rom){
- drawTitleLogo();
+ for(const id of ['titleTexts','titlePalettes','titleTextsActions'])$(id).replaceChildren();
  for(const f of TITLE_TEXT_FIELDS){const original=readTitleText(rom,f);textControl($('titleTexts'),{scope:'titleTexts',key:f.id,label:f.label+' · até '+f.count+' letras',value:project.changes.titleScreen?.texts?.[f.id]??original,original,validate:v=>validateTitleText(v,f),onChange:v=>{titleChange('texts',f.id,v,original);const chars=[...v.normalize('NFC').toUpperCase()];for(const c of chars){if(c===' '||TITLE_SUPPORTED_CHARACTERS.includes(c)||TITLE_FONT_ROWS[c])continue;const canvas=document.createElement('canvas');canvas.width=8;canvas.height=8;const ctx=canvas.getContext('2d');ctx.font='bold 8px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(c,4,4);const data=ctx.getImageData(0,0,8,8).data,rows=Array.from({length:8},(_,y)=>Array.from({length:8},(_,x)=>data[(y*8+x)*4+3]>48?1<<(7-x):0).reduce((a,b)=>a|b,0));const title=project.changes.titleScreen??={};(title.fontGlyphs??={})[c]=rows;}}});}
  const hint=document.createElement('p');hint.className='hint';hint.textContent='Letras, números, acentos e símbolos são aceitos. A fonte é gerada ao salvar. Limites: 29 e 18 caracteres visíveis; até 31 caracteres diferentes nas duas linhas.';$('titleTexts').append(hint);
  for(const p of readTitlePalettes(rom)){
@@ -241,6 +241,7 @@ function renderTitleScreen(rom){
   colors.forEach((v,i)=>{const label=document.createElement('label');label.textContent=String(i+1);const input=document.createElement('input');input.type='color';input.value=bgrToHex(v);input.setAttribute('aria-label',p.label+' cor '+(i+1));input.oninput=()=>{colors[i]=hexToBgr(input.value);titleChange('palettes',p.id,colors.slice(),p.colors);drawTitleLogo();};label.append(input);palette.append(label);});
   const reset=document.createElement('button');reset.textContent='Restaurar cores originais';reset.onclick=()=>{titleChange('palettes',p.id,p.colors,p.colors);render();};details.append(reset);$('titlePalettes').append(details);
  }
+ try{drawTitleLogo();}catch(error){$('titleComposerRomStatus').textContent='Não foi possível desenhar a prévia: '+error.message;}
 }
 
 function drawTitleLogo(){titleComposer.render();}
@@ -296,3 +297,5 @@ function addPresetButtons(host,scope){for(const [mode,label]of [['original','Res
 function renderTextActions(){for(const scope of ['allTexts','texts','nativeTexts','menuTexts','trainingHud','matchStatistics','cursorHelp','mainMenu','titleTexts']){const host=$(scope+'Actions');host.replaceChildren();addPresetButtons(host,scope);}}
 
 const titleComposer=installTitleComposer({getProject:()=>project,getFile:()=>file,onStatus:status});
+
+document.addEventListener?.('deluxe:title-screen-open',()=>{if(!project){titleComposer.render();return;}try{renderTitleScreen(splitRom(file).rom);renderTextActions();}catch(error){status('Falha ao atualizar Tela de título: '+error.message);}});

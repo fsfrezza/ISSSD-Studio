@@ -3,7 +3,7 @@ const pages={
  groups:['Grupos','Organize as equipes nos grupos nativos da Deluxe.'],
  players:['Jogadores','Edite os elencos regulares originais da Deluxe.'],
  overview:['Visão geral','Abra a ROM original ou continue um projeto.'],
- title:['Tela de título','Edite a composição, as cores e os textos da tela anterior ao menu principal.'],
+ 'title-screen':['Tela de título','Edite a composição, as cores e os textos da tela anterior ao menu principal.'],
  menu:['Menu principal','Personalize os nomes e confira a tipografia na prévia.'],
  texts:['Textos','Edite as frases do jogo, organizadas por tela.'],
  cursor:['Cursor','Personalize as instruções dos controles e da seleção de jogadores.'],
@@ -17,6 +17,7 @@ function selectPage(id){
  if(!Object.hasOwn(pages,id))return;
  active=id;
  for(const panel of panels)panel.hidden=panel.dataset.panel!==id;
+ if(id==='title-screen')document.dispatchEvent?.(new CustomEvent('deluxe:title-screen-open'));
  for(const button of buttons){if(button.dataset.page===id)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');}
  document.getElementById('pageTitle').textContent=pages[id][0];
  document.getElementById('pageDescription').textContent=pages[id][1];
