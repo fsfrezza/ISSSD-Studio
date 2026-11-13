@@ -4,9 +4,9 @@ const item=(id,label,description,extra={})=>Object.freeze({id,label,description,
 export const IMPROVEMENT_SECTIONS=Object.freeze([
  {id:'plus-rom',title:'Melhorias já presentes na ROM Plus',description:'Estas sete melhorias constavam como incluídas na base do Editor Plus. As opções disponíveis podem ser ativadas separadamente no Deluxe.',items:[
   item('low-goal-kick','Tiro de meta rasteiro com B','Permite uma reposição rasteira usando B.',{plusKey:'shortGoalKickB',status:'available',capability:'gameplay'}),
-  item('final-attack','Aguardar o último ataque','Preserva o ataque dentro da área adversária antes de encerrar o tempo.',{plusKey:'lastAttackProtection'}),
+  item('final-attack','Aguardar o último ataque','Preserva o ataque dentro da área adversária antes de encerrar o tempo.',{plusKey:'lastAttackProtection',status:'available',capability:'gameplay'}),
   item('match-hour','Escolha do horário da partida','Libera a escolha do horário da partida.',{plusKey:'matchTimeSelection'}),
-  item('one-minute','Partida de 1 minuto','Acrescenta a duração de um minuto às opções de tempo.',{plusKey:'oneMinuteMatch'}),
+  item('one-minute','Partida de 1 minuto','Acrescenta a duração de um minuto às opções de tempo.',{plusKey:'oneMinuteMatch',status:'available',capability:'gameplay'}),
   item('penalty-interference','Corrigir interferência na cobrança de pênalti','Correção de entrada dos controles na cobrança; é distinta da correção do replay.',{plusKey:'penaltyInputFix',status:'available',capability:'gameplay'}),
   item('password-save','Salvar progresso por bateria','Preserva o progresso por bateria. Substitui a descrição incompleta “guardar último password”.',{plusKey:'batterySave'}),
   item('controller-one-codes','Códigos secretos pelo controle 1 ou 2','Adaptar o uso pelo controle 1, mantendo o controle 2. São códigos diferentes: árbitro cachorro — ↑ ↑ ↓ ↓ ← → ← → B A; equipes secretas — R ↑ ↓ L X B ← A → Y.',{plusKey:'playerOneSecretCodes',status:'available',capability:'gameplay'}),

@@ -1,7 +1,7 @@
 # Opções de jogabilidade Deluxe
 
 `changes.improvements` aceita `low-goal-kick`, `backpass`, `penalty-interference` e
-`controller-one-codes`, independentes,
+`controller-one-codes`, `one-minute` e `final-attack`, independentes,
 desmarcados por padrão. A aba Melhorias valida a geração antes de atualizar
 o projeto. Reabrir mantém a seleção; desmarcar reconstrói a ROM original.
 Nenhuma alteração de grupos, jogadores, fotos ou táticas é necessária.
@@ -61,6 +61,37 @@ Snes9x com os quatro patches e estrutura GG: os códigos de árbitro cachorro
 entradas de controle, separadamente nos controles 1 e 2. As quatro combinações
 ativaram a flag nativa correspondente (7E:D854 ou 7E:D856 = 1).
 
-Partida de um minuto, último ataque, horário e bateria continuam pendentes.
-O minuto extra exige concluir a apresentação da quarta opção e sua leitura
-pelas rotinas de partida; localizar seus bytes não basta para disponibilizá-lo.
+Horário, bateria e correção do replay de pênalti continuam pendentes.
+
+
+## Um minuto e espera do último ataque
+
+A duração utiliza o índice 3, preservando os índices 0/1/2 de três, cinco e
+sete minutos. As opções nativas passam a quatro, o texto de duração mostra
+1/3/5/7 e o cursor recebe o mapeamento e espaçamento correspondentes.
+As duas leituras do cronômetro usam o mesmo mecanismo da Plus: índice 3
+retorna 0100 no período normal e 0030 na prorrogação. Os demais índices leem
+as tabelas originais, sem alterações. O helper de tempo foi movido de A4:E180
+para A4:FF80 porque E180 pertence às tabelas das equipes expandidas.
+
+O último ataque reutiliza o mecanismo completo da Plus: filtro de estados da
+bola e reinício, controle do apito e contador auxiliar. A entrada 86:DBC0 é
+redirecionada para 86:CC00, dentro da reserva nativa CB9E..D1FF. A posição
+86:F700 da Plus colide com os loaders de nomes compactos da estrutura GG.
+Os helpers adicionais ficam em 80:F900 e A4:FF00, sem alterar as tabelas de
+equipes. O comportamento é o mecanismo da Plus, não uma regra nova baseada
+em uma estimativa de posição em JavaScript.
+
+Validação: 92 testes com fixtures reais, incluindo as quatro durações,
+prorrogação, posição do cursor, estados protegidos da bola, encerramento,
+ativação/desativação e exportação das seis opções junto ao projeto GG.
+No Snes9x, o menu exibiu 1/3/5/7, a escolha de 1 minuto gravou 1F88=3, e
+uma partida GG carregou 1E5A=3 com relógio abaixo de 01:00 (00:56 na amostra).
+No caso controlado de tempo zerado, a ação protegida da bola 3 foi mantida
+por 120 frames sem evento de encerramento; após a liberação para ação 1,
+o evento 6 ocorreu em 60 frames. Os estados foram preparados em WRAM;
+não se trata de uma partida inteira com todas as trajetórias possíveis.
+
+O bug do replay não foi marcado como corrigido: a rotina de replay e o
+caminho de captura manual foram inspecionados, mas ainda é necessário
+reproduzir a defesa indevida para selecionar e validar o ponto de bloqueio.

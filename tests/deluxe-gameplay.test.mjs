@@ -25,3 +25,13 @@ test('new options match native signatures, combine with earlier gameplay and res
  const file=new Uint8Array(fs.readFileSync(fixture)),base=splitRom(file).rom,p=JSON.parse(fs.readFileSync(projectPath)),original=await buildDeluxeProject(file,p);for(const id of ['penalty-interference','controller-one-codes']){p.changes.improvements=[id];const out=(await buildDeluxeProject(file,p)).rom.slice(p.base.headerSize);if(id==='penalty-interference')assert.deepEqual(out.slice(0x27fc0,0x27fda),PENALTY_INPUT_HELPER);else assert.deepEqual(out.slice(0x7a00,0x7a00+SECRET_CONTROLLERS_HELPER.length),SECRET_CONTROLLERS_HELPER);}
  p.changes.improvements=[...DELUXE_GAMEPLAY_IDS];await buildDeluxeProject(file,JSON.parse(JSON.stringify(p)));p.changes.improvements=[];assert.deepEqual((await buildDeluxeProject(file,p)).rom,original.rom);assert.deepEqual(base.slice(0x7513,0x7515),Uint8Array.of(0xa5,0x2a));
 });
+
+test('one-minute menu and both native timer branches preserve the three existing durations',{skip:!fixture},()=>{
+ const base=splitRom(new Uint8Array(fs.readFileSync(fixture))).rom,out=applyDeluxeGameplay(base,base,['one-minute']);assert.equal(out.length,base.length);assert.equal(out[0x51c8b],3);assert.equal(out[0x51c96],4);assert.deepEqual(Array.from(out.slice(0x3de2f,0x3de3c)),[0x5f,0,0,0x61,0,0,0x63,0,0,0x65,0,0,0]);
+ for(let index=0;index<4;index++){const m=new Uint8Array(0x1000000);m.set(out.slice(0x57600,0x5760e),0x8af600);m.set(out.slice(0x127f80,0x127fa0),0xa4ff80);m.set(base.slice(0xe893,0xe8a3),0xe893);m[0x1f88]=index;const menu=executeHook(m,0x8af600,{});assert.equal(menu.r.a,index===3?0:index+1);const normal=executeHook(m,0xa4ff80,{y:index*2});assert.equal(normal.r.a,index===3?0x100:(base[0xe893+index*2]|base[0xe894+index*2]<<8));const extra=executeHook(m,0xa4ff90,{y:index*2});assert.equal(extra.r.a,index===3?0x30:(base[0xe89b+index*2]|base[0xe89c+index*2]<<8));}
+});
+test('Plus final-attack hook postpones the whistle during protected ball states and then ends normally',{skip:!fixture},()=>{
+ const base=splitRom(new Uint8Array(fs.readFileSync(fixture))).rom,out=applyDeluxeGameplay(base,base,['final-attack']);
+ for(const ball of [3,4,5,6,0x16,0x18,0xe]){const m=new Uint8Array(0x1000000);m.set(out.slice(0x34c00,0x34c66),0x86cc00);m[0x430]=ball;m[0x6c]=1;m[0x6b]=1;const result=executeHook(m,0x86cc00,{},new Set([0x86dc03]));assert.equal(m[0xba],0);assert.equal(result.calls.length,0);}
+ const m=new Uint8Array(0x1000000);m.set(out.slice(0x34c00,0x34c66),0x86cc00);m[0x430]=1;executeHook(m,0x86cc00,{},new Set([0x86dc03]));assert.equal(m[0x6c],1);assert.equal(m[0xba],0);m[0x6b]=1;const end=executeHook(m,0x86cc00,{},new Set([0x86dc03]));assert.equal(m[0xba],6);assert.equal(m[0x14e6],1);assert.equal(end.calls[0].target,0x86dc03);
+});
