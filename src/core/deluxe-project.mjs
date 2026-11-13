@@ -96,5 +96,5 @@ export async function buildDeluxeProject(file,project){
   }
   const output=new Uint8Array(header.length+out.length);
   output.set(header);output.set(out,header.length);
-  return {rom:output,diff:diffRanges(rom,out),expanded:false,base};
+  return {rom:output,diff:diffRanges(rom,out),expanded:out.length>rom.length,base};
 }

@@ -81,5 +81,15 @@ test('UI handlers: abrir, editar, salvar projeto, reabrir, exportar e restaurar'
   const context=ids.titleComposerCanvas.getContext;ids.titleComposerCanvas.getContext=()=>{throw Error('preview test failure');};pageEvents['deluxe:title-screen-open']();assert.equal(ids.titlePalettes.children.length,4);assert.equal(ids.titleTexts.children.length,3);assert.match(ids.titleComposerRomStatus.textContent,/preview test failure/);ids.titleComposerCanvas.getContext=context;pageEvents['deluxe:title-screen-open']();assert.equal(ids.titleComposerElements.children.length,8);
 
 
+ if(process.env.ISSSD_GG_RECOVERED_PROJECT){
+  const real=fs.readFileSync(process.env.ISSSD_GG_RECOVERED_PROJECT,'utf8'),expected=JSON.parse(real);
+  ids.load.files=[{text:async()=>real}];await ids.load.onchange();assert.equal(ids.status.textContent,'Projeto Deluxe reaberto.');
+  assert.equal(ids.groupCards.children.length,10);assert.equal(ids.groupCards.children[9].children[0].textContent,'GG');assert.equal(ids.playerTeam.children.length,60);assert.equal(ids.teamSelection.children.length,60);
+  ids.playerTeam.value='55';ids.playerSelection.value='12';ids.playerTeam.onchange();ids.playerSelection.value='12';ids.playerSelection.onchange();assert.equal(ids.playerFields.children[0].children[0].value,'Ale 100');
+  await ids.save.onclick();const saved=JSON.parse(await downloads.at(-1).blob.text());assert.deepEqual(saved.changes.structure,expected.changes.structure);assert.deepEqual(saved.changes.players,expected.changes.players);
+  ids.load.files=[{text:async()=>JSON.stringify(saved)}];await ids.load.onchange();assert.equal(ids.groupCards.children.length,10);
+  await ids.export.onclick();assert.match(ids.status.textContent,/4 MB/);assert.equal(downloads.at(-1).blob.size,file.length+0x200000);
+ }
+
  }finally{globalThis.createImageBitmap=previous.bitmap;globalThis.fetch=previous.fetch;globalThis.window=previous.window;globalThis.document=previous.document;URL.createObjectURL=previous.create;URL.revokeObjectURL=previous.revoke;}
 });

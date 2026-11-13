@@ -24,8 +24,8 @@ export function applyPlusGroupOrganization(base,project){
  let next=structuredClone(project),remaining=availablePlusTeams(next).map(t=>t.plusId);
  while(remaining.length){next=addPlusCatalogGroup(base,next,remaining.slice(0,6));remaining=remaining.slice(6);}
  const ids=projectPlusIds(next),slots=new Map(ids.map((id,slot)=>[id,slot]));
- if(slots.size!==54)throw Error('Catálogo de equipes incompatível com a estrutura Plus.');
+ if(![54,60].includes(slots.size))throw Error('Catálogo de equipes incompatível com a estrutura Plus.');
  next.changes.structure.groups=PLUS_NORMAL_GROUPS.map(row=>row.map(id=>slots.get(id)));
- next.changes.structure.labels=PLUS_NORMAL_LABELS.slice();
+ next.changes.structure.labels=[...PLUS_NORMAL_LABELS,...(next.changes.structure.secret?[next.changes.structure.labels?.[9]??'GG']:[])];
  validateDeluxeStructure(next.changes.structure);return next;
 }

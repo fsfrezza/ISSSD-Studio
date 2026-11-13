@@ -5,11 +5,11 @@ import {deluxeTeamIdentity,deluxeGroupView,swapDeluxeProjectGroups,DELUXE_PROJEC
 import {createDeluxeProject,buildDeluxeProject,splitRom} from '../src/core/deluxe-project.mjs';
 const fixture=process.env.ISSSD_DELUXE_ROM,saved=process.env.ISSSD_SAVED_PROJECT;
 test('Plus country identities preserve Deluxe native indices and legacy expanded slots',()=>{
- assert.equal(new Set(DELUXE_PROJECT_TO_PLUS).size,54);
+ assert.equal(new Set(DELUXE_PROJECT_TO_PLUS).size,60);
  assert.deepEqual(deluxeTeamIdentity(21),{plusId:53,deluxeId:21,projectSlot:21});
  assert.deepEqual(deluxeTeamIdentity(26),{plusId:21,deluxeId:26,projectSlot:26});
  assert.deepEqual(deluxeTeamIdentity(36),{plusId:26,deluxeId:null,projectSlot:36});
- assert.throws(()=>deluxeTeamIdentity(54));
+ assert.throws(()=>deluxeTeamIdentity(60));
 });
 test('new Deluxe project remains exact; group swaps and names survive generation and restore',{skip:!fixture},async()=>{
  const file=new Uint8Array(fs.readFileSync(fixture)),base=splitRom(file).rom,p=await createDeluxeProject(file),snapshot=structuredClone(p);

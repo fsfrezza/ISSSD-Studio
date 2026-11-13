@@ -26,11 +26,11 @@ export function applyDeluxeGroupLabels(out,base,labels){
   const native=DELUXE_GROUP_LABELS.indexOf(labels[i]);if(native>=0){out.set(base.slice(0x3c54f+native*2,0x3c551+native*2),0x3c54f+i*2);continue;}
   if(typeof labels[i]!=='string'||!labels[i].trim())throw Error('Nome do grupo inválido');
   const text=labels[i].normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/\s/g,'');
-  if(text.length>8||[...text].some(c=>NATIVE_MENU_FONTS.SmallMenuText[c]===undefined))throw Error('Título do grupo: use até oito letras/números, sem contar espaços');
+  if(text.length>16||[...text].some(c=>NATIVE_MENU_FONTS.SmallMenuText[c]===undefined))throw Error('Título do grupo: use até 16 letras/números, sem contar espaços');
   const at=0x3fc00+i*16;
   if(base.slice(at,at+16).some(v=>v!==255)||out.slice(at,at+16).some(v=>v!==255))throw Error('Nomes dos grupos: reserva ocupada');
-  out.set([...text.padEnd(8,' ')].map(c=>NATIVE_MENU_FONTS.SmallMenuText[c]),at);
-  out.fill(0,at+8,at+16);
+  out.set([...text.padEnd(16,' ')].map(c=>NATIVE_MENU_FONTS.SmallMenuText[c]),at);
+
   out[0x3c54f+i*2]=at&255;out[0x3c550+i*2]=at>>8&255;
  }
  return out;

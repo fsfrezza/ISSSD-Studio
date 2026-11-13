@@ -1,6 +1,6 @@
 import {structureActive,expandedPlayerOffsets} from './deluxe-structure.mjs';
 import {decodePlayerRecord,writeSkill,writeNaturalPosition,writeJersey} from './plus-player.mjs';
-import {decodeFixedPlayerName,encodeFixedPlayerName,formatPlayerName} from './plus-player-name.mjs';
+import {decodeFixedPlayerName,encodeFixedPlayerName} from './plus-player-name.mjs';
 import {DELUXE_TEAMS} from './deluxe-team-catalog.mjs';
 export {DELUXE_TEAMS};
 export const PLAYER_SKILLS={acceleration:'Arranque',speed:'Rapidez',shot:'Chute',curve:'Efeito',balance:'Firmeza',intelligence:'Inteligência',dribbling:'Drible',jump:'Pulo',energy:'Resistência'};
@@ -21,10 +21,10 @@ function object(v,label){if(!v||typeof v!=='object'||Array.isArray(v))throw Erro
 export function applyDeluxePlayers(out,base,edits){
  if(edits===undefined)return out;object(edits,'Jogadores');const writes=[],teams=new Set();
  for(const [id,edit]of Object.entries(edits)){
-  if(!/^(?:[0-9]|[1-4][0-9]|5[0-3]):(?:[0-9]|1[0-9])$/.test(id))throw Error('Identificador de jogador inválido');
+  if(!/^(?:[0-9]|[1-4][0-9]|5[0-9]):(?:[0-9]|1[0-9])$/.test(id))throw Error('Identificador de jogador inválido');
   object(edit,'Jogador');if(Object.keys(edit).some(k=>!['name','jersey','naturalPosition','skills'].includes(k)))throw Error('Campo de jogador não suportado');
   const [team,player]=id.split(':').map(Number),at=deluxePlayerOffsets(base,team,player),raw=base.slice(at.record,at.record+7);teams.add(team);
-  if(edit.name!==undefined){if(typeof edit.name!=='string'||!edit.name.trim())throw Error('Nome de jogador vazio ou inválido');const original=decodeFixedPlayerName(base.slice(at.name,at.name+8)).trim();if(edit.name!==original)writes.push([at.name,encodeFixedPlayerName(formatPlayerName(edit.name,'center'))]);}
+  if(edit.name!==undefined){if(typeof edit.name!=='string'||!edit.name.trim())throw Error('Nome de jogador vazio ou inválido');const original=decodeFixedPlayerName(base.slice(at.name,at.name+8)).trim();if(edit.name!==original)writes.push([at.name,encodeFixedPlayerName(centerDeluxePlayerName(edit.name))]);}
   if(edit.skills!==undefined){object(edit.skills,'Atributos');for(const [k,v]of Object.entries(edit.skills)){if(!Object.hasOwn(PLAYER_SKILLS,k))throw Error('Atributo desconhecido');writeSkill(raw,k,v);}}
   if(edit.naturalPosition!==undefined){const goalkeeper=player===0||player===11;if(goalkeeper&&edit.naturalPosition!==1)throw Error('A posição do goleiro é fixa');if(!goalkeeper&&edit.naturalPosition===1)throw Error('Jogadores de linha não podem virar goleiros');writeNaturalPosition(raw,edit.naturalPosition);}
   if(edit.jersey!==undefined)writeJersey(raw,edit.jersey);
@@ -37,3 +37,5 @@ export function planDeluxeJerseySwap(base,edits,team,player,jersey){
  if(!Number.isInteger(jersey)||jersey<1||jersey>20)throw Error('Número deve ser de 1 a 20');const current=readDeluxePlayer(base,team,player,edits),other=Array.from({length:20},(_,p)=>readDeluxePlayer(base,team,p,edits)).find(p=>p.player!==player&&p.jersey===jersey);
  const result=structuredClone(edits);(result[team+':'+player]??={}).jersey=jersey;if(other)(result[team+':'+other.player]??={}).jersey=current.jersey;return result;
 }
+
+function centerDeluxePlayerName(value){const text=String(value).replace(/['‘`´]/g,'’').trim();if([...text].length>8)throw Error('Nome do jogador: até oito caracteres');return ' '.repeat(Math.floor((8-text.length)/2))+text;}
