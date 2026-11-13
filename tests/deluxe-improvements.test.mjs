@@ -7,7 +7,7 @@ test('catalog covers the seven included Plus rules and all three optional editor
  assert.deepEqual(IMPROVEMENT_SECTIONS.find(s=>s.id==='plus-rom').items.map(i=>i.plusKey),['shortGoalKickB','lastAttackProtection','matchTimeSelection','oneMinuteMatch','penaltyInputFix','batterySave','playerOneSecretCodes']);
  assert.deepEqual(IMPROVEMENT_SECTIONS.find(s=>s.id==='plus-options').items.map(i=>i.plusKey),['goalkeeperBackpassNoHands','goalkeeperFreeKickTaker','goalkeeperCornerKickTaker']);
  assert.equal(new Set(IMPROVEMENTS.map(i=>i.id)).size,IMPROVEMENTS.length);
- for(const i of IMPROVEMENTS.filter(i=>i.plusKey))assert.equal(deluxeImprovementState(i,{changes:{improvements:[i.id]}}).kind,'pending');
+ for(const i of IMPROVEMENTS.filter(i=>i.plusKey))assert.equal(deluxeImprovementState(i,{changes:{improvements:[i.id]}}).kind,i.capability==='gameplay'?'active':'pending');
  assert.notEqual(item('penalty-interference').id,item('penalty-replay').id);
 });
 test('GG means six unique secret identities outside all nine regular groups',()=>{

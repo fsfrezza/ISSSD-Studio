@@ -26,7 +26,7 @@ test('ROM real: identidade, edições restritas, checksum, roundtrip e rejeiçã
  const sum=rom.reduce((s,b)=>(s+b)&65535,0);assert.equal(sum,rom[0x7fde]|rom[0x7fdf]<<8);
  delete project.changes.strategyTexts.alloutatk;
  assert.deepEqual((await buildDeluxeProject(input,project)).rom,input);
- project.changes.improvements=['low-goal-kick'];await assert.rejects(buildDeluxeProject(input,project),/sem patch/);
+ project.changes.improvements=['goalkeeper-free-kick'];await assert.rejects(buildDeluxeProject(input,project),/sem patch/);
  project.changes.improvements=[];project.changes.plusPlayers={};await assert.rejects(buildDeluxeProject(input,project),/não suportado/);
 });
 

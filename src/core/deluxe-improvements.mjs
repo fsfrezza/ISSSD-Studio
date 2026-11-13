@@ -2,8 +2,8 @@
 // Presence in the Plus ROM is distinct from a patch implemented for original Deluxe.
 const item=(id,label,description,extra={})=>Object.freeze({id,label,description,status:'pending-mapping',...extra});
 export const IMPROVEMENT_SECTIONS=Object.freeze([
- {id:'plus-rom',title:'Melhorias já presentes na ROM Plus',description:'Estas sete melhorias constavam como incluídas na base do Editor Plus. Ainda precisam de patches próprios para a base Deluxe.',items:[
-  item('low-goal-kick','Tiro de meta rasteiro com B','Permite uma reposição rasteira usando B.',{plusKey:'shortGoalKickB'}),
+ {id:'plus-rom',title:'Melhorias já presentes na ROM Plus',description:'Estas sete melhorias constavam como incluídas na base do Editor Plus. As opções disponíveis podem ser ativadas separadamente no Deluxe.',items:[
+  item('low-goal-kick','Tiro de meta rasteiro com B','Permite uma reposição rasteira usando B.',{plusKey:'shortGoalKickB',status:'available',capability:'gameplay'}),
   item('final-attack','Aguardar o último ataque','Preserva o ataque dentro da área adversária antes de encerrar o tempo.',{plusKey:'lastAttackProtection'}),
   item('match-hour','Escolha do horário da partida','Libera a escolha do horário da partida.',{plusKey:'matchTimeSelection'}),
   item('one-minute','Partida de 1 minuto','Acrescenta a duração de um minuto às opções de tempo.',{plusKey:'oneMinuteMatch'}),
@@ -12,7 +12,7 @@ export const IMPROVEMENT_SECTIONS=Object.freeze([
   item('controller-one-codes','Códigos secretos pelo controle 1 ou 2','Adaptar o uso pelo controle 1, mantendo o controle 2. São códigos diferentes: árbitro cachorro — ↑ ↑ ↓ ↓ ← → ← → B A; equipes secretas — R ↑ ↓ L X B ← A → Y.',{plusKey:'playerOneSecretCodes'}),
  ]},
  {id:'plus-options',title:'Opções adicionais do Editor Plus',description:'As três opções existiam no Editor Plus. A adaptação ao Deluxe e a estabilidade das rotinas de goleiro ainda precisam de validação.',items:[
-  item('backpass','Punição por recuo ao goleiro','Ao agarrar com as mãos um recuo proibido, aplica pênalti após a breve animação. O domínio com os pés continua permitido.',{plusKey:'goalkeeperBackpassNoHands'}),
+  item('backpass','Punição por recuo ao goleiro','Ao agarrar com as mãos um recuo proibido, aplica pênalti após a breve animação. O domínio com os pés continua permitido.',{plusKey:'goalkeeperBackpassNoHands',status:'available',capability:'gameplay'}),
   item('goalkeeper-free-kick','Goleiro como batedor de faltas','Permite escolher o goleiro como batedor oficial na tela de Substituições.',{plusKey:'goalkeeperFreeKickTaker'}),
   item('goalkeeper-corner','Goleiro como batedor de escanteios','Permite escolher o goleiro como batedor oficial de escanteios, independentemente das faltas.',{plusKey:'goalkeeperCornerKickTaker'}),
  ]},
@@ -47,9 +47,10 @@ export const IMPROVEMENTS=Object.freeze(IMPROVEMENT_SECTIONS.flatMap(s=>s.items)
 export function deluxeImprovementState(item,project){
  if(item.status!=='available')return {kind:'pending',label:'Aguardando adaptação / validação'};
  const s=project?.changes?.structure,visuals=project?.changes?.teamVisuals,opening=Object.keys(project?.changes?.openingMedia??{}).length>0;
+ if(item.capability==='gameplay')return project?.changes?.improvements?.includes(item.id)?{kind:'active',label:'Aplicar ao gerar a ROM'}:{kind:'inactive',label:'Desativada'};
  if(item.capability==='always')return {kind:'available',label:'Disponível no Editor Deluxe'};
  if(!project)return {kind:'available',label:'Abra um projeto para conferir'};
- const active={groups:s?.groups?.length===9,gg:s?.teams?.length===60&&s.groups?.length===9&&s.secret?.length===6&&new Set(s.secret.map(slot=>s.teams[slot]?.plusId??slot)).size===6&&s.secret.every(slot=>(s.teams[slot]?.plusId??slot)>=54&&(s.teams[slot]?.plusId??slot)<60)&&s.groups.every(row=>row.every(slot=>!s.secret.includes(slot))),visuals:!!visuals,photos:!!project?.changes?.teamPhotos,tactics:!!project?.changes?.tactics,opening,expansion:s?.teams?.length===60||!!visuals||opening||!!project?.changes?.teamPhotos||!!project?.changes?.tactics}[item.capability];
+ const active={groups:s?.groups?.length===9,gg:s?.teams?.length===60&&s.groups?.length===9&&s.secret?.length===6&&new Set(s.secret.map(slot=>s.teams[slot]?.plusId??slot)).size===6&&s.secret.every(slot=>(s.teams[slot]?.plusId??slot)>=54&&(s.teams[slot]?.plusId??slot)<60)&&s.groups.every(row=>row.every(slot=>!s.secret.includes(slot))),visuals:!!visuals,photos:!!project?.changes?.teamPhotos,tactics:!!project?.changes?.tactics,opening,expansion:project?.changes?.improvements?.includes('backpass')||s?.teams?.length===60||!!visuals||opening||!!project?.changes?.teamPhotos||!!project?.changes?.tactics}[item.capability];
  return active?{kind:'active',label:item.capability==='expansion'?'Automática ao gerar a ROM':'Presente no projeto'}:{kind:'inactive',label:'Não aplicado neste projeto'};
 }
 export function deluxeStructureSummary(project){

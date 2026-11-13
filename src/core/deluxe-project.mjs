@@ -1,3 +1,4 @@
+import {applyDeluxeGameplay,validateDeluxeGameplay} from './deluxe-gameplay.mjs';
 import {applyDeluxeTactics} from './deluxe-tactics.mjs';
 import {applyDeluxeTeamPhotos} from './deluxe-team-photos.mjs';
 import {applyDeluxeOpeningMedia} from './deluxe-opening-media.mjs';
@@ -54,7 +55,7 @@ export async function buildDeluxeProject(file,project){
   const changes=project.changes;
   if(changes.titleComposer!==undefined)validateTitleComposer(changes.titleComposer);
   if(!Array.isArray(changes.improvements))throw new Error('Lista de melhorias inválida');
-  if(changes.improvements.length)throw new Error('Melhorias ainda sem patch validado: '+changes.improvements.join(', '));
+  validateDeluxeGameplay(changes.improvements);
   const {rom,header}=splitRom(file),playerBase=prepareDeluxeStructure(rom,changes.structure);
   let out=playerBase.slice();
   if(changes.structure&&changes.groups!==undefined)throw Error('Use os grupos da estrutura ampliada');
@@ -86,6 +87,7 @@ export async function buildDeluxeProject(file,project){
   out=applyDeluxeTeamPhotos(out,rom,changes.structure,changes.teamPhotos);
   out=applyDeluxeTactics(out,rom,project);
   out=applyDeluxeOpeningMedia(out,rom,changes.openingMedia);
+  out=applyDeluxeGameplay(out,rom,changes.improvements);
   const edited=diffRanges(rom,out).changedBytes>0;
   if(edited){
     // For the supported 2 MB power-of-two ROM the checksum quartet contributes
