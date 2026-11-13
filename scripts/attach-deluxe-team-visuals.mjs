@@ -1,0 +1,13 @@
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+import {extractGGTeamVisuals} from '../src/core/deluxe-team-visuals.mjs';
+import {buildDeluxeProject,splitRom} from '../src/core/deluxe-project.mjs';
+const [projectPath,deluxePath,plusPath,referencePath,outputPath]=process.argv.slice(2);
+if(!outputPath)throw Error('Uso: node scripts/attach-deluxe-team-visuals.mjs projeto.issdproj deluxe.smc plus.sfc referencia.sfc saida.issdproj');
+const project=JSON.parse(fs.readFileSync(projectPath)),deluxe=new Uint8Array(fs.readFileSync(deluxePath)),plus=splitRom(new Uint8Array(fs.readFileSync(plusPath))).rom,reference=new Uint8Array(fs.readFileSync(referencePath));
+const sha=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
+if(sha(plus)!=='ca2d73b226ab252649d4c9c35bb6b81937586d908c1d9dc9d447db7babfaad0a')throw Error('Use a Plus original verificada para localizar os diretórios de referência.');
+project.changes.teamVisuals=extractGGTeamVisuals(reference,plus,sha(reference));
+await buildDeluxeProject(deluxe,project);
+fs.writeFileSync(outputPath,JSON.stringify(project));
+console.log('Projeto validado com recursos visuais próprios das 60 equipes.');

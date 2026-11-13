@@ -290,7 +290,7 @@ function renderTeams(){
  if(!project)return;const names=teamNames(),i=Math.min(Number($('teamSelection').value)||0,names.length-1);$('teamSelection').replaceChildren();names.forEach((name,id)=>option($('teamSelection'),id,name));$('teamSelection').value=i;$('teamCards').replaceChildren();
  const t=project.changes.structure?.teams[i],body=document.createElement('div');body.className='card-body compact-grid';
  const label=document.createElement('label'),input=document.createElement('input');label.textContent='Nome no projeto e no Editor';input.value=t?.name??names[i];input.maxLength=32;input.disabled=!t;input.onchange=()=>{if(!input.value.trim()){input.value=t.name;return;}t.name=input.value.trim();renderTeams();renderGroups();renderPlayers();};label.append(input);body.append(label);
- const l=document.createElement('label'),sel=document.createElement('select');l.textContent='Equipe-base dos recursos visuais';DELUXE_TEAMS.forEach((name,id)=>option(sel,id,name));sel.value=t?.sourceTeam??i;sel.disabled=i<36||!t;sel.onchange=()=>{t.sourceTeam=Number(sel.value);renderPlayers();};l.append(sel);body.append(l);$('teamCards').append(body);
+ const l=document.createElement('label'),sel=document.createElement('select');l.textContent='Equipe-base dos recursos visuais';DELUXE_TEAMS.forEach((name,id)=>option(sel,id,name));sel.value=t?.sourceTeam??i;sel.disabled=i<36||!t;if(project.changes.teamVisuals&&t){l.textContent='Recursos visuais da equipe';sel.textContent='';option(sel,'own','Próprios · '+t.name);sel.value='own';sel.disabled=true;}sel.onchange=()=>{t.sourceTeam=Number(sel.value);renderPlayers();};l.append(sel);body.append(l);$('teamCards').append(body);
 }
 $('teamSelection').onchange=renderTeams;
 
