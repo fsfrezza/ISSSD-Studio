@@ -1,3 +1,4 @@
+import {installScreenEditors} from './screen-editors.mjs';
 import {IMPROVEMENT_SECTIONS,deluxeImprovementState,deluxeStructureSummary} from '../src/core/deluxe-improvements.mjs';
 import {availablePlusTeams,addPlusCatalogGroup,applyPlusGroupOrganization} from '../src/core/deluxe-group-catalog.mjs';
 import {deluxeGroupView,swapDeluxeProjectGroups,structureGroupRows,setStructureGroupRows} from '../src/core/deluxe-team-identity.mjs';
@@ -32,6 +33,7 @@ function showProjectRomRequest(value,name='Projeto Deluxe'){$('projectRomRequest
 function download(data,name,type){const url=URL.createObjectURL(new Blob([data],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 function render(){
   renderImprovements();
+  screenEditors.render();
   if(!project)renderTextActions();
   for(const id of ['resetGroups','addStructureGroup','resetStructure','teamSelection'])$(id).disabled=!project;$('groupCards').replaceChildren();$('teamCards').replaceChildren();if(!project)$('teamSelection').replaceChildren();$('groupStatus').textContent='';$('newGroupPanel').hidden=true;$('applyPlusGroups').disabled=!project;
   for(const id of ['playerTeam','playerSelection','resetPlayer','resetPlayerTeam'])$(id).disabled=!project;
@@ -101,6 +103,7 @@ const hexToBgr=hex=>[1,3,5].reduce((v,at,i)=>v|(Math.round(parseInt(hex.slice(at
 function renderNative(rom){
  $('title').value=project.changes.internalTitle??project.base.title;
  for(const section of DELUXE_MENU_SECTIONS){
+  if(screenEditors.ownsSection(section.id))continue;
   const details=document.createElement('details'),summary=document.createElement('summary');summary.textContent=section.title+' · '+section.fields.length+' campos';details.append(summary);$('menuTexts').append(details);
   for(const f of section.fields){
    const original=f[1],segments=f[3].pool.segments;
@@ -323,6 +326,7 @@ async function runTextPreset(scope,mode){const p=project,current=file,signature=
 function addPresetButtons(host,scope){for(const [mode,label]of [['original','Restaurar todos os textos'],['portuguese','Português em todos os textos']]){const b=document.createElement('button');b.type='button';b.textContent=label;b.disabled=!project;b.onclick=()=>runTextPreset(scope,mode);host.append(b);}}
 function renderTextActions(){for(const scope of ['allTexts','texts','nativeTexts','menuTexts','trainingHud','matchStatistics','cursorHelp','mainMenu','titleTexts']){const host=$(scope+'Actions');host.replaceChildren();addPresetButtons(host,scope);}}
 
+const screenEditors=installScreenEditors({getProject:()=>project,getFile:()=>file,textControl,addPresetButtons,onStatus:status});
 const titleComposer=installTitleComposer({getProject:()=>project,getFile:()=>file,onStatus:status});
 
 document.addEventListener?.('deluxe:title-screen-open',()=>{if(!project){titleComposer.render();return;}try{renderTitleScreen(splitRom(file).rom);renderTextActions();}catch(error){status('Falha ao atualizar Tela de título: '+error.message);}});

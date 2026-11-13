@@ -6,7 +6,7 @@ test('abas preservam painéis e expandir/recolher afeta somente a aba ativa',asy
   setAttribute(k,v){this.attrs[k]=v;}removeAttribute(k){delete this.attrs[k];}
   addEventListener(k,f){this.handlers[k]=f;}querySelectorAll(){return this.children;}
  }
- const ids=['overview','menu','texts','cursor','stadiums','improvements','title-screen'];
+ const ids=['overview','menu','texts','cursor','stadiums','improvements','title-screen','open-game','handicap','pre-match','stadium-screen'];
  const panels=ids.map(id=>{const e=new Element(id);e.dataset.panel=id;e.children=[{open:false},{open:false}];return e;});
  const buttons=ids.map(id=>{const e=new Element(id);e.dataset.page=id;return e;});
  const controls=Object.fromEntries(['pageTitle','pageDescription','expandAll','collapseAll'].map(id=>[id,new Element(id)]));
@@ -21,6 +21,7 @@ test('abas preservam painéis e expandir/recolher afeta somente a aba ativa',asy
   controls.collapseAll.handlers.click();assert.ok(panels[2].children.every(e=>!e.open));
   buttons[6].handlers.click();assert.equal(panels[6].hidden,false);assert.equal(controls.pageTitle.textContent,'Tela de título');assert.ok(panels.filter(p=>p!==panels[6]).every(p=>p.hidden));
   buttons[5].handlers.click();assert.equal(controls.expandAll.disabled,false);controls.expandAll.handlers.click();assert.ok(panels[5].children.every(e=>e.open));
+  for(const [index,title]of [[7,'Tela de Open Game'],[8,'Handicap'],[9,'Menu pré-partida'],[10,'Seleção de estádio']]){buttons[index].handlers.click();assert.equal(panels[index].hidden,false);assert.equal(controls.pageTitle.textContent,title);assert.ok(panels.filter(p=>p!==panels[index]).every(p=>p.hidden));}
  }finally{globalThis.document=previous;}
 });
 

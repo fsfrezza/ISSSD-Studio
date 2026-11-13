@@ -1,4 +1,8 @@
 const pages={
+ 'open-game':['Tela de Open Game','Edite as três opções e as descrições do tipo de partida.'],
+ handicap:['Handicap','Edite os textos da tela de vantagem e confira sua composição.'],
+ 'pre-match':['Menu pré-partida','Edite os rótulos gráficos de preparação, treino e desafio.'],
+ 'stadium-screen':['Seleção de estádio','Edite os títulos, os países e as condições da tela de seleção.'],
  teams:['Equipes','Personalize as equipes da estrutura ampliada.'],
  groups:['Grupos','Organize as equipes e os grupos do projeto, incluindo o grupo secreto.'],
  players:['Jogadores','Edite os jogadores das equipes habilitadas no projeto.'],

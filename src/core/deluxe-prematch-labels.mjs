@@ -1,0 +1,77 @@
+import {konamiLzCompress,konamiLzDecompress} from './konami-lz.mjs';
+import {PLUS_MAIN_MENU_GLYPHS} from './plus-main-menu-renderer.mjs';
+export const PREMATCH_GRAPHIC_MAPS=[{pc:0xDBEF7,size:553},{pc:0xDC120,size:474},{pc:0xDC2FA,size:585},{pc:0xDC543,size:350},{pc:0xDC6A1,size:267}];
+export const PREMATCH_GRAPHIC_LABELS=[
+ ['gameStart','GAME START','kickOff'],['selectSquad','SELECT SQUAD','substitution'],['formationChange','FORMATION CHANGE','formation'],['adjustStrategy','ADJUST STRATEGY','teamStrategy'],['manToMan','MAN TO MAN','markChange'],
+ ['keyConfiguration','KEY CONFIGURATION'],['changeController','CHANGE CONTROLLER'],['numberPlayers','NUMBER OF PLAYERS'],['editPlayers','EDIT PLAYER SKILLS'],['teamColors','TEAM COLORS'],
+ ['trainingStart','TRAINING START',null,'training-graphics'],['challengeStart','CHALLENGE START',null,'challenge-graphics'],
+];
+const normalize=s=>String(s??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/\s+/g,' ').trim();
+const read=(a,i)=>a[i*2]|a[i*2+1]<<8;
+const set=(a,i,v)=>{a[i*2]=v&255;a[i*2+1]=v>>8;};
+function renderLabel(text){
+ const q=normalize(text),width=[...q].reduce((n,c)=>n+(c===' '?3:6),0)-1;
+ if(width>112)throw Error('Pré-partida: “'+q+'” excede os 112 px da linha.');
+ const tiles=Math.max(1,Math.ceil(width/8)),raw=new Uint8Array(tiles*2*16),pix=new Uint8Array(tiles*8*16),w=tiles*8;let x=Math.floor((w-width)/2);
+ for(const c of q){if(c===' '){x+=3;continue;}const glyph=c==='.'?[0,0,0,0,0,16,16]:PLUS_MAIN_MENU_GLYPHS[c];if(!glyph)throw Error('Pré-partida: caractere indisponível '+c);
+  for(let y=0;y<7;y++)for(let xx=0;xx<5;xx++)if((glyph[y]>>(6-xx))&1)for(let dy=0;dy<2;dy++)pix[(y*2+dy+1)*w+x+xx]=1;x+=6;
+ }
+ for(let t=0;t<tiles*2;t++)for(let y=0;y<8;y++){let a=0;for(let xx=0;xx<8;xx++)a|=pix[(Math.floor(t/tiles)*8+y)*w+(t%tiles)*8+xx]<<(7-xx);raw[t*16+y*2]=a;}
+ return {raw,tiles};
+}
+function signature(map,y){const row=Array.from({length:32},(_,x)=>read(map,y*32+x)&1023),xs=row.flatMap((v,x)=>v>512&&v<710?[x]:[]);if(!xs.length)return '';return row.slice(xs[0],xs.at(-1)+1).join(',');}
+export function plusPrematchGraphicsWriter(rom,state={},base=rom,selectedAreas=null){
+ if(selectedAreas&&!selectedAreas.includes('pre-partida'))return rom;
+ const screen=state.screenTextsV1?.values?.['match-options']||{},extra=state.additionalScreenTextsV1?.values?.['pre-match-labels']||{};
+ const requested=PREMATCH_GRAPHIC_LABELS.map(([id,en,legacy,section])=>section?state.additionalScreenTextsV1?.values?.[section]?.[id]:extra[id]??(legacy?screen[legacy]:undefined));
+ if(!requested.some((v,i)=>v!==undefined&&normalize(v)!==PREMATCH_GRAPHIC_LABELS[i][1]))return rom;
+ const original=konamiLzDecompress(base,0xF631C).data;if(original.length!==3168)throw Error('Pré-partida: stream nativo não reconhecido.');
+ const maps=PREMATCH_GRAPHIC_MAPS.map(m=>{const d=konamiLzDecompress(base,m.pc);if(d.data.length!==2048||d.compressedSize>m.size)throw Error('Pré-partida: mapa nativo divergente.');return d.data.slice();});
+ const reference=maps[0].slice();
+ const starts=[0x201,0x20F,0x221,0x234,0x28E,0x248,0x256,0x26A,0x27E,0x206];
+ for(let i=0;i<starts.length;i++){const first=Array.from({length:32},(_,x)=>read(reference,(4+i*2)*32+x)&1023).find(v=>v>512&&v<710);if(first!==starts[i])throw Error('Pré-partida: ordem dos rótulos diverge da Plus verificada.');}
+ const patterns=PREMATCH_GRAPHIC_LABELS.map((_,i)=>i<10?signature(reference,4+i*2):signature(maps[i===10?3:4],i===10?7:9));
+ const tiles=Array.from({length:198},(_,i)=>original.slice(i*16,i*16+16));
+ for(let i=0;i<requested.length;i++){
+  if(requested[i]===undefined||normalize(requested[i])===PREMATCH_GRAPHIC_LABELS[i][1])continue;
+  const rendered=renderLabel(requested[i]),first=tiles.length;for(let t=0;t<rendered.raw.length/16;t++)tiles.push(rendered.raw.slice(t*16,t*16+16));
+  let count=0;for(const map of maps)for(let y=0;y<31;y++)if(signature(map,y)===patterns[i]){
+   const palette=read(map,y*32+11)&0xFC00,left=10+Math.floor((14-rendered.tiles)/2);
+   for(let row=0;row<2;row++){for(let x=10;x<=23;x++)set(map,(y+row)*32+x,palette|512);for(let x=0;x<rendered.tiles;x++)set(map,(y+row)*32+left+x,palette|512+first+row*rendered.tiles+x);}
+   count++;y++;
+  }
+  if(!count)throw Error('Pré-partida: ocorrência não encontrada: '+PREMATCH_GRAPHIC_LABELS[i][0]);
+ }
+ // Only retain referenced tiles. Deduplication prevents shared English glyphs
+ // from being overwritten and keeps the native 2153-byte stream capacity.
+ const packedTiles=[],lookup=new Map(),remap=new Map();
+ for(const map of maps)for(let i=0;i<1024;i++){
+  const cell=read(map,i),t=(cell&1023)-512;if(t<0||t>=tiles.length)continue;
+  if(!remap.has(t)){const key=[...tiles[t]].join(',');let n=lookup.get(key);if(n===undefined){n=packedTiles.length;lookup.set(key,n);packedTiles.push(tiles[t]);}remap.set(t,n);}
+  set(map,i,(cell&0xFC00)|512+remap.get(t));
+ }
+ if(packedTiles.length>512)throw Error('Pré-partida: atlas excede o charset nativo.');
+ const atlas=new Uint8Array(packedTiles.length*16);packedTiles.forEach((t,i)=>atlas.set(t,i*16));const compressed=konamiLzCompress(atlas),writes=[[0xF631C,2153,compressed]];
+ maps.forEach((map,i)=>writes.push([PREMATCH_GRAPHIC_MAPS[i].pc,PREMATCH_GRAPHIC_MAPS[i].size,konamiLzCompress(map)]));
+ // Deluxe has a guarded free pool after the largest 67-team attribute table.
+ // A single changed label may compress worse than translating the whole atlas.
+ const refs=[0x11246,0x11201,0x1120b,0x11215,0x1121f,0x11229],cpu=p=>0x800000|((p>>15)<<16)|0x8000|(p&32767);let next=0x17e800;
+ const plans=writes.map(([pc,capacity,data],i)=>{
+  if(data.length<=capacity)return {pc,capacity,data};
+  const target=next;next=(target+data.length+1)&~1;
+  if(next>0x180000||base.slice(target,next).some(v=>v!==255)||rom.slice(target,next).some(v=>v!==255))throw Error('Pré-partida: recursos excedem a reserva disponível.');
+  const ref=refs[i],old=cpu(pc);if([0,1,2].some(k=>base[ref+k]!==((old>>(k*8))&255)))throw Error('Pré-partida: ponteiro de recurso incompatível.');
+  return {pc:target,capacity:data.length,data,ref};
+ });
+ for(const {pc,capacity,data,ref}of plans){rom.fill(255,pc,pc+capacity);rom.set(data,pc);if(ref!==undefined){const address=cpu(pc);rom.set([address&255,address>>8&255,address>>16&255],ref);}}return rom;
+}
+
+export const DELUXE_PREMATCH_PORTUGUESE={gameStart:'INICIAR JOGO',selectSquad:'SUBSTITUICOES',formationChange:'FORMACAO',adjustStrategy:'TATICA DO TIME',manToMan:'MARCACAO',keyConfiguration:'CONFIG CONTROLES',changeController:'TROCAR CONTROLES',numberPlayers:'NUMERO JOGADORES',editPlayers:'EDITAR ATRIBUTOS',teamColors:'CORES DO TIME',trainingStart:'INICIAR TREINO',challengeStart:'INICIAR DESAFIO'};
+export function applyDeluxePrematchLabels(out,base,values){
+ if(values===undefined)return out;
+ const ids=PREMATCH_GRAPHIC_LABELS.map(f=>f[0]);
+ if(!values||typeof values!=='object'||Array.isArray(values)||Object.keys(values).some(id=>!ids.includes(id)))throw Error('Rótulos de pré-partida inválidos');
+ for(const [id,text]of Object.entries(values))if(typeof text!=='string'||!text.trim())throw Error('Pré-partida: texto vazio '+id);
+ const main=Object.fromEntries(Object.entries(values).filter(([id])=>!['trainingStart','challengeStart'].includes(id)));
+ return plusPrematchGraphicsWriter(out,{additionalScreenTextsV1:{values:{'pre-match-labels':main,'training-graphics':{trainingStart:values.trainingStart},'challenge-graphics':{challengeStart:values.challengeStart}}}},base);
+}
