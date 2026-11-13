@@ -24,6 +24,10 @@ const $=id=>document.getElementById(id);
 let file=null,project=null,opening=0,pendingProject=null;
 let audioContext=null,audioSource=null;
 function status(value){$('status').textContent=value;}
+function requestProjectRom(){try{$('rom').click();}catch{$('status').textContent='O navegador não abriu o seletor automaticamente. Use Selecionar ROM e abrir projeto.';}}
+$('selectProjectRom').onclick=requestProjectRom;
+function showProjectRomRequest(value,name='Projeto Deluxe'){$('projectRomRequest').hidden=!value;$('pendingProjectName').textContent=value?name:'';}
+
 function download(data,name,type){const url=URL.createObjectURL(new Blob([data],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 function render(){
   if(!project)renderTextActions();
@@ -51,14 +55,14 @@ for(const item of IMPROVEMENTS){const label=document.createElement('label'),inpu
 $('rom').onchange=async()=>{
  const selected=$('rom').files[0];if(!selected)return;
  const token=++opening,pending=pendingProject;
- try{const bytes=new Uint8Array(await selected.arrayBuffer()),p=await createDeluxeProject(bytes);if(pending)await buildDeluxeProject(bytes,pending);if(token!==opening)return;file=bytes;project=pending??p;pendingProject=null;render();for(const id of ['save','export'])$(id).disabled=false;status(pending?'Projeto Deluxe reaberto com a ROM selecionada.':'Deluxe original reconhecido · 2 MB. Sem edições, a exportação preserva o arquivo inteiro.');}catch(error){if(token===opening)status(error.message+(pending?' O projeto continua aguardando a ROM correta. Clique em Abrir ROM para tentar novamente.':''));}finally{$('rom').value='';}
+ try{const bytes=new Uint8Array(await selected.arrayBuffer()),p=await createDeluxeProject(bytes);if(pending)await buildDeluxeProject(bytes,pending);if(token!==opening)return;file=bytes;project=pending??p;pendingProject=null;showProjectRomRequest(false);render();for(const id of ['save','export'])$(id).disabled=false;status(pending?'Projeto Deluxe reaberto com a ROM selecionada.':'Deluxe original reconhecido · 2 MB. Sem edições, a exportação preserva o arquivo inteiro.');}catch(error){if(token===opening)status(error.message+(pending?' O projeto continua aguardando a ROM correta. Clique em Abrir ROM para tentar novamente.':''));}finally{$('rom').value='';}
 };
 $('rom').addEventListener('cancel',()=>{if(pendingProject)status('Seleção de ROM cancelada. O projeto continua aguardando; clique em Abrir ROM para continuar.');});
 $('save').onclick=async()=>{try{await buildDeluxeProject(file,project);download(JSON.stringify(project,null,2),'Deluxe.issdproj','application/json');}catch(error){status(error.message);}};
 $('load').onchange=async()=>{
- const selected=$('load').files[0];if(!selected)return;const token=++opening;pendingProject=null;
+ const selected=$('load').files[0];if(!selected)return;const token=++opening;pendingProject=null;showProjectRomRequest(false);
  try{const p=JSON.parse(await selected.text());if(token!==opening)return;if(p?.schema!==DELUXE_SCHEMA||p.version!==1||!p.base||!p.changes)throw Error('Selecione um projeto do Editor Deluxe válido.');
- if(!file){pendingProject=p;status('Projeto selecionado. Escolha a ROM Deluxe original (USA) para abri-lo. Se o seletor não aparecer, clique em Abrir ROM.');$('rom').click();return;}
+ if(!file){pendingProject=p;showProjectRomRequest(true,selected.name??'Projeto Deluxe');status('Projeto selecionado. Escolha a ROM Deluxe original (USA) no botão Selecionar ROM e abrir projeto.');requestProjectRom();return;}
  const current=file;await buildDeluxeProject(current,p);if(token!==opening||file!==current)return;project=p;render();status('Projeto Deluxe reaberto.');
  }catch(error){if(token===opening)status(error.message);}finally{$('load').value='';}
 };
