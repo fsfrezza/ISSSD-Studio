@@ -41,3 +41,8 @@
 .team-details-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;padding:20px;align-items:start}
 .team-details-row>.card-body,.team-details-row>#teamCards,.team-details-row>#teamCards>.card-body{display:contents}
 .team-details-row label{min-width:0;margin:0}
+
+.rom-title-row{display:flex;align-items:center;gap:14px}
+.rom-title-row>label,.rom-title-row>small,.rom-title-row>button{flex-shrink:0;margin:0;white-space:nowrap}
+.rom-title-row>input{flex:1;min-width:120px;width:auto;margin:0}
+@media(max-width:650px){.rom-title-row{flex-wrap:wrap}.rom-title-row>input{flex-basis:55%}}
