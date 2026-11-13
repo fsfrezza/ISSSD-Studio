@@ -20,7 +20,7 @@ test('abas preservam painéis e expandir/recolher afeta somente a aba ativa',asy
   buttons[1].handlers.click();buttons[2].handlers.click();assert.ok(panels[2].children.every(e=>e.open));
   controls.collapseAll.handlers.click();assert.ok(panels[2].children.every(e=>!e.open));
   buttons[6].handlers.click();assert.equal(panels[6].hidden,false);assert.equal(controls.pageTitle.textContent,'Tela de título');assert.ok(panels.filter(p=>p!==panels[6]).every(p=>p.hidden));
-  buttons[5].handlers.click();assert.equal(controls.expandAll.disabled,true);
+  buttons[5].handlers.click();assert.equal(controls.expandAll.disabled,false);controls.expandAll.handlers.click();assert.ok(panels[5].children.every(e=>e.open));
  }finally{globalThis.document=previous;}
 });
 

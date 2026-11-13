@@ -1,7 +1,7 @@
 const pages={
  teams:['Equipes','Personalize as equipes da estrutura ampliada.'],
- groups:['Grupos','Organize as equipes nos grupos nativos da Deluxe.'],
- players:['Jogadores','Edite os elencos regulares originais da Deluxe.'],
+ groups:['Grupos','Organize as equipes e os grupos do projeto, incluindo o grupo secreto.'],
+ players:['Jogadores','Edite os jogadores das equipes habilitadas no projeto.'],
  overview:['Visão geral','Abra a ROM original ou continue um projeto.\nSalve o projeto para continuar depois ou gere uma cópia da ROM com suas alterações.'],
  'title-screen':['Tela de título','Edite a composição, as cores e os textos da tela anterior ao menu principal.'],
  menu:['Menu principal','Personalize os nomes e confira a tipografia na prévia.'],
@@ -9,7 +9,7 @@ const pages={
  cursor:['Cursor','Personalize as instruções dos controles e da seleção de jogadores.'],
  stadiums:['Estádios','Ajuste as cores das paletas dos oito estádios originais.'],
  sounds:['Sons e vozes','Ouça, substitua e restaure as amostras de áudio.'],
- improvements:['Melhorias','Recursos opcionais para o Deluxe.'],
+ improvements:['Melhorias','Recursos da Plus, diferenças para o Deluxe e estado do projeto atual.'],
 };
 const panels=[...document.querySelectorAll('[data-panel]')],buttons=[...document.querySelectorAll('[data-page]')];
 let active='overview';
@@ -21,8 +21,7 @@ function selectPage(id){
  for(const button of buttons){if(button.dataset.page===id)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');}
  document.getElementById('pageTitle').textContent=pages[id][0];
  document.getElementById('pageDescription').textContent=pages[id][1];
- const empty=id==='improvements';
- document.getElementById('expandAll').disabled=empty;document.getElementById('collapseAll').disabled=empty;
+ document.getElementById('expandAll').disabled=false;document.getElementById('collapseAll').disabled=false;
 }
 for(const button of buttons)button.addEventListener('click',()=>selectPage(button.dataset.page));
 function setExpanded(open){const panel=panels.find(p=>p.dataset.panel===active);if(panel)for(const section of panel.querySelectorAll('details'))section.open=open;}

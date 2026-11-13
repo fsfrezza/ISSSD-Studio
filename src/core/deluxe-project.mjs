@@ -15,18 +15,7 @@ import {diffRanges} from './rom-integrity.mjs';
 
 export const DELUXE_SHA256='d2fe66c1ce66c65ce14e478c94be2e616f9e2cad374b5783a6a64d3c1a99cfa9';
 export const DELUXE_SCHEMA='isssd-deluxe-project-v1';
-export const IMPROVEMENTS=Object.freeze([
-  ['penalty-interference','Corrigir interferência nos pênaltis'],
-  ['low-goal-kick','Tiro de meta rasteiro com B'],
-  ['final-attack','Preservar último ataque'],
-  ['one-minute','Partida de 1 minuto'],
-  ['match-hour','Escolha do horário'],
-  ['password-save','Guardar último password'],
-  ['controller-one-codes','Código secreto pelo controle 1 ou 2','Permite executar também pelo controle 1 o código original do Deluxe: ↑ ↑ ↓ ↓ ← → ← → B A. O controle 2 continua funcionando.'],
-  ['goalkeeper-free-kick','Goleiro batedor de faltas'],
-  ['goalkeeper-corner','Goleiro batedor de escanteios'],
-  ['backpass','Punição por recuo'],
-].map(([id,label,description])=>Object.freeze({id,label,...(description?{description}:{}),status:'pending-mapping'})));
+export {IMPROVEMENTS} from './deluxe-improvements.mjs';
 
 export function splitRom(file){
   if(!(file instanceof Uint8Array))throw new TypeError('ROM deve ser Uint8Array');

@@ -25,6 +25,8 @@ test('UI handlers: abrir, editar, salvar projeto, reabrir, exportar e restaurar'
  try{
   await import('../deluxe-editor/app.mjs?ui-test');
   const file=new Uint8Array(fs.readFileSync(fixture));
+  assert.equal(ids.improvements.children.length,6);
+  assert.ok(ids.improvements.children.slice(1).every(card=>card.tag==='details'&&card.open));
   ids.load.files=[{text:async()=>'{invalid'}];await ids.load.onchange();assert.ok(ids.status.textContent);assert.equal(ids.rom.clicked,undefined);
   const initial=await createDeluxeProject(file);initial.changes.internalTitle='PROJECT FIRST';
   const fileClick=ids.rom.click;ids.rom.click=()=>{throw Error('browser blocked automatic file picker');};
@@ -86,10 +88,12 @@ test('UI handlers: abrir, editar, salvar projeto, reabrir, exportar e restaurar'
  if(process.env.ISSSD_GG_RECOVERED_PROJECT){
   const real=fs.readFileSync(process.env.ISSSD_GG_RECOVERED_PROJECT,'utf8'),expected=JSON.parse(real);
   ids.load.files=[{text:async()=>real}];await ids.load.onchange();assert.equal(ids.status.textContent,'Projeto Deluxe reaberto.');
+  assert.match(ids.improvements.children[0].textContent,/60 equipes · 9 grupos regulares · 6 equipes secretas · GG secreto preservado/);
   assert.equal(ids.groupCards.children.length,10);assert.equal(ids.groupCards.children[9].children[0].textContent,'GG');assert.equal(ids.playerTeam.children.length,60);assert.equal(ids.teamSelection.children.length,60);
   ids.playerTeam.value='55';ids.playerSelection.value='12';ids.playerTeam.onchange();ids.playerSelection.value='12';ids.playerSelection.onchange();assert.equal(ids.playerFields.children[0].children[0].value,'Ale 100');
   await ids.save.onclick();const saved=JSON.parse(await downloads.at(-1).blob.text());assert.deepEqual(saved.changes.structure,expected.changes.structure);assert.deepEqual(saved.changes.players,expected.changes.players);
-  ids.load.files=[{text:async()=>JSON.stringify(saved)}];await ids.load.onchange();assert.equal(ids.groupCards.children.length,10);
+  ids.load.files=[{text:async()=>JSON.stringify(saved)}];await ids.load.onchange();assert.match(ids.improvements.children[0].textContent,/60 equipes · 9 grupos regulares · 6 equipes secretas · GG secreto preservado/);
+  assert.equal(ids.groupCards.children.length,10);
   await ids.export.onclick();assert.match(ids.status.textContent,/4 MB/);assert.equal(downloads.at(-1).blob.size,file.length+0x200000);
  }
 
