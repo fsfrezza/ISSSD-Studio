@@ -5,16 +5,16 @@ export const IMPROVEMENT_SECTIONS=Object.freeze([
  {id:'plus-rom',title:'Melhorias já presentes na ROM Plus',description:'Estas sete melhorias constavam como incluídas na base do Editor Plus. As opções disponíveis podem ser ativadas separadamente no Deluxe.',items:[
   item('low-goal-kick','Tiro de meta rasteiro com B','Permite uma reposição rasteira usando B.',{plusKey:'shortGoalKickB',status:'available',capability:'gameplay'}),
   item('final-attack','Aguardar o último ataque','Preserva o ataque dentro da área adversária antes de encerrar o tempo.',{plusKey:'lastAttackProtection',status:'available',capability:'gameplay'}),
-  item('match-hour','Escolha do horário da partida','Libera a escolha do horário da partida.',{plusKey:'matchTimeSelection'}),
+  item('match-hour','Escolha do horário da partida','Libera a escolha do horário da partida.',{plusKey:'matchTimeSelection',status:'available',capability:'gameplay'}),
   item('one-minute','Partida de 1 minuto','Acrescenta a duração de um minuto às opções de tempo.',{plusKey:'oneMinuteMatch',status:'available',capability:'gameplay'}),
   item('penalty-interference','Corrigir interferência na cobrança de pênalti','Correção de entrada dos controles na cobrança; é distinta da correção do replay.',{plusKey:'penaltyInputFix',status:'available',capability:'gameplay'}),
   item('password-save','Salvar progresso por bateria','Preserva o progresso por bateria. Substitui a descrição incompleta “guardar último password”.',{plusKey:'batterySave'}),
   item('controller-one-codes','Códigos secretos pelo controle 1 ou 2','Adaptar o uso pelo controle 1, mantendo o controle 2. São códigos diferentes: árbitro cachorro — ↑ ↑ ↓ ↓ ← → ← → B A; equipes secretas — R ↑ ↓ L X B ← A → Y.',{plusKey:'playerOneSecretCodes',status:'available',capability:'gameplay'}),
  ]},
- {id:'plus-options',title:'Opções adicionais do Editor Plus',description:'As três opções existiam no Editor Plus. A adaptação ao Deluxe e a estabilidade das rotinas de goleiro ainda precisam de validação.',items:[
+ {id:'plus-options',title:'Opções adicionais do Editor Plus',description:'As três opções existiam no Editor Plus. As disponíveis têm adaptação própria para o Deluxe; as demais aguardam validação.',items:[
   item('backpass','Punição por recuo ao goleiro','Ao agarrar com as mãos um recuo proibido, aplica pênalti após a breve animação. O domínio com os pés continua permitido.',{plusKey:'goalkeeperBackpassNoHands',status:'available',capability:'gameplay'}),
   item('goalkeeper-free-kick','Goleiro como batedor de faltas','Permite escolher o goleiro como batedor oficial na tela de Substituições.',{plusKey:'goalkeeperFreeKickTaker'}),
-  item('goalkeeper-corner','Goleiro como batedor de escanteios','Permite escolher o goleiro como batedor oficial de escanteios, independentemente das faltas.',{plusKey:'goalkeeperCornerKickTaker'}),
+  item('goalkeeper-corner','Goleiro como batedor de escanteios','Permite escolher o goleiro como batedor oficial de escanteios, independentemente das faltas.',{plusKey:'goalkeeperCornerKickTaker',status:'available',capability:'gameplay'}),
  ]},
  {id:'structure',title:'Diferenças de estrutura: Deluxe, Plus e versão GG',description:'O Deluxe inicia com 36 equipes regulares. A Plus possui 54 regulares em nove grupos de seis, mais All Star e Autores. Na versão GG são 60: 54 regulares e seis GG no grupo secreto.',items:[
   item('deluxe-base','ROM Deluxe original como base','Abre a Deluxe original e gera uma cópia com as alterações do projeto.',{status:'available',capability:'always'}),
@@ -33,8 +33,8 @@ export const IMPROVEMENT_SECTIONS=Object.freeze([
   item('text-editing','Editar textos e aplicar português','Textos organizados por tela, com restauração e validação do espaço disponível.',{status:'available',capability:'always'}),
   item('audio-editing','Editar sons e vozes','Substituição e restauração de amostras, com os catálogos de áudio disponíveis na aba Sons e vozes.',{status:'available',capability:'always'}),
   item('stadium-editing','Editar cores dos estádios','Paletas dos oito estádios originais na aba Estádios.',{status:'available',capability:'always'}),
-  item('uniform-flag-pixels','Editar uniformes e bandeiras por pixels','A preservação dos recursos próprios já funciona; a interface de edição por pixels do Plus ainda precisa ser incorporada.'),
-  item('player-appearance-editing','Editar pele e cabelo por jogador','O catálogo preserva a aparência da referência. Os controles de edição individual do Plus ainda precisam ser adaptados.'),
+  item('uniform-flag-pixels','Editar uniformes e bandeiras por pixels','Edite o desenho e as cores próprios da equipe, com lápis, preenchimento, conta-gotas, desfazer/refazer e importação de imagem.',{status:'available',capability:'visuals'}),
+  item('player-appearance-editing','Editar pele e cabelo por jogador','Prévias nativas de frente, costas e perfil, 16 tipos de cabelo, dois conjuntos de pele/cabelo e cores independentes dos goleiros.',{status:'available',capability:'appearance'}),
  ]},
  {id:'planned',title:'Planejadas e experimentais',description:'Itens ainda indisponíveis. Nenhum deles é aplicado à ROM por aparecer nesta lista.',items:[
   item('penalty-replay','Impedir defesa da bola durante o replay do pênalti','Constava como planejada no Editor Plus; não confundir com a correção de interferência na cobrança.'),
@@ -50,7 +50,7 @@ export function deluxeImprovementState(item,project){
  if(item.capability==='gameplay')return project?.changes?.improvements?.includes(item.id)?{kind:'active',label:'Aplicar ao gerar a ROM'}:{kind:'inactive',label:'Desativada'};
  if(item.capability==='always')return {kind:'available',label:'Disponível no Editor Deluxe'};
  if(!project)return {kind:'available',label:'Abra um projeto para conferir'};
- const active={groups:s?.groups?.length===9,gg:s?.teams?.length===60&&s.groups?.length===9&&s.secret?.length===6&&new Set(s.secret.map(slot=>s.teams[slot]?.plusId??slot)).size===6&&s.secret.every(slot=>(s.teams[slot]?.plusId??slot)>=54&&(s.teams[slot]?.plusId??slot)<60)&&s.groups.every(row=>row.every(slot=>!s.secret.includes(slot))),visuals:!!visuals,photos:!!project?.changes?.teamPhotos,tactics:!!project?.changes?.tactics,opening,expansion:project?.changes?.improvements?.includes('backpass')||s?.teams?.length===60||!!visuals||opening||!!project?.changes?.teamPhotos||!!project?.changes?.tactics}[item.capability];
+ const active={appearance:Object.values(project?.changes?.players??{}).some(p=>p.appearance),groups:s?.groups?.length===9,gg:s?.teams?.length===60&&s.groups?.length===9&&s.secret?.length===6&&new Set(s.secret.map(slot=>s.teams[slot]?.plusId??slot)).size===6&&s.secret.every(slot=>(s.teams[slot]?.plusId??slot)>=54&&(s.teams[slot]?.plusId??slot)<60)&&s.groups.every(row=>row.every(slot=>!s.secret.includes(slot))),visuals:!!visuals,photos:!!project?.changes?.teamPhotos,tactics:!!project?.changes?.tactics,opening,expansion:Object.values(project?.changes?.players??{}).some(p=>p.appearance)||project?.changes?.improvements?.includes('goalkeeper-corner')||project?.changes?.improvements?.includes('backpass')||s?.teams?.length===60||!!visuals||opening||!!project?.changes?.teamPhotos||!!project?.changes?.tactics}[item.capability];
  return active?{kind:'active',label:item.capability==='expansion'?'Automática ao gerar a ROM':'Presente no projeto'}:{kind:'inactive',label:'Não aplicado neste projeto'};
 }
 export function deluxeStructureSummary(project){

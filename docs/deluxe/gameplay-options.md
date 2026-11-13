@@ -95,3 +95,44 @@ não se trata de uma partida inteira com todas as trajetórias possíveis.
 O bug do replay não foi marcado como corrigido: a rotina de replay e o
 caminho de captura manual foram inspecionados, mas ainda é necessário
 reproduzir a defesa indevida para selecionar e validar o ponto de bloqueio.
+
+## Escanteio com goleiro, horário e aparência
+
+O escanteio usa os 70 registros do renderer aprovado do Plus com máscara 2.
+A seleção de faltas continua bloqueando o goleiro; a seleção CK permite zero.
+Os leitores compartilhados do corpo encadeiam a base careca quando ela está
+instalada. No teste de menu pelo controle foi possível selecionar o goleiro,
+confirmar e sair: DFF passou de 10 para 0, mantendo DFE=10 (faltas).
+
+O horário usa o terceiro campo da seleção de estádio, sem exigir o comando
+oculto que existia na Plus. Zero mantém o horário automático; 1/2/3 escolhem
+13h/16h/21h. Os helpers A4:E1xx foram movidos para A4:E700..E7C6, depois das
+tabelas das 60 equipes e antes do fim da reserva nativa. O leitor de horário
+em 86:CB9E reutiliza o mecanismo Plus. No Snes9x, a escolha 3 chegou a
+1FA4=2 e 1E5C=2 durante a sequência de partida.
+
+As prévias de jogadores reutilizam composição OAM e gráficos do Plus. Os
+metadados de goleiros foram extraídos com o mesmo parser do disassembly.
+A base careca/original/Cascão também foi incorporada, separando a gravação
+DOS elencos do writer Plus: o adaptador usa os índices Deluxe. O atlas é
+reutilizado entre builds da mesma base canônica. Conflitos com vídeos que
+ocupem as reservas de gráficos são recusados antes de alterar o arquivo-base.
+
+As paletas individuais de goleiros reutilizam os geradores Plus adaptados
+para 60 equipes. Dados: 2A0000..2A6720; flags: 2A6800..2A7160; helpers:
+2A7200..2A7E00. No Snes9x, uma equipe GG carregou cinco cores explícitas
+na paleta WRAM 2D82 e manteve a aparência Cascão de um jogador de linha.
+O projeto salvo mantém nomes, números, atributos, equipes, grupos e táticas.
+
+As fotos de formação usam receitas indexadas em cinco paletas, obtidas do
+renderer nativo com cores sentinela e corte pelos pixels visíveis. O catálogo
+cobre os seletores das 36 equipes originais e das 60 equipes da referência.
+As cores são lidas do projeto aberto, não de uma captura colorida fixa.
+Seletores não catalogados mostram uma mensagem, sem simular outra foto.
+
+Os editores por pixels reutilizam IndexedPixelEditor e os codecs de padrões
+/bandeiras do Plus: lápis, preenchimento, conta-gotas, desfazer/refazer e
+importação quantizada. Cada uniforme mantém oito quadros e as paletas titular
+/reserva; a geometria é compartilhada pelos dois conjuntos da mesma equipe.
+Na bandeira de partida, a quarta cor é aproximada às três entradas estáveis
+13–15, preservando a seleção com quatro cores. Não altera outras equipes.

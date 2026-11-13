@@ -22,12 +22,13 @@ export function applyDeluxePlayers(out,base,edits){
  if(edits===undefined)return out;object(edits,'Jogadores');const writes=[],teams=new Set();
  for(const [id,edit]of Object.entries(edits)){
   if(!/^(?:[0-9]|[1-4][0-9]|5[0-9]):(?:[0-9]|1[0-9])$/.test(id))throw Error('Identificador de jogador inválido');
-  object(edit,'Jogador');if(Object.keys(edit).some(k=>!['name','jersey','naturalPosition','skills'].includes(k)))throw Error('Campo de jogador não suportado');
+  object(edit,'Jogador');if(Object.keys(edit).some(k=>!['name','jersey','naturalPosition','skills','appearance'].includes(k)))throw Error('Campo de jogador não suportado');
   const [team,player]=id.split(':').map(Number),at=deluxePlayerOffsets(base,team,player),raw=base.slice(at.record,at.record+7);teams.add(team);
   if(edit.name!==undefined){if(typeof edit.name!=='string'||!edit.name.trim())throw Error('Nome de jogador vazio ou inválido');const original=decodeFixedPlayerName(base.slice(at.name,at.name+8)).trim();if(edit.name!==original)writes.push([at.name,encodeFixedPlayerName(centerDeluxePlayerName(edit.name))]);}
   if(edit.skills!==undefined){object(edit.skills,'Atributos');for(const [k,v]of Object.entries(edit.skills)){if(!Object.hasOwn(PLAYER_SKILLS,k))throw Error('Atributo desconhecido');writeSkill(raw,k,v);}}
   if(edit.naturalPosition!==undefined){const goalkeeper=player===0||player===11;if(goalkeeper&&edit.naturalPosition!==1)throw Error('A posição do goleiro é fixa');if(!goalkeeper&&edit.naturalPosition===1)throw Error('Jogadores de linha não podem virar goleiros');writeNaturalPosition(raw,edit.naturalPosition);}
   if(edit.jersey!==undefined)writeJersey(raw,edit.jersey);
+  if(edit.appearance!==undefined){const a=object(edit.appearance,'Aparência');if(Object.keys(a).some(k=>!['hair','palette','colors'].includes(k))||!Number.isInteger(a.hair)||a.hair<0||a.hair>15||![0,1].includes(a.palette))throw Error('Aparência: escolha um tipo de 0 a 15 e conjunto 0 ou 1');if(a.colors!==undefined&&(!(player===0||player===11)||!Array.isArray(a.colors)||a.colors.length!==11||a.colors.some(v=>!Number.isInteger(v)||v<0||v>32767)))throw Error('Cores individuais: paleta de goleiro inválida');if((player===0||player===11)&&a.hair!==0)throw Error('Goleiro usa cabelo integrado ao desenho');raw[6]=(raw[6]&224)|(a.palette<<4)|a.hair;}
   writes.push([at.record,raw]);
  }
  for(const team of teams){const nums=Array.from({length:20},(_,p)=>readDeluxePlayer(base,team,p,edits).jersey);if(nums.some(v=>!Number.isInteger(v)||v<1||v>20)||new Set(nums).size!==20)throw Error('Os números da equipe devem conter 1 a 20, sem repetição');}
@@ -39,3 +40,5 @@ export function planDeluxeJerseySwap(base,edits,team,player,jersey){
 }
 
 function centerDeluxePlayerName(value){const text=String(value).replace(/['‘`´]/g,'’').trim();if([...text].length>8)throw Error('Nome do jogador: até oito caracteres');return ' '.repeat(Math.floor((8-text.length)/2))+text;}
+
+export function applyDeluxePlayerAppearance(out,base,edits={}){for(const[id,e]of Object.entries(edits)){if(!e.appearance)continue;const[t,p]=id.split(':').map(Number),at=deluxePlayerOffsets(base,t,p).record+6;out[at]=(out[at]&224)|(e.appearance.palette<<4)|e.appearance.hair;}return out;}

@@ -1,3 +1,5 @@
+import {applyDeluxeGoalkeeperColors} from './deluxe-goalkeeper-colors.mjs';
+import {applyDeluxePlayerHair} from './deluxe-player-hair.mjs';
 import {applyDeluxeGameplay,validateDeluxeGameplay} from './deluxe-gameplay.mjs';
 import {applyDeluxeTactics} from './deluxe-tactics.mjs';
 import {applyDeluxeTeamPhotos} from './deluxe-team-photos.mjs';
@@ -7,7 +9,7 @@ import {applyDeluxeTeamVisuals} from './deluxe-team-visuals.mjs';
 import {validateTitleComposer} from './deluxe-title-composer.mjs';
 import {prepareDeluxeStructure} from './deluxe-structure.mjs';
 import {applyDeluxeGroups,applyDeluxeGroupLabels} from './deluxe-groups.mjs';
-import {applyDeluxePlayers} from './deluxe-players.mjs';
+import {applyDeluxePlayers,applyDeluxePlayerAppearance} from './deluxe-players.mjs';
 import {PLUS_STRATEGY_TEXTS, encodePlusStrategyText, readPlusStrategyText} from './plus-strategy-text.mjs';
 import {encodeInternalRomTitle, readInternalRomTitle} from './plus-rom-meta.mjs';
 import {applyDeluxeTitleScreen} from './deluxe-title-screen.mjs';
@@ -85,8 +87,11 @@ export async function buildDeluxeProject(file,project){
   }
   out=applyDeluxeTeamVisuals(out,rom,changes.structure,changes.teamVisuals);
   out=applyDeluxeTeamPhotos(out,rom,changes.structure,changes.teamPhotos);
+  applyDeluxePlayerAppearance(out,playerBase,changes.players);
   out=applyDeluxeTactics(out,rom,project);
   out=applyDeluxeOpeningMedia(out,rom,changes.openingMedia);
+  out=applyDeluxePlayerHair(out,rom,project,playerBase);
+  out=applyDeluxeGoalkeeperColors(out,rom,project);
   out=applyDeluxeGameplay(out,rom,changes.improvements);
   const edited=diffRanges(rom,out).changedBytes>0;
   if(edited){
