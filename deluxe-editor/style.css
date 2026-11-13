@@ -57,3 +57,5 @@
 
 /* Keep every editor area reachable on short desktop windows. */
 @media(min-width:651px){.sidebar{height:100dvh;overflow:hidden}.sidebar>.brand,.sidebar>.nav-caption,.sidebar>.sidebar-footer{flex-shrink:0}.sidebar>nav{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;scrollbar-width:thin;scrollbar-color:#728aac #142139;align-content:start;padding-bottom:6px}}
+
+.improvement-copy{display:flex;align-items:baseline;gap:10px;min-width:0;font-weight:400;line-height:1.6;font-size:12px}.improvement-copy>span{min-width:0}.improvement-copy strong{font-weight:700}.improvement-description{color:var(--muted)}.improvement-copy>input[type=checkbox]{display:inline-block;flex:0 0 auto;width:14px;height:14px;margin:0;padding:0;align-self:baseline;accent-color:var(--blue)}
