@@ -22,7 +22,7 @@ export const IMPROVEMENT_SECTIONS=Object.freeze([
   item('gg-secret','Seis equipes GG no grupo secreto','Adiposos, Bugigangas, Encefalicos, Macucos, Teluricos e Vaporosos ocupam o grupo secreto; não são um décimo grupo regular nem seis equipes somadas aos dois All Stars.',{status:'available',capability:'gg'}),
   item('team-visuals','Bandeiras, uniformes e aparência próprios por equipe','O projeto de referência guarda os recursos das 60 equipes por identidade. Fotografias de seleção e retratos têm adaptação separada.',{status:'available',capability:'visuals'}),
   item('expansion','Expansão automática para 4 MB quando necessária','A exportação amplia a ROM quando a estrutura, os recursos visuais ou as mídias de abertura exigem espaço.',{status:'available',capability:'expansion'}),
-  item('individual-tactics','Táticas individualizadas por equipe','A Plus já oferece infraestrutura e edição tática individual. A interface e os patches equivalentes ainda não foram adaptados ao Deluxe.'),
+  item('individual-tactics','Táticas individualizadas por equipe','Edite esquema base, posições, funções DF/MF/FW e Atacar. Cada equipe possui seu próprio registro tático.',{status:'available',capability:'tactics'}),
  ]},
  {id:'editor',title:'Recursos de edição do Plus no Editor Deluxe',description:'O estado indica recursos disponíveis no editor ou dados presentes no projeto aberto. Estar disponível não significa alterar a ROM automaticamente.',items:[
   item('opening-media','Substituir as três telas de abertura por imagem ou vídeo','Imagem e vídeo convertido em quadros SNES, com fades. Vídeo experimental, sem áudio importado e limitado pelo espaço da ROM.',{status:'available',capability:'opening'}),
@@ -49,7 +49,7 @@ export function deluxeImprovementState(item,project){
  const s=project?.changes?.structure,visuals=project?.changes?.teamVisuals,opening=Object.keys(project?.changes?.openingMedia??{}).length>0;
  if(item.capability==='always')return {kind:'available',label:'Disponível no Editor Deluxe'};
  if(!project)return {kind:'available',label:'Abra um projeto para conferir'};
- const active={groups:s?.groups?.length===9,gg:s?.teams?.length===60&&s.groups?.length===9&&s.secret?.length===6&&new Set(s.secret.map(slot=>s.teams[slot]?.plusId??slot)).size===6&&s.secret.every(slot=>(s.teams[slot]?.plusId??slot)>=54&&(s.teams[slot]?.plusId??slot)<60)&&s.groups.every(row=>row.every(slot=>!s.secret.includes(slot))),visuals:!!visuals,photos:!!project?.changes?.teamPhotos,opening,expansion:s?.teams?.length===60||!!visuals||opening||!!project?.changes?.teamPhotos}[item.capability];
+ const active={groups:s?.groups?.length===9,gg:s?.teams?.length===60&&s.groups?.length===9&&s.secret?.length===6&&new Set(s.secret.map(slot=>s.teams[slot]?.plusId??slot)).size===6&&s.secret.every(slot=>(s.teams[slot]?.plusId??slot)>=54&&(s.teams[slot]?.plusId??slot)<60)&&s.groups.every(row=>row.every(slot=>!s.secret.includes(slot))),visuals:!!visuals,photos:!!project?.changes?.teamPhotos,tactics:!!project?.changes?.tactics,opening,expansion:s?.teams?.length===60||!!visuals||opening||!!project?.changes?.teamPhotos||!!project?.changes?.tactics}[item.capability];
  return active?{kind:'active',label:item.capability==='expansion'?'Automática ao gerar a ROM':'Presente no projeto'}:{kind:'inactive',label:'Não aplicado neste projeto'};
 }
 export function deluxeStructureSummary(project){

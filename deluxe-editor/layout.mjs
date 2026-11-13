@@ -1,4 +1,5 @@
 const pages={
+ tactics:['Táticas e formações','Edite posições, funções e Atacar de forma independente para cada equipe.'],
  'match-announcement':['Anúncio da partida','Edite os rótulos; Brasil, Inglaterra e U.S.A. permanecem como exemplos.'],
  'opening-konami':['Tela 1 · Konami','Substitua a primeira tela por imagem ou vídeo convertido para o SNES.'],
  'opening-international':['Tela 2 · International','Preserve a animação original ou importe sua própria mídia.'],
