@@ -38,3 +38,13 @@ test('title layer importer protects shared pixels and roundtrips photo replaceme
  const photo=titleBackgroundPixels(base,'photos'),raw=importTitleBackground(base,'photos',{},new Uint8ClampedArray(photo.rgba.length),photo.width,photo.height);
  assert.ok(titleBackgroundPixels(base,'photos',{photoTiles:Array.from(raw)}).rgba.every(v=>v===0));
 });
+
+
+test('title composite uses native backdrop rather than opaque black in uncovered screen areas',{skip:!fixture},async()=>{
+ const file=new Uint8Array(fs.readFileSync(fixture)),base=splitRom(file).rom;
+ const {titleCompositePixels}=await import('../src/core/deluxe-title-background.mjs');
+ const original=titleCompositePixels(base);
+ for(const [x,y]of [[0,0],[255,0],[0,223]])assert.deepEqual([...original.rgba.slice((y*256+x)*4,(y*256+x)*4+4)],[247,255,255,255]);
+ const palette=Array.from({length:16},(_,i)=>base[0x4c292+i*2]|base[0x4c293+i*2]<<8);palette[0]=31;
+ const custom=titleCompositePixels(base,{map0:Array(1024).fill(0),map1:Array(1024).fill(0),palettes:{stripe:palette}});assert.deepEqual([...custom.rgba.slice(0,4)],[255,0,0,255]);
+});
