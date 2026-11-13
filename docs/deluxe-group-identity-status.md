@@ -31,3 +31,9 @@ New team records can persist `plusId`; legacy records resolve through their orig
 Validation: 50 tests passed, none skipped. Coverage includes arbitrary catalog selection order, duplicate/secret-team rejection, exported roster comparison, legacy saved project preservation, exact unchanged-ROM restoration, all prior title/menu tests and the six-selector UI flow.
 
 Runtime limitation remains: ROM generation still uses the existing Deluxe expansion. Full functional Plus runtime activation and independent flags/kits are not implemented by this follow-up. The two secret teams are cataloged but are not added to the normal-group workflow. No new emulator playthrough was performed.
+
+## Secret unlock — user-confirmed behavior
+
+The original Deluxe accepts the sequence Up, Up, Down, Down, Back, Forward, Back, Forward, B, A through controller 2. The Plus ROM also accepts controller 1. The Deluxe improvements list records this separately under the existing stable ID `controller-one-codes`, explicitly preserving controller 2. This entry remains pending mapping: documenting it does not implement the input patch.
+
+The uploaded project of 12 November 2026 (22:02:03 filename) is the source for reproducing the user's reported GG unlock. Its dormant semantic GG metadata alone is not sufficient evidence to deny the reported ROM behavior. Reproduction and complete GG project compatibility remain unresolved.

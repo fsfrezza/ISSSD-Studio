@@ -21,11 +21,11 @@ export const IMPROVEMENTS=Object.freeze([
   ['one-minute','Partida de 1 minuto'],
   ['match-hour','Escolha do horário'],
   ['password-save','Guardar último password'],
-  ['controller-one-codes','Códigos especiais pelo controle 1'],
+  ['controller-one-codes','Código secreto pelo controle 1 ou 2','Permite executar também pelo controle 1 o código original do Deluxe: ↑ ↑ ↓ ↓ ← → ← → B A. O controle 2 continua funcionando.'],
   ['goalkeeper-free-kick','Goleiro batedor de faltas'],
   ['goalkeeper-corner','Goleiro batedor de escanteios'],
   ['backpass','Punição por recuo'],
-].map(([id,label])=>Object.freeze({id,label,status:'pending-mapping'})));
+].map(([id,label,description])=>Object.freeze({id,label,...(description?{description}:{}),status:'pending-mapping'})));
 
 export function splitRom(file){
   if(!(file instanceof Uint8Array))throw new TypeError('ROM deve ser Uint8Array');

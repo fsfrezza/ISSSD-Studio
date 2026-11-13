@@ -47,7 +47,7 @@ function render(){
   for(const item of PLUS_STRATEGY_TEXTS){const original=readPlusStrategyText(rom,item.id);textControl($('texts'),{scope:'texts',key:item.id,label:item.label,value:project.changes.strategyTexts[item.id]??original,original,validate:v=>encodePlusStrategyText(v),onChange:v=>{if(v===original)delete project.changes.strategyTexts[item.id];else project.changes.strategyTexts[item.id]=v;}});}
   renderTextActions();
 }
-for(const item of IMPROVEMENTS){const label=document.createElement('label'),input=document.createElement('input');input.type='checkbox';input.disabled=true;label.append(input,document.createTextNode(' '+item.label+' — em mapeamento'));$('improvements').append(label);}
+for(const item of IMPROVEMENTS){const label=document.createElement('label'),input=document.createElement('input');input.type='checkbox';input.disabled=true;label.append(input,document.createTextNode(' '+item.label+' — em mapeamento'));if(item.description){const detail=document.createElement('small');detail.textContent=item.description;label.append(detail);}$('improvements').append(label);}
 $('rom').onchange=async()=>{
  const selected=$('rom').files[0];if(!selected)return;
  const token=++opening,pending=pendingProject;
