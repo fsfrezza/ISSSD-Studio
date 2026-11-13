@@ -1,6 +1,7 @@
 # Opções de jogabilidade Deluxe
 
-`changes.improvements` aceita `low-goal-kick` e `backpass`, independentes,
+`changes.improvements` aceita `low-goal-kick`, `backpass`, `penalty-interference` e
+`controller-one-codes`, independentes,
 desmarcados por padrão. A aba Melhorias valida a geração antes de atualizar
 o projeto. Reabrir mantém a seleção; desmarcar reconstrói a ROM original.
 Nenhuma alteração de grupos, jogadores, fotos ou táticas é necessária.
@@ -39,3 +40,27 @@ controlados preparados em WRAM/SRAM, não partidas completas por comandos.
 
 A validação em outros emuladores e partidas completas continua útil; estes
 resultados não afirmam eliminar todos os bugs de jogabilidade do jogo.
+
+## Controles: segunda integração
+
+A correção de interferência copia os 26 bytes da Plus em 84:FFC0 e o hook
+em 84:8073. Reexecuta o LDA/LSR deslocado, preservando carry e resultado.
+O tratamento da entrada considera o botão Select e a situação de reinício.
+Não modifica o replay nem suas rotinas.
+
+Os códigos secretos usam o detector e as três tabelas nativas. Um adaptador
+em 80:FA00, chamado pelo ponto original 80:84C2, combina temporariamente
+as entradas de borda P1/P2. Preserva os dois valores de entrada, registradores,
+flags e rotina nativa de desbloqueio. Ao contrário da troca simples P2→P1
+presente na Plus, mantém suporte ao controle 2. Comandos simultâneos diferentes
+nos dois controles não constituem uma sequência válida; faça cada código
+normalmente em um controle.
+
+Snes9x com os quatro patches e estrutura GG: os códigos de árbitro cachorro
+(↑ ↑ ↓ ↓ ← → ← → B A) e equipes (R ↑ ↓ L X B ← A → Y) foram executados por
+entradas de controle, separadamente nos controles 1 e 2. As quatro combinações
+ativaram a flag nativa correspondente (7E:D854 ou 7E:D856 = 1).
+
+Partida de um minuto, último ataque, horário e bateria continuam pendentes.
+O minuto extra exige concluir a apresentação da quarta opção e sua leitura
+pelas rotinas de partida; localizar seus bytes não basta para disponibilizá-lo.

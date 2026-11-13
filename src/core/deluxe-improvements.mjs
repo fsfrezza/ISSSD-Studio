@@ -7,9 +7,9 @@ export const IMPROVEMENT_SECTIONS=Object.freeze([
   item('final-attack','Aguardar o último ataque','Preserva o ataque dentro da área adversária antes de encerrar o tempo.',{plusKey:'lastAttackProtection'}),
   item('match-hour','Escolha do horário da partida','Libera a escolha do horário da partida.',{plusKey:'matchTimeSelection'}),
   item('one-minute','Partida de 1 minuto','Acrescenta a duração de um minuto às opções de tempo.',{plusKey:'oneMinuteMatch'}),
-  item('penalty-interference','Corrigir interferência na cobrança de pênalti','Correção de entrada dos controles na cobrança; é distinta da correção do replay.',{plusKey:'penaltyInputFix'}),
+  item('penalty-interference','Corrigir interferência na cobrança de pênalti','Correção de entrada dos controles na cobrança; é distinta da correção do replay.',{plusKey:'penaltyInputFix',status:'available',capability:'gameplay'}),
   item('password-save','Salvar progresso por bateria','Preserva o progresso por bateria. Substitui a descrição incompleta “guardar último password”.',{plusKey:'batterySave'}),
-  item('controller-one-codes','Códigos secretos pelo controle 1 ou 2','Adaptar o uso pelo controle 1, mantendo o controle 2. São códigos diferentes: árbitro cachorro — ↑ ↑ ↓ ↓ ← → ← → B A; equipes secretas — R ↑ ↓ L X B ← A → Y.',{plusKey:'playerOneSecretCodes'}),
+  item('controller-one-codes','Códigos secretos pelo controle 1 ou 2','Adaptar o uso pelo controle 1, mantendo o controle 2. São códigos diferentes: árbitro cachorro — ↑ ↑ ↓ ↓ ← → ← → B A; equipes secretas — R ↑ ↓ L X B ← A → Y.',{plusKey:'playerOneSecretCodes',status:'available',capability:'gameplay'}),
  ]},
  {id:'plus-options',title:'Opções adicionais do Editor Plus',description:'As três opções existiam no Editor Plus. A adaptação ao Deluxe e a estabilidade das rotinas de goleiro ainda precisam de validação.',items:[
   item('backpass','Punição por recuo ao goleiro','Ao agarrar com as mãos um recuo proibido, aplica pênalti após a breve animação. O domínio com os pés continua permitido.',{plusKey:'goalkeeperBackpassNoHands',status:'available',capability:'gameplay'}),
