@@ -1,3 +1,4 @@
+import {applyDeluxeTeamPhotos} from './deluxe-team-photos.mjs';
 import {applyDeluxeOpeningMedia} from './deluxe-opening-media.mjs';
 import {applyDeluxePrematchLabels} from './deluxe-prematch-labels.mjs';
 import {applyDeluxeTeamVisuals} from './deluxe-team-visuals.mjs';
@@ -48,7 +49,7 @@ export async function buildDeluxeProject(file,project){
   const base=await identifyDeluxe(file);
   keys(project,['schema','version','base','changes'],'projeto');
   if(project.schema!==DELUXE_SCHEMA||project.version!==1||project.base?.sha256!==base.sha256||project.base?.id!==base.id)throw new Error('Projeto não pertence à base Deluxe original');
-  keys(project.changes,['strategyTexts','internalTitle','improvements','nativeTexts','cursorHelp','stadiums','menuTexts','mainMenu','sounds','trainingHud','matchStatistics','titleScreen','players','groups','structure','titleComposer','groupLabels','teamVisuals','preMatchLabels','openingMedia'],'alterações');
+  keys(project.changes,['strategyTexts','internalTitle','improvements','nativeTexts','cursorHelp','stadiums','menuTexts','mainMenu','sounds','trainingHud','matchStatistics','titleScreen','players','groups','structure','titleComposer','groupLabels','teamVisuals','preMatchLabels','openingMedia','teamPhotos'],'alterações');
   const changes=project.changes;
   if(changes.titleComposer!==undefined)validateTitleComposer(changes.titleComposer);
   if(!Array.isArray(changes.improvements))throw new Error('Lista de melhorias inválida');
@@ -81,6 +82,7 @@ export async function buildDeluxeProject(file,project){
     out.set(encodeInternalRomTitle(changes.internalTitle),0x7fc0);
   }
   out=applyDeluxeTeamVisuals(out,rom,changes.structure,changes.teamVisuals);
+  out=applyDeluxeTeamPhotos(out,rom,changes.structure,changes.teamPhotos);
   out=applyDeluxeOpeningMedia(out,rom,changes.openingMedia);
   const edited=diffRanges(rom,out).changedBytes>0;
   if(edited){
