@@ -1,3 +1,4 @@
+import {DELUXE_SCREEN_EDITORS} from './deluxe-screen-scenes.mjs';
 import {PREMATCH_GRAPHIC_LABELS,DELUXE_PREMATCH_PORTUGUESE} from './deluxe-prematch-labels.mjs';
 import {PLUS_STRATEGY_TEXTS,readPlusStrategyText} from './plus-strategy-text.mjs';
 import {NATIVE_SCREEN_TEXT_FIELDS,CURSOR_HELP_FIELDS,readNativeField,readCursorHelp} from './deluxe-native-fields.mjs';
@@ -23,7 +24,7 @@ export function textPresetFields(base){const out=[];const add=(scope,key,origina
  return out;
 }
 function prune(o){for(const key of Object.keys(o))if(o[key]&&typeof o[key]==='object'&&!Array.isArray(o[key])){prune(o[key]);if(!Object.keys(o[key]).length)delete o[key];}}
-export function applyTextPreset(project,base,scope,mode){if(!['original','portuguese'].includes(mode))throw Error('Preset de texto inválido');const fields=textPresetFields(base).filter(f=>scope==='allTexts'?TEXT_TAB_SCOPES.includes(f.scope):f.scope===scope||f.scope==='menuTexts'&&scope===f.key.split('/')[0]);if(!fields.length)throw Error('Seção de texto desconhecida');const next=structuredClone(project);
+export function applyTextPreset(project,base,scope,mode){if(!['original','portuguese'].includes(mode))throw Error('Preset de texto inválido');const screen=DELUXE_SCREEN_EDITORS.find(s=>s.id===scope&&s.fieldIds);const fields=textPresetFields(base).filter(f=>screen?f.scope==='menuTexts'&&screen.fieldIds.includes(f.path.at(-1)):scope==='allTexts'?TEXT_TAB_SCOPES.includes(f.scope):f.scope===scope||f.scope==='menuTexts'&&scope===f.key.split('/')[0]);if(!fields.length)throw Error('Seção de texto desconhecida');const next=structuredClone(project);
  for(const f of fields){const value=mode==='original'?f.original:f.portuguese;if(typeof value!=='string')throw Error('Tradução não disponível: '+f.key);let parent=next.changes;for(const key of f.path.slice(0,-1))parent=parent[key]??={};const key=f.path.at(-1);if(value===f.original)delete parent[key];else parent[key]=value;}
  if(scope==='mainMenu'){if(mode==='portuguese'){next.changes.mainMenu??={texts:{}};next.changes.mainMenu.scale=95;}else if(next.changes.mainMenu)delete next.changes.mainMenu.scale;}
  prune(next.changes);if(next.changes.mainMenu)next.changes.mainMenu.texts??={};next.changes.strategyTexts??={};next.changes.improvements??=[];return next;

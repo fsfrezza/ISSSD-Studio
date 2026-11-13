@@ -1,4 +1,8 @@
 const pages={
+ 'match-announcement':['Anúncio da partida','Edite os rótulos; Brasil, Inglaterra e U.S.A. permanecem como exemplos.'],
+ 'opening-konami':['Tela 1 · Konami','Substitua a primeira tela por imagem ou vídeo convertido para o SNES.'],
+ 'opening-international':['Tela 2 · International','Preserve a animação original ou importe sua própria mídia.'],
+ 'opening-we-love-soccer':['Tela 3 · We Love Soccer','Edite a mídia e os fades da última etapa da abertura.'],
  'open-game':['Tela de Open Game','Edite as três opções e as descrições do tipo de partida.'],
  handicap:['Handicap','Edite os textos da tela de vantagem e confira sua composição.'],
  'pre-match':['Menu pré-partida','Edite os rótulos gráficos de preparação, treino e desafio.'],

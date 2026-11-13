@@ -1,3 +1,4 @@
+import {installOpeningEditors} from './opening-editors.mjs';
 import {installScreenEditors} from './screen-editors.mjs';
 import {IMPROVEMENT_SECTIONS,deluxeImprovementState,deluxeStructureSummary} from '../src/core/deluxe-improvements.mjs';
 import {availablePlusTeams,addPlusCatalogGroup,applyPlusGroupOrganization} from '../src/core/deluxe-group-catalog.mjs';
@@ -34,6 +35,7 @@ function download(data,name,type){const url=URL.createObjectURL(new Blob([data],
 function render(){
   renderImprovements();
   screenEditors.render();
+  openingEditors.render();
   if(!project)renderTextActions();
   for(const id of ['resetGroups','addStructureGroup','resetStructure','teamSelection'])$(id).disabled=!project;$('groupCards').replaceChildren();$('teamCards').replaceChildren();if(!project)$('teamSelection').replaceChildren();$('groupStatus').textContent='';$('newGroupPanel').hidden=true;$('applyPlusGroups').disabled=!project;
   for(const id of ['playerTeam','playerSelection','resetPlayer','resetPlayerTeam'])$(id).disabled=!project;
@@ -326,6 +328,7 @@ async function runTextPreset(scope,mode){const p=project,current=file,signature=
 function addPresetButtons(host,scope){for(const [mode,label]of [['original','Restaurar todos os textos'],['portuguese','Português em todos os textos']]){const b=document.createElement('button');b.type='button';b.textContent=label;b.disabled=!project;b.onclick=()=>runTextPreset(scope,mode);host.append(b);}}
 function renderTextActions(){for(const scope of ['allTexts','texts','nativeTexts','menuTexts','trainingHud','matchStatistics','cursorHelp','mainMenu','titleTexts']){const host=$(scope+'Actions');host.replaceChildren();addPresetButtons(host,scope);}}
 
+const openingEditors=installOpeningEditors({getProject:()=>project,getFile:()=>file,onStatus:status});
 const screenEditors=installScreenEditors({getProject:()=>project,getFile:()=>file,textControl,addPresetButtons,onStatus:status});
 const titleComposer=installTitleComposer({getProject:()=>project,getFile:()=>file,onStatus:status});
 

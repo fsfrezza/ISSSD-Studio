@@ -14,7 +14,7 @@ test('screen fields retain their existing project paths and appear once',()=>{
 });
 test('previews use the real wallpaper and change with text/selection without mutating the project',{skip:!fixture},async()=>{
  const file=new Uint8Array(fs.readFileSync(fixture)),base=splitRom(file).rom,p=await createDeluxeProject(file),before=JSON.stringify(p);
- for(const config of DELUXE_SCREEN_EDITORS){const a=deluxeScreenScene(base,config.id,p,0),b=deluxeScreenScene(base,config.id,p,1);assert.equal(a.rgba.length,256*224*4);assert.notDeepEqual(a.rgba,b.rgba);assert.ok(a.rgba.every((v,i)=>i%4!==3||v===255));}
+ for(const config of DELUXE_SCREEN_EDITORS){const a=deluxeScreenScene(base,config.id,p,0),b=deluxeScreenScene(base,config.id,p,config.choices.length>1?1:0);assert.equal(a.rgba.length,256*224*4);if(config.choices.length>1)assert.notDeepEqual(a.rgba,b.rgba);assert.ok(a.rgba.every((v,i)=>i%4!==3||v===255));}
  assert.equal(JSON.stringify(p),before);const a=deluxeScreenScene(base,'open-game',p);p.changes.menuTexts={'game-type-native':{friendly:'JOGATINA',friendlyHelp:'X1 maroto'}};assert.notDeepEqual(a.rgba,deluxeScreenScene(base,'open-game',p).rgba);
 });
 test('all twelve pre-match labels export safely, survive roundtrip and restore to the original ROM',{skip:!fixture},async()=>{
@@ -28,4 +28,11 @@ test('all twelve pre-match labels export safely, survive roundtrip and restore t
  const occupied=base.slice();occupied[0x17e800]=0;const snapshot=occupied.slice();assert.throws(()=>applyDeluxePrematchLabels(occupied,base,{gameStart:'INICIAR JOGO'}),/reserva/);assert.deepEqual(occupied,snapshot);
  const untouched=base.slice();assert.throws(()=>applyDeluxePrematchLabels(untouched,base,{gameStart:'W'.repeat(40)}),/excede/);assert.deepEqual(untouched,base);
  assert.throws(()=>applyDeluxePrematchLabels(base.slice(),base,{unknown:'NO'}),/inválidos/);
+});
+
+test('reference previews preserve the example flags and USA while replacing editable labels',()=>{
+ const reference=new Uint8Array(256*224*4).fill(140);for(let i=3;i<reference.length;i+=4)reference[i]=255;
+ const project={changes:{menuTexts:{'handicap-native':{data_87c811:'VANTAGEM'},'stadium-native':{data_87ca36:'ESTADIO',data_87ca57:'JOGO DE HOJE'}}}},snapshot=JSON.stringify(project);
+ for(const [id,x,y]of [['handicap',100,44],['stadium-screen',90,50],['match-announcement',40,60]]){const scene=deluxeScreenScene(new Uint8Array(),id,project,0,reference);const at=(y*256+x)*4;assert.deepEqual(Array.from(scene.rgba.slice(at,at+4)),Array.from(reference.slice(at,at+4)));assert.notDeepEqual(scene.rgba,reference);}
+ assert.equal(JSON.stringify(project),snapshot);
 });
