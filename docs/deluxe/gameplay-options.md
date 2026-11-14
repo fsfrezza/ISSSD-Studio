@@ -61,7 +61,7 @@ Snes9x com os quatro patches e estrutura GG: os códigos de árbitro cachorro
 entradas de controle, separadamente nos controles 1 e 2. As quatro combinações
 ativaram a flag nativa correspondente (7E:D854 ou 7E:D856 = 1).
 
-Horário, bateria e correção do replay de pênalti continuam pendentes.
+Horário e bateria foram adaptados nas integrações seguintes. A correção do replay de pênalti permanece em investigação.
 
 
 ## Um minuto e espera do último ataque
@@ -136,3 +136,41 @@ importação quantizada. Cada uniforme mantém oito quadros e as paletas titular
 /reserva; a geometria é compartilhada pelos dois conjuntos da mesma equipe.
 Na bandeira de partida, a quarta cor é aproximada às três entradas estáveis
 13–15, preservando a seleção com quatro cores. Não altera outras equipes.
+
+
+## Bateria e password
+
+Opção `password-save`, independente dos demais patches e desligada por padrão.
+A gravação ocorre ao gerar o password nativo (hook 8A:F205); ao entrar na tela
+PASSWORD, o preenchimento ocorre após limpar o buffer nativo (8A:E99B).
+Os helpers ficam em 86:CE00 e 86:CF00, sem anti-cópia ou código de reset da Plus.
+A reserva 70:1000..1043 contém assinatura, versão, checksum e os 60 bytes do
+password. SRAM de 8 KiB, tipo de cartucho 02; preserva 70:1800 do recuo.
+Este mecanismo retoma o progresso codificado no password pela tela nativa;
+não salva uma partida em andamento, como um save state de emulador.
+
+Validação Snes9x: ROMs de diagnóstico executaram o encoder nativo e o hook
+novo, encerraram o processo e carregaram a SRAM num segundo processo/ROM.
+Os 60 bytes persistiram exatamente. Uma ROM completa com projeto GG abriu
+PASSWORD por comandos do menu e mostrou o conteúdo salvo, sem digitação.
+Testes de CPU rejeitam assinatura/versão/checksum inválidos sem carregar dados.
+
+## Retratos e paletas de cenas
+
+O motor de retratos do Plus foi adaptado aos índices Deluxe e ao limite de
+60 equipes; as aparências usam equipe + posição no elenco, nunca número de
+camisa ou índice antigo do Plus. Tabelas e helpers ficam em 2B8000..2CA800.
+Os sete diretórios nativos de paletas de cenas foram ampliados em 2CB000,
+com registros privados deduplicados em 2CC000..2CFFFF e leitores 8B:FDD0.
+Isso corrige um acesso fora da tabela nativa que travava a cena da equipe 60.
+O catálogo de paletas de cenas vem da referência IASBESR; não importa fotos
+individuais nem converte desenhos de uniforme em novos desenhos de cenas.
+
+Snes9x: cena controlada do jogador 20 da equipe 60 (Vaporosos), cabelo 15,
+leu a paleta individual esperada e alcançou o estado nativo de exibição sem
+travamento. A mesma preparação passou nas 60 equipes. As cores de pele/cabelo e a cabeça são individualizadas no telão;
+edição livre dos demais recursos de cenas ainda exige adaptação.
+
+A interface tática também preserva coordenadas nativas não editadas fora dos
+limites atuais (por exemplo, MF com X=20 na Itália), validando somente as
+alterações efetivas em vez de impedir a edição dos demais jogadores.

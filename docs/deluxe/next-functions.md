@@ -12,9 +12,15 @@ Estado desta integração:
    IndexedPixelEditor do Plus e adaptadores próprios do Deluxe.
 6. Pele/cabelo: prévias nativas em Dados do jogador, 16 tipos de cabelo,
    dois conjuntos por equipe de linha e paletas individuais dos goleiros.
-7. Progresso por bateria: pendente de adaptação e teste de reinicialização.
-8. Substituir Posições em campo pela interface do Editor Plus: solicitado
-   para o fim desta lista; a interface existente de táticas continua funcional.
+7. Progresso por bateria: disponível como opção. Password nativo gravado na
+   SRAM, validado e preenchido ao abrir a tela de password após desligar.
+8. Campo tático: arte e interface do Plus adaptadas, com seleção múltipla,
+   arraste/setas, funções, Atacar e trocas de ordem ou de posição.
+9. Retratos/cenas: aparência individual no telão integrada; sete diretórios
+   de paletas ampliados para evitar acesso fora das tabelas nativas com GG.
+   Importação de fotos individuais e edição das demais cenas ainda pendentes.
 
 A defesa indevida durante o replay de pênalti permanece em investigação.
 Não confundir com o patch já disponível de interferência na cobrança.
+
+Referência da investigação do replay: `docs/deluxe/pb9t-replay-investigation.md`.

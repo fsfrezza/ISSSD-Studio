@@ -8,7 +8,7 @@ export const IMPROVEMENT_SECTIONS=Object.freeze([
   item('match-hour','Escolha do horário da partida','Libera a escolha do horário da partida.',{plusKey:'matchTimeSelection',status:'available',capability:'gameplay'}),
   item('one-minute','Partida de 1 minuto','Acrescenta a duração de um minuto às opções de tempo.',{plusKey:'oneMinuteMatch',status:'available',capability:'gameplay'}),
   item('penalty-interference','Corrigir interferência na cobrança de pênalti','Correção de entrada dos controles na cobrança; é distinta da correção do replay.',{plusKey:'penaltyInputFix',status:'available',capability:'gameplay'}),
-  item('password-save','Salvar progresso por bateria','Preserva o progresso por bateria. Substitui a descrição incompleta “guardar último password”.',{plusKey:'batterySave'}),
+  item('password-save','Salvar progresso por bateria','Grava o password de progresso na bateria e o preenche ao voltar à tela de password, inclusive após desligar.',{plusKey:'batterySave',status:'available',capability:'gameplay'}),
   item('controller-one-codes','Códigos secretos pelo controle 1 ou 2','Adaptar o uso pelo controle 1, mantendo o controle 2. São códigos diferentes: árbitro cachorro — ↑ ↑ ↓ ↓ ← → ← → B A; equipes secretas — R ↑ ↓ L X B ← A → Y.',{plusKey:'playerOneSecretCodes',status:'available',capability:'gameplay'}),
  ]},
  {id:'plus-options',title:'Opções adicionais do Editor Plus',description:'As três opções existiam no Editor Plus. As disponíveis têm adaptação própria para o Deluxe; as demais aguardam validação.',items:[
@@ -26,7 +26,8 @@ export const IMPROVEMENT_SECTIONS=Object.freeze([
  ]},
  {id:'editor',title:'Recursos de edição do Plus no Editor Deluxe',description:'O estado indica recursos disponíveis no editor ou dados presentes no projeto aberto. Estar disponível não significa alterar a ROM automaticamente.',items:[
   item('opening-media','Substituir as três telas de abertura por imagem ou vídeo','Imagem e vídeo convertido em quadros SNES, com fades. Vídeo experimental, sem áudio importado e limitado pelo espaço da ROM.',{status:'available',capability:'opening'}),
-  item('team-photos','Fotos próprias na seleção de equipes','Importa poses, rostos, acessórios e cinco paletas por equipe. Retratos e cenas individuais dos jogadores ainda precisam de adaptação.',{status:'available',capability:'photos'}),
+  item('team-photos','Fotos próprias na seleção de equipes','Importa poses, rostos, acessórios e cinco paletas por equipe; exibe a formação na aba Equipes.',{status:'available',capability:'photos'}),
+  item('player-closeups','Aparência individual no telão','Adapta pele e cabelo aos retratos do telão e preserva as paletas de cenas das 60 equipes. Importação de fotografias individuais e edição das demais cenas ainda não estão disponíveis.',{status:'available',capability:'appearance'}),
   item('group-editing','Trocar equipes e grupos e editar nomes de grupos','Disponível na aba Grupos, incluindo os dados do grupo secreto quando o projeto os contém.',{status:'available',capability:'always'}),
   item('player-editing','Editar os jogadores das equipes habilitadas','Nomes, números, posições e atributos das equipes contidas no projeto, incluindo os 1.200 jogadores na versão de 60 equipes.',{status:'available',capability:'always'}),
   item('title-menu-editing','Editar tela de título e menu principal','Camadas, imagens, textos e cores nos recursos já adaptados ao Deluxe.',{status:'available',capability:'always'}),
@@ -37,7 +38,7 @@ export const IMPROVEMENT_SECTIONS=Object.freeze([
   item('player-appearance-editing','Editar pele e cabelo por jogador','Prévias nativas de frente, costas e perfil, 16 tipos de cabelo, dois conjuntos de pele/cabelo e cores independentes dos goleiros.',{status:'available',capability:'appearance'}),
  ]},
  {id:'planned',title:'Planejadas e experimentais',description:'Itens ainda indisponíveis. Nenhum deles é aplicado à ROM por aparecer nesta lista.',items:[
-  item('penalty-replay','Impedir defesa da bola durante o replay do pênalti','Constava como planejada no Editor Plus; não confundir com a correção de interferência na cobrança.'),
+  item('penalty-replay','Impedir defesa da bola durante o replay do pênalti','Referência PB9T recebida e comparada. A correção específica ainda precisa ser isolada e validada; não confundir com a interferência na cobrança.'),
   item('backpass-direct-free-kick','Recuo punido com tiro livre dentro da área','Alternativa experimental à punição por pênalti, com posicionamento de barreira e goleiro ainda em revisão.'),
   item('second-touch','Punir segundo toque em faltas e escanteios','Experimento de jogabilidade ainda sem opção integrada e validada para o Editor Deluxe.'),
   item('goalkeeper-stability','Corrigir travamentos nas rotinas do goleiro','Revisar seleção de batedor, preparação da bola e substituições antes de disponibilizar os patches de goleiro no Deluxe.'),

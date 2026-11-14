@@ -1,3 +1,4 @@
+import {applyDeluxePlayerCloseups} from './deluxe-player-closeup.mjs';
 import {applyDeluxeGoalkeeperColors} from './deluxe-goalkeeper-colors.mjs';
 import {applyDeluxePlayerHair} from './deluxe-player-hair.mjs';
 import {applyDeluxeGameplay,validateDeluxeGameplay} from './deluxe-gameplay.mjs';
@@ -92,6 +93,7 @@ export async function buildDeluxeProject(file,project){
   out=applyDeluxeOpeningMedia(out,rom,changes.openingMedia);
   out=applyDeluxePlayerHair(out,rom,project,playerBase);
   out=applyDeluxeGoalkeeperColors(out,rom,project);
+  out=applyDeluxePlayerCloseups(out,rom,project);
   out=applyDeluxeGameplay(out,rom,changes.improvements);
   const edited=diffRanges(rom,out).changedBytes>0;
   if(edited){

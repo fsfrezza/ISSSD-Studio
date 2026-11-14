@@ -1,6 +1,7 @@
+import {applyDeluxePasswordSave} from './deluxe-password-save.mjs';
 import {applyDeluxeGoalkeeperCorner} from './deluxe-goalkeeper-corner.mjs';
 import {buildExperimentalBackpassPenalty,experimentalBackpassHooks} from './experimental-backpass-penalty.mjs';
-export const DELUXE_GAMEPLAY_IDS=Object.freeze(['low-goal-kick','backpass','penalty-interference','controller-one-codes','one-minute','final-attack','goalkeeper-corner','match-hour']);
+export const DELUXE_GAMEPLAY_IDS=Object.freeze(['low-goal-kick','backpass','penalty-interference','controller-one-codes','one-minute','final-attack','goalkeeper-corner','match-hour','password-save']);
 // Exact 44-byte helper from the clean Plus ROM at 85:FEC0. PHD/PLD preserve
 // the player's direct page; only keepers 0500/1000 consult their own controller.
 export const LOW_GOAL_KICK_HELPER=Uint8Array.from('0ba900005be00005f007e00010f0078011a2a01a8003a2d01ab58e748ec90080f005a20b002b60a20a002b60'.match(/../g).map(v=>parseInt(v,16)));
@@ -48,5 +49,6 @@ export function applyDeluxeGameplay(input,base,ids){
  if(ids.includes('controller-one-codes')){hook(0x4c2,[0x22,0x0d,0xf5,0x80],[0x22,0,0xfa,0x80]);helper(0x7a00,SECRET_CONTROLLERS_HELPER);}
  if(ids.includes('low-goal-kick')){const original=[0xa5,0x76,0xa2,0x0b,0];if(original.some((v,i)=>base[0x2ef47+i]!==v)||base.slice(0x2fec0,0x2feec).some(v=>v!==255))throw Error('Tiro de meta: rotina Deluxe incompatível');write(0x2ef47,Uint8Array.of(0x20,0xc0,0xfe,0xa5,0x76));write(0x2fec0,LOW_GOAL_KICK_HELPER);}
  if(penalty){for(const[at,bytes]of experimentalBackpassHooks().writes)write(at,bytes);write(0x7fd8,Uint8Array.of(3));out[0x7fd7]=12;}
- return ids.includes('goalkeeper-corner')?applyDeluxeGoalkeeperCorner(out,base):out;
+ const corners=ids.includes('goalkeeper-corner')?applyDeluxeGoalkeeperCorner(out,base):out;
+ return ids.includes('password-save')?applyDeluxePasswordSave(corners,base):corners;
 }

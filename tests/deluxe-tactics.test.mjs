@@ -19,3 +19,21 @@ test('sixty reference tactics survive save, export, team edits and GG isolation'
  const built=await buildDeluxeProject(file,JSON.parse(JSON.stringify(project))),out=built.rom.slice(built.base.headerSize);for(let i=0;i<60;i++)assert.deepEqual(Array.from(out.slice(0x243000+i*32,0x243000+i*32+31)),project.changes.tactics.sourceRecords[i]);
  const state=decodePlusTacticalRecord(deluxeTacticalRecord(base,project,54));state.players[0].x++;state.players[0].attack=!state.players[0].attack;const next=setDeluxeTeamTactics(base,project,54,state);assert.deepEqual(deluxeTacticalRecord(base,next,55),deluxeTacticalRecord(base,project,55));assert.deepEqual(next.changes.players,before.changes.players);assert.deepEqual(next.changes.structure,before.changes.structure);assert.deepEqual(next.changes.teamPhotos,before.changes.teamPhotos);await buildDeluxeProject(file,next);
 });
+
+test('Plus field UI synchronizes selection, roster swaps and position swaps',{skip:!process.env.ISSSD_DELUXE_ROM},async()=>{
+ const {installTacticsEditor}=await import('../deluxe-editor/tactics-editor.mjs'),fs=await import('node:fs');
+ const {createDeluxeProject,splitRom}=await import('../src/core/deluxe-project.mjs'),{readDeluxePlayer}=await import('../src/core/deluxe-players.mjs');
+ const file=new Uint8Array(fs.readFileSync(process.env.ISSSD_DELUXE_ROM)),base=splitRom(file).rom;let project=await createDeluxeProject(file);
+ class El{constructor(){this.value='';this.children=[];this.style={};this.events={};}append(...e){this.children.push(...e);}replaceChildren(...e){this.children=e;}setAttribute(k,v){this[k]=v;}addEventListener(k,v){this.events[k]=v;}}
+ const ids=Object.fromEntries(['tacticsCanvas','tacticsTeam','tacticsFormation','tacticsPreset','tacticsIndividualize','tacticsReset','tacticsStatus','tacticsPlayers','tacticsSwapField','tacticsSwapPlayers'].map(k=>[k,new El()])),old=globalThis.document;
+ globalThis.document={getElementById:id=>ids[id],createElement:()=>new El()};
+ try{
+  installTacticsEditor({getProject:()=>project,setProject:p=>project=p,getFile:()=>file,onStatus:()=>{}});
+  assert.equal(ids.tacticsCanvas.children.length,11);assert.equal(ids.tacticsSwapPlayers.disabled,true);
+  const p1=readDeluxePlayer(base,0,1),p2=readDeluxePlayer(base,0,2),before=deluxeTacticalRecord(base,project,0);
+  const second=ids.tacticsPlayers.children[1].children[0];second.checked=true;second.onchange();assert.equal(ids.tacticsSwapPlayers.disabled,false);
+  ids.tacticsSwapPlayers.onclick();assert.equal(project.changes.players['0:1'].name,p2.name);assert.equal(project.changes.players['0:2'].jersey,p1.jersey);assert.deepEqual(deluxeTacticalRecord(base,project,0),before);
+  const original=decodePlusTacticalRecord(before),a=original.players[0],b=original.players[1];
+  ids.tacticsSwapField.onclick();const after=decodePlusTacticalRecord(deluxeTacticalRecord(base,project,0));assert.equal(after.players[0].x,b.x);assert.equal(after.players[0].y,b.y);assert.equal(after.players[1].y,a.y);
+ }finally{globalThis.document=old;}
+});
