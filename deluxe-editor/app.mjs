@@ -132,13 +132,18 @@ function renderNative(rom){
   const original=readCursorHelp(rom,f),details=document.createElement('details'),summary=document.createElement('summary');summary.textContent=f[3].label??f[0];details.append(summary);$('cursorHelp').append(details);
   textControl(details,{scope:'cursorHelp',key:f[0],label:'Instrução',value:project.changes.cursorHelp?.[f[0]]??original,original,multiline:true,validate:v=>encodeCursorText(f,v),onChange:v=>updateChange('cursorHelp',f[0],v,original)});
  }
- for(const stadium of readStadiums(rom)){
-  const details=document.createElement('details'),summary=document.createElement('summary');summary.textContent=stadium.name;details.append(summary);
-  const palette=document.createElement('div');palette.className='palette';details.append(palette);
+ renderStadiums(rom);
+}
+let activeStadium=0;
+function renderStadiums(rom){
+ const stadiums=readStadiums(rom),root=$('stadiums');root.replaceChildren();if(!stadiums.length)return;activeStadium=Math.min(activeStadium,stadiums.length-1);const stadium=stadiums[activeStadium];
+ const card=document.createElement('article'),header=document.createElement('div'),heading=document.createElement('div'),summary=document.createElement('strong'),count=document.createElement('small'),body=document.createElement('div');card.className='card';header.className='group-navigation';heading.className='group-navigation-title';heading.setAttribute('aria-live','polite');summary.textContent=stadium.name;count.textContent=(activeStadium+1)+' / '+stadiums.length;heading.append(summary,count);
+ function arrow(step,label,symbol){const button=document.createElement('button');button.type='button';button.textContent=symbol;button.setAttribute('aria-label',label);button.title=label;button.disabled=stadiums.length<2;button.onclick=()=>{activeStadium=(activeStadium+step+stadiums.length)%stadiums.length;renderStadiums(rom);};return button;}
+ header.append(arrow(-1,'Estádio anterior','←'),heading,arrow(1,'Próximo estádio','→'));body.className='card-body';card.append(header,body);
+ const palette=document.createElement('div');palette.className='palette';body.append(palette);
   const colors=(project.changes.stadiums?.[stadium.id]??stadium.colors).slice();
   colors.forEach((v,i)=>{const label=document.createElement('label');label.textContent=String(i+1);const input=document.createElement('input');input.type='color';input.value=bgrToHex(v);input.setAttribute('aria-label',stadium.name+' cor '+(i+1));input.oninput=()=>{colors[i]=hexToBgr(input.value);updateChange('stadiums',String(stadium.id),colors.slice(),stadium.colors);};label.append(input);palette.append(label);});
-  const reset=document.createElement('button');reset.textContent='Restaurar cores originais';reset.onclick=()=>{delete project.changes.stadiums?.[stadium.id];render();};details.append(reset);$('stadiums').append(details);
- }
+  const reset=document.createElement('button');reset.type='button';reset.textContent='Restaurar cores originais';reset.onclick=()=>{updateChange('stadiums',String(stadium.id),stadium.colors,stadium.colors);renderStadiums(rom);};body.append(reset);root.append(card);
 }
 $('title').oninput=()=>{if($('title').value===project.base.title)delete project.changes.internalTitle;else project.changes.internalTitle=$('title').value;};
 $('resetTitle').onclick=()=>{delete project.changes.internalTitle;render();};
