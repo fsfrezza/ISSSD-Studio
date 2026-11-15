@@ -5,6 +5,8 @@ import {decodeFixedPlayerName} from '../src/core/plus-player-name.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import crypto from 'node:crypto';
 import {extractGGTeamPhotos,validateTeamPhotos} from '../src/core/deluxe-team-photos.mjs';
 import {buildDeluxeProject} from '../src/core/deluxe-project.mjs';
+import {encodeTeamPhotoDraft,validateTeamPhotoDrafts,TEAM_PHOTO_WIDTH,TEAM_PHOTO_HEIGHT} from '../src/core/deluxe-team-photo-drafts.mjs';
+test('formation draft encodes independent BGR555 colors and preserves transparency',()=>{const rgba=new Uint8Array(TEAM_PHOTO_WIDTH*TEAM_PHOTO_HEIGHT*4);rgba.set([255,0,0,255,0,0,0,255,0,255,0,127]);const draft=encodeTeamPhotoDraft(rgba);assert.ok(draft.pixels[0]);assert.equal(draft.colors[draft.pixels[0]],31);assert.ok(draft.pixels[1]);assert.equal(draft.colors[draft.pixels[1]],0);assert.equal(draft.pixels[2],0);assert.deepEqual(validateTeamPhotoDrafts({'23':draft}),[23]);assert.throws(()=>validateTeamPhotoDrafts({'23':{...draft,pixels:[16]}}),/inválido/);});
 const paths=[process.env.ISSSD_DELUXE_ROM,process.env.ISSSD_PLUS_ROM,process.env.ISSSD_GG_ROM,process.env.ISSSD_GG_RECOVERED_PROJECT];
 const word=(b,p)=>b[p]|b[p+1]<<8,long=(b,p)=>word(b,p)|b[p+2]<<16,pc=c=>((c>>16&127)*32768)+(c&32767);
 function directory(base,out,old){for(let at=0;at<base.length-4;at++)if(base[at]===191&&long(base,at+1)===old)return pc(long(out,at+1));throw Error('Missing directory');}

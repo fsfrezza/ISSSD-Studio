@@ -10,6 +10,12 @@ As tabelas e o código usam `0x242000–0x248000`. As paletas usam `0x24C000–0
 
 A adaptação desta etapa cobre as fotos da seleção de equipes, incluindo os rostos que fazem parte delas. Retratos individuais, aproximações e outras cenas dos jogadores ainda precisam de seus próprios mapeamentos. A interface de edição livre de fotos/pixels não faz parte desta etapa.
 
+### Importação independente (rascunho)
+
+A aba Equipes aceita PNG, JPEG e WebP mesmo sem `changes.teamPhotos`. O bitmap é redimensionado proporcionalmente para 96 × 64 pixels, com índice zero transparente e até 15 cores BGR555 opacas. `changes.teamPhotoDrafts`, indexado pela identidade Plus da equipe, guarda a paleta e os pixels editáveis; não modifica as tabelas gráficas nativas. O Editor mantém o rascunho ao salvar/reabrir o projeto e bloqueia Gerar ROM enquanto houver rascunhos, evitando uma exportação que descartaria essas imagens silenciosamente. Remover uma imagem importada retorna à foto nativa. O resultado do compilador informa `pendingTeamPhotos` para que outros consumidores também possam distinguir rascunhos não gravados.
+
+A individualização real dos bitmaps ainda depende da rotina nativa `CODE_85AFA0` e da composição/OAM iniciada por `CODE_85B18B`: atualmente os componentes de formação são carregados de gráficos compartilhados. A conversão acima não é uma implementação dessa rotina, nem implica funcionamento em emulador.
+
 Também ficam identificadas como sem equivalente mapeado no menu nativo atual as chaves legadas `preKickoff.viewData` e as seis descrições auxiliares do projeto Plus. Elas não são anunciadas como traduções aplicadas à ROM. Os outros sete rótulos de pré-partida não tinham tradução explícita nesse anexo. As melhorias de jogabilidade continuam com o estado próprio da aba Melhorias.
 
 No emulador, as seis GG foram selecionadas com os novos recursos de foto, e a seleção seguida de partida foi verificada. O acesso secreto continua com a organização previamente validada: nove páginas bloqueadas e dez após o segredo.

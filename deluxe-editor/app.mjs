@@ -1,7 +1,7 @@
 import {appendTeamPixelEditors,appendTeamPhotoEditor} from './team-pixels.mjs';
 import {renderPlayerAppearancePanel} from './player-appearance.mjs';
 import {deluxeTeamPicture,deluxeTeamFlag} from '../src/core/deluxe-team-preview.mjs';
-import {drawIndexedPreview,deluxeVisualRow,deluxePlayerPalette,deluxeAppearance,deluxePlayerPicture} from '../src/core/deluxe-visual-preview.mjs';
+import {drawIndexedPreview,deluxeVisualRow,deluxePlayerPalette,deluxeAppearance,deluxePlayerPicture,visualTeamId} from '../src/core/deluxe-visual-preview.mjs';
 import {installTacticsEditor} from './tactics-editor.mjs';
 import {installOpeningEditors} from './opening-editors.mjs';
 import {installScreenEditors} from './screen-editors.mjs';
@@ -87,7 +87,7 @@ $('load').onchange=async()=>{
  const current=file;await buildDeluxeProject(current,p);if(token!==opening||file!==current)return;project=p;render();status('Projeto Deluxe reaberto.');
  }catch(error){if(token===opening)status(error.message);}finally{$('load').value='';}
 };
-$('export').onclick=async()=>{try{const result=await buildDeluxeProject(file,project);download(result.rom,'Deluxe-editado.'+(project.base.headerSize?'smc':'sfc'),'application/octet-stream');status('ROM gerada · '+result.diff.changedBytes+' bytes alterados · '+(result.expanded?'4 MB.':'sem expansão.')+(project.changes.structure?' Estrutura experimental: '+project.changes.structure.teams.length+' equipes; valide no emulador.':'')+(project.changes.titleComposer&&!project.changes.titleComposer.prepared?' Há um rascunho de composição não implementado.':''));}catch(error){status(error.message);}};
+$('export').onclick=async()=>{try{const result=await buildDeluxeProject(file,project);if(result.pendingTeamPhotos.length)throw Error('Existem fotos de formação importadas ainda não aplicáveis à ROM. Salve o projeto ou remova os rascunhos antes de gerar.');download(result.rom,'Deluxe-editado.'+(project.base.headerSize?'smc':'sfc'),'application/octet-stream');status('ROM gerada · '+result.diff.changedBytes+' bytes alterados · '+(result.expanded?'4 MB.':'sem expansão.')+(project.changes.structure?' Estrutura experimental: '+project.changes.structure.teams.length+' equipes; valide no emulador.':'')+(project.changes.titleComposer&&!project.changes.titleComposer.prepared?' Há um rascunho de composição não implementado.':''));}catch(error){status(error.message);}};
 
 function updateChange(section,key,value,original){
  const entries=project.changes[section]??={};
@@ -330,8 +330,8 @@ function renderTeamVisualEditors(team){
  for(const [label,kind] of [['Bandeira / símbolo','flag'],['Equipe em formação','photo'],['Jogador com uniforme','uniform']]){
   const panel=document.createElement('div'),figure=document.createElement('figure'),caption=document.createElement('figcaption'),canvas=document.createElement('canvas');panel.className='team-visual-column '+kind;caption.textContent=label;canvas.setAttribute('aria-label',label+' · '+teamNames()[team]);figure.append(caption,canvas);panel.append(figure);previews.append(panel);panels.push(panel);canvases.push(canvas);
  }
- function redraw(){for(let j=0;j<3;j++){const canvas=canvases[j];try{let view;if(j===0)view=deluxeTeamFlag(base,project,team);else if(j===1)view=deluxeTeamPicture(base,project,team);else{const row=deluxeVisualRow(base,project,team),a=deluxeAppearance(base,project,team,1);view={...deluxePlayerPicture(base,{direction:'Down',hair:a.hair,pattern:row.pattern}),colors:deluxePlayerPalette(row,a.palette)};}if(!view)throw Error('Prévia indisponível para esta composição.');drawIndexedPreview(canvas,view,view.colors);canvas.title='';}catch(e){canvas.title=e.message;canvas.width=1;canvas.height=1;}}}
- function update(next){if(next.changes.teamVisuals)project.changes.teamVisuals=next.changes.teamVisuals;if(next.changes.teamPhotos)project.changes.teamPhotos=next.changes.teamPhotos;redraw();renderPlayers();status('Pixels e cores atualizados no projeto. Salve o projeto ou gere a ROM.');}
+ function redraw(){for(let j=0;j<3;j++){const canvas=canvases[j];try{let view;if(j===0)view=deluxeTeamFlag(base,project,team);else if(j===1){const draft=project.changes.teamPhotoDrafts?.[visualTeamId(project,team)];panels[j].children[0].children[0].textContent=draft?'Equipe em formação · rascunho':'Equipe em formação';view=draft??deluxeTeamPicture(base,project,team);}else{const row=deluxeVisualRow(base,project,team),a=deluxeAppearance(base,project,team,1);view={...deluxePlayerPicture(base,{direction:'Down',hair:a.hair,pattern:row.pattern}),colors:deluxePlayerPalette(row,a.palette)};}if(!view)throw Error('Prévia indisponível para esta composição.');drawIndexedPreview(canvas,view,view.colors);canvas.title='';}catch(e){canvas.title=e.message;canvas.width=1;canvas.height=1;}}}
+ function update(next){if(next.changes.teamVisuals)project.changes.teamVisuals=next.changes.teamVisuals;if(next.changes.teamPhotos)project.changes.teamPhotos=next.changes.teamPhotos;if(next.changes.teamPhotoDrafts)project.changes.teamPhotoDrafts=next.changes.teamPhotoDrafts;else delete project.changes.teamPhotoDrafts;redraw();renderPlayers();status(project.changes.teamPhotoDrafts?'Foto importada salva como rascunho; ainda não aplicável à ROM.':'Pixels e cores atualizados no projeto. Salve o projeto ou gere a ROM.');}
  const options={base,getProject:()=>project,getSelection:()=>Number($('teamSelection').value),team,onChange:update,onStatus:status};appendTeamPixelEditors(panels[0],{...options,uniformRoot:panels[2]});appendTeamPhotoEditor(panels[1],options);redraw();$('teamCards').append(previews);
 }
 $('teamSelection').onchange=renderTeams;

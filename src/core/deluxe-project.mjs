@@ -4,6 +4,7 @@ import {applyDeluxePlayerHair} from './deluxe-player-hair.mjs';
 import {applyDeluxeGameplay,validateDeluxeGameplay} from './deluxe-gameplay.mjs';
 import {applyDeluxeTactics} from './deluxe-tactics.mjs';
 import {applyDeluxeTeamPhotos} from './deluxe-team-photos.mjs';
+import {validateTeamPhotoDrafts} from './deluxe-team-photo-drafts.mjs';
 import {applyDeluxeOpeningMedia} from './deluxe-opening-media.mjs';
 import {applyDeluxePrematchLabels} from './deluxe-prematch-labels.mjs';
 import {applyDeluxeTeamVisuals} from './deluxe-team-visuals.mjs';
@@ -54,8 +55,9 @@ export async function buildDeluxeProject(file,project){
   const base=await identifyDeluxe(file);
   keys(project,['schema','version','base','changes'],'projeto');
   if(project.schema!==DELUXE_SCHEMA||project.version!==1||project.base?.sha256!==base.sha256||project.base?.id!==base.id)throw new Error('Projeto não pertence à base Deluxe original');
-  keys(project.changes,['strategyTexts','internalTitle','improvements','nativeTexts','cursorHelp','stadiums','menuTexts','mainMenu','sounds','trainingHud','matchStatistics','titleScreen','players','groups','structure','titleComposer','groupLabels','teamVisuals','preMatchLabels','openingMedia','teamPhotos','tactics'],'alterações');
+  keys(project.changes,['strategyTexts','internalTitle','improvements','nativeTexts','cursorHelp','stadiums','menuTexts','mainMenu','sounds','trainingHud','matchStatistics','titleScreen','players','groups','structure','titleComposer','groupLabels','teamVisuals','preMatchLabels','openingMedia','teamPhotos','teamPhotoDrafts','tactics'],'alterações');
   const changes=project.changes;
+  const pendingTeamPhotos=validateTeamPhotoDrafts(changes.teamPhotoDrafts);
   if(changes.titleComposer!==undefined)validateTitleComposer(changes.titleComposer);
   if(!Array.isArray(changes.improvements))throw new Error('Lista de melhorias inválida');
   validateDeluxeGameplay(changes.improvements);
@@ -105,5 +107,5 @@ export async function buildDeluxeProject(file,project){
   }
   const output=new Uint8Array(header.length+out.length);
   output.set(header);output.set(out,header.length);
-  return {rom:output,diff:diffRanges(rom,out),expanded:out.length>rom.length,base};
+  return {rom:output,diff:diffRanges(rom,out),expanded:out.length>rom.length,base,pendingTeamPhotos};
 }
