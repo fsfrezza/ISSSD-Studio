@@ -3,6 +3,14 @@ import {readDeluxeGroups,validateDeluxeGroups,moveDeluxeGroupTeam,DELUXE_GROUP_T
 import {createDeluxeProject,buildDeluxeProject,splitRom} from '../src/core/deluxe-project.mjs';
 import {DELUXE_TEAMS} from '../src/core/deluxe-players.mjs';
 const fixture=process.env.ISSSD_DELUXE_ROM;
+test('hidden groups compact selection only, validate and can be reenabled',{skip:!fixture},async()=>{
+ const file=new Uint8Array(fs.readFileSync(fixture)),base=splitRom(file).rom,p=await createDeluxeProject(file),rows=readDeluxeGroups(base);
+ p.changes.hiddenGroups=[0,3];const out=splitRom((await buildDeluxeProject(file,JSON.parse(JSON.stringify(p)))).rom).rom;
+ assert.deepEqual(readDeluxeGroups(out),rows);assert.deepEqual([...out.slice(0x2ff40,0x2ff40+24)],rows.filter((_,i)=>![0,3].includes(i)).flat().map(i=>i*2));
+ assert.equal(out[0x2a567],4);assert.equal(out[0x2a573],5);assert.equal(out[0x2ac95],4);
+ p.changes.hiddenGroups=[0,1,2,3,4,5];await assert.rejects(buildDeluxeProject(file,p),/pelo menos um/);
+ delete p.changes.hiddenGroups;assert.deepEqual((await buildDeluxeProject(file,p)).rom,file);
+});
 test('country identities distinguish original Northern Ireland and Turkey from Plus carriers',()=>{assert.equal(DELUXE_TEAMS[21],'Irlanda do Norte');assert.equal(DELUXE_TEAMS[26],'Turquia');assert.equal(DELUXE_TO_PLUS_TEAM[21],53);assert.equal(DELUXE_TO_PLUS_TEAM[26],21);assert.equal(new Set(DELUXE_TO_PLUS_TEAM).size,36);assert.ok(!DELUXE_TO_PLUS_TEAM.includes(26));});
 test('native groups reject duplicate or expanded layouts until runtime expansion is ready',()=>{const g=Array.from({length:6},(_,i)=>Array.from({length:6},(_,s)=>i*6+s));assert.deepEqual(moveDeluxeGroupTeam(g,0,0,5,5)[0],[35,1,2,3,4,5]);assert.equal(g[0][0],0);const bad=g.map(r=>r.slice());bad[0][0]=35;assert.throws(()=>validateDeluxeGroups(bad),/duplicatas/);assert.throws(()=>validateDeluxeGroups([...g,...g.slice(0,3)]),/seis grupos/);});
 test('native group edits roundtrip projects and touch only the table and checksum',{skip:!fixture},async()=>{const file=new Uint8Array(fs.readFileSync(fixture)),snapshot=file.slice(),base=splitRom(file).rom,g=readDeluxeGroups(base),p=await createDeluxeProject(file);assert.equal(g[0][0],2);p.changes.groups=moveDeluxeGroupTeam(g,0,0,5,0);const result=await buildDeluxeProject(file,JSON.parse(JSON.stringify(p))),out=splitRom(result.rom).rom;assert.deepEqual(readDeluxeGroups(out),p.changes.groups);assert.deepEqual(out.slice(0xda63,0xda69),base.slice(0xda63,0xda69));for(let i=0;i<out.length;i++)if(out[i]!==base[i])assert.ok((i>=DELUXE_GROUP_TABLE&&i<DELUXE_GROUP_TABLE+36)||(i>=0x7fdc&&i<0x7fe0));assert.deepEqual(file,snapshot);assert.equal(result.expanded,false);delete p.changes.groups;assert.deepEqual((await buildDeluxeProject(file,p)).rom,file);});

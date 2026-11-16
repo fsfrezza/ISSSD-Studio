@@ -14,6 +14,7 @@ import {applyDeluxeTeamVisuals} from './deluxe-team-visuals.mjs';
 import {validateTitleComposer} from './deluxe-title-composer.mjs';
 import {prepareDeluxeStructure} from './deluxe-structure.mjs';
 import {applyDeluxeGroups,applyDeluxeGroupLabels} from './deluxe-groups.mjs';
+import {applyDeluxeGroupVisibility} from './deluxe-group-visibility.mjs';
 import {applyDeluxePlayers,applyDeluxePlayerAppearance} from './deluxe-players.mjs';
 import {PLUS_STRATEGY_TEXTS, encodePlusStrategyText, readPlusStrategyText} from './plus-strategy-text.mjs';
 import {encodeInternalRomTitle, readInternalRomTitle} from './plus-rom-meta.mjs';
@@ -58,7 +59,7 @@ export async function buildDeluxeProject(file,project){
   const base=await identifyDeluxe(file);
   keys(project,['schema','version','base','changes'],'projeto');
   if(project.schema!==DELUXE_SCHEMA||project.version!==1||project.base?.sha256!==base.sha256||project.base?.id!==base.id)throw new Error('Projeto não pertence à base Deluxe original');
-  keys(project.changes,['strategyTexts','internalTitle','improvements','nativeTexts','cursorHelp','stadiums','stadiumUnits','menuTexts','mainMenu','sounds','trainingHud','matchStatistics','titleScreen','players','groups','structure','titleComposer','groupLabels','teamVisuals','preMatchLabels','handicapLabels','openingMedia','teamPhotos','teamPhotoDrafts','tactics'],'alterações');
+  keys(project.changes,['strategyTexts','internalTitle','improvements','nativeTexts','cursorHelp','stadiums','stadiumUnits','menuTexts','mainMenu','sounds','trainingHud','matchStatistics','titleScreen','players','groups','structure','titleComposer','groupLabels','teamVisuals','preMatchLabels','handicapLabels','openingMedia','teamPhotos','teamPhotoDrafts','tactics','hiddenGroups'],'alterações');
   project=ensureDeluxeTeamPhotos(structuredClone(project));
   const changes=project.changes;
   const appliedTeamPhotos=validateTeamPhotoDrafts(changes.teamPhotoDrafts);
@@ -104,6 +105,7 @@ export async function buildDeluxeProject(file,project){
   applyDeluxeHandicapLabels(out,rom,changes.handicapLabels);
   applyDeluxeStadiumUnits(out,rom,changes.stadiumUnits);
   out=applyDeluxeFormationPhotos(out,rom,project);
+  applyDeluxeGroupVisibility(out,rom,project);
   const edited=diffRanges(rom,out).changedBytes>0;
   if(edited){
     // For the supported 2 MB power-of-two ROM the checksum quartet contributes

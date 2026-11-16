@@ -27,6 +27,7 @@ export function applyPlusGroupOrganization(base,project){
  const ids=projectPlusIds(next),slots=new Map(ids.map((id,slot)=>[id,slot]));
  if(![54,60].includes(slots.size))throw Error('Catálogo de equipes incompatível com a estrutura Plus.');
  next.changes.structure.groups=PLUS_NORMAL_GROUPS.map(row=>row.map(id=>slots.get(id)));
+ delete next.changes.hiddenGroups;
  next.changes.structure.labels=[...PLUS_NORMAL_LABELS,...(next.changes.structure.secret?[next.changes.structure.labels?.[9]??'GG']:[])];
  validateDeluxeStructure(next.changes.structure);return ensureDeluxeTeamPhotos(next);
 }

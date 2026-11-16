@@ -27,6 +27,8 @@ export function swapDeluxeProjectGroups(base,project,from,to){
  const groups=view.map(g=>g.teams.map(t=>t.projectSlot)),labels=view.map(g=>g.name);
  [groups[from],groups[to]]=[groups[to],groups[from]];
  [labels[from],labels[to]]=[labels[to],labels[from]];
+ if(next.changes.hiddenGroups)next.changes.hiddenGroups=next.changes.hiddenGroups.map(i=>i===from?to:i===to?from:i).sort((a,b)=>a-b);
+ if(structure?.secret&&structure.groups.every((_,i)=>next.changes.hiddenGroups?.includes(i)))throw Error('Mantenha pelo menos um grupo normal ativo.');
  if(structure){setStructureGroupRows(structure,groups);structure.labels=labels;}else {next.changes.groups=groups;next.changes.groupLabels=labels;}
  return next;
 }
