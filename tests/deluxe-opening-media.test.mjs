@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {encodeOpeningFrame,openingFramePixels,validateOpeningMedia,applyDeluxeOpeningMedia,transformOpeningFrame,openingPlaybackState,validateOpeningProjectMedia} from '../src/core/deluxe-opening-media.mjs';
+import {encodeOpeningFrame,openingFramePixels,validateOpeningMedia,applyDeluxeOpeningMedia,transformOpeningFrame,openingPlaybackState,validateOpeningProjectMedia,makeOpeningSource,transformOpeningSource} from '../src/core/deluxe-opening-media.mjs';
 import {createDeluxeProject,buildDeluxeProject,splitRom} from '../src/core/deluxe-project.mjs';
 import {openingMediaRect,installOpeningEditors} from '../deluxe-editor/opening-editors.mjs';
 test('opening placement preserves proportions, supports zoom and native pixel offsets',()=>{
@@ -22,6 +22,10 @@ test('editable placement retains the source and produces exactly the transformed
 test('fade playback follows the native 16 brightness levels and configured timing',()=>{
  const v=image();assert.equal(openingPlaybackState(v,0).brightness,0);assert.equal(openingPlaybackState(v,7.5).brightness,7);assert.equal(openingPlaybackState(v,15).brightness,15);assert.equal(openingPlaybackState(v,75).brightness,15);assert.equal(openingPlaybackState(v,90).brightness,0);
  const video={...v,kind:'video',frames:[frame(),frame()]};assert.equal(openingPlaybackState(video,25).index,1);assert.equal(openingPlaybackState(video,50).brightness,0);
+});
+test('raw image retains transparent pixels and supports independent background, position and scale after reopening',()=>{
+ const rgba=new Uint8Array(4*2*4);for(let i=0;i<8;i++)rgba.set([255,0,0,i%4<2?255:0],i*4);const source=makeOpeningSource(4,2,rgba),placement={zoom:50,x:16,y:-8,background:'#ffffff'},f=transformOpeningSource(source,placement),pixels=openingFramePixels(f),at=(x,y)=>Array.from(pixels.slice((y*256+x)*4,(y*256+x)*4+4));assert.deepEqual(at(0,0),[255,255,255,255]);assert.deepEqual(at(90,90),[255,0,0,255]);assert.deepEqual(at(190,90),[255,255,255,255]);assert.equal(f.palette[0],32767);
+ const model={konami:{...image(),rawSources:[source],placement,frames:[f]}};const loaded=validateOpeningProjectMedia(JSON.parse(JSON.stringify(model)));const adjusted=transformOpeningSource(loaded.konami.rawSources[0],{...placement,background:'#0000ff',zoom:100,x:0});assert.deepEqual(Array.from(openingFramePixels(adjusted).slice(0,4)),[0,0,255,255]);assert.deepEqual(transformOpeningSource(source,placement),f);
 });
 test('opening editor updates the visible and saved frame, restores placement on reopen and previews fades',()=>{
  const prev={document:globalThis.document,requestAnimationFrame:globalThis.requestAnimationFrame,cancelAnimationFrame:globalThis.cancelAnimationFrame},nodes=new Map();let tick;
