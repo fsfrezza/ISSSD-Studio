@@ -1,5 +1,6 @@
 const pages={
  tactics:['Táticas e formações','Edite posições, funções e Atacar de forma independente para cada equipe.'],
+ scenarios:['Cenários','Edite as equipes, placares, tempo e descrição dos 12 desafios.'],
  'match-announcement':['Anúncio da partida','Edite os rótulos; Brasil, Inglaterra e U.S.A. permanecem como exemplos.'],
  'opening-konami':['Tela 1 · Konami','Substitua a primeira tela por imagem ou vídeo convertido para o SNES.'],
  'opening-international':['Tela 2 · International','Preserve a animação original ou importe sua própria mídia.'],
@@ -27,6 +28,7 @@ function selectPage(id){
  active=id;
  for(const panel of panels)panel.hidden=panel.dataset.panel!==id;
  if(id==='title-screen')document.dispatchEvent?.(new CustomEvent('deluxe:title-screen-open'));
+ if(id==='scenarios')document.dispatchEvent?.(new CustomEvent('deluxe:scenarios-open'));
  for(const button of buttons){if(button.dataset.page===id)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');}
  document.getElementById('pageTitle').textContent=pages[id][0];
  document.getElementById('pageDescription').textContent=pages[id][1];

@@ -26,6 +26,7 @@ import {applyDeluxeMainMenu} from './deluxe-main-menu.mjs';
 import {applyDeluxeMenuTexts} from './deluxe-menu-text.mjs';
 import {applyDeluxeNativeChanges} from './deluxe-native-fields.mjs';
 import {diffRanges} from './rom-integrity.mjs';
+import {applyDeluxeScenarios} from './deluxe-scenarios.mjs';
 
 export const DELUXE_SHA256='d2fe66c1ce66c65ce14e478c94be2e616f9e2cad374b5783a6a64d3c1a99cfa9';
 export const DELUXE_SCHEMA='isssd-deluxe-project-v1';
@@ -60,7 +61,7 @@ export async function buildDeluxeProject(file,project){
   const base=await identifyDeluxe(file);
   keys(project,['schema','version','base','changes'],'projeto');
   if(project.schema!==DELUXE_SCHEMA||project.version!==1||project.base?.sha256!==base.sha256||project.base?.id!==base.id)throw new Error('Projeto não pertence à base Deluxe original');
-  keys(project.changes,['strategyTexts','internalTitle','improvements','nativeTexts','cursorHelp','stadiums','stadiumUnits','menuTexts','mainMenu','sounds','trainingHud','matchStatistics','titleScreen','players','groups','structure','titleComposer','groupLabels','teamVisuals','preMatchLabels','handicapLabels','buttonLabels','openingMedia','teamPhotos','teamPhotoDrafts','tactics','hiddenGroups'],'alterações');
+  keys(project.changes,['strategyTexts','internalTitle','improvements','nativeTexts','cursorHelp','stadiums','stadiumUnits','menuTexts','mainMenu','sounds','trainingHud','matchStatistics','titleScreen','players','groups','structure','titleComposer','groupLabels','teamVisuals','preMatchLabels','handicapLabels','buttonLabels','openingMedia','teamPhotos','teamPhotoDrafts','tactics','hiddenGroups','scenarios'],'alterações');
   project=ensureDeluxeTeamPhotos(structuredClone(project));
   const changes=project.changes;
   const appliedTeamPhotos=validateTeamPhotoDrafts(changes.teamPhotoDrafts);
@@ -84,7 +85,7 @@ export async function buildDeluxeProject(file,project){
   applyDeluxeGroups(out,rom,changes.groups);
   applyDeluxePlayers(out,playerBase,changes.players);
   applyDeluxeNativeChanges(out,rom,changes);
-  applyDeluxeMenuTexts(out,rom,changes.menuTexts);
+  applyDeluxeMenuTexts(out,rom,applyDeluxeScenarios(out,rom,changes));
   applyDeluxeMainMenu(out,rom,changes.mainMenu);
   applyDeluxePrematchLabels(out,rom,changes.preMatchLabels);
   applyDeluxeSounds(out,rom,changes.sounds);

@@ -5,6 +5,8 @@ import {ensureDeluxeTeamPhotos} from '../src/core/deluxe-team-photos.mjs';
 import {drawIndexedPreview,deluxeVisualRow,deluxePlayerPalette,deluxeAppearance,deluxeUniformFramePicture,visualTeamId} from '../src/core/deluxe-visual-preview.mjs';
 import {installTacticsEditor} from './tactics-editor.mjs';
 import {installOpeningEditors} from './opening-editors.mjs';
+import {installScenarioEditor} from './scenario-editor.mjs';
+import {scenarioHeaderId,scenarioDescriptionId} from '../src/core/deluxe-scenarios.mjs';
 import {installScreenEditors} from './screen-editors.mjs';
 import {IMPROVEMENT_SECTIONS,deluxeImprovementState,deluxeStructureSummary} from '../src/core/deluxe-improvements.mjs';
 import {availablePlusTeams,addPlusCatalogGroup,applyPlusGroupOrganization} from '../src/core/deluxe-group-catalog.mjs';
@@ -46,6 +48,7 @@ function render(){
   renderImprovements();
   screenEditors.render();
   openingEditors.render();
+  scenarioEditor.render();
   tacticsEditor.render();
   if(!project)renderTextActions();
   for(const id of ['resetGroups','addStructureGroup','resetStructure','teamSelection'])$(id).disabled=!project;$('groupCards').replaceChildren();$('teamCards').replaceChildren();if(!project)$('teamSelection').replaceChildren();$('groupStatus').textContent='';$('newGroupPanel').hidden=true;$('applyPlusGroups').disabled=!project;
@@ -129,6 +132,7 @@ function renderNative(rom){
   if(screenEditors.ownsSection(section.id))continue;
   const details=document.createElement('details'),summary=document.createElement('summary');summary.textContent=section.title+' · '+section.fields.length+' campos';details.append(summary);$('menuTexts').append(details);
   for(const f of section.fields){
+   if(section.id==='scenario-native'&&Array.from({length:12},(_,i)=>[scenarioHeaderId(i),scenarioDescriptionId(i)]).flat().includes(f[0]))continue;
    const original=f[1],segments=f[3].pool.segments;
    textControl(details,{scope:'menuTexts',key:section.id+'/'+f[0],label:(f[3].label??f[0])+' · '+segments.map(s=>f[3].pool.capacity??s.original.length).join('/')+' células',value:project.changes.menuTexts?.[section.id]?.[f[0]]??original,original,multiline:segments.length>1,validate:v=>encodeNativeMenuField(f,v),onChange:v=>{
     const menus=project.changes.menuTexts??={},entries=menus[section.id]??={};
@@ -376,6 +380,7 @@ function renderTextActions(){for(const scope of ['allTexts','texts','nativeTexts
 
 const tacticsEditor=installTacticsEditor({getProject:()=>project,setProject:next=>project=next,getFile:()=>file,onStatus:status});
 const openingEditors=installOpeningEditors({getProject:()=>project,getFile:()=>file,onStatus:status});
+const scenarioEditor=installScenarioEditor({getProject:()=>project,getFile:()=>file,onStatus:status});
 const screenEditors=installScreenEditors({getProject:()=>project,getFile:()=>file,textControl,addPresetButtons,onStatus:status});
 const titleComposer=installTitleComposer({getProject:()=>project,getFile:()=>file,onStatus:status});
 
