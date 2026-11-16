@@ -98,7 +98,6 @@ export async function buildDeluxeProject(file,project){
   out=applyDeluxeTeamPhotos(out,rom,changes.structure,changes.teamPhotos);
   applyDeluxePlayerAppearance(out,playerBase,changes.players);
   out=applyDeluxeTactics(out,rom,project);
-  out=applyDeluxeOpeningMedia(out,rom,changes.openingMedia);
   out=applyDeluxePlayerHair(out,rom,project,playerBase);
   out=applyDeluxeGoalkeeperColors(out,rom,project);
   out=applyDeluxePlayerCloseups(out,rom,project);
@@ -108,6 +107,8 @@ export async function buildDeluxeProject(file,project){
   applyDeluxeStadiumUnits(out,rom,changes.stadiumUnits);
   out=applyDeluxeFormationPhotos(out,rom,project);
   applyDeluxeGroupVisibility(out,rom,project);
+  // Allocate media after all other expansion assets so their banks remain intact.
+  out=applyDeluxeOpeningMedia(out,rom,changes.openingMedia);
   const edited=diffRanges(rom,out).changedBytes>0;
   if(edited){
     // For the supported 2 MB power-of-two ROM the checksum quartet contributes

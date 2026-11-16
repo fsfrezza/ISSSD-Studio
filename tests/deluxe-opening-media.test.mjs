@@ -20,8 +20,15 @@ test('opening conversion produces a bounded SNES palette and a full opaque decod
 test('image and video openings export atomically, expand when needed and restore exact original bytes',{skip:!fixture},async()=>{
  const file=new Uint8Array(fs.readFileSync(fixture)),base=splitRom(file).rom,p=await createDeluxeProject(file);p.changes.openingMedia={konami:image(),international:{...image(),kind:'video',frames:[frame(),frame()]},'we-love-soccer':image()};const before=JSON.stringify(p),result=await buildDeluxeProject(file,JSON.parse(before));assert.equal(JSON.stringify(p),before);assert.equal(result.rom.length,0x400000+result.base.headerSize);assert.ok(result.expanded);assert.equal(result.rom[result.base.headerSize+0x480],0x5c);
  const restored=await createDeluxeProject(file);assert.deepEqual((await buildDeluxeProject(file,restored)).rom,file);
- const occupied=base.slice();occupied[0x17b80]=0;const snapshot=occupied.slice();assert.throws(()=>applyDeluxeOpeningMedia(occupied,base,{konami:image()}),/reserva/);assert.deepEqual(occupied,snapshot);
+ const occupied=base.slice();occupied[0x17bb4]=0;const snapshot=occupied.slice();assert.throws(()=>applyDeluxeOpeningMedia(occupied,base,{konami:image()}),/reserva/);assert.deepEqual(occupied,snapshot);
 });
 test('opening replacement preserves the full GG project and its sixty-team visual assets',{skip:!fixture||!process.env.ISSSD_GG_RECOVERED_PROJECT},async()=>{
- const p=JSON.parse(fs.readFileSync(process.env.ISSSD_GG_RECOVERED_PROJECT)),before=structuredClone(p),file=new Uint8Array(fs.readFileSync(fixture));p.changes.openingMedia={konami:image()};await buildDeluxeProject(file,p);delete p.changes.openingMedia;assert.deepEqual(p,before);
+ const p=JSON.parse(fs.readFileSync(process.env.ISSSD_GG_RECOVERED_PROJECT)),before=structuredClone(p),file=new Uint8Array(fs.readFileSync(fixture));
+ const header=splitRom(file).header.length,original=(await buildDeluxeProject(file,p)).rom.subarray(header);
+ const video=n=>{const f=frame();return {...image(),kind:'video',frames:Array.from({length:n},()=>f)};};
+ p.changes.openingMedia={konami:video(30),international:video(30),'we-love-soccer':video(24)};
+ const edited=(await buildDeluxeProject(file,p)).rom.subarray(header);
+ assert.deepEqual(edited.slice(0x17b80,0x17bb3),original.slice(0x17b80,0x17bb3));
+ assert.equal(edited[0x17bb4+84*13-1],255);
+ delete p.changes.openingMedia;assert.deepEqual(p,before);
 });
