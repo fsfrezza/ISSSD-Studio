@@ -5,6 +5,7 @@ import {applyDeluxeGameplay,validateDeluxeGameplay} from './deluxe-gameplay.mjs'
 import {applyDeluxeTactics} from './deluxe-tactics.mjs';
 import {applyDeluxeTeamPhotos} from './deluxe-team-photos.mjs';
 import {validateTeamPhotoDrafts} from './deluxe-team-photo-drafts.mjs';
+import {applyDeluxeFormationPhotos} from './deluxe-team-photo-runtime.mjs';
 import {applyDeluxeOpeningMedia} from './deluxe-opening-media.mjs';
 import {applyDeluxePrematchLabels} from './deluxe-prematch-labels.mjs';
 import {applyDeluxeTeamVisuals} from './deluxe-team-visuals.mjs';
@@ -57,7 +58,7 @@ export async function buildDeluxeProject(file,project){
   if(project.schema!==DELUXE_SCHEMA||project.version!==1||project.base?.sha256!==base.sha256||project.base?.id!==base.id)throw new Error('Projeto não pertence à base Deluxe original');
   keys(project.changes,['strategyTexts','internalTitle','improvements','nativeTexts','cursorHelp','stadiums','menuTexts','mainMenu','sounds','trainingHud','matchStatistics','titleScreen','players','groups','structure','titleComposer','groupLabels','teamVisuals','preMatchLabels','openingMedia','teamPhotos','teamPhotoDrafts','tactics'],'alterações');
   const changes=project.changes;
-  const pendingTeamPhotos=validateTeamPhotoDrafts(changes.teamPhotoDrafts);
+  const appliedTeamPhotos=validateTeamPhotoDrafts(changes.teamPhotoDrafts);
   if(changes.titleComposer!==undefined)validateTitleComposer(changes.titleComposer);
   if(!Array.isArray(changes.improvements))throw new Error('Lista de melhorias inválida');
   validateDeluxeGameplay(changes.improvements);
@@ -97,6 +98,7 @@ export async function buildDeluxeProject(file,project){
   out=applyDeluxeGoalkeeperColors(out,rom,project);
   out=applyDeluxePlayerCloseups(out,rom,project);
   out=applyDeluxeGameplay(out,rom,changes.improvements);
+  out=applyDeluxeFormationPhotos(out,rom,project);
   const edited=diffRanges(rom,out).changedBytes>0;
   if(edited){
     // For the supported 2 MB power-of-two ROM the checksum quartet contributes
@@ -107,5 +109,5 @@ export async function buildDeluxeProject(file,project){
   }
   const output=new Uint8Array(header.length+out.length);
   output.set(header);output.set(out,header.length);
-  return {rom:output,diff:diffRanges(rom,out),expanded:out.length>rom.length,base,pendingTeamPhotos};
+  return {rom:output,diff:diffRanges(rom,out),expanded:out.length>rom.length,base,appliedTeamPhotos,pendingTeamPhotos:[]};
 }

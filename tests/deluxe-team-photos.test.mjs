@@ -6,6 +6,8 @@ import test from 'node:test';import assert from 'node:assert/strict';import fs f
 import {extractGGTeamPhotos,validateTeamPhotos} from '../src/core/deluxe-team-photos.mjs';
 import {buildDeluxeProject} from '../src/core/deluxe-project.mjs';
 import {encodeTeamPhotoDraft,validateTeamPhotoDrafts,TEAM_PHOTO_WIDTH,TEAM_PHOTO_HEIGHT} from '../src/core/deluxe-team-photo-drafts.mjs';
+import {encodeFormationTiles} from '../src/core/deluxe-team-photo-runtime.mjs';
+test('formation tiles use SNES OBJ row stride and transparent index',()=>{const pixels=Array(6144).fill(0);pixels[0]=1;pixels[1]=2;pixels[2]=4;pixels[3]=8;pixels[8*96]=15;const tiles=encodeFormationTiles({pixels});assert.equal(tiles.length,4096);assert.deepEqual([tiles[0],tiles[1],tiles[16],tiles[17]],[128,64,32,16]);assert.deepEqual([tiles[512],tiles[513],tiles[528],tiles[529]],[128,128,128,128]);assert.equal(tiles[384],0);});
 test('formation draft encodes independent BGR555 colors and preserves transparency',()=>{const rgba=new Uint8Array(TEAM_PHOTO_WIDTH*TEAM_PHOTO_HEIGHT*4);rgba.set([255,0,0,255,0,0,0,255,0,255,0,127]);const draft=encodeTeamPhotoDraft(rgba);assert.ok(draft.pixels[0]);assert.equal(draft.colors[draft.pixels[0]],31);assert.ok(draft.pixels[1]);assert.equal(draft.colors[draft.pixels[1]],0);assert.equal(draft.pixels[2],0);assert.deepEqual(validateTeamPhotoDrafts({'23':draft}),[23]);assert.throws(()=>validateTeamPhotoDrafts({'23':{...draft,pixels:[16]}}),/inválido/);});
 const paths=[process.env.ISSSD_DELUXE_ROM,process.env.ISSSD_PLUS_ROM,process.env.ISSSD_GG_ROM,process.env.ISSSD_GG_RECOVERED_PROJECT];
 const word=(b,p)=>b[p]|b[p+1]<<8,long=(b,p)=>word(b,p)|b[p+2]<<16,pc=c=>((c>>16&127)*32768)+(c&32767);

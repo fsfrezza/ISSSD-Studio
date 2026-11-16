@@ -10,9 +10,9 @@ As tabelas e o código usam `0x242000–0x248000`. As paletas usam `0x24C000–0
 
 A adaptação desta etapa cobre as fotos da seleção de equipes, incluindo os rostos que fazem parte delas. Retratos individuais, aproximações e outras cenas dos jogadores ainda precisam de seus próprios mapeamentos. A interface de edição livre de fotos/pixels não faz parte desta etapa.
 
-### Importação independente (rascunho)
+### Importação independente na ROM
 
-A aba Equipes aceita PNG, JPEG e WebP mesmo sem `changes.teamPhotos`. O bitmap é redimensionado proporcionalmente para 96 × 64 pixels, com índice zero transparente e até 15 cores BGR555 opacas. `changes.teamPhotoDrafts`, indexado pela identidade Plus da equipe, guarda a paleta e os pixels editáveis; não modifica as tabelas gráficas nativas. O Editor mantém o rascunho ao salvar/reabrir o projeto e bloqueia Gerar ROM enquanto houver rascunhos, evitando uma exportação que descartaria essas imagens silenciosamente. Remover uma imagem importada retorna à foto nativa. O resultado do compilador informa `pendingTeamPhotos` para que outros consumidores também possam distinguir rascunhos não gravados.
+A aba Equipes aceita PNG, JPEG e WebP mesmo sem `changes.teamPhotos`. O bitmap é redimensionado proporcionalmente para 96 × 64 pixels, com índice zero transparente e até 15 cores BGR555 opacas. `changes.teamPhotoDrafts`, indexado pela identidade Plus da equipe, guarda a paleta e os pixels editáveis, inclusive em projetos existentes. A geração expande a ROM para 4 MB quando necessário e grava os tiles, paleta e tabela de ponteiros em espaço livre, após os demais patches. A rotina de seleção em `$85AFA0` carrega a imagem correspondente em VRAM `$7400` e na paleta OBJ 6; equipes sem personalização seguem a rotina original. Remover a imagem restaura a formação nativa na próxima exportação. O compilador informa `appliedTeamPhotos`.
 
 A individualização real dos bitmaps ainda depende da rotina nativa `CODE_85AFA0` e da composição/OAM iniciada por `CODE_85B18B`: atualmente os componentes de formação são carregados de gráficos compartilhados. A conversão acima não é uma implementação dessa rotina, nem implica funcionamento em emulador.
 
