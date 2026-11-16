@@ -3,6 +3,13 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {encodeOpeningFrame,openingFramePixels,validateOpeningMedia,applyDeluxeOpeningMedia} from '../src/core/deluxe-opening-media.mjs';
 import {createDeluxeProject,buildDeluxeProject,splitRom} from '../src/core/deluxe-project.mjs';
+import {openingMediaRect} from '../deluxe-editor/opening-editors.mjs';
+test('opening placement preserves proportions, supports zoom and native pixel offsets',()=>{
+ assert.deepEqual(openingMediaRect(512,256),[0,48,256,128]);
+ assert.deepEqual(openingMediaRect(512,256,50,10,-8),[74,72,128,64]);
+ assert.deepEqual(openingMediaRect(512,256,200),[-128,-16,512,256]);
+ assert.throws(()=>openingMediaRect(512,256,401),/inválido/);
+});
 const fixture=process.env.ISSSD_DELUXE_ROM;
 function frame(){const rgba=new Uint8Array(256*224*4);for(let y=0;y<224;y++)for(let x=0;x<256;x++)rgba.set([x<128?248:0,y<112?248:0,0,255],(y*256+x)*4);return encodeOpeningFrame(rgba);}
 const image=()=>({kind:'image',fps:6,holdFrames:60,fadeInFrames:15,fadeOutFrames:15,frames:[frame()]});
