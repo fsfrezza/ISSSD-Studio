@@ -1,3 +1,4 @@
+import {applyDeluxeHandicapLabels} from './deluxe-handicap-labels.mjs';
 import {applyDeluxePlayerCloseups} from './deluxe-player-closeup.mjs';
 import {applyDeluxeGoalkeeperColors} from './deluxe-goalkeeper-colors.mjs';
 import {applyDeluxePlayerHair} from './deluxe-player-hair.mjs';
@@ -56,7 +57,7 @@ export async function buildDeluxeProject(file,project){
   const base=await identifyDeluxe(file);
   keys(project,['schema','version','base','changes'],'projeto');
   if(project.schema!==DELUXE_SCHEMA||project.version!==1||project.base?.sha256!==base.sha256||project.base?.id!==base.id)throw new Error('Projeto não pertence à base Deluxe original');
-  keys(project.changes,['strategyTexts','internalTitle','improvements','nativeTexts','cursorHelp','stadiums','menuTexts','mainMenu','sounds','trainingHud','matchStatistics','titleScreen','players','groups','structure','titleComposer','groupLabels','teamVisuals','preMatchLabels','openingMedia','teamPhotos','teamPhotoDrafts','tactics'],'alterações');
+  keys(project.changes,['strategyTexts','internalTitle','improvements','nativeTexts','cursorHelp','stadiums','menuTexts','mainMenu','sounds','trainingHud','matchStatistics','titleScreen','players','groups','structure','titleComposer','groupLabels','teamVisuals','preMatchLabels','handicapLabels','openingMedia','teamPhotos','teamPhotoDrafts','tactics'],'alterações');
   const changes=project.changes;
   const appliedTeamPhotos=validateTeamPhotoDrafts(changes.teamPhotoDrafts);
   if(changes.titleComposer!==undefined)validateTitleComposer(changes.titleComposer);
@@ -98,6 +99,7 @@ export async function buildDeluxeProject(file,project){
   out=applyDeluxeGoalkeeperColors(out,rom,project);
   out=applyDeluxePlayerCloseups(out,rom,project);
   out=applyDeluxeGameplay(out,rom,changes.improvements);
+  applyDeluxeHandicapLabels(out,rom,changes.handicapLabels);
   out=applyDeluxeFormationPhotos(out,rom,project);
   const edited=diffRanges(rom,out).changedBytes>0;
   if(edited){

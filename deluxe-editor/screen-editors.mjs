@@ -1,3 +1,4 @@
+import {HANDICAP_LABELS,handicapLabelBitmaps} from '../src/core/deluxe-handicap-labels.mjs';
 import {DELUXE_SCREEN_EDITORS,deluxeScreenScene,MOVED_MENU_SECTIONS} from '../src/core/deluxe-screen-scenes.mjs';
 import {DELUXE_MENU_SECTIONS,encodeNativeMenuField} from '../src/core/deluxe-menu-text.mjs';
 import {PREMATCH_GRAPHIC_LABELS,applyDeluxePrematchLabels} from '../src/core/deluxe-prematch-labels.mjs';
@@ -23,6 +24,9 @@ export function installScreenEditors({getProject,getFile,textControl,addPresetBu
    $(prefix+'Status').textContent='';if(!p){draw(config);continue;}
    config.choices.forEach((id,i)=>{const option=document.createElement('option');option.value=String(i);option.textContent=config.choiceLabels[i];selection.append(option);});selection.value=String(previous<config.choices.length?previous:0);
    addPresetButtons(actions,config.id==='pre-match'?'preMatchLabels':config.fieldIds?config.id:config.section);
+   if(config.id==='handicap'){
+    for(const [id,original] of HANDICAP_LABELS)textControl(fields,{scope:'handicapLabels',key:id,label:original+' · rótulo gráfico',original,value:p.changes.handicapLabels?.[id]??original,validate:value=>handicapLabelBitmaps(id,value),onChange:value=>{const entries=p.changes.handicapLabels??={};if(value===original)delete entries[id];else entries[id]=value;if(!Object.keys(entries).length)delete p.changes.handicapLabels;draw(config);}});
+   }
    if(config.id==='pre-match'){
     for(const [id,original]of PREMATCH_GRAPHIC_LABELS)textControl(fields,{scope:'preMatchLabels',key:id,label:original+' · rótulo gráfico',original,value:p.changes.preMatchLabels?.[id]??original,validate:value=>{const base=splitRom(getFile()).rom;applyDeluxePrematchLabels(base.slice(),base,{...p.changes.preMatchLabels,[id]:value});},onChange:value=>{const entries=p.changes.preMatchLabels??={};if(value===original)delete entries[id];else entries[id]=value;if(!Object.keys(entries).length)delete p.changes.preMatchLabels;draw(config);}});
    }
@@ -35,7 +39,7 @@ export function installScreenEditors({getProject,getFile,textControl,addPresetBu
    draw(config);
   }
  }
- for(const config of DELUXE_SCREEN_EDITORS){const prefix=screenPrefix(config.id);$(prefix+'Selection').onchange=()=>draw(config);$(prefix+'Reset').onclick=()=>{const p=getProject();if(!p)return;if(p.changes.menuTexts){for(const id of(config.sections??[config.section]).filter(Boolean)){if(config.fieldIds){for(const key of config.fieldIds)delete p.changes.menuTexts[id]?.[key];if(!Object.keys(p.changes.menuTexts[id]??{}).length)delete p.changes.menuTexts[id];}else delete p.changes.menuTexts[id];}if(!Object.keys(p.changes.menuTexts).length)delete p.changes.menuTexts;}if(config.id==='pre-match')delete p.changes.preMatchLabels;render();onStatus(config.title+': textos originais restaurados.');};}
+ for(const config of DELUXE_SCREEN_EDITORS){const prefix=screenPrefix(config.id);$(prefix+'Selection').onchange=()=>draw(config);$(prefix+'Reset').onclick=()=>{const p=getProject();if(!p)return;if(p.changes.menuTexts){for(const id of(config.sections??[config.section]).filter(Boolean)){if(config.fieldIds){for(const key of config.fieldIds)delete p.changes.menuTexts[id]?.[key];if(!Object.keys(p.changes.menuTexts[id]??{}).length)delete p.changes.menuTexts[id];}else delete p.changes.menuTexts[id];}if(!Object.keys(p.changes.menuTexts).length)delete p.changes.menuTexts;}if(config.id==='pre-match')delete p.changes.preMatchLabels;if(config.id==='handicap')delete p.changes.handicapLabels;render();onStatus(config.title+': textos originais restaurados.');};}
  for(const config of DELUXE_SCREEN_EDITORS){const img=document.createElement('img');img.onload=()=>{const canvas=document.createElement('canvas');canvas.width=256;canvas.height=224;const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,256,224);references.set(config.id,ctx.getImageData(0,0,256,224).data);draw(config);};img.src='/deluxe-editor/assets/screens/'+config.id+'.png';}
  render();return {render,ownsSection:id=>MOVED_MENU_SECTIONS.has(id)};
 }

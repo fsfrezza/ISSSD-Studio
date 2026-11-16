@@ -4,6 +4,7 @@ import {PLUS_MAIN_MENU_GLYPHS} from './plus-main-menu-renderer.mjs';
 import {TITLE_FONT_ROWS} from './title-font-glyphs.mjs';
 import {DELUXE_MENU_SECTIONS} from './deluxe-menu-text.mjs';
 import {PREMATCH_GRAPHIC_LABELS} from './deluxe-prematch-labels.mjs';
+import {HANDICAP_LABELS,handicapLabelBitmaps} from './deluxe-handicap-labels.mjs';
 export const DELUXE_SCREEN_EDITORS=Object.freeze([
  {id:'open-game',title:'Tela de Open Game',section:'game-type-native',choices:['friendly','league','tournament'],choiceLabels:['Open Game','Short League','Short Tournament']},
  {id:'handicap',title:'Handicap',section:'handicap-native',choices:['example'],choiceLabels:['Brasil x Inglaterra · exemplo']},
@@ -17,7 +18,8 @@ export function deluxeScreenModel(id,project,selected=0){
  if(!Number.isInteger(selected)||selected<0||selected>=config.choices.length)throw Error('Seleção de prévia inválida');
  const sections=(config.sections??[config.section]).filter(Boolean).map(id=>DELUXE_MENU_SECTIONS.find(s=>s.id===id)),values=Object.fromEntries(sections.flatMap(section=>section.fields.map(f=>[f[0],project?.changes?.menuTexts?.[section.id]?.[f[0]]??f[1]])));
  const labels=Object.fromEntries(PREMATCH_GRAPHIC_LABELS.map(([key,en])=>[key,project?.changes?.preMatchLabels?.[key]??en]));
- return {id,selected,values,labels,config};
+ const handicapLabels=Object.fromEntries(HANDICAP_LABELS.map(([key,en])=>[key,project?.changes?.handicapLabels?.[key]??en]));
+ return {id,selected,values,labels,handicapLabels,config};
 }
 // Composition preview: original wallpaper, approximate native frames and font.
 // Every editable string is read from the same project path as the ROM writer.
@@ -64,6 +66,8 @@ function referenceScene(id,project,selected,reference){
   fill(54,132,148,34);lines(v[['friendlyHelp','leagueHelp','tournamentHelp'][selected]],17).slice(0,2).forEach((line,i)=>text(line,64,136+i*16));
  }else if(id==='handicap'){
   fill(80,16,96,16,[48,80,200]);centered(v.data_87c811,16);const count=v.data_87c875.split('\n').at(-1).trim();for(const x of[64,176]){fill(x,104,24,16);text(count,x,104);}fill(0,176,256,48,[0,16,136]);lines(v.data_87c884,27).slice(0,2).forEach((line,i)=>text(line,24,184+i*16));
+  const places={condition:[[112,72]],weak:[[16,128],[208,128]],strong:[[56,128],[168,128]],numberPlayers:[[104,104],[104,112]],goalkeeperSkill:[[96,136],[112,144]]};
+  for(const [key,en]of HANDICAP_LABELS){const value=model.handicapLabels[key];if(value===en)continue;const maps=handicapLabelBitmaps(key,value),positions=places[key];positions.forEach(([x,y],i)=>{const b=maps[i%maps.length];fill(x,y,b.width,b.height);for(let yy=0;yy<b.height;yy++)for(let xx=0;xx<b.width;xx++){const c=b.pixels[yy*b.width+xx];if(c)put(x+xx,y+yy,c===1?[248,248,248]:[0,0,64]);}});}
  }else if(id==='pre-match'){
   fill(70,30,124,164);const labels=selected<10?PREMATCH_GRAPHIC_LABELS.slice(0,10):[PREMATCH_GRAPHIC_LABELS[selected]];labels.forEach(([key],i)=>{const t=model.labels[key],width=[...t].reduce((n,c)=>n+(c===' '?3:6),0);text(t,Math.round(132-width/2),32+i*16,key===model.config.choices[selected]?[248,248,0]:undefined,true);});
  }else if(id==='stadium-screen'){
