@@ -6,6 +6,8 @@ A revisão verifica os 1.200 nomes, números, posições e nove atributos contra
 
 `changes.teamPhotos` importa sessenta conjuntos independentes de seletores de corpo, rosto, sobreposição, detalhes, acessórios e formação, com cinco paletas por equipe. Os diretórios foram identificados pelos mesmos consumidores de código nas bases Plus e Deluxe. Diretórios indexados por tipo de rosto permanecem distintos dos indexados por equipe.
 
+As seis equipes GG recebem paletas de formação revisadas, com luz, meio-tom e sombra na ordem nativa do Deluxe. A atualização automática atua somente sobre registros idênticos à referência extraída, preservando fotos personalizadas, seletores originais e paletas de pele. A mesma composição é usada no preview e na ROM; as seis equipes foram verificadas na tela de seleção no emulador.
+
 As tabelas e o código usam `0x242000–0x248000`. As paletas usam `0x24C000–0x24E000`, com ponteiros virtuais `0x4000–0x5FFF` e banco C9. O despachante mantém as paletas de uniformes em C5 e as nativas em 89. Registros iguais podem compartilhar armazenamento na ROM; os dados do projeto continuam separados por identidade. Reservas ocupadas e seletores fora dos limites bloqueiam a exportação.
 
 A adaptação desta etapa cobre as fotos da seleção de equipes, incluindo os rostos que fazem parte delas. Retratos individuais, aproximações e outras cenas dos jogadores ainda precisam de seus próprios mapeamentos. A interface de edição livre de fotos/pixels não faz parte desta etapa.

@@ -1,6 +1,7 @@
 import {appendTeamPixelEditors,appendTeamPhotoEditor} from './team-pixels.mjs';
 import {renderPlayerAppearancePanel} from './player-appearance.mjs';
 import {deluxeTeamPicture,deluxeTeamFlag} from '../src/core/deluxe-team-preview.mjs';
+import {ensureDeluxeTeamPhotos} from '../src/core/deluxe-team-photos.mjs';
 import {drawIndexedPreview,deluxeVisualRow,deluxePlayerPalette,deluxeAppearance,deluxePlayerPicture,visualTeamId} from '../src/core/deluxe-visual-preview.mjs';
 import {installTacticsEditor} from './tactics-editor.mjs';
 import {installOpeningEditors} from './opening-editors.mjs';
@@ -39,6 +40,7 @@ function showProjectRomRequest(value,name='Projeto Deluxe'){$('projectRomRequest
 
 function download(data,name,type){const url=URL.createObjectURL(new Blob([data],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 function render(){
+  if(project)ensureDeluxeTeamPhotos(project);
   renderImprovements();
   screenEditors.render();
   openingEditors.render();
@@ -350,7 +352,7 @@ $('addStructureGroup').onclick=()=>{if(!project)return;newGroupChoices=Array(6).
 $('cancelNewGroup').onclick=()=>{$('newGroupPanel').hidden=true;newGroupChoices=[];};
 $('confirmNewGroup').onclick=async()=>{const p=project,current=file,signature=JSON.stringify(p.changes);try{const next=addPlusCatalogGroup(splitRom(current).rom,p,newGroupChoices);await buildDeluxeProject(current,next);if(project!==p||file!==current||JSON.stringify(p.changes)!==signature)throw Error('O projeto mudou. Selecione o grupo novamente.');project=next;$('newGroupPanel').hidden=true;render();$('groupStatus').textContent='Grupo criado com seis equipes e seus elencos Plus. Salve o projeto ou gere a ROM.';}catch(e){$('newGroupStatus').textContent=e.message;}};
 $('applyPlusGroups').onclick=async()=>{const p=project,current=file,signature=JSON.stringify(p.changes);try{const next=applyPlusGroupOrganization(splitRom(current).rom,p);await buildDeluxeProject(current,next);if(project!==p||file!==current||JSON.stringify(p.changes)!==signature)throw Error('O projeto mudou. Repita a aplicação.');project=next;$('newGroupPanel').hidden=true;render();$('groupStatus').textContent='Nove grupos Plus aplicados. As edições existentes das equipes e jogadores foram preservadas.';}catch(e){$('groupStatus').textContent=e.message;}};
-$('resetStructure').onclick=()=>{delete project.changes.structure;delete project.changes.groups;delete project.changes.groupLabels;for(const key of Object.keys(project.changes.players??{}))if(Number(key.split(':')[0])>=36)delete project.changes.players[key];$('playerTeam').value=0;render();$('groupStatus').textContent='Estrutura original restaurada. As edições dos 36 elencos nativos foram preservadas.';};
+$('resetStructure').onclick=()=>{delete project.changes.structure;delete project.changes.teamPhotos;delete project.changes.teamVisuals;delete project.changes.groups;delete project.changes.groupLabels;for(const key of Object.keys(project.changes.players??{}))if(Number(key.split(':')[0])>=36)delete project.changes.players[key];$('playerTeam').value=0;render();$('groupStatus').textContent='Estrutura original restaurada. As edições dos 36 elencos nativos foram preservadas.';};
 
 var presetFile,presetCatalog;
 function textPt(scope,key){if(!scope)return undefined;if(presetFile!==file){presetFile=file;presetCatalog=textPresetFields(splitRom(file).rom);}return presetCatalog.find(f=>f.scope===scope&&f.key===key)?.portuguese;}

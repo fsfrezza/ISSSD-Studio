@@ -29,4 +29,10 @@ test('structure: graphic headings and independent team names use project identit
  const tp=pc(long(out,0x2ad2f));for(let i=0;i<9;i++){const address=0x30000+(out[tp+i*2]|out[tp+i*2+1]<<8),raw=out.slice(address,address+16);const inv=Object.fromEntries(Object.entries(NATIVE_MENU_FONTS.SmallMenuText).map(([c,n])=>[n,c]));assert.equal(Array.from(raw.slice(0,8),b=>inv[b]).join('').trim(),'GRUPO'+(i+1));assert.deepEqual(raw.slice(8),new Uint8Array(8));}
  const packed=konamiLzDecompress(out,0xdea80).data;assert.equal(packed[0],61);const total=packed[1]|packed[2]<<8;assert.equal(packed.length,3+61+total*4);let offset=0;const readName=team=>{let off=0;for(let i=0;i<team;i++)off+=packed[3+i];const chars=[];for(let i=0;i<packed[3+team];i+=2){const t=packed[64+total*2+off+i]-128;chars.push(t<16?String.fromCharCode(65+t):t>=32&&t<=41?String.fromCharCode(81+t-32):t===42?'.':String(t-96));}return chars.join('');};assert.equal(readName(30),'BRASIL');assert.equal(readName(53),'HONDURAS');assert.notEqual(readName(30),readName(53));for(const ref of [0x10c21,0x10e49,0x116b5])assert.equal(pc(out[ref]|out[ref+1]<<8|out[ref+2]<<16),0xdea80);
  assert.equal(out[0x121153],0x22);assert.equal(out[0x12116f],0x22);const occupied=base.slice();occupied[0xdea80]=0;assert.throws(()=>prepareDeluxeStructure(occupied,s),/reserva ocupada/);
+ // The original $4F02 OAM allocation ends before $5238. Expanded names
+ // must never write past their dedicated $58B4-$6000 buffer.
+ assert.ok(total*2<=0x6000-0x58b4);
+ for(const ref of [0x10c21,0x10e49,0x116b5])assert.equal((out[ref+3]|out[ref+4]<<8)&0x7fff,0x58b4);
+ assert.equal(out[0x10e42]|out[0x10e43]<<8,0x5278);
+ const nameTable=pc(long(out,0x1ba5b));for(let i=0;i<61;i++){const p=out[nameTable+i*2]|out[nameTable+i*2+1]<<8;assert.ok(p>=0x58b4&&p<0x6000);}
 });

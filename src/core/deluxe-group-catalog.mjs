@@ -1,6 +1,7 @@
 import {PLUS_TEAM_CATALOG,PLUS_NORMAL_GROUPS,PLUS_NORMAL_LABELS} from './plus-team-catalog.mjs';
 import {DELUXE_PROJECT_TO_PLUS} from './deluxe-team-identity.mjs';
 import {addDeluxeStructureGroup,validateDeluxeStructure} from './deluxe-structure.mjs';
+import {ensureDeluxeTeamPhotos} from './deluxe-team-photos.mjs';
 export function projectPlusIds(project){return project.changes.structure?.teams.map((t,i)=>t.plusId??DELUXE_PROJECT_TO_PLUS[i])??DELUXE_PROJECT_TO_PLUS.slice(0,36);}
 export function availablePlusTeams(project){const used=new Set(projectPlusIds(project));return PLUS_TEAM_CATALOG.filter(t=>!t.secret&&!used.has(t.plusId));}
 export function addPlusCatalogGroup(base,project,plusIds){
@@ -18,7 +19,7 @@ export function addPlusCatalogGroup(base,project,plusIds){
   entry.players.forEach((player,p)=>{next.changes.players[slot+':'+p]=structuredClone(player);});
  });
  validateDeluxeStructure(structure);next.changes.structure=structure;delete next.changes.groups;delete next.changes.groupLabels;
- return next;
+ return ensureDeluxeTeamPhotos(next);
 }
 export function applyPlusGroupOrganization(base,project){
  let next=structuredClone(project),remaining=availablePlusTeams(next).map(t=>t.plusId);
@@ -27,5 +28,5 @@ export function applyPlusGroupOrganization(base,project){
  if(![54,60].includes(slots.size))throw Error('Catálogo de equipes incompatível com a estrutura Plus.');
  next.changes.structure.groups=PLUS_NORMAL_GROUPS.map(row=>row.map(id=>slots.get(id)));
  next.changes.structure.labels=[...PLUS_NORMAL_LABELS,...(next.changes.structure.secret?[next.changes.structure.labels?.[9]??'GG']:[])];
- validateDeluxeStructure(next.changes.structure);return next;
+ validateDeluxeStructure(next.changes.structure);return ensureDeluxeTeamPhotos(next);
 }

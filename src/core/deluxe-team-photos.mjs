@@ -1,4 +1,15 @@
 import {DELUXE_PROJECT_TO_PLUS} from './deluxe-team-identity.mjs';
+import {DELUXE_REFERENCE_PHOTOS} from './deluxe-reference-photos.mjs';
+import {DELUXE_REFERENCE_VISUALS} from './deluxe-reference-visuals.mjs';
+import {upgradeGGPhotoStyle} from './deluxe-gg-photo-style.mjs';
+export function ensureDeluxeTeamPhotos(project){
+ if(project.changes.structure?.teams.some((team,slot)=>slot>=36&&Number.isInteger(team.plusId))){
+  project.changes.teamPhotos??=structuredClone(DELUXE_REFERENCE_PHOTOS);
+  project.changes.teamVisuals??=structuredClone(DELUXE_REFERENCE_VISUALS);
+ }
+ upgradeGGPhotoStyle(project.changes.teamPhotos);
+ return project;
+}
 const word=(b,p)=>b[p]|b[p+1]<<8,long=(b,p)=>word(b,p)|b[p+2]<<16;
 const w=n=>[n&255,n>>8&255],l=n=>[...w(n),n>>16&255],cpu=p=>0x800000|((p>>15)<<16)|32768|(p&32767),pc=c=>((c>>16&127)*32768)+(c&32767);
 const fields=[['bodyType',0x81fd5e,0x82f91b,1],['faceType',0x81fb99,0x82fa35,1],['overlayType',0x81fbd1,0x82fab3,1],['extraType',0x81fc09,0x82f8f1,1],['accessory',0x82f970,0x82f61c,2],['formationFlags',0x81fe78,0x82fa07,1]];

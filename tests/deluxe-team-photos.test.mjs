@@ -4,6 +4,32 @@ import {decodePlayerRecord} from '../src/core/plus-player.mjs';
 import {decodeFixedPlayerName} from '../src/core/plus-player-name.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import crypto from 'node:crypto';
 import {extractGGTeamPhotos,validateTeamPhotos} from '../src/core/deluxe-team-photos.mjs';
+import {ensureDeluxeTeamPhotos} from '../src/core/deluxe-team-photos.mjs';
+import {DELUXE_REFERENCE_PHOTOS} from '../src/core/deluxe-reference-photos.mjs';
+import {DELUXE_REFERENCE_VISUALS} from '../src/core/deluxe-reference-visuals.mjs';
+import {validateTeamVisuals} from '../src/core/deluxe-team-visuals.mjs';
+import {DELUXE_TEAM_PHOTO_RECIPES} from '../src/core/deluxe-team-photo-recipes.mjs';
+import {deluxePhotoKey} from '../src/core/deluxe-team-preview.mjs';
+import {ggNativePhotoStyle} from '../src/core/deluxe-gg-photo-style.mjs';
+test('GG formation styles retain native geometry and skin, with independent uniform shading',()=>{
+ const p={changes:{teamPhotos:structuredClone(DELUXE_REFERENCE_PHOTOS)}};
+ p.changes.teamPhotos.teams[59].palettes[0][2]^=1;
+ const custom=structuredClone(p.changes.teamPhotos.teams[59]);
+ ensureDeluxeTeamPhotos(p);
+ for(let i=54;i<59;i++){const source=DELUXE_REFERENCE_PHOTOS.teams[i],row=p.changes.teamPhotos.teams[i];assert.equal(deluxePhotoKey(row),deluxePhotoKey(source));assert.deepEqual(row.palettes.slice(3),source.palettes.slice(3));assert.notDeepEqual(row.palettes[0],source.palettes[0]);assert.deepEqual(row,ggNativePhotoStyle(i));}
+ assert.deepEqual(p.changes.teamPhotos.teams[59],custom);assert.deepEqual(p.changes.teamPhotos.teams[0],DELUXE_REFERENCE_PHOTOS.teams[0]);
+ const saved=structuredClone(p);ensureDeluxeTeamPhotos(p);assert.deepEqual(p,saved);
+});
+test('reference catalog includes all 60 native compositions and respects existing overrides',()=>{
+ assert.equal(Object.keys(validateTeamPhotos(DELUXE_REFERENCE_PHOTOS).teams).length,60);
+ assert.equal(Object.keys(validateTeamVisuals(DELUXE_REFERENCE_VISUALS).teams).length,60);
+ for(const row of Object.values(DELUXE_REFERENCE_PHOTOS.teams))assert.ok(DELUXE_TEAM_PHOTO_RECIPES.recipes[deluxePhotoKey(row)]);
+ const p={changes:{structure:{teams:Array.from({length:37},(_,i)=>({plusId:i}))}}};
+ ensureDeluxeTeamPhotos(p);
+ assert.notEqual(p.changes.teamPhotos,DELUXE_REFERENCE_PHOTOS);
+ const own=p.changes.teamPhotos;p.changes.teamPhotos.teams[0].bodyType=99;
+ ensureDeluxeTeamPhotos(p);assert.equal(p.changes.teamPhotos,own);assert.equal(own.teams[0].bodyType,99);
+});
 import {buildDeluxeProject} from '../src/core/deluxe-project.mjs';
 import {encodeTeamPhotoDraft,validateTeamPhotoDrafts,TEAM_PHOTO_WIDTH,TEAM_PHOTO_HEIGHT} from '../src/core/deluxe-team-photo-drafts.mjs';
 import {encodeFormationTiles} from '../src/core/deluxe-team-photo-runtime.mjs';
@@ -15,7 +41,7 @@ function directory(base,out,old){for(let at=0;at<base.length-4;at++)if(base[at]=
 test('photo catalog refuses incomplete records',()=>{assert.equal(validateTeamPhotos(undefined),null);assert.throws(()=>validateTeamPhotos({}),/inválido/);});
 test('sixty photos use stable identities and preserve every player record and existing asset',{skip:!paths.every(Boolean)},async()=>{
  const [baseFile,plus,reference]=paths.slice(0,3).map(p=>new Uint8Array(fs.readFileSync(p))),project=JSON.parse(fs.readFileSync(paths[3])),before=structuredClone(project),base=baseFile.slice(baseFile.length%32768===512?512:0);
- project.changes.teamPhotos=extractGGTeamPhotos(reference,plus,crypto.createHash('sha256').update(reference).digest('hex'));assert.equal(Object.keys(project.changes.teamPhotos.teams).length,60);
+ project.changes.teamPhotos=extractGGTeamPhotos(reference,plus,crypto.createHash('sha256').update(reference).digest('hex'));assert.equal(Object.keys(project.changes.teamPhotos.teams).length,60);ensureDeluxeTeamPhotos(project);
  const original=await buildDeluxeProject(baseFile,before),saved=JSON.parse(JSON.stringify(project)),result=await buildDeluxeProject(baseFile,saved),out=result.rom.slice(result.base.headerSize),old=original.rom.slice(original.base.headerSize);
  assert.deepEqual(saved.changes.players,before.changes.players);assert.deepEqual(saved.changes.structure,before.changes.structure);assert.deepEqual(saved.changes.teamVisuals,before.changes.teamVisuals);assert.deepEqual(saved.changes.titleComposer,before.changes.titleComposer);
  assert.deepEqual(out.slice(0x17bd20,0x17bd20+67*140),old.slice(0x17bd20,0x17bd20+67*140));assert.deepEqual(out.slice(0x200000,0x200000+60*160),old.slice(0x200000,0x200000+60*160));

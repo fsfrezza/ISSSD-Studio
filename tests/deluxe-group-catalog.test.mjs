@@ -17,7 +17,9 @@ test('six distinct available teams, arbitrary order, atomic rejection, serialize
  p.changes.players={'0:0':{name:'Buffon'}};p.changes.groupLabels=['GRUPO A','EUROPE 2','EUROPE 3','EUROPE 4','ASIA-AFRICA','N.S.AMERICA'];
  const ids=available.slice(-6).reverse(),next=addPlusCatalogGroup(base,p,ids);assert.equal(next.changes.structure.teams.length,42);assert.equal(next.changes.structure.labels[0],'GRUPO A');assert.deepEqual(projectPlusIds(next).slice(36),ids);assert.equal(next.changes.players['0:0'].name,'Buffon');
  assert.ok(ids.every(id=>!availablePlusTeams(next).some(t=>t.plusId===id)));
- const built=await buildDeluxeProject(file,JSON.parse(JSON.stringify(next))),rom=splitRom(built.rom).rom;
+ assert.equal(Object.keys(next.changes.teamPhotos.teams).length,60);
+ assert.equal(Object.keys(next.changes.teamVisuals.teams).length,60);
+ const built=await buildDeluxeProject(file,JSON.parse(JSON.stringify(next))),rom=built.rom.slice(built.base.headerSize);
  ids.forEach((id,i)=>{for(let player=0;player<20;player++){const actual=readDeluxePlayer(rom,36+i,player),expected=PLUS_TEAM_CATALOG[id].players[player];assert.equal(actual.name,expected.name);assert.equal(actual.jersey,expected.jersey);assert.deepEqual(actual.skills,expected.skills);}});
  assert.deepEqual((await buildDeluxeProject(file,snapshot)).rom,file);
  const all=applyPlusGroupOrganization(base,next);assert.equal(all.changes.players['0:0'].name,'Buffon');assert.deepEqual(all.changes.structure.groups.map(g=>g.map(slot=>projectPlusIds(all)[slot])),PLUS_NORMAL_GROUPS);await buildDeluxeProject(file,all);
