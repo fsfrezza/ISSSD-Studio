@@ -1,12 +1,13 @@
 import {createTitleComposer,validateTitleComposer,renderTitleComposer,prepareTitleComposer,composerAsset,composerAssetPixels,composerNativeImage,duplicateComposerLayer,composerBudget,hitTitleComposer,COMPOSER_ROLES,COMPOSER_LABELS,COMPOSER_NATIVE_KEYS} from '../src/core/deluxe-title-composer.mjs';
 import {titleCompositePixels} from '../src/core/deluxe-title-background.mjs';
-import {TITLE_PHOTO_MASKS} from '../src/core/deluxe-title-photos.mjs';
+import {TITLE_PHOTO_MASKS,titlePhotoBorderPixel} from '../src/core/deluxe-title-photos.mjs';
 import {buildDeluxeProject,splitRom} from '../src/core/deluxe-project.mjs';
 import {zipStore} from '../src/core/zip-store.mjs';
 const numbers={X:'x',Y:'y',W:'width',H:'height',ScaleX:'scaleX',ScaleY:'scaleY',ClipX:'clipX',ClipY:'clipY',ClipW:'clipW',ClipH:'clipH',RotX:'rotationX',RotY:'rotationY',RotZ:'rotationZ',Opacity:'opacity',Priority:'priority'};
 const checks={LockAspect:'lockAspect',Visible:'visible',Locked:'locked',Transparent:'transparent'};
 export function installTitleComposer({getProject,getFile,onStatus}){
  const $=id=>document.getElementById('titleComposer'+id);let owner=null,model=null,nativeKey=null,drag=null,maskEdit=false,queued=false;
+ const border=document.createElement('input');border.type='checkbox';const borderLabel=document.createElement('label');borderLabel.append(border,document.createTextNode(' Borda branca nas fotos (1 px)'));$('ShowReference').closest('label').after(borderLabel);border.onchange=()=>{const p=getProject();if(!p)return;const changes=p.changes.titleScreen??={};if(border.checked)changes.photoBorder=true;else delete changes.photoBorder;renderPreview();onStatus?.('Borda das fotos atualizada. Salve o projeto ou gere a ROM.');};
  const base=()=>splitRom(getFile()).rom,selected=()=>model?.elements.find(e=>e.id===model.selectedId),message=s=>{$('RomStatus').textContent=s;};
  function ensure(){const project=getProject();if(!project)return null;const key=JSON.stringify(project.changes.titleScreen??{});if(owner!==project){owner=project;nativeKey=key;model=project.changes.titleComposer?structuredClone(project.changes.titleComposer):createTitleComposer(base(),project.changes.titleScreen);}else if(!project.changes.titleComposer&&nativeKey!==key){nativeKey=key;model=createTitleComposer(base(),project.changes.titleScreen);}return model;}
  function persist(){model.prepared=false;getProject().changes.titleComposer=structuredClone(model);}
@@ -15,7 +16,8 @@ export function installTitleComposer({getProject,getFile,onStatus}){
  function renderProps(){const e=selected();$('SelectedBadge').textContent=e?.name??'Nenhum';for(const [suffix,key]of Object.entries(numbers)){$(suffix).value=e?.[key]??'';$(suffix).disabled=!e;}for(const [suffix,key]of Object.entries(checks)){$(suffix).checked=e?.[key]??false;$(suffix).disabled=!e;}for(const id of ['Name','Role','Conversion','ImageFile','RestoreElementBtn','DownloadLayerBtn','DuplicateBtn','UpBtn','DownBtn','DeleteBtn','EditMaskBtn','ResetMaskBtn','RectMaskBtn'])$(id).disabled=!e;
  $('Name').value=e?.name??'';$('Role').value=e?.role??'logo';$('Conversion').value=e?.conversion??'auto';$('DuplicateBtn').disabled=!e||model.elements.length>=10;$('AddImageBtn').disabled=!model||model.elements.length>=10;$('PointerHint').textContent=maskEdit?'Arraste os vértices da máscara.':'Arraste para mover. PNG com transparência é aceito.';
  }
- function renderPreview(){if(!ensure())return;const frame=model.prepared?titleCompositePixels(base(),getProject().changes.titleScreen):renderTitleComposer(model),rgba=frame.rgba.slice(),reference=$('ShowReference').checked?titleCompositePixels(base(),getProject().changes.titleScreen).rgba:null;
+ function renderPreview(){if(!ensure()){border.disabled=true;return;}border.disabled=false;border.checked=!!getProject().changes.titleScreen?.photoBorder;const frame=model.prepared?titleCompositePixels(base(),getProject().changes.titleScreen):renderTitleComposer(model),rgba=frame.rgba.slice(),reference=$('ShowReference').checked?titleCompositePixels(base(),getProject().changes.titleScreen).rgba:null;
+ if(border.checked&&!model.prepared)for(let y=112;y<216;y++)for(let x=0;x<256;x++){const i=(y*256+x)*4;if(rgba[i+3]&&titlePhotoBorderPixel(x,y))rgba.set([255,255,255,255],i);}
  for(let i=0;i<rgba.length;i+=4){const a=rgba[i+3]/255;for(let c=0;c<3;c++){const bg=reference?Math.round(reference[i+c]*.25+([247,255,255][c])*.75):[247,255,255][c];rgba[i+c]=Math.round(rgba[i+c]*a+bg*(1-a));}rgba[i+3]=255;}
  const dot=(x,y,color)=>{x=Math.round(x);y=Math.round(y);if(x>=0&&x<256&&y>=0&&y<224)rgba.set([...color,255],(y*256+x)*4);};
  const line=(a,b,color)=>{const steps=Math.ceil(Math.max(Math.abs(a[0]-b[0]),Math.abs(a[1]-b[1])));for(let i=0;i<=steps;i++)dot(a[0]+(b[0]-a[0])*(steps?i/steps:0),a[1]+(b[1]-a[1])*(steps?i/steps:0),color);};

@@ -5,6 +5,10 @@ import {splitRom,createDeluxeProject,buildDeluxeProject} from '../src/core/delux
 import {TITLE_LAYERS,readTitleBackground,titleBackgroundPixels,importTitleBackground,titleCompositePixels,transformTitleLayer} from '../src/core/deluxe-title-background.mjs';
 import {konamiLzDecompress} from '../src/core/konami-lz.mjs';
 const fixture=process.env.ISSSD_DELUXE_ROM;
+test('optional photo border writes the same native pixels as preview without mutating project',{skip:!fixture},async()=>{
+ const file=new Uint8Array(fs.readFileSync(fixture)),base=splitRom(file).rom,p=await createDeluxeProject(file);p.changes.titleScreen={photoBorder:true};const before=JSON.stringify(p),preview=titleCompositePixels(base,p.changes.titleScreen),normal=titleCompositePixels(base),built=splitRom((await buildDeluxeProject(file,p)).rom).rom;
+ assert.notDeepEqual(preview.rgba,normal.rgba);assert.deepEqual(titleCompositePixels(built).rgba,preview.rgba);assert.equal(JSON.stringify(p),before);delete p.changes.titleScreen;assert.deepEqual((await buildDeluxeProject(file,p)).rom,file);
+});
 test('custom title map suppresses the late native two-tile overlay; original stays intact',{skip:!fixture},async()=>{
  const file=new Uint8Array(fs.readFileSync(fixture)),base=splitRom(file).rom,p=await createDeluxeProject(file),desc=0x1197e,ptr=base[desc]|base[desc+1]<<8|base[desc+2]<<16,raw=konamiLzDecompress(base,((ptr>>>16)&127)*32768+(ptr&32767)).data;
  const map=Array.from({length:1024},(_,i)=>raw[i*2]|raw[i*2+1]<<8);p.changes.titleScreen={map0:map};assert.deepEqual((await buildDeluxeProject(file,p)).rom,file);
