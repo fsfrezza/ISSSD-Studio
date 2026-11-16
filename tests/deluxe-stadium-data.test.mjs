@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
+import {readDeluxeStadiumData} from '../src/core/deluxe-stadium-data.mjs';
+import {splitRom} from '../src/core/deluxe-project.mjs';
+test('stadium data extracts all eight original previews and dimensions without changes',{skip:!process.env.ISSSD_DELUXE_ROM},()=>{const rom=splitRom(new Uint8Array(fs.readFileSync(process.env.ISSSD_DELUXE_ROM))).rom,before=rom.slice(),expected=[[114,74],[118,82],[126,90],[130,82],[122,82],[122,74],[114,90],[138,90]],images=new Set();for(let i=0;i<8;i++){const d=readDeluxeStadiumData(rom,i);assert.deepEqual([d.length,d.width],expected[i]);assert.equal(d.unit,'yd');assert.equal(d.rgba.length,64*48*4);assert.ok(d.rgba.every((v,i)=>i%4!==3||v===255));images.add(Buffer.from(d.rgba).toString('base64'));}assert.equal(images.size,8);assert.deepEqual(rom,before);assert.throws(()=>readDeluxeStadiumData(rom,8),/inválido/);});

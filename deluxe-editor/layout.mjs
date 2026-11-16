@@ -16,7 +16,7 @@ const pages={
  menu:['Menu principal','Personalize os nomes e confira a tipografia na prévia.'],
  texts:['Textos','Edite as frases do jogo, organizadas por tela.'],
  cursor:['Cursor','Personalize as instruções dos controles e da seleção de jogadores.'],
- stadiums:['Estádios','Ajuste as cores das paletas dos oito estádios originais.'],
+ stadiums:['Estádios','Visualize os campos e suas dimensões e ajuste as cores das paletas dos oito estádios originais.'],
  sounds:['Sons e vozes','Ouça, substitua e restaure as amostras de áudio.'],
  improvements:['Melhorias','Recursos da Plus, diferenças para o Deluxe e estado do projeto atual.'],
 };
