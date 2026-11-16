@@ -11,10 +11,12 @@ test('abas preservam painéis e expandir/recolher afeta somente a aba ativa',asy
  const buttons=ids.map(id=>{const e=new Element(id);e.dataset.page=id;return e;});
  const controls=Object.fromEntries(['pageTitle','pageDescription','expandAll','collapseAll'].map(id=>[id,new Element(id)]));
  const previous=globalThis.document;
- globalThis.document={querySelectorAll:s=>s==='[data-panel]'?panels:buttons,getElementById:id=>controls[id]};
+ const events={};globalThis.document={querySelectorAll:s=>s==='[data-panel]'?panels:buttons,getElementById:id=>controls[id],addEventListener:(name,handler)=>events[name]=handler};
  try{
   await import('../deluxe-editor/layout.mjs?test');
   assert.equal(panels[0].hidden,false);assert.equal(panels[1].hidden,true);
+  assert.equal(buttons[0].hidden,false);assert.ok(buttons.slice(1).every(b=>b.hidden));buttons[2].handlers.click();assert.equal(panels[2].hidden,true);
+  events['deluxe:editor-ready']({detail:true});assert.ok(buttons.every(b=>!b.hidden));
   buttons[2].handlers.click();assert.equal(panels[2].hidden,false);assert.equal(panels[0].hidden,true);assert.equal(buttons[2].attrs['aria-current'],'page');
   controls.expandAll.handlers.click();assert.ok(panels[2].children.every(e=>e.open));assert.ok(panels[0].children.every(e=>!e.open));
   buttons[1].handlers.click();buttons[2].handlers.click();assert.ok(panels[2].children.every(e=>e.open));
@@ -22,6 +24,7 @@ test('abas preservam painéis e expandir/recolher afeta somente a aba ativa',asy
   buttons[6].handlers.click();assert.equal(panels[6].hidden,false);assert.equal(controls.pageTitle.textContent,'Tela de título');assert.ok(panels.filter(p=>p!==panels[6]).every(p=>p.hidden));
   buttons[5].handlers.click();assert.equal(controls.expandAll.disabled,false);controls.expandAll.handlers.click();assert.ok(panels[5].children.every(e=>e.open));
   for(const [index,title]of [[7,'Tela de Open Game'],[8,'Handicap'],[9,'Menu pré-partida'],[10,'Seleção de estádio']]){buttons[index].handlers.click();assert.equal(panels[index].hidden,false);assert.equal(controls.pageTitle.textContent,title);assert.ok(panels.filter(p=>p!==panels[index]).every(p=>p.hidden));}
+  events['deluxe:editor-ready']({detail:false});assert.equal(panels[0].hidden,false);assert.ok(buttons.slice(1).every(b=>b.hidden));
  }finally{globalThis.document=previous;}
 });
 

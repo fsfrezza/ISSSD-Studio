@@ -21,9 +21,9 @@ const pages={
  improvements:['Melhorias','Recursos da Plus, diferenças para o Deluxe e estado do projeto atual.'],
 };
 const panels=[...document.querySelectorAll('[data-panel]')],buttons=[...document.querySelectorAll('[data-page]')];
-let active='overview';
+let active='overview',ready=false;
 function selectPage(id){
- if(!Object.hasOwn(pages,id))return;
+ if(!Object.hasOwn(pages,id)||(!ready&&id!=='overview'))return;
  active=id;
  for(const panel of panels)panel.hidden=panel.dataset.panel!==id;
  if(id==='title-screen')document.dispatchEvent?.(new CustomEvent('deluxe:title-screen-open'));
@@ -32,8 +32,10 @@ function selectPage(id){
  document.getElementById('pageDescription').textContent=pages[id][1];
  document.getElementById('expandAll').disabled=false;document.getElementById('collapseAll').disabled=false;
 }
+function setEditorReady(value){ready=!!value;for(const button of buttons)button.hidden=!ready&&button.dataset.page!=='overview';if(!ready)selectPage('overview');}
+document.addEventListener('deluxe:editor-ready',event=>setEditorReady(event.detail));
 for(const button of buttons)button.addEventListener('click',()=>selectPage(button.dataset.page));
 function setExpanded(open){const panel=panels.find(p=>p.dataset.panel===active);if(panel)for(const section of panel.querySelectorAll('details'))section.open=open;}
 document.getElementById('expandAll').addEventListener('click',()=>setExpanded(true));
 document.getElementById('collapseAll').addEventListener('click',()=>setExpanded(false));
-selectPage('overview');
+setEditorReady(false);

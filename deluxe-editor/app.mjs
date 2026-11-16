@@ -41,6 +41,7 @@ function showProjectRomRequest(value,name='Projeto Deluxe'){$('projectRomRequest
 
 function download(data,name,type){const url=URL.createObjectURL(new Blob([data],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 function render(){
+  document.dispatchEvent?.(new CustomEvent('deluxe:editor-ready',{detail:!!(file&&project)}));
   if(project)ensureDeluxeTeamPhotos(project);
   renderImprovements();
   screenEditors.render();
@@ -67,12 +68,22 @@ function render(){
   for(const item of PLUS_STRATEGY_TEXTS){const original=readPlusStrategyText(rom,item.id);textControl($('texts'),{scope:'texts',key:item.id,label:item.label,value:project.changes.strategyTexts[item.id]??original,original,validate:v=>encodePlusStrategyText(v),onChange:v=>{if(v===original)delete project.changes.strategyTexts[item.id];else project.changes.strategyTexts[item.id]=v;}});}
   renderTextActions();
 }
+let improvementBusy=false;
+async function updateImprovements(ids,checked){
+ if(!file||!project||improvementBusy)return;
+ const current=project,rom=file,signature=JSON.stringify(current.changes),next=structuredClone(current),selected=new Set(next.changes.improvements);
+ for(const id of ids){if(checked)selected.add(id);else selected.delete(id);}
+ next.changes.improvements=[...selected];improvementBusy=true;renderImprovements();
+ try{await buildDeluxeProject(rom,next);if(project!==current||file!==rom||JSON.stringify(current.changes)!==signature)throw Error('O projeto mudou durante a aplicação. Repita a ação.');project=next;status('Melhoria atualizada no projeto. Salve o projeto ou gere a ROM para aplicar.');}catch(error){status(error.message);}finally{improvementBusy=false;renderImprovements();}
+}
 function renderImprovements(){
  const root=$('improvements');root.replaceChildren();
  const summary=document.createElement('p');summary.className='improvements-project';summary.textContent=deluxeStructureSummary(project);root.append(summary);
  for(const section of IMPROVEMENT_SECTIONS){
   const card=document.createElement('details'),heading=document.createElement('summary'),body=document.createElement('div'),description=document.createElement('p');card.className='card';card.open=true;heading.textContent=section.title;body.className='card-body improvements-list';description.className='help';description.textContent=section.description;body.append(description);card.append(heading,body);
-  for(const item of section.items){const row=document.createElement('div'),title=document.createElement('strong'),badge=document.createElement('span'),detail=document.createElement('span'),state=deluxeImprovementState(item,project);row.className='improvement-row';row.setAttribute('data-improvement',item.id);title.textContent=item.label;badge.className='improvement-status status-'+state.kind;badge.textContent=state.label;detail.textContent=item.description;detail.className='improvement-description';const copy=document.createElement(item.capability==='gameplay'?'label':'div'),text=document.createElement('span');copy.className='improvement-copy';text.append(title,document.createTextNode(' - '),detail);if(item.capability==='gameplay'){const box=document.createElement('input');box.type='checkbox';box.checked=project?.changes?.improvements?.includes(item.id)??false;box.disabled=!project;box.setAttribute('aria-label',item.label);box.onchange=async()=>{const current=project,next=structuredClone(current);box.disabled=true;next.changes.improvements=next.changes.improvements.filter(id=>id!==item.id);if(box.checked)next.changes.improvements.push(item.id);try{await buildDeluxeProject(file,next);if(project!==current)return;project=next;renderImprovements();status('Melhoria atualizada no projeto. Salve o projeto ou gere a ROM para aplicar.');}catch(error){box.checked=current.changes.improvements.includes(item.id);status(error.message);}finally{box.disabled=!project;}};copy.append(box);}copy.append(text);row.append(copy,badge);body.append(row);}
+  const ids=section.items.filter(item=>item.capability==='gameplay'&&item.status==='available').map(item=>item.id),actions=document.createElement('div');actions.className='preset-toolbar improvement-actions';
+  for(const [checked,label] of [[true,'Marcar todos'],[false,'Desmarcar todos']]){const button=document.createElement('button');button.type='button';button.textContent=label;button.disabled=!project||improvementBusy||!ids.length||ids.every(id=>project.changes.improvements.includes(id)===checked);button.onclick=()=>updateImprovements(ids,checked);actions.append(button);}if(!ids.length){const hint=document.createElement('small');hint.textContent='Este cartão não possui opções selecionáveis.';actions.append(hint);}body.append(actions);
+  for(const item of section.items){const row=document.createElement('div'),title=document.createElement('strong'),badge=document.createElement('span'),detail=document.createElement('span'),state=deluxeImprovementState(item,project);row.className='improvement-row';row.setAttribute('data-improvement',item.id);title.textContent=item.label;badge.className='improvement-status status-'+state.kind;badge.textContent=state.label;detail.textContent=item.description;detail.className='improvement-description';const copy=document.createElement(item.capability==='gameplay'?'label':'div'),text=document.createElement('span');copy.className='improvement-copy';text.append(title,document.createTextNode(' - '),detail);if(item.capability==='gameplay'){const box=document.createElement('input');box.type='checkbox';box.checked=project?.changes?.improvements?.includes(item.id)??false;box.disabled=!project||improvementBusy;box.setAttribute('aria-label',item.label);box.onchange=()=>updateImprovements([item.id],box.checked);copy.append(box);}copy.append(text);row.append(copy,badge);body.append(row);}
   root.append(card);
  }
 }
