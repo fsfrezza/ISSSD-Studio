@@ -20,7 +20,7 @@ test('previews use the real wallpaper and change with text/selection without mut
 test('all twelve pre-match labels export safely, survive roundtrip and restore to the original ROM',{skip:!fixture},async()=>{
  const file=new Uint8Array(fs.readFileSync(fixture)),base=splitRom(file).rom,p=await createDeluxeProject(file),out=base.slice();
  applyDeluxePrematchLabels(out,base,DELUXE_PREMATCH_PORTUGUESE);
- const ranges=[[0xf631c,0xf631c+2153],...PREMATCH_GRAPHIC_MAPS.map(m=>[m.pc,m.pc+m.size])];let count=0;
+ const ranges=[[0x11201,0x1124a],[0x17e800,0x17fc00],[0xf631c,0xf631c+2153],...PREMATCH_GRAPHIC_MAPS.map(m=>[m.pc,m.pc+m.size])];let count=0;
  for(let i=0;i<base.length;i++)if(base[i]!==out[i]){count++;assert.ok(ranges.some(([a,b])=>i>=a&&i<b),'Unexpected write '+i.toString(16));}assert.ok(count>0);
  p.changes.preMatchLabels=DELUXE_PREMATCH_PORTUGUESE;const saved=JSON.parse(JSON.stringify(p));await buildDeluxeProject(file,saved);assert.deepEqual(saved,p);
  delete saved.changes.preMatchLabels;assert.deepEqual((await buildDeluxeProject(file,saved)).rom,file);

@@ -1,11 +1,11 @@
 import {konamiLzCompress,konamiLzDecompress} from './konami-lz.mjs';
-import {TITLE_FONT_ROWS} from './title-font-glyphs.mjs';
+import {renderDeluxeTeamLabel} from './deluxe-team-visuals.mjs';
 import {DELUXE_GROUP_LABELS} from './deluxe-groups.mjs';
 import {NATIVE_MENU_FONTS} from './deluxe-menu-fields.mjs';
 const cpu=p=>((128|(p>>15))<<16)|32768|(p&32767),pc=a=>((a>>>16)&127)*32768+(a&32767),u24=a=>[a&255,a>>8&255,a>>16&255];
 const normalize=s=>String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9 .]/g,'').replace(/\s+/g,' ').trim();
 function compact(s,max){let v=normalize(s);if(v.length<=max)return v;const words=v.split(' ');if(words.length>1)v=words.slice(0,-1).map(w=>w[0]+'.').join('')+' '+words.at(-1);return v.length>max?v.slice(0,max-1).trim()+'.':v;}
-function smallName(text){const t=compact(text,10),width=Math.min(32,t.length*4),left=Math.floor((32-width)/2),raw=new Uint8Array(64);for(let y=0;y<8;y++)for(let x=0;x<width;x++){const source=x*t.length*8/width,c=t[Math.floor(source/8)],sx=Math.floor(source%8),v=((TITLE_FONT_ROWS[c]?.[y]??0)>>(7-sx)&1)?3:0,col=x+left,at=Math.floor(col/8)*16+y*2;raw[at]|=(v&1)<<(7-col%8);raw[at+1]|=(v>>1)<<(7-col%8);}return raw;}
+const smallName=renderDeluxeTeamLabel;
 function bigName(text,max=10){const s=compact(text,max),x0=Math.round(40-s.length*8/2),out=[];for(let i=0;i<s.length;i++){const c=s[i];if(c===' ')continue;const top=c>='A'&&c<='P'?c.charCodeAt(0)-65:c>='Q'&&c<='Z'?32+c.charCodeAt(0)-81:c==='.'?42:c>='0'&&c<='9'?96+Number(c):null;if(top===null)continue;out.push([x0+i*8,4,128+top,10],[x0+i*8,12,144+top,10]);}return out.length?out:[[0,240,170,10]];}
 export function applyDeluxeStructureNames(out,base,s,titlePointers){const n=s.teams.length,runtime=n+7,reserve=(at,data)=>{if(base.slice(at,at+data.length).some(v=>v!==255)||out.slice(at,at+data.length).some(v=>v!==255))throw Error('Nomes gráficos: reserva ocupada em '+at.toString(16));out.set(data,at);};
  const pointer=out[0x121154]|out[0x121155]<<8|out[0x121156]<<16,table=pc(pointer),banks=new Uint8Array(runtime);banks.fill(0x9a);

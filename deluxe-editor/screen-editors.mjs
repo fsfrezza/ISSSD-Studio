@@ -1,4 +1,5 @@
 import {HANDICAP_LABELS,handicapLabelBitmaps} from '../src/core/deluxe-handicap-labels.mjs';
+import {BUTTON_LABELS,applyDeluxeButtonLabels} from '../src/core/deluxe-button-labels.mjs';
 import {DELUXE_SCREEN_EDITORS,deluxeScreenScene,MOVED_MENU_SECTIONS} from '../src/core/deluxe-screen-scenes.mjs';
 import {DELUXE_MENU_SECTIONS,encodeNativeMenuField} from '../src/core/deluxe-menu-text.mjs';
 import {PREMATCH_GRAPHIC_LABELS,applyDeluxePrematchLabels} from '../src/core/deluxe-prematch-labels.mjs';
@@ -24,6 +25,8 @@ export function installScreenEditors({getProject,getFile,textControl,addPresetBu
    $(prefix+'Status').textContent='';if(!p){draw(config);continue;}
    config.choices.forEach((id,i)=>{const option=document.createElement('option');option.value=String(i);option.textContent=config.choiceLabels[i];selection.append(option);});selection.value=String(previous<config.choices.length?previous:0);
    addPresetButtons(actions,config.id==='pre-match'?'preMatchLabels':config.fieldIds?config.id:config.section);
+   const buttonsPt=document.createElement('button');buttonsPt.type='button';buttonsPt.textContent='CONFIRMA / CANCELA em todas as telas';buttonsPt.onclick=()=>{p.changes.buttonLabels=Object.fromEntries(BUTTON_LABELS.map(([id,,pt])=>[id,pt]));render();onStatus('Rótulos A/B em português, compartilhados entre as telas.');};actions.append(buttonsPt);
+   for(const [id,original] of BUTTON_LABELS)textControl(fields,{scope:'buttonLabels',key:config.id+'/'+id,label:(id==='confirm'?'A → ':'B → ')+original+' · compartilhado entre telas',original,value:p.changes.buttonLabels?.[id]??original,validate:value=>{const base=splitRom(getFile()).rom;applyDeluxeButtonLabels(base.slice(),base,{...p.changes.buttonLabels,[id]:value});},onChange:value=>{const entries=p.changes.buttonLabels??={};if(value===original)delete entries[id];else entries[id]=value;if(!Object.keys(entries).length)delete p.changes.buttonLabels;render();}});
    if(config.id==='handicap'){
     for(const [id,original] of HANDICAP_LABELS)textControl(fields,{scope:'handicapLabels',key:id,label:original+' · rótulo gráfico',original,value:p.changes.handicapLabels?.[id]??original,validate:value=>handicapLabelBitmaps(id,value),onChange:value=>{const entries=p.changes.handicapLabels??={};if(value===original)delete entries[id];else entries[id]=value;if(!Object.keys(entries).length)delete p.changes.handicapLabels;draw(config);}});
    }

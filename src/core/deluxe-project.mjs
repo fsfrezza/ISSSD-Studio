@@ -1,4 +1,5 @@
 import {applyDeluxeHandicapLabels} from './deluxe-handicap-labels.mjs';
+import {applyDeluxeButtonLabels} from './deluxe-button-labels.mjs';
 import {applyDeluxeStadiumUnits} from './deluxe-stadium-data.mjs';
 import {applyDeluxePlayerCloseups} from './deluxe-player-closeup.mjs';
 import {applyDeluxeGoalkeeperColors} from './deluxe-goalkeeper-colors.mjs';
@@ -59,7 +60,7 @@ export async function buildDeluxeProject(file,project){
   const base=await identifyDeluxe(file);
   keys(project,['schema','version','base','changes'],'projeto');
   if(project.schema!==DELUXE_SCHEMA||project.version!==1||project.base?.sha256!==base.sha256||project.base?.id!==base.id)throw new Error('Projeto não pertence à base Deluxe original');
-  keys(project.changes,['strategyTexts','internalTitle','improvements','nativeTexts','cursorHelp','stadiums','stadiumUnits','menuTexts','mainMenu','sounds','trainingHud','matchStatistics','titleScreen','players','groups','structure','titleComposer','groupLabels','teamVisuals','preMatchLabels','handicapLabels','openingMedia','teamPhotos','teamPhotoDrafts','tactics','hiddenGroups'],'alterações');
+  keys(project.changes,['strategyTexts','internalTitle','improvements','nativeTexts','cursorHelp','stadiums','stadiumUnits','menuTexts','mainMenu','sounds','trainingHud','matchStatistics','titleScreen','players','groups','structure','titleComposer','groupLabels','teamVisuals','preMatchLabels','handicapLabels','buttonLabels','openingMedia','teamPhotos','teamPhotoDrafts','tactics','hiddenGroups'],'alterações');
   project=ensureDeluxeTeamPhotos(structuredClone(project));
   const changes=project.changes;
   const appliedTeamPhotos=validateTeamPhotoDrafts(changes.teamPhotoDrafts);
@@ -103,6 +104,7 @@ export async function buildDeluxeProject(file,project){
   out=applyDeluxePlayerCloseups(out,rom,project);
   out=applyDeluxeGameplay(out,rom,changes.improvements);
   applyDeluxeHandicapLabels(out,rom,changes.handicapLabels);
+  applyDeluxeButtonLabels(out,rom,changes.buttonLabels);
   applyDeluxeStadiumUnits(out,rom,changes.stadiumUnits);
   out=applyDeluxeFormationPhotos(out,rom,project);
   applyDeluxeGroupVisibility(out,rom,project);

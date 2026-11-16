@@ -9,15 +9,16 @@ export const PREMATCH_GRAPHIC_LABELS=[
 const normalize=s=>String(s??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/\s+/g,' ').trim();
 const read=(a,i)=>a[i*2]|a[i*2+1]<<8;
 const set=(a,i,v)=>{a[i*2]=v&255;a[i*2+1]=v>>8;};
-function renderLabel(text){
+export function renderLabel(text){
  const q=normalize(text),width=[...q].reduce((n,c)=>n+(c===' '?3:6),0)-1;
  if(width>112)throw Error('Pré-partida: “'+q+'” excede os 112 px da linha.');
- const tiles=Math.max(1,Math.ceil(width/8)),raw=new Uint8Array(tiles*2*16),pix=new Uint8Array(tiles*8*16),w=tiles*8;let x=Math.floor((w-width)/2);
+ const tiles=Math.max(1,Math.ceil((width+1)/8)),raw=new Uint8Array(tiles*2*16),pix=new Uint8Array(tiles*8*16),w=tiles*8;let x=Math.floor((w-width)/2);
  for(const c of q){if(c===' '){x+=3;continue;}const glyph=c==='.'?[0,0,0,0,0,16,16]:PLUS_MAIN_MENU_GLYPHS[c];if(!glyph)throw Error('Pré-partida: caractere indisponível '+c);
   for(let y=0;y<7;y++)for(let xx=0;xx<5;xx++)if((glyph[y]>>(6-xx))&1)for(let dy=0;dy<2;dy++)pix[(y*2+dy+1)*w+x+xx]=1;x+=6;
  }
- for(let t=0;t<tiles*2;t++)for(let y=0;y<8;y++){let a=0;for(let xx=0;xx<8;xx++)a|=pix[(Math.floor(t/tiles)*8+y)*w+(t%tiles)*8+xx]<<(7-xx);raw[t*16+y*2]=a;}
- return {raw,tiles};
+ const shaded=pix.slice();for(let y=0;y<15;y++)for(let x=0;x<w-1;x++)if(pix[y*w+x]&&!pix[(y+1)*w+x+1])shaded[(y+1)*w+x+1]=3;
+ for(let t=0;t<tiles*2;t++)for(let y=0;y<8;y++){let a=0,b=0;for(let xx=0;xx<8;xx++){const v=shaded[(Math.floor(t/tiles)*8+y)*w+(t%tiles)*8+xx];a|=(v&1)<<(7-xx);b|=(v>>1)<<(7-xx);}raw[t*16+y*2]=a;raw[t*16+y*2+1]=b;}
+ return {raw,tiles,pixels:shaded,width:w,height:16};
 }
 function signature(map,y){const row=Array.from({length:32},(_,x)=>read(map,y*32+x)&1023),xs=row.flatMap((v,x)=>v>512&&v<710?[x]:[]);if(!xs.length)return '';return row.slice(xs[0],xs.at(-1)+1).join(',');}
 export function plusPrematchGraphicsWriter(rom,state={},base=rom,selectedAreas=null){
@@ -59,7 +60,7 @@ export function plusPrematchGraphicsWriter(rom,state={},base=rom,selectedAreas=n
  const plans=writes.map(([pc,capacity,data],i)=>{
   if(data.length<=capacity)return {pc,capacity,data};
   const target=next;next=(target+data.length+1)&~1;
-  if(next>0x180000||base.slice(target,next).some(v=>v!==255)||rom.slice(target,next).some(v=>v!==255))throw Error('Pré-partida: recursos excedem a reserva disponível.');
+  if(next>0x17fc00||base.slice(target,next).some(v=>v!==255)||rom.slice(target,next).some(v=>v!==255))throw Error('Pré-partida: recursos excedem a reserva disponível.');
   const ref=refs[i],old=cpu(pc);if([0,1,2].some(k=>base[ref+k]!==((old>>(k*8))&255)))throw Error('Pré-partida: ponteiro de recurso incompatível.');
   return {pc:target,capacity:data.length,data,ref};
  });

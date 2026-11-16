@@ -9,7 +9,7 @@ const {ISSSD_DELUXE_ROM:basePath,ISSSD_GG_ROM:referencePath,ISSSD_PLUS_ROM:plusP
 const available=[basePath,referencePath,plusPath,projectPath].every(Boolean);
 const word=(b,p)=>b[p]|b[p+1]<<8;
 test('compact labels use the native white foreground and fit long team names',()=>{
- for(const name of ['VAPOROSOS','ENCEFALICOS','REPUBLICA TCHECA','IRLANDA DO NORTE']){const raw=renderDeluxeTeamLabel(name);assert.equal(raw.length,64);assert.ok(raw.some(v=>v));assert.ok(raw.every((v,i)=>i%2===0||v===0));}
+ for(const name of ['VAPOROSOS','ENCEFALICOS','REPUBLICA TCHECA','IRLANDA DO NORTE']){const raw=renderDeluxeTeamLabel(name);assert.equal(raw.length,64);assert.ok(raw.some((v,i)=>i%2===1&&v));assert.ok(raw.some((v,i)=>i%2===0&&(v&~raw[i+1])));}
  assert.notDeepEqual(renderDeluxeTeamLabel('BRASIL'),renderDeluxeTeamLabel('ITALIA'));
 });
 test('visual catalog rejects malformed records',()=>{

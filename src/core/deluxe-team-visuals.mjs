@@ -37,8 +37,10 @@ export function renderDeluxeTeamLabel(name){
  const tight=t=>[...t].reduce((n,c)=>n+(c===' '?2:FONT[c][0].length),0);
  if(tight(text)>32&&text.includes(' ')){const words=text.split(/\s+/);text=words.slice(0,-1).map(w=>w[0]+'.').join('')+' '+words.at(-1);}
  while(tight(text)>32)text=text.slice(0,-2)+'.';
- const gap=tight(text)+text.length-1<=32?1:0,width=tight(text)+Math.max(0,text.length-1)*gap,raw=new Uint8Array(64);let x=Math.floor((32-width)/2);
- for(const c of text){if(c===' '){x+=2+gap;continue;}const glyph=FONT[c];for(let y=0;y<7;y++)for(let dx=0;dx<glyph[y].length;dx++)if(glyph[y][dx]==='1'){const col=x+dx;raw[Math.floor(col/8)*16+y*2]|=1<<(7-col%8);}x+=glyph[0].length+gap;}
+ const gap=tight(text)+text.length-1<=31?1:0,width=tight(text)+Math.max(0,text.length-1)*gap,raw=new Uint8Array(64),pixels=new Uint8Array(32*8);let x=Math.floor((32-width)/2);
+ for(const c of text){if(c===' '){x+=2+gap;continue;}const glyph=FONT[c];for(let y=0;y<7;y++)for(let dx=0;dx<glyph[y].length;dx++)if(glyph[y][dx]==='1')pixels[y*32+x+dx]=1;x+=glyph[0].length+gap;}
+ const shaded=pixels.slice();for(let y=0;y<7;y++)for(let col=0;col<32;col++)if(pixels[y*32+col])for(const [dx,dy]of [[0,1],[1,0],[1,1]])if(col+dx<32&&!pixels[(y+dy)*32+col+dx])shaded[(y+dy)*32+col+dx]=3;
+ for(let y=0;y<8;y++)for(let col=0;col<32;col++){const v=shaded[y*32+col],at=Math.floor(col/8)*16+y*2,bit=1<<(7-col%8);if(v&1)raw[at]|=bit;if(v&2)raw[at+1]|=bit;}
  return raw;
 }
 export function applyDeluxeTeamVisuals(input,base,structure,value){

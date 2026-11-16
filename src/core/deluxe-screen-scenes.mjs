@@ -3,8 +3,10 @@ import {deluxeMenuWallpaper} from './deluxe-main-menu-scene.mjs';
 import {PLUS_MAIN_MENU_GLYPHS} from './plus-main-menu-renderer.mjs';
 import {TITLE_FONT_ROWS} from './title-font-glyphs.mjs';
 import {DELUXE_MENU_SECTIONS} from './deluxe-menu-text.mjs';
-import {PREMATCH_GRAPHIC_LABELS} from './deluxe-prematch-labels.mjs';
+import {PREMATCH_GRAPHIC_LABELS,renderLabel} from './deluxe-prematch-labels.mjs';
 import {HANDICAP_LABELS,handicapLabelBitmaps} from './deluxe-handicap-labels.mjs';
+import {BUTTON_LABELS,buttonLabelPixels} from './deluxe-button-labels.mjs';
+import {renderDeluxeTeamLabel} from './deluxe-team-visuals.mjs';
 import {yardsToMeters} from './deluxe-stadium-data.mjs';
 export const DELUXE_SCREEN_EDITORS=Object.freeze([
  {id:'open-game',title:'Tela de Open Game',section:'game-type-native',choices:['friendly','league','tournament'],choiceLabels:['Open Game','Short League','Short Tournament']},
@@ -20,7 +22,8 @@ export function deluxeScreenModel(id,project,selected=0){
  const sections=(config.sections??[config.section]).filter(Boolean).map(id=>DELUXE_MENU_SECTIONS.find(s=>s.id===id)),values=Object.fromEntries(sections.flatMap(section=>section.fields.map(f=>[f[0],project?.changes?.menuTexts?.[section.id]?.[f[0]]??f[1]])));
  const labels=Object.fromEntries(PREMATCH_GRAPHIC_LABELS.map(([key,en])=>[key,project?.changes?.preMatchLabels?.[key]??en]));
  const handicapLabels=Object.fromEntries(HANDICAP_LABELS.map(([key,en])=>[key,project?.changes?.handicapLabels?.[key]??en]));
- return {id,selected,values,labels,handicapLabels,stadiumUnits:project?.changes?.stadiumUnits??'yards',config};
+ const buttonLabels=Object.fromEntries(BUTTON_LABELS.map(([key,en])=>[key,project?.changes?.buttonLabels?.[key]??en]));
+ return {id,selected,values,labels,handicapLabels,buttonLabels,stadiumUnits:project?.changes?.stadiumUnits??'yards',config};
 }
 // Composition preview: original wallpaper, approximate native frames and font.
 // Every editable string is read from the same project path as the ROM writer.
@@ -33,7 +36,7 @@ export function deluxeScreenScene(base,id,project,selected=0,reference=null){
  const norm=s=>String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'');
  const text=(s,x,y,{scale=1,tall=1,color=[248,248,248],max=240,compact=false}={})=>{let xx=x;for(const c of norm(s)){const width=compact?6:8;if(xx+width*scale>x+max)break;const rows=(compact?PLUS_MAIN_MENU_GLYPHS[c.toUpperCase()]:TITLE_FONT_ROWS[c]??TITLE_FONT_ROWS[c.toUpperCase()])??[];for(let row=0;row<8;row++)for(let col=0;col<(compact?5:8);col++)if((rows[row]??0)&(1<<((compact?6:7)-col)))for(let dy=0;dy<tall;dy++)for(let dx=0;dx<scale;dx++)put(xx+col*scale+dx,y+row*tall+dy,color);xx+=width*scale;}};
  const wrap=(s,width)=>String(s).split('\n').flatMap(line=>{const lines=[];while(line.length>width){let cut=line.lastIndexOf(' ',width);if(cut<1)cut=width;lines.push(line.slice(0,cut));line=line.slice(cut).trimStart();}return [...lines,line];});
- text('A CONFIRM',176,4,{max:80});text('B CANCEL',184,13,{max:72});
+ for(const [i,[key]]of BUTTON_LABELS.entries()){text(i?'B':'A',208,8+i*8,{compact:true,max:12});const p=buttonLabelPixels(model.buttonLabels[key]);for(let y=0;y<8;y++)for(let x=12;x<40;x++){const c=p[y*40+x];if(c)put(208+x,8+i*8+y,c===1?[248,248,248]:[0,0,0]);}}
  if(id==='open-game'){
   panel(54,32,148,88);panel(46,132,164,60);
   const keys=model.config.choices;keys.forEach((key,i)=>{const y=40+i*24;if(i===selected){rect(59,y-2,136,20,[0,0,80]);for(let x=59;x<195;x++){put(x,y-2,[248,248,0]);put(x,y+17,[248,248,0]);}}text(v[key],62,y,{tall:2,color:i===selected?[248,248,0]:[248,248,248],max:132});});
@@ -47,7 +50,7 @@ export function deluxeScreenScene(base,id,project,selected=0,reference=null){
  }else if(id==='pre-match'){
   const list=selected<10?PREMATCH_GRAPHIC_LABELS.slice(0,10):[PREMATCH_GRAPHIC_LABELS[selected]];
   panel(72,24,128,196);
-  list.forEach(([key],i)=>{const y=32+i*18,active=key===model.config.choices[selected];if(active)rect(77,y-1,118,16,[0,0,88]);text(model.labels[key],80,y,{tall:2,color:active?[248,248,0]:[248,248,248],max:112,compact:true});});
+  list.forEach(([key],i)=>{const y=32+i*18,active=key===model.config.choices[selected];if(active)rect(77,y-1,118,16,[0,0,88]);const p=renderLabel(model.labels[key]),x=80+Math.floor((14-p.tiles)/2)*8;for(let yy=0;yy<16;yy++)for(let xx=0;xx<p.width;xx++){const v=p.pixels[yy*p.width+xx];if(v)put(x+xx,y+yy,v===3?[0,0,0]:active?[248,248,0]:[248,248,248]);}});
  }else{
   text(v.data_87ca36,64,26,{tall:2,max:184});panel(56,56,144,100);rect(66,68,124,76,[0,104,24]);rect(68,70,120,2,[224,240,224]);rect(68,140,120,2,[224,240,224]);rect(128,70,1,72,[224,240,224]);
   text(v.data_87ca57,64,44,{max:176});const country=v.data_87ca9b.split('\n')[selected]?.trim()??model.config.choiceLabels[selected];text(v.data_87cad3+' '+country,40,166,{max:208});text(v.data_87ca77,48,184,{max:160});text(v.data_87ca80.split('\n').join(' / '),64,198,{max:160});text(v.data_87cada,80,214,{max:160});
@@ -59,6 +62,7 @@ function referenceScene(id,project,selected,reference){
  const model=deluxeScreenModel(id,project,selected),rgba=new Uint8ClampedArray(reference),v=model.values;
  const put=(x,y,c)=>{if(x>=0&&x<256&&y>=0&&y<224)rgba.set([...c,255],(y*256+x)*4);};
  const fill=(x,y,w,h,c=[0,0,96])=>{for(let yy=y;yy<y+h;yy++)for(let xx=x;xx<x+w;xx++)put(xx,yy,c);};
+ for(const [i,[key,en]]of BUTTON_LABELS.entries())if(model.buttonLabels[key]!==en){const p=buttonLabelPixels(model.buttonLabels[key]);const top=8+i*8;for(let y=0;y<8;y++)for(let x=12;x<40;x++){const c=p[y*40+x],bg=reference.slice(((top+y)*256+248)*4,((top+y)*256+248)*4+3);put(208+x,top+y,c===1?[248,248,248]:c===3?[0,0,0]:bg);}}
  const text=(value,x,y,color=[248,248,248],compact=false)=>{let at=x;for(const c of String(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'')){let rows=REFERENCE_TALL_FONT[c]??REFERENCE_TALL_FONT[c.toUpperCase()];if(compact){const g=PLUS_MAIN_MENU_GLYPHS[c.toUpperCase()]??[];rows=Array.from({length:16},(_,y)=>g[Math.floor(y/2)]??0);}if(!rows)rows=Array.from({length:16},(_,y)=>TITLE_FONT_ROWS[c.toUpperCase()]?.[Math.floor(y/2)]??0);for(let yy=0;yy<16;yy++)for(let xx=0;xx<(compact?5:8);xx++)if((rows[yy]??0)&(1<<((compact?6:7)-xx)))put(at+xx,y+yy,color);at+=compact?(c===' '?3:6):8;}};
  const centered=(value,y,color,compact=false)=>{const w=compact?[...value].reduce((n,c)=>n+(c===' '?3:6),0):value.length*8;text(value,Math.round(128-w/2),y,color,compact);};
  const lines=(value,width)=>String(value).split('\n').flatMap(line=>{const out=[];while(line.length>width){let at=line.lastIndexOf(' ',width);if(at<1)at=width;out.push(line.slice(0,at));line=line.slice(at).trimStart();}return [...out,line];});
@@ -67,10 +71,11 @@ function referenceScene(id,project,selected,reference){
   fill(54,132,148,34);lines(v[['friendlyHelp','leagueHelp','tournamentHelp'][selected]],17).slice(0,2).forEach((line,i)=>text(line,64,136+i*16));
  }else if(id==='handicap'){
   fill(80,16,96,16,[48,80,200]);centered(v.data_87c811,16);const count=v.data_87c875.split('\n').at(-1).trim();for(const x of[64,176]){fill(x,104,24,16);text(count,x,104);}fill(0,176,256,48,[0,16,136]);lines(v.data_87c884,27).slice(0,2).forEach((line,i)=>text(line,24,184+i*16));
-  const places={condition:[[112,72]],weak:[[16,128],[208,128]],strong:[[56,128],[168,128]],numberPlayers:[[104,104],[104,112]],goalkeeperSkill:[[96,136],[112,144]]};
+  if(project?.changes?.structure){for(const [x,name]of [[92,'BRASIL'],[140,'INGLATERRA']]){const teams=project.changes.structure.teams,team=teams.find(t=>[name,name==='BRASIL'?'BRAZIL':'ENGLAND'].includes(t.name.toUpperCase())),raw=renderDeluxeTeamLabel(team?.name??name);for(let y=0;y<8;y++)for(let col=0;col<32;col++){const at=(col>>3)*16+y*2,bit=7-(col&7),c=(raw[at]>>bit&1)|((raw[at+1]>>bit&1)<<1);const bg=reference.slice(((56+y)*256+x)*4,((56+y)*256+x)*4+3);put(x+col,48+y,c===1?[248,248,248]:c===3?[0,0,0]:bg);}}}
+  const places={condition:[[112,72]],weak:[[16,128],[208,128]],strong:[[56,128],[168,128]],numberPlayers:[[104,104],[112,112]],goalkeeperSkill:[[96,136],[112,144]]};
   for(const [key,en]of HANDICAP_LABELS){const value=model.handicapLabels[key];if(value===en)continue;const maps=handicapLabelBitmaps(key,value),positions=places[key];positions.forEach(([x,y],i)=>{const b=maps[i%maps.length];fill(x,y,b.width,b.height);for(let yy=0;yy<b.height;yy++)for(let xx=0;xx<b.width;xx++){const c=b.pixels[yy*b.width+xx];if(c)put(x+xx,y+yy,c===1?[248,248,248]:[0,0,64]);}});}
  }else if(id==='pre-match'){
-  fill(70,30,124,164);const labels=selected<10?PREMATCH_GRAPHIC_LABELS.slice(0,10):[PREMATCH_GRAPHIC_LABELS[selected]];labels.forEach(([key],i)=>{const t=model.labels[key],width=[...t].reduce((n,c)=>n+(c===' '?3:6),0);text(t,Math.round(132-width/2),32+i*16,key===model.config.choices[selected]?[248,248,0]:undefined,true);});
+  fill(70,30,124,164);const labels=selected<10?PREMATCH_GRAPHIC_LABELS.slice(0,10):[PREMATCH_GRAPHIC_LABELS[selected]];labels.forEach(([key],i)=>{const p=renderLabel(model.labels[key]),x=80+Math.floor((14-p.tiles)/2)*8;for(let yy=0;yy<16;yy++)for(let xx=0;xx<p.width;xx++){const v=p.pixels[yy*p.width+xx];if(v)put(x+xx,32+i*16+yy,v===3?[0,0,0]:key===model.config.choices[selected]?[248,248,0]:[248,248,248]);}});
  }else if(id==='stadium-screen'){
   fill(56,8,144,16,[48,80,200]);centered(v.data_87ca36,8);const weather=v.data_87ca80.split('\n');for(let i=0;i<3;i++){fill(32+i*64,195,64,24,[0,16,136]);const label=weather[i]??'';text(label,32+i*64+Math.max(0,Math.floor((64-label.length*6)/2)),196,[248,248,248],true);}
  }else if(id==='match-announcement'){
