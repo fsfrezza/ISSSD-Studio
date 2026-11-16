@@ -5,6 +5,7 @@ import {TITLE_FONT_ROWS} from './title-font-glyphs.mjs';
 import {DELUXE_MENU_SECTIONS} from './deluxe-menu-text.mjs';
 import {PREMATCH_GRAPHIC_LABELS} from './deluxe-prematch-labels.mjs';
 import {HANDICAP_LABELS,handicapLabelBitmaps} from './deluxe-handicap-labels.mjs';
+import {yardsToMeters} from './deluxe-stadium-data.mjs';
 export const DELUXE_SCREEN_EDITORS=Object.freeze([
  {id:'open-game',title:'Tela de Open Game',section:'game-type-native',choices:['friendly','league','tournament'],choiceLabels:['Open Game','Short League','Short Tournament']},
  {id:'handicap',title:'Handicap',section:'handicap-native',choices:['example'],choiceLabels:['Brasil x Inglaterra · exemplo']},
@@ -19,7 +20,7 @@ export function deluxeScreenModel(id,project,selected=0){
  const sections=(config.sections??[config.section]).filter(Boolean).map(id=>DELUXE_MENU_SECTIONS.find(s=>s.id===id)),values=Object.fromEntries(sections.flatMap(section=>section.fields.map(f=>[f[0],project?.changes?.menuTexts?.[section.id]?.[f[0]]??f[1]])));
  const labels=Object.fromEntries(PREMATCH_GRAPHIC_LABELS.map(([key,en])=>[key,project?.changes?.preMatchLabels?.[key]??en]));
  const handicapLabels=Object.fromEntries(HANDICAP_LABELS.map(([key,en])=>[key,project?.changes?.handicapLabels?.[key]??en]));
- return {id,selected,values,labels,handicapLabels,config};
+ return {id,selected,values,labels,handicapLabels,stadiumUnits:project?.changes?.stadiumUnits??'yards',config};
 }
 // Composition preview: original wallpaper, approximate native frames and font.
 // Every editable string is read from the same project path as the ROM writer.
@@ -74,6 +75,10 @@ function referenceScene(id,project,selected,reference){
   fill(56,8,144,16,[48,80,200]);centered(v.data_87ca36,8);const weather=v.data_87ca80.split('\n');for(let i=0;i<3;i++){fill(32+i*64,195,64,24,[0,16,136]);const label=weather[i]??'';text(label,32+i*64+Math.max(0,Math.floor((64-label.length*6)/2)),196,[248,248,248],true);}
  }else if(id==='match-announcement'){
   fill(48,16,160,16,[48,80,200]);centered(v[selected?'data_87ca67':'data_87ca57'],16);fill(56,72,144,16);centered('U.S.A. '+v.data_87cad3,72);fill(56,144,176,16);text(v.data_87cada+' 13:00',56,144);fill(64,168,168,16);text(v.data_87ca77+' '+(v.data_87ca80.split('\n')[1]??'FINE'),64,168);
+ }
+ if(model.stadiumUnits==='meters'&&['stadium-screen','match-announcement'].includes(id)){
+  const positions=id==='stadium-screen'?[[136,56,118],[96,88,82]]:[[112,88,118],[72,120,82]];
+  for(const [x,y,n]of positions){const value=String(yardsToMeters(n))+'m';fill(x,y,value.length*8,8,[0,0,96]);for(let i=0;i<value.length;i++){const c=value[i],glyph=c==='m'?[0,0,0,108,84,84,84]:PLUS_MAIN_MENU_GLYPHS[c];for(let yy=0;yy<7;yy++)for(let xx=0;xx<5;xx++)if((glyph[yy]??0)&(1<<(6-xx)))put(x+i*8+1+xx,y+yy,[248,248,180]);}}
  }
  return {...model,width:256,height:224,rgba};
 }

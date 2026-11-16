@@ -1,6 +1,18 @@
 import {konamiLzDecompress} from './konami-lz.mjs';
 import {STADIUMS} from './stadiums.mjs';
 
+export const yardsToMeters=yards=>Math.round(yards*0.9144);
+// The original table is read only by CODE_A4A003 (the selection and match
+// announcement renderer). Physics and stadium loaders use separate tables.
+export function applyDeluxeStadiumUnits(out,base,units){
+ if(units===undefined||units==='yards')return out;
+ if(units!=='meters')throw Error('Unidade de medida do estádio inválida.');
+ const table=0x17aed,suffix=0x3ca46,expected=[114,74,118,82,126,90,130,82,122,82,122,74,114,90,138,90];
+ if(expected.some((v,i)=>base[table+i]!==v||out[table+i]!==v)||base[suffix]!==0x42||out[suffix]!==0x42)throw Error('Medidas de estádio: dados originais divergentes.');
+ out.set(expected.map(yardsToMeters),table);out[suffix]=0x36; // SmallMenuText: m
+ return out;
+}
+
 // Native stadium selection: 8 × 12 tiles (32 bytes/tile, planar),
 // with the shared 32×32 tilemap and the four native field colors.
 export function readDeluxeStadiumData(rom,id){
