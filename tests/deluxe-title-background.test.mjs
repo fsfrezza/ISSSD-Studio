@@ -3,7 +3,15 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {splitRom,createDeluxeProject,buildDeluxeProject} from '../src/core/deluxe-project.mjs';
 import {TITLE_LAYERS,readTitleBackground,titleBackgroundPixels,importTitleBackground,titleCompositePixels,transformTitleLayer} from '../src/core/deluxe-title-background.mjs';
+import {konamiLzDecompress} from '../src/core/konami-lz.mjs';
 const fixture=process.env.ISSSD_DELUXE_ROM;
+test('custom title map suppresses the late native two-tile overlay; original stays intact',{skip:!fixture},async()=>{
+ const file=new Uint8Array(fs.readFileSync(fixture)),base=splitRom(file).rom,p=await createDeluxeProject(file),desc=0x1197e,ptr=base[desc]|base[desc+1]<<8|base[desc+2]<<16,raw=konamiLzDecompress(base,((ptr>>>16)&127)*32768+(ptr&32767)).data;
+ const map=Array.from({length:1024},(_,i)=>raw[i*2]|raw[i*2+1]<<8);p.changes.titleScreen={map0:map};assert.deepEqual((await buildDeluxeProject(file,p)).rom,file);
+ map[0x154]=0x2400;map[0x155]=0x2400;const fixed=splitRom((await buildDeluxeProject(file,p)).rom).rom;
+ assert.deepEqual([...fixed.slice(0x5d475,0x5d47f)],Array(10).fill(0xea));assert.deepEqual(fixed.slice(0xf617,0xf61c),base.slice(0xf617,0xf61c));
+ delete p.changes.titleScreen;assert.deepEqual((await buildDeluxeProject(file,p)).rom,file);
+});
 test('title transforms reject clipping and materialize position and scale',()=>{
  const image={width:4,height:4,rgba:new Uint8ClampedArray(64)};image.rgba.set([255,0,0,255],20);
  const next=transformTitleLayer(image,{x:1,y:1,scale:100});assert.deepEqual(Array.from(next.rgba.slice(40,44)),[255,0,0,255]);assert.equal(next.rgba[23],0);assert.equal(image.rgba[23],255);
