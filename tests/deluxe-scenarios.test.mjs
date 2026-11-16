@@ -4,7 +4,13 @@ import fs from 'node:fs';
 import {createDeluxeProject,buildDeluxeProject,splitRom} from '../src/core/deluxe-project.mjs';
 import {SCENARIO_BASE,readDeluxeScenario,scenarioTeamNames,scenarioTexts,scenarioTextField,validateDeluxeScenario,scenarioHeaderId,scenarioDescriptionId} from '../src/core/deluxe-scenarios.mjs';
 import {encodeNativeMenuField} from '../src/core/deluxe-menu-text.mjs';
+import {installScenarioEditor} from '../deluxe-editor/scenario-editor.mjs';
 const fixture=process.env.ISSSD_DELUXE_ROM;
+test('scenario form groups fields, disables native fixed values and keeps navigation and score preview working',{skip:!fixture},()=>{
+ class Element{constructor(tag){this.tag=tag;this.children=[];this.style={};this.listeners={};}append(...items){this.children.push(...items);}replaceChildren(){this.children=[];}addEventListener(event,fn){this.listeners[event]=fn;}}
+ const host=new Element('article'),prior=globalThis.document;globalThis.document={getElementById:()=>host,createElement:tag=>new Element(tag),addEventListener(){}};
+ try{const file=new Uint8Array(fs.readFileSync(fixture)),project={changes:{}},editor=installScenarioEditor({getProject:()=>project,getFile:()=>file,onStatus(){}});editor.render();const nav=host.children[0],body=host.children[1],primary=body.children[0],secondary=body.children[1];assert.equal(primary.children.length,5);assert.equal(secondary.children.length,3);assert.equal(primary.children[4].children[0].disabled,true);assert.equal(secondary.children[2].children[0].disabled,true);assert.notEqual(primary.children[2].children[0].disabled,true);assert.equal(body.children[2].className,'scenario-header');assert.equal(body.children[3].children[0].tag,'textarea');const score=primary.children[2].children[0];score.value=8;score.listeners.input();assert.match(body.children[2].children[0].textContent,/8-/);nav.children[2].onclick();assert.match(host.children[0].children[1].textContent,/2 DE 12/);}finally{globalThis.document=prior;}
+});
 test('all twelve scenarios write native teams, score, clock and referee, and matching header and description',{skip:!fixture},async()=>{
  const f=new Uint8Array(fs.readFileSync(fixture)),{rom,header}=splitRom(f),p=await createDeluxeProject(f);
  p.changes.scenarios=Object.fromEntries(Array.from({length:12},(_,i)=>[i,{...readDeluxeScenario(rom,i),team1:30,team2:31,score1:2,score2:3,seconds:95,referee:2}]));
