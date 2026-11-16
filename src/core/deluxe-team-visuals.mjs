@@ -97,7 +97,9 @@ export function applyDeluxeTeamVisuals(input,base,structure,value){
  }
  for(let id=0;id<n;id++)for(let slot=0;slot<20;slot++){const at=0x17bd20+(id*20+slot)*7+6;out[at]=(out[at]&224)|entries[id].appearance[slot];}
  const patterns=table(0x81ce8a);for(let id=0;id<n;id++){reserve(0x230000+id*256,entries[id].pattern);out.set(w(0x8000+id*256),patterns+id*2);}
- const patternBank=new Code();patternBank.put(0x08,0xc9,0x14,0xf0).branch(0xf0,'native').put(0xe0,...w(n*2)).branch(0xb0,'native').put(0xa5,0x57,0x29,255,0,0xc9,...w(n*2)).branch(0xb0,'native').put(0x28,0xa9,0x80,0xc6,0x6b).label('native').put(0x28,0xa9,0x80,0x98,0x6b);
+ // A is the actual DMA source word. Native numbers and blank tiles share
+ // this call site but reside above $C5D4 in bank $98, not the private patterns.
+ const patternBank=new Code();patternBank.put(0x08,0xc9,...w(0x8000)).branch(0x90,'native').put(0xc9,...w(0x8000+n*256)).branch(0xb0,'native').put(0x28,0xa9,0x80,0xc6,0x6b).label('native').put(0x28,0xa9,0x80,0x98,0x6b);
  hook(0x26816,[0xa9,0,0x98,0x09,0x80,0],[0x22,...l(cpu(allocate(patternBank.finish()))),0xea,0xea]);
  return out;
 }

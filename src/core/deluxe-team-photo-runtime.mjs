@@ -18,7 +18,8 @@ export function applyDeluxeFormationPhotos(input,base,project){
  let cursor=0x3f8000;function alloc(bytes){let at=(cursor-bytes.length)&~1;while(at>=0x300000){if((at&32767)+bytes.length>32768){at=(at&~32767)-bytes.length;continue;}if(!out.subarray(at,at+bytes.length).some(v=>v!==255)){out.set(bytes,at);cursor=at;return at;}at=(at&~32767)-bytes.length;}throw Error('Fotos de formação: espaço de ROM insuficiente.');}
  const table=new Uint8Array(128*4),n=project.changes.structure?.teams.length??36,applied=new Set();for(let slot=0;slot<n;slot++){const id=project.changes.structure?.teams[slot]?.plusId??DELUXE_PROJECT_TO_PLUS[slot],photo=drafts[id];if(!photo)continue;const record=new Uint8Array(PHOTO_BYTES+32);record.set(encodeFormationTiles(photo));record.set(photo.colors.flatMap(w),PHOTO_BYTES);const address=cpu(alloc(record));table.set([...w(address),address>>16,0],slot*4);applied.add(id);}if(ids.some(id=>!applied.has(id)))throw Error('Foto importada pertence a equipe fora da estrutura atual.');
  const tableAt=cpu(alloc(table)),restoreAt=cpu(alloc(originalFormationTiles(base)));
- const rows=[[],[],[],[]];for(let y=0;y<4;y++)for(let x=0;x<6;x++){rows[0].push(...w(0xff00|(x===0&&y===0?24:0)));rows[1].push(...w(x*16));rows[2].push(...w(16+y*16));rows[3].push(...w(0x140+y*32+x*2));}const objectAt=cpu(alloc(Uint8Array.from(rows.flat())));
+ // Native frame interior begins at screen (24,40), not (16,48).
+ const rows=[[],[],[],[]];for(let y=0;y<4;y++)for(let x=0;x<6;x++){rows[0].push(...w(0xff00|(x===0&&y===0?24:0)));rows[1].push(...w(8+x*16));rows[2].push(...w(8+y*16));rows[3].push(...w(0x140+y*32+x*2));}const objectAt=cpu(alloc(Uint8Array.from(rows.flat())));
  const code=new Code();
  // The native caller has already stored the selected team*2 in DP $26.
  code.put(0xa5,0x26,0x0a,0xaa,0xbf,...l(tableAt+2)).branch(0xf0,'native');

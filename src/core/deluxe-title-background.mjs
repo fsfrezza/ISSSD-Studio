@@ -25,9 +25,12 @@ export function applyTitleBackground(out,base,changes){changes=withTitlePhotoBor
   // Skip its dedicated call (an empty script would still queue a zero-length DMA).
   const nativeMap=key==='map0'?stream(base,desc).data:null;
   if(nativeMap&&raw.some((v,i)=>v!==nativeMap[i])){
-   const at=0x5d475,expected=[0xa2,0x17,0xf6,0xa9,0x00,0x04,0x22,0x22,0xa0,0x80];
-   if(expected.some((v,i)=>out[at+i]!==v))throw Error('Tela de título: sobreposição nativa incompatível');
-   out.fill(0xea,at,at+expected.length);
+   const expected=[0xa2,0x17,0xf6,0xa9,0x00,0x04,0x22,0x22,0xa0,0x80];
+   // Both title initialization and the subsequent animation submit this script.
+   for(const at of [0x5d475,0x5d672]){
+    if(expected.some((v,i)=>out[at+i]!==v))throw Error('Tela de título: sobreposição nativa incompatível');
+    out.fill(0xea,at,at+expected.length);
+   }
   }
  }return out;}
 export function titleCompositePixels(base,changes={}){changes=withTitlePhotoBorder(base,changes);const width=256,height=224,rgba=new Uint8ClampedArray(width*height*4),backdrop=colors(base,changes)[0];for(let i=0;i<rgba.length;i+=4)rgba.set([...backdrop,255],i);for(const p of [titleBackgroundPixels(base,'stripe',changes),titleBackgroundPixels(base,'ball',changes),titleBackgroundPixels(base,'photos',changes),{...titleLogoPixels(base,changes),x:TITLE_LOGO_BOUNDS.x,y:TITLE_LOGO_BOUNDS.y}])for(let y=0;y<p.height;y++)for(let x=0;x<p.width;x++){const src=(y*p.width+x)*4,dx=p.x+x,dy=p.y+y;if(p.rgba[src+3]&&dx>=0&&dx<width&&dy>=0&&dy<height)rgba.set(p.rgba.slice(src,src+4),(dy*width+dx)*4);}return {rgba,width,height};}
