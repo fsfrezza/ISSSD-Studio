@@ -1,7 +1,8 @@
 import {applyDeluxePasswordSave} from './deluxe-password-save.mjs';
 import {applyDeluxeGoalkeeperCorner} from './deluxe-goalkeeper-corner.mjs';
 import {buildExperimentalBackpassPenalty,experimentalBackpassHooks} from './experimental-backpass-penalty.mjs';
-export const DELUXE_GAMEPLAY_IDS=Object.freeze(['low-goal-kick','backpass','penalty-interference','controller-one-codes','one-minute','final-attack','goalkeeper-corner','goalkeeper-free-kick','match-hour','password-save']);
+import {applyGoldenBall} from './deluxe-golden-ball.mjs';
+export const DELUXE_GAMEPLAY_IDS=Object.freeze(['low-goal-kick','backpass','penalty-interference','controller-one-codes','one-minute','final-attack','goalkeeper-corner','goalkeeper-free-kick','match-hour','password-save','secret-team-skill-codes','golden-ball-code']);
 // Exact 44-byte helper from the clean Plus ROM at 85:FEC0. PHD/PLD preserve
 // the player's direct page; only keepers 0500/1000 consult their own controller.
 export const LOW_GOAL_KICK_HELPER=Uint8Array.from('0ba900005be00005f007e00010f0078011a2a01a8003a2d01ab58e748ec90080f005a20b002b60a20a002b60'.match(/../g).map(v=>parseInt(v,16)));
@@ -9,6 +10,12 @@ export const PENALTY_INPUT_HELPER=Uint8Array.from('c90080d011b92000892000d009958
 // Preserve caller registers and both input words. The original code detector
 // sees the combined edge for this call only, so controller 2 remains supported.
 export const SECRET_CONTROLLERS_HELPER=Uint8Array.from('08c23048da5aa52a48a528052a852a220df58068852a7afa68286b'.match(/../g).map(v=>parseInt(v,16)));
+// Both unlock codes grant dog and teams. Arm the third native matcher at
+// its preceding A (consumed on this same frame), then B A X Y grants Skills.
+export const SECRET_REWARDS_HELPER=Uint8Array.of(0xa9,1,0,0x9d,0,0,0xe0,0x58,0xd8,0xf0,0x0c,0x8d,0x54,0xd8,0x8d,0x56,0xd8,0xa9,0x48,0x80,0x8d,0x5e,0xd8,0x6b);
+// Code 2 ends in Y rather than A; accept it at the continuation's arming
+// position only. All other comparisons retain the native table.
+export const SECRET_COMPARE_HELPER=Uint8Array.of(0xe0,0x48,0x80,0xd0,0x05,0xc9,0,0x40,0xf0,0x05,0xdf,0,0,0x82,0x6b,0x6b);
 export function validateDeluxeGameplay(ids){if(!Array.isArray(ids)||new Set(ids).size!==ids.length||ids.some(id=>!DELUXE_GAMEPLAY_IDS.includes(id)))throw Error('Melhorias sem patch Deluxe: '+(Array.isArray(ids)?ids.join(', '):'lista inválida'));}
 export function applyDeluxeGameplay(input,base,ids){
  validateDeluxeGameplay(ids);if(!ids.length)return input;
@@ -46,7 +53,13 @@ export function applyDeluxeGameplay(input,base,ids){
   helper(0x127f80,Uint8Array.from([0xad,0x88,0x1f,0xc9,3,0,0xd0,4,0xa9,0,1,0x60,0xb9,0x93,0xe8,0x60,0xad,0x88,0x1f,0xc9,3,0,0xd0,4,0xa9,0x30,0,0x60,0xb9,0x9b,0xe8,0x60]));
  }
  if(ids.includes('penalty-interference')){hook(0x20073,[0xb5,0x22,0x4a],[0x20,0xc0,0xff]);helper(0x27fc0,PENALTY_INPUT_HELPER);}
- if(ids.includes('controller-one-codes')){hook(0x4c2,[0x22,0x0d,0xf5,0x80],[0x22,0,0xfa,0x80]);helper(0x7a00,SECRET_CONTROLLERS_HELPER);}
+ const golden=ids.includes('golden-ball-code');
+ if(ids.includes('controller-one-codes')||ids.includes('secret-team-skill-codes')||golden){hook(0x4c2,[0x22,0x0d,0xf5,0x80],[0x22,0,0xfa,0x80]);const adapter=SECRET_CONTROLLERS_HELPER.slice();if(golden)adapter.set([0x22,0xc0,0xfa,0x80],adapter.indexOf(0x22));helper(0x7a00,adapter);}
+ if(ids.includes('secret-team-skill-codes')){
+  hook(0x7556,[0xa9,1,0,0x9d,0,0],[0x22,0x40,0xfa,0x80,0xea,0xea]);helper(0x7a40,SECRET_REWARDS_HELPER);
+  hook(0x7536,[0xdf,0,0,0x82],[0x22,0x80,0xfa,0x80]);helper(0x7a80,SECRET_COMPARE_HELPER);
+ }
+ if(golden)applyGoldenBall({base,hook,helper});
  if(ids.includes('low-goal-kick')){const original=[0xa5,0x76,0xa2,0x0b,0];if(original.some((v,i)=>base[0x2ef47+i]!==v)||base.slice(0x2fec0,0x2feec).some(v=>v!==255))throw Error('Tiro de meta: rotina Deluxe incompatível');write(0x2ef47,Uint8Array.of(0x20,0xc0,0xfe,0xa5,0x76));write(0x2fec0,LOW_GOAL_KICK_HELPER);}
  if(penalty){for(const[at,bytes]of experimentalBackpassHooks().writes)write(at,bytes);write(0x7fd8,Uint8Array.of(3));out[0x7fd7]=12;}
  const mask=(ids.includes('goalkeeper-corner')?2:0)|(ids.includes('goalkeeper-free-kick')?1:0);
