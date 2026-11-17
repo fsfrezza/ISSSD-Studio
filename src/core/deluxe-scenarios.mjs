@@ -21,11 +21,11 @@ export function scenarioTeamNames(structure){return structure?.teams.map(t=>t.na
 export function scenarioClock(s){return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
 const name=(s,max)=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9 .-]/g,'').trim().slice(0,max).trim();
 export function scenarioTexts(i,v,names){
- const prefix=`N.${i+1} `,score=` ${v.score1}-${v.score2} `,space=28-prefix.length-score.length,fullA=name(names[v.team1],32),fullB=name(names[v.team2],32),half=Math.floor(space/2),a=name(fullA,Math.max(half,space-fullB.length)),b=name(fullB,space-a.length);
+ const score=` ${v.score1}-${v.score2} `,space=28-score.length,fullA=name(names[v.team1],32),fullB=name(names[v.team2],32),half=Math.floor(space/2),a=name(fullA,Math.max(half,space-fullB.length)),b=name(fullB,space-a.length);
  // The native menu draws its TIME REMAINING label in the first six cells.
  const restart=`      ${scenarioClock(v.seconds)} ${SCENARIO_RESTARTS[i]}`;
  const suffix=fullA.length+restart.length+1<=28?' '+fullA:'';
- return {[scenarioHeaderId(i)]:prefix+a+score+b+'\n'+restart+suffix,[scenarioDescriptionId(i)]:v.description??scenarioDefaultDescription(i)};
+ return {[scenarioHeaderId(i)]:a+score+b+'\n'+restart+suffix,[scenarioDescriptionId(i)]:v.description??scenarioDefaultDescription(i)};
 }
 export function validateDeluxeScenario(i,v,names){
  if(!Number.isInteger(i)||i<0||i>=12||!v||typeof v!=='object'||Array.isArray(v)||Object.keys(v).some(k=>!['team1','team2','score1','score2','seconds','referee','description'].includes(k)))throw Error('Cenário inválido');
@@ -36,10 +36,13 @@ export function validateDeluxeScenario(i,v,names){
  return texts;
 }
 export function applyDeluxeScenarios(out,base,changes){
- const values=changes.scenarios;if(values===undefined)return changes.menuTexts;
- if(!values||typeof values!=='object'||Array.isArray(values))throw Error('Cenários inválidos');
+ const values=changes.scenarios;if(values===undefined&&!changes.menuTexts?.['scenario-native'])return changes.menuTexts;
+ if(values!==undefined&&(!values||typeof values!=='object'||Array.isArray(values)))throw Error('Cenários inválidos');
  const names=scenarioTeamNames(changes.structure),menus=structuredClone(changes.menuTexts??{}),section=menus['scenario-native']??={};
- for(const [key,v]of Object.entries(values)){
+ // Existing translated headers may still contain the legacy scenario number.
+ // The selection rectangles use a separate native number table; never modify it.
+ for(let i=0;i<SCENARIO_COUNT;i++){const id=scenarioHeaderId(i),text=section[id];if(typeof text==='string')section[id]=text.replace(/^\s*N(?:O)?\.\s*\d+\s*/i,'');else if(values!==undefined)section[id]=scenarioTextField(id)[1].replace(/^\s*N(?:O)?\.\s*\d+\s*/i,'');}
+ for(const [key,v]of Object.entries(values??{})){
   const i=Number(key);if(String(i)!==key)throw Error('Índice de cenário inválido');
   Object.assign(section,validateDeluxeScenario(i,v,names));
   const p=SCENARIO_BASE+i*15,original=readDeluxeScenario(base,i);
