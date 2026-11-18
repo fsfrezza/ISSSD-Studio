@@ -22,7 +22,8 @@ test('all twelve scenarios write native teams, score, clock and referee, and mat
   assert.deepEqual(out.slice(at+8,at+15),rom.slice(at+8,at+15));
   for(const[id,value]of Object.entries(scenarioTexts(i,v,scenarioTeamNames()))){const field=scenarioTextField(id);encodeNativeMenuField(field,value).forEach((b,k)=>assert.deepEqual(out.slice(field[3].pool.segments[k].pc,field[3].pool.segments[k].pc+b.length),b));}
  }
- assert.match(scenarioTexts(0,p.changes.scenarios[0],scenarioTeamNames())[scenarioHeaderId(0)],/BRASIL 2-3 ARGENTINA/);
+ assert.match(scenarioTexts(0,p.changes.scenarios[0],scenarioTeamNames())[scenarioHeaderId(0)],/^BRASIL 2-3 ARGENTINA/);
+ assert.deepEqual(out.slice(0x3ee15,0x3ee21),rom.slice(0x3ee15,0x3ee21));
  assert.match(scenarioTexts(0,p.changes.scenarios[0],scenarioTeamNames())[scenarioHeaderId(0)],/\n {6}1:35 ESCANTEIO/);
  assert.throws(()=>validateDeluxeScenario(0,{...p.changes.scenarios[0],team2:30},scenarioTeamNames()),/diferentes/);
  delete p.changes.scenarios;assert.deepEqual((await buildDeluxeProject(f,p)).rom,f);
