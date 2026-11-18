@@ -9,12 +9,17 @@ export const IMPROVEMENT_SECTIONS=Object.freeze([
   item('one-minute','Partida de 1 minuto','Acrescenta a duração de um minuto às opções de tempo.',{plusKey:'oneMinuteMatch',status:'available',capability:'gameplay'}),
   item('penalty-interference','Corrigir interferência na cobrança de pênalti','Correção de entrada dos controles na cobrança; é distinta da correção do replay.',{plusKey:'penaltyInputFix',status:'available',capability:'gameplay'}),
   item('password-save','Salvar progresso por bateria','Grava o password de progresso na bateria e o preenche ao voltar à tela de password, inclusive após desligar.',{plusKey:'batterySave',status:'available',capability:'gameplay'}),
-  item('controller-one-codes','Códigos secretos pelo controle 1 ou 2','Adaptar o uso pelo controle 1, mantendo o controle 2. São códigos diferentes: árbitro cachorro — ↑ ↑ ↓ ↓ ← → ← → B A; equipes secretas — R ↑ ↓ L X B ← A → Y.',{plusKey:'playerOneSecretCodes',status:'available',capability:'gameplay'}),
+  item('controller-one-codes','Códigos secretos pelo controle 1 ou 2','Permite digitar os códigos secretos em qualquer um dos controles.',{plusKey:'playerOneSecretCodes',status:'available',capability:'gameplay'}),
  ]},
  {id:'plus-options',title:'Opções adicionais do Editor Plus',description:'As três opções existiam no Editor Plus. As disponíveis têm adaptação própria para o Deluxe; as demais aguardam validação.',items:[
   item('backpass','Punição por recuo ao goleiro','Ao agarrar com as mãos um recuo proibido, aplica pênalti após a breve animação. O domínio com os pés continua permitido.',{plusKey:'goalkeeperBackpassNoHands',status:'available',capability:'gameplay'}),
   item('goalkeeper-free-kick','Goleiro como batedor de faltas (experimental)','Permite escolher o goleiro como batedor oficial na tela de Substituições. Portado do Plus; a estabilidade durante a partida ainda requer teste.',{plusKey:'goalkeeperFreeKickTaker',status:'available',capability:'gameplay'}),
   item('goalkeeper-corner','Goleiro como batedor de escanteios','Permite escolher o goleiro como batedor oficial de escanteios, independentemente das faltas.',{plusKey:'goalkeeperCornerKickTaker',status:'available',capability:'gameplay'}),
+ ]},
+ {id:'secret-codes',title:'Códigos secretos',description:'Recompensas adicionais para os códigos originais.',items:[
+  item('dog-skill-code','Transformar juiz em cachorro','Nos controles 1 e 2: ↑ ↑ ↓ ↓ ← → ← → B A transforma o juiz em cachorro, sem liberar equipes. B A X Y libera 999 pontos para Skills após o desbloqueio, sem exigir sequência imediata.',{status:'available',capability:'gameplay'}),
+  item('secret-team-skill-codes','Liberar equipes secretas e 999 pontos de Skills','Nos controles 1 e 2: R ↑ ↓ L X B ← A → Y libera equipes secretas e árbitro cachorro. B A X Y funciona a qualquer momento após um dos dois desbloqueios.',{status:'available',capability:'gameplay'}),
+  item('golden-ball-code','Bola dourada (código B A L L)','Digite B A L L na tela de título pelo controle 1 ou 2, antes ou depois dos outros códigos, para ativar a bola dourada durante as partidas com latido de confirmação.',{status:'available',capability:'gameplay'}),
  ]},
  {id:'structure',title:'Diferenças de estrutura: Deluxe, Plus e versão GG',description:'O Deluxe inicia com 36 equipes regulares. A Plus possui 54 regulares em nove grupos de seis, mais All Star e Autores. Na versão GG são 60: 54 regulares e seis GG no grupo secreto.',items:[
   item('deluxe-base','ROM Deluxe original como base','Abre a Deluxe original e gera uma cópia com as alterações do projeto.',{status:'available',capability:'always'}),

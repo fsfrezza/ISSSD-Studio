@@ -31,6 +31,7 @@ import {PLUS_MAIN_MENU_IDS,PLUS_MAIN_MENU_ORIGINAL,deluxeMainMenuPreview} from '
 import {SOUND_SLOTS,originalSound,selectedSound,soundEntry,decodeBrrPreview,galvaoSoundChoices,fb96SoundChoices} from '../src/core/deluxe-sounds.mjs';
 import {GAME_AUDIO_RATE,prepareAudio,encodeBrr,pcmToWav} from '../src/core/audio-conversion.mjs';
 import {TRAINING_HUD_FIELDS,MATCH_STATISTICS_FIELDS,encodeTrainingHud,renderMatchStatistics} from '../src/core/deluxe-match-texts.mjs';
+import {MATCH_ANNOUNCEMENTS,renderMatchAnnouncements,announcementPreview} from '../src/core/deluxe-match-announcements.mjs';
 import {TITLE_TEXT_FIELDS,TITLE_SUPPORTED_CHARACTERS,readTitleText,validateTitleText,readTitlePalettes} from '../src/core/deluxe-title-screen.mjs';
 import {titleLogoPixels,importTitleLogo} from '../src/core/deluxe-title-logo.mjs';
 const $=id=>document.getElementById(id);
@@ -54,7 +55,7 @@ function render(){
   for(const id of ['resetGroups','addStructureGroup','resetStructure','teamSelection'])$(id).disabled=!project;$('groupCards').replaceChildren();$('teamCards').replaceChildren();if(!project)$('teamSelection').replaceChildren();$('groupStatus').textContent='';$('newGroupPanel').hidden=true;$('applyPlusGroups').disabled=!project;
   for(const id of ['playerTeam','playerSelection','resetPlayer','resetPlayerTeam'])$(id).disabled=!project;
   $('playerFields').replaceChildren();$('playerAppearance').replaceChildren();$('playerStatus').textContent='';if(!project){$('playerTeam').replaceChildren();$('playerSelection').replaceChildren();}
-  for(const id of ['texts','stadiums','stadiumData','nativeTexts','cursorHelp','menuTexts','mainMenu','trainingHud','matchStatistics','titleTexts','titlePalettes'])$(id).replaceChildren();
+  for(const id of ['texts','stadiums','stadiumData','nativeTexts','cursorHelp','menuTexts','mainMenu','trainingHud','matchAnnouncements','matchStatistics','titleTexts','titlePalettes'])$(id).replaceChildren();
   for(const id of ['menuScale','menuSelection','resetMenu'])$(id).disabled=!project;
   if(!project){$('menuPreview').getContext('2d').clearRect(0,0,256,224);$('menuStatus').textContent='';}
   $('title').value='';$('title').disabled=!project;$('resetTitle').disabled=!project;
@@ -67,6 +68,7 @@ function render(){
   renderTitleScreen(rom);
   renderNative(rom);
   renderMatchTexts(rom);
+  renderMatchAnnouncementsEditor();
   renderMainMenu(rom);
   for(const item of PLUS_STRATEGY_TEXTS){const original=readPlusStrategyText(rom,item.id);textControl($('texts'),{scope:'texts',key:item.id,label:item.label,value:project.changes.strategyTexts[item.id]??original,original,validate:v=>encodePlusStrategyText(v),onChange:v=>{if(v===original)delete project.changes.strategyTexts[item.id];else project.changes.strategyTexts[item.id]=v;}});}
   renderTextActions();
@@ -77,7 +79,7 @@ async function updateImprovements(ids,checked){
  const current=project,rom=file,signature=JSON.stringify(current.changes),next=structuredClone(current),selected=new Set(next.changes.improvements);
  for(const id of ids){if(checked)selected.add(id);else selected.delete(id);}
  next.changes.improvements=[...selected];improvementBusy=true;renderImprovements();
- try{await buildDeluxeProject(rom,next);if(project!==current||file!==rom||JSON.stringify(current.changes)!==signature)throw Error('O projeto mudou durante a aplicação. Repita a ação.');project=next;status('Melhoria atualizada no projeto. Salve o projeto ou gere a ROM para aplicar.');}catch(error){status(error.message);}finally{improvementBusy=false;renderImprovements();}
+ try{await buildDeluxeProject(rom,next);if(project!==current||file!==rom||JSON.stringify(current.changes)!==signature)throw Error('O projeto mudou durante a aplicação. Repita a ação.');project=next;status('Melhoria atualizada no projeto. Salve o projeto ou gere a ROM para aplicar.');}catch(error){status(error.message);}finally{improvementBusy=false;renderImprovements();screenEditors.render();}
 }
 function renderImprovements(){
  const root=$('improvements');root.replaceChildren();
@@ -94,7 +96,7 @@ renderImprovements();
 $('rom').onchange=async()=>{
  const selected=$('rom').files[0];if(!selected)return;
  const token=++opening,pending=pendingProject;
- try{const bytes=new Uint8Array(await selected.arrayBuffer()),p=await createDeluxeProject(bytes);if(pending)await buildDeluxeProject(bytes,pending);if(token!==opening)return;file=bytes;project=pending??p;pendingProject=null;showProjectRomRequest(false);render();for(const id of ['save','export'])$(id).disabled=false;status(pending?'Projeto Deluxe reaberto com a ROM selecionada.':'Deluxe original reconhecido · 2 MB. Sem edições, a exportação preserva o arquivo inteiro.');}catch(error){if(token===opening)status(error.message+(pending?' O projeto continua aguardando a ROM correta. Clique em Abrir ROM para tentar novamente.':''));}finally{$('rom').value='';}
+ try{const bytes=new Uint8Array(await selected.arrayBuffer()),p=await createDeluxeProject(bytes);if(pending&&(pending.base?.sha256!==p.base.sha256||pending.base?.id!==p.base.id))throw Error('A ROM selecionada não corresponde à ROM-base registrada no projeto.');if(token!==opening)return;file=bytes;project=pending??p;pendingProject=null;showProjectRomRequest(false);render();for(const id of ['save','export'])$(id).disabled=false;status(pending?'Projeto Deluxe reaberto com a ROM selecionada.':'Deluxe original reconhecido · 2 MB. Sem edições, a exportação preserva o arquivo inteiro.');}catch(error){if(token===opening)status(error.message+(pending?' O projeto continua aguardando a ROM correta. Clique em Abrir ROM para tentar novamente.':''));}finally{$('rom').value='';}
 };
 $('rom').addEventListener('cancel',()=>{if(pendingProject)status('Seleção de ROM cancelada. O projeto continua aguardando; clique em Abrir ROM para continuar.');});
 $('save').onclick=async()=>{try{await buildDeluxeProject(file,project);download(JSON.stringify(project,null,2),'Deluxe.issdproj','application/json');}catch(error){status(error.message);}};
@@ -102,7 +104,7 @@ $('load').onchange=async()=>{
  const selected=$('load').files[0];if(!selected)return;const token=++opening;pendingProject=null;showProjectRomRequest(false);
  try{const p=JSON.parse(await selected.text());if(token!==opening)return;if(p?.schema!==DELUXE_SCHEMA||p.version!==1||!p.base||!p.changes)throw Error('Selecione um projeto do Editor Deluxe válido.');
  if(!file){pendingProject=p;showProjectRomRequest(true,selected.name??'Projeto Deluxe');status('Projeto selecionado. Escolha a ROM Deluxe original (USA) no botão Selecionar ROM e abrir projeto.');requestProjectRom();return;}
- const current=file;await buildDeluxeProject(current,p);if(token!==opening||file!==current)return;project=p;render();status('Projeto Deluxe reaberto.');
+ const current=file,romProject=await createDeluxeProject(current);if(p.base?.sha256!==romProject.base.sha256||p.base?.id!==romProject.base.id)throw Error('A ROM aberta não corresponde à ROM-base registrada no projeto.');if(token!==opening||file!==current)return;project=p;render();status('Projeto Deluxe reaberto.');
  }catch(error){if(token===opening)status(error.message);}finally{$('load').value='';}
 };
 $('export').onclick=async()=>{try{const result=await buildDeluxeProject(file,project);download(result.rom,'Deluxe-editado.'+(project.base.headerSize?'smc':'sfc'),'application/octet-stream');status('ROM gerada · '+result.diff.changedBytes+' bytes alterados · '+(result.expanded?'4 MB.':'sem expansão.')+(project.changes.structure?' Estrutura experimental: '+project.changes.structure.teams.length+' equipes; valide no emulador.':'')+(project.changes.titleComposer&&!project.changes.titleComposer.prepared?' Há um rascunho de composição não implementado.':''));}catch(error){status(error.message);}};
@@ -281,6 +283,17 @@ function renderMatchTexts(rom){
  }
 }
 
+function renderMatchAnnouncementsEditor(){
+ const host=$('matchAnnouncements');host.replaceChildren();
+ const views=[];
+ function redraw(){try{const rendered=renderMatchAnnouncements(project.changes.matchAnnouncements??{});for(const [index,canvas,info]of views){const ctx=canvas.getContext('2d'),data=ctx.createImageData(256,32);data.data.set(announcementPreview(rendered,index));ctx.putImageData(data,0,0);const requested=project.changes.matchAnnouncements?.[MATCH_ANNOUNCEMENTS[index][0]]??MATCH_ANNOUNCEMENTS[index][1];info.textContent=rendered.texts[index]===requested.toUpperCase()?'':`Na ROM: ${rendered.texts[index]}`;}$('matchAnnouncementsStatus').textContent='Prévia dos gráficos que serão exportados.';}catch(error){$('matchAnnouncementsStatus').textContent=error.message;}}
+ for(const [index,[id,original]]of MATCH_ANNOUNCEMENTS.entries()){
+  const card=document.createElement('div');card.className='announcement-card';
+  textControl(card,{scope:'matchAnnouncements',key:id,label:original,value:project.changes.matchAnnouncements?.[id]??original,original,validate:v=>renderMatchAnnouncements({...project.changes.matchAnnouncements,[id]:v}),onChange:v=>{updateChange('matchAnnouncements',id,v,original);redraw();}});
+  const canvas=document.createElement('canvas');canvas.width=256;canvas.height=32;canvas.className='announcement-preview';canvas.setAttribute('aria-label',`Prévia de ${original}`);const info=document.createElement('p');info.className='hint';card.append(canvas,info);host.append(card);views.push([index,canvas,info]);
+ }redraw();
+}
+
 function titleChange(kind,id,value,original){
  const title=project.changes.titleScreen??={},items=title[kind]??={};
  if(JSON.stringify(value)===JSON.stringify(original))delete items[id];else items[id]=value;
@@ -376,12 +389,12 @@ var presetFile,presetCatalog;
 function textPt(scope,key){if(!scope)return undefined;if(presetFile!==file){presetFile=file;presetCatalog=textPresetFields(splitRom(file).rom);}return presetCatalog.find(f=>f.scope===scope&&f.key===key)?.portuguese;}
 async function runTextPreset(scope,mode){const p=project,current=file,signature=JSON.stringify(p.changes);try{const next=applyTextPreset(p,splitRom(current).rom,scope,mode);await buildDeluxeProject(current,next);if(project!==p||file!==current||JSON.stringify(p.changes)!==signature){status('O projeto mudou durante a aplicação. Repita a ação.');return;}project=next;render();status(mode==='original'?'Textos originais restaurados na seção inteira.':'Português aplicado à seção inteira. Você pode editar cada texto livremente.');}catch(e){status('Nenhum texto foi aplicado: '+e.message);}}
 function addPresetButtons(host,scope){for(const [mode,label]of [['original','Restaurar todos os textos'],['portuguese','Português em todos os textos']]){const b=document.createElement('button');b.type='button';b.textContent=label;b.disabled=!project;b.onclick=()=>runTextPreset(scope,mode);host.append(b);}}
-function renderTextActions(){for(const scope of ['allTexts','texts','nativeTexts','menuTexts','trainingHud','matchStatistics','cursorHelp','mainMenu','titleTexts']){const host=$(scope+'Actions');host.replaceChildren();addPresetButtons(host,scope);}}
+function renderTextActions(){for(const scope of ['allTexts','texts','nativeTexts','menuTexts','trainingHud','matchAnnouncements','matchStatistics','cursorHelp','mainMenu','titleTexts']){const host=$(scope+'Actions');host.replaceChildren();addPresetButtons(host,scope);}}
 
 const tacticsEditor=installTacticsEditor({getProject:()=>project,setProject:next=>project=next,getFile:()=>file,onStatus:status});
 const openingEditors=installOpeningEditors({getProject:()=>project,getFile:()=>file,onStatus:status});
 const scenarioEditor=installScenarioEditor({getProject:()=>project,getFile:()=>file,onStatus:status});
-const screenEditors=installScreenEditors({getProject:()=>project,getFile:()=>file,textControl,addPresetButtons,onStatus:status});
+const screenEditors=installScreenEditors({getProject:()=>project,getFile:()=>file,textControl,addPresetButtons,onStatus:status,updateImprovements});
 const titleComposer=installTitleComposer({getProject:()=>project,getFile:()=>file,onStatus:status});
 
 document.addEventListener?.('deluxe:title-screen-open',()=>{if(!project){titleComposer.render();return;}try{renderTitleScreen(splitRom(file).rom);renderTextActions();}catch(error){status('Falha ao atualizar Tela de título: '+error.message);}});

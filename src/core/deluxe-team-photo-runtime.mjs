@@ -36,6 +36,6 @@ export function applyDeluxeFormationPhotos(input,base,project){
  code.put(0x2b,0xa5,0x26,0xaa,0x5c,...l(0x85b14d));
  // Switching back to a native team restores the static tiles before the
  // original routine reloads the team-dependent body strips.
- code.label('native').put(0xaf,...l(0x7e12c0),0xc9,...w(PHOTO_OBJECT)).branch(0xd0,'original').put(0x0b,0xa9,0,0,0x5b,0xa9,restoreAt>>16,0,0x85,0,0xa9,...w(restoreAt),0xa2,...w(PHOTO_BYTES),0xa0,...w(PHOTO_VRAM),0x22,...l(0x808e37),0x2b).label('original').put(0xa5,0x26,0xaa,0x5c,...l(0x85afa4));
+ code.label('native').put(0x0b,0xa9,0,0,0x5b,0xa9,restoreAt>>16,0,0x85,0,0xa9,...w(restoreAt),0xa2,...w(PHOTO_BYTES),0xa0,...w(PHOTO_VRAM),0x22,...l(0x808e37),0x2b).put(0xa5,0x26,0xaa,0x5c,...l(0x85afa4));
  const helper=cpu(alloc(code.finish())),hook=0x2afa0,expected=[0x20,0x6f,0xaf,0xaa];if(expected.some((v,i)=>base[hook+i]!==v||out[hook+i]!==v))throw Error('Foto de formação: rotina original incompatível.');out.set([0x5c,...l(helper)],hook);return out;
 }

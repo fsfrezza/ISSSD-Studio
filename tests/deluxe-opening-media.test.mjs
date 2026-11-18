@@ -47,6 +47,9 @@ test('image and video openings export atomically, expand when needed and restore
  const restored=await createDeluxeProject(file);assert.deepEqual((await buildDeluxeProject(file,restored)).rom,file);
  const occupied=base.slice();occupied[0x17bb4]=0;const snapshot=occupied.slice();assert.throws(()=>applyDeluxeOpeningMedia(occupied,base,{konami:image()}),/reserva/);assert.deepEqual(occupied,snapshot);
 });
+test('per-screen Start preferences export with original or imported media',{skip:!fixture},async()=>{
+ const file=new Uint8Array(fs.readFileSync(fixture)),base=splitRom(file).rom,p=await createDeluxeProject(file);p.changes.openingStart={konami:'next',international:'next','we-love-soccer':'title'};const original=(await buildDeluxeProject(file,p)).rom.subarray(p.base.headerSize);assert.equal(original[0x493],0x5c);assert.equal(original[0x1e0c7],0x5c);assert.deepEqual(original.slice(0x480,0x484),base.slice(0x480,0x484));p.changes.openingMedia={konami:image()};p.changes.openingStart.konami='title';const custom=(await buildDeluxeProject(file,p)).rom.subarray(p.base.headerSize);assert.equal(custom[0x480],0x5c);assert.equal(custom[0x1e0c7],0x5c);p.changes.openingStart.konami='bad';await assert.rejects(buildDeluxeProject(file,p),/Start inválida/);
+});
 test('opening replacement preserves the full GG project and its sixty-team visual assets',{skip:!fixture||!process.env.ISSSD_GG_RECOVERED_PROJECT},async()=>{
  const p=JSON.parse(fs.readFileSync(process.env.ISSSD_GG_RECOVERED_PROJECT)),before=structuredClone(p),file=new Uint8Array(fs.readFileSync(fixture));
  const header=splitRom(file).header.length,original=(await buildDeluxeProject(file,p)).rom.subarray(header);
@@ -56,4 +59,20 @@ test('opening replacement preserves the full GG project and its sixty-team visua
  assert.deepEqual(edited.slice(0x17b80,0x17bb3),original.slice(0x17b80,0x17bb3));
  assert.equal(edited[0x17bb4+84*13-1],255);
  delete p.changes.openingMedia;assert.deepEqual(p,before);
+});
+test('all imported opening routes restore native PPU tile bases before initializing the title',{skip:!fixture},async()=>{
+ const file=new Uint8Array(fs.readFileSync(fixture)),base=splitRom(file).rom;
+ const ids=['konami','international','we-love-soccer'],at=0x5d1bd;
+ const target=(rom,p)=>((rom[p+3]&0x7f)*0x8000)+((rom[p+1]|rom[p+2]<<8)&0x7fff);
+ for(const id of ids){
+  const original=applyDeluxeOpeningMedia(base,base,undefined,{[id]:'title'});
+  assert.deepEqual(original.slice(at,at+6),base.slice(at,at+6));
+  const rom=applyDeluxeOpeningMedia(base,base,{[id]:image()},{[id]:'title'});
+  assert.equal(rom[at],0x5c);
+  assert.deepEqual(Array.from(rom.slice(at+4,at+6)),[0xea,0xea]);
+  const entry=target(rom,at),restore=target(rom,entry);
+  assert.equal(rom[entry],0x22);
+  assert.deepEqual(rom.slice(entry+4,entry+10),base.slice(at,at+6));
+  assert.deepEqual(Array.from(rom.slice(restore+6,restore+18)),[0xe2,0x20,0xa9,0x22,0x8d,0x0b,0x21,0xa9,0x44,0x8d,0x0c,0x21]);
+ }
 });

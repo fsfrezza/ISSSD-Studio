@@ -20,6 +20,7 @@ import {applyDeluxePlayers,applyDeluxePlayerAppearance} from './deluxe-players.m
 import {PLUS_STRATEGY_TEXTS, encodePlusStrategyText, readPlusStrategyText} from './plus-strategy-text.mjs';
 import {encodeInternalRomTitle, readInternalRomTitle} from './plus-rom-meta.mjs';
 import {applyDeluxeTitleScreen} from './deluxe-title-screen.mjs';
+import {applyDeluxeMatchAnnouncements} from './deluxe-match-announcements.mjs';
 import {applyDeluxeMatchTexts} from './deluxe-match-texts.mjs';
 import {applyDeluxeSounds} from './deluxe-sounds.mjs';
 import {applyDeluxeMainMenu} from './deluxe-main-menu.mjs';
@@ -27,6 +28,7 @@ import {applyDeluxeMenuTexts} from './deluxe-menu-text.mjs';
 import {applyDeluxeNativeChanges} from './deluxe-native-fields.mjs';
 import {diffRanges} from './rom-integrity.mjs';
 import {applyDeluxeScenarios} from './deluxe-scenarios.mjs';
+import {applyDeluxeAnnouncementLayout} from './deluxe-match-announcement-layout.mjs';
 
 export const DELUXE_SHA256='d2fe66c1ce66c65ce14e478c94be2e616f9e2cad374b5783a6a64d3c1a99cfa9';
 export const DELUXE_SCHEMA='isssd-deluxe-project-v1';
@@ -61,7 +63,7 @@ export async function buildDeluxeProject(file,project){
   const base=await identifyDeluxe(file);
   keys(project,['schema','version','base','changes'],'projeto');
   if(project.schema!==DELUXE_SCHEMA||project.version!==1||project.base?.sha256!==base.sha256||project.base?.id!==base.id)throw new Error('Projeto não pertence à base Deluxe original');
-  keys(project.changes,['strategyTexts','internalTitle','improvements','nativeTexts','cursorHelp','stadiums','stadiumUnits','menuTexts','mainMenu','sounds','trainingHud','matchStatistics','titleScreen','players','groups','structure','titleComposer','groupLabels','teamVisuals','preMatchLabels','handicapLabels','buttonLabels','openingMedia','teamPhotos','teamPhotoDrafts','tactics','hiddenGroups','scenarios'],'alterações');
+  keys(project.changes,['strategyTexts','internalTitle','improvements','nativeTexts','cursorHelp','stadiums','stadiumUnits','menuTexts','mainMenu','sounds','trainingHud','matchAnnouncements','matchStatistics','titleScreen','players','groups','structure','titleComposer','groupLabels','teamVisuals','preMatchLabels','handicapLabels','buttonLabels','openingMedia','openingStart','teamPhotos','teamPhotoDrafts','tactics','hiddenGroups','scenarios'],'alterações');
   project=ensureDeluxeTeamPhotos(structuredClone(project));
   const changes=project.changes;
   const appliedTeamPhotos=validateTeamPhotoDrafts(changes.teamPhotoDrafts);
@@ -103,13 +105,15 @@ export async function buildDeluxeProject(file,project){
   out=applyDeluxeGoalkeeperColors(out,rom,project);
   out=applyDeluxePlayerCloseups(out,rom,project);
   out=applyDeluxeGameplay(out,rom,changes.improvements);
+  applyDeluxeAnnouncementLayout(out,rom,changes);
   applyDeluxeHandicapLabels(out,rom,changes.handicapLabels);
   applyDeluxeButtonLabels(out,rom,changes.buttonLabels);
   applyDeluxeStadiumUnits(out,rom,changes.stadiumUnits);
   out=applyDeluxeFormationPhotos(out,rom,project);
   applyDeluxeGroupVisibility(out,rom,project);
+  out=applyDeluxeMatchAnnouncements(out,rom,changes.matchAnnouncements);
   // Allocate media after all other expansion assets so their banks remain intact.
-  out=applyDeluxeOpeningMedia(out,rom,changes.openingMedia);
+  out=applyDeluxeOpeningMedia(out,rom,changes.openingMedia,changes.openingStart);
   const edited=diffRanges(rom,out).changedBytes>0;
   if(edited){
     // For the supported 2 MB power-of-two ROM the checksum quartet contributes

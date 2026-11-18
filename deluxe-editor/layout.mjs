@@ -2,6 +2,7 @@ const pages={
  tactics:['Táticas e formações','Edite posições, funções e Atacar de forma independente para cada equipe.'],
  scenarios:['Cenários','Edite as equipes, placares, tempo e descrição dos 12 desafios.'],
  'match-announcement':['Anúncio da partida','Edite os rótulos; Brasil, Inglaterra e U.S.A. permanecem como exemplos.'],
+ 'match-notices':['Avisos na partida','Personalize os 17 avisos gráficos exibidos durante o jogo.'],
  'opening-konami':['Tela 1 · Konami','Substitua a primeira tela por imagem ou vídeo convertido para o SNES.'],
  'opening-international':['Tela 2 · International','Preserve a animação original ou importe sua própria mídia.'],
  'opening-we-love-soccer':['Tela 3 · We Love Soccer','Edite a mídia e os fades da última etapa da abertura.'],
