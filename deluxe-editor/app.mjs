@@ -40,6 +40,7 @@ let audioContext=null,audioSource=null;
 function status(value){$('status').textContent=value;}
 function requestProjectRom(){try{$('rom').click();}catch{$('status').textContent='O navegador não abriu o seletor automaticamente. Use Selecionar ROM e abrir projeto.';}}
 $('selectProjectRom').onclick=requestProjectRom;
+$('openProjectButton').onclick=()=>{if(!file){status('Abra primeiro uma ROM Deluxe original (USA).');return;}$('load').click();};
 function showProjectRomRequest(value,name='Projeto Deluxe'){$('projectRomRequest').hidden=!value;$('pendingProjectName').textContent=value?name:'';}
 
 function download(data,name,type){const url=URL.createObjectURL(new Blob([data],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
@@ -50,7 +51,8 @@ function render(){
   screenEditors.render();
   openingEditors.render();
   scenarioEditor.render();
-  tacticsEditor.render();
+  let tacticsWarning='';
+  try{tacticsEditor.render();}catch(error){tacticsWarning='As táticas contêm um valor incompatível: '+error.message+'. O projeto foi preservado; revise as táticas antes de gerar a ROM.';$('tacticsStatus').textContent=tacticsWarning;}
   if(!project)renderTextActions();
   for(const id of ['resetGroups','addStructureGroup','resetStructure','teamSelection'])$(id).disabled=!project;$('groupCards').replaceChildren();$('teamCards').replaceChildren();if(!project)$('teamSelection').replaceChildren();$('groupStatus').textContent='';$('newGroupPanel').hidden=true;$('applyPlusGroups').disabled=!project;
   for(const id of ['playerTeam','playerSelection','resetPlayer','resetPlayerTeam'])$(id).disabled=!project;
@@ -72,6 +74,7 @@ function render(){
   renderMainMenu(rom);
   for(const item of PLUS_STRATEGY_TEXTS){const original=readPlusStrategyText(rom,item.id);textControl($('texts'),{scope:'texts',key:item.id,label:item.label,value:project.changes.strategyTexts[item.id]??original,original,validate:v=>encodePlusStrategyText(v),onChange:v=>{if(v===original)delete project.changes.strategyTexts[item.id];else project.changes.strategyTexts[item.id]=v;}});}
   renderTextActions();
+  return tacticsWarning;
 }
 let improvementBusy=false;
 async function updateImprovements(ids,checked){
@@ -96,15 +99,14 @@ renderImprovements();
 $('rom').onchange=async()=>{
  const selected=$('rom').files[0];if(!selected)return;
  const token=++opening,pending=pendingProject;
- try{const bytes=new Uint8Array(await selected.arrayBuffer()),p=await createDeluxeProject(bytes);if(pending&&(pending.base?.sha256!==p.base.sha256||pending.base?.id!==p.base.id))throw Error('A ROM selecionada não corresponde à ROM-base registrada no projeto.');if(token!==opening)return;file=bytes;project=pending??p;pendingProject=null;showProjectRomRequest(false);render();for(const id of ['save','export'])$(id).disabled=false;status(pending?'Projeto Deluxe reaberto com a ROM selecionada.':'Deluxe original reconhecido · 2 MB. Sem edições, a exportação preserva o arquivo inteiro.');}catch(error){if(token===opening)status(error.message+(pending?' O projeto continua aguardando a ROM correta. Clique em Abrir ROM para tentar novamente.':''));}finally{$('rom').value='';}
+ try{const bytes=new Uint8Array(await selected.arrayBuffer()),p=await createDeluxeProject(bytes);if(pending&&(pending.base?.sha256!==p.base.sha256||pending.base?.id!==p.base.id))throw Error('A ROM selecionada não corresponde à ROM-base registrada no projeto.');if(token!==opening)return;file=bytes;project=pending??p;pendingProject=null;showProjectRomRequest(false);const warning=render();for(const id of ['save','export'])$(id).disabled=false;$('load').disabled=false;$('openProjectButton').disabled=false;status((pending?'Projeto Deluxe reaberto com a ROM selecionada.':'ROM Deluxe original reconhecida. Agora você pode abrir um projeto ou editar a ROM.')+(warning?' '+warning:''));}catch(error){if(token===opening)status(error.message+(pending?' O projeto continua aguardando a ROM correta. Clique em Abrir ROM para tentar novamente.':''));}finally{$('rom').value='';}
 };
 $('rom').addEventListener('cancel',()=>{if(pendingProject)status('Seleção de ROM cancelada. O projeto continua aguardando; clique em Abrir ROM para continuar.');});
 $('save').onclick=async()=>{try{await buildDeluxeProject(file,project);download(JSON.stringify(project,null,2),'Deluxe.issdproj','application/json');}catch(error){status(error.message);}};
 $('load').onchange=async()=>{
- const selected=$('load').files[0];if(!selected)return;const token=++opening;pendingProject=null;showProjectRomRequest(false);
+ const selected=$('load').files[0];if(!selected)return;if(!file){status('Abra primeiro a ROM Deluxe original (USA).');$('load').value='';return;}const token=++opening;pendingProject=null;showProjectRomRequest(false);
  try{const p=JSON.parse(await selected.text());if(token!==opening)return;if(p?.schema!==DELUXE_SCHEMA||p.version!==1||!p.base||!p.changes)throw Error('Selecione um projeto do Editor Deluxe válido.');
- if(!file){pendingProject=p;showProjectRomRequest(true,selected.name??'Projeto Deluxe');status('Projeto selecionado. Escolha a ROM Deluxe original (USA) no botão Selecionar ROM e abrir projeto.');requestProjectRom();return;}
- const current=file,romProject=await createDeluxeProject(current);if(p.base?.sha256!==romProject.base.sha256||p.base?.id!==romProject.base.id)throw Error('A ROM aberta não corresponde à ROM-base registrada no projeto.');if(token!==opening||file!==current)return;project=p;render();status('Projeto Deluxe reaberto.');
+ const current=file,romProject=await createDeluxeProject(current);if(p.base?.sha256!==romProject.base.sha256||p.base?.id!==romProject.base.id)throw Error('A ROM aberta não corresponde à ROM-base registrada no projeto.');if(token!==opening||file!==current)return;project=p;const warning=render();status('Projeto Deluxe reaberto.'+(warning?' '+warning:''));
  }catch(error){if(token===opening)status(error.message);}finally{$('load').value='';}
 };
 $('export').onclick=async()=>{try{const result=await buildDeluxeProject(file,project);download(result.rom,'Deluxe-editado.'+(project.base.headerSize?'smc':'sfc'),'application/octet-stream');status('ROM gerada · '+result.diff.changedBytes+' bytes alterados · '+(result.expanded?'4 MB.':'sem expansão.')+(project.changes.structure?' Estrutura experimental: '+project.changes.structure.teams.length+' equipes; valide no emulador.':'')+(project.changes.titleComposer&&!project.changes.titleComposer.prepared?' Há um rascunho de composição não implementado.':''));}catch(error){status(error.message);}};
