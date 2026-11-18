@@ -1,6 +1,6 @@
 import {konamiLzCompress,konamiLzDecompress} from './konami-lz.mjs';
 import {DELUXE_COMPACT_FONT as FONT} from './deluxe-compact-font.mjs';
-import {DELUXE_PROJECT_TO_PLUS} from './deluxe-team-identity.mjs';
+import {DELUXE_PROJECT_TO_PLUS,normalizeDeluxeFlag} from './deluxe-team-identity.mjs';
 export const TEAM_VISUAL_SCHEMA='isssd-deluxe-team-visuals-v1';
 const word=(b,p)=>b[p]|b[p+1]<<8,long=(b,p)=>word(b,p)|b[p+2]<<16;
 const w=n=>[n&255,n>>8&255],l=n=>[...w(n),n>>16&255],cpu=p=>0x800000|((p>>15)<<16)|0x8000|(p&32767),pc=c=>((c>>16&127)*32768)+(c&32767);
@@ -46,7 +46,7 @@ export function renderDeluxeTeamLabel(name){
 export function applyDeluxeTeamVisuals(input,base,structure,value){
  const model=validateTeamVisuals(value);if(!model)return input;if(!structure)throw Error('Identidade visual exige a estrutura de equipes do projeto.');
  const out=input.length===0x400000?input.slice():new Uint8Array(0x400000).fill(255);if(input.length!==out.length)out.set(input);out[0x7fd7]=12;
- const n=structure.teams.length,total=n+7,sources=[...structure.teams.map(t=>t.sourceTeam),36,37,38,39,40,41,42],entries=structure.teams.map((t,i)=>model.teams[t.plusId??DELUXE_PROJECT_TO_PLUS[i]]);
+ const n=structure.teams.length,total=n+7,sources=[...structure.teams.map(t=>t.sourceTeam),36,37,38,39,40,41,42],entries=structure.teams.map((t,i)=>{const id=t.plusId??DELUXE_PROJECT_TO_PLUS[i];return normalizeDeluxeFlag(id,model.teams[id]);});
  let codeNext=0x238000,paletteNext=0x22e000,flagNext=0x220000;
  const reserve=(at,bytes)=>{if(at<0||at+bytes.length>out.length||out.slice(at,at+bytes.length).some(v=>v!==255))throw Error('Identidade visual: reserva ocupada em '+at.toString(16));out.set(bytes,at);return at;};
  const allocate=bytes=>{const at=codeNext;codeNext=(at+bytes.length+1)&~1;if(codeNext>0x240000)throw Error('Código visual excedeu reserva');reserve(at,bytes);return at;};

@@ -5,6 +5,15 @@ import {DELUXE_SCREEN_EDITORS,deluxeScreenModel,deluxeScreenScene,MOVED_MENU_SEC
 import {applyDeluxePrematchLabels,DELUXE_PREMATCH_PORTUGUESE,PREMATCH_GRAPHIC_MAPS} from '../src/core/deluxe-prematch-labels.mjs';
 import {createDeluxeProject,buildDeluxeProject,splitRom} from '../src/core/deluxe-project.mjs';
 const fixture=process.env.ISSSD_DELUXE_ROM;
+test('stadium preview selection tracks the project layout toggle',()=>{const p={changes:{improvements:[]}};assert.equal(deluxeScreenModel('stadium-screen',p).stadiumOptimized,false);p.changes.improvements.push('stadium-layout');assert.equal(deluxeScreenModel('stadium-screen',p).stadiumOptimized,true);p.changes.improvements=[];assert.equal(deluxeScreenModel('stadium-screen',p).stadiumOptimized,false);});
+test('hour preview animates the native frame without modifying the project or background',()=>{
+ const reference=new Uint8Array(256*224*4).fill(49),base=new Uint8Array(0x40000),project={changes:{improvements:['stadium-layout','match-hour']}},before=JSON.stringify(project);
+ const active=deluxeScreenScene(base,'stadium-screen',project,0,reference,true),inactive=deluxeScreenScene(base,'stadium-screen',project,0,reference,false);
+ assert.notDeepEqual(active.rgba,inactive.rgba);
+ const pixel=(scene,x,y)=>Array.from(scene.rgba.slice((y*256+x)*4,(y*256+x)*4+4));
+ assert.deepEqual(pixel(active,100,198),[255,255,131,255]);assert.deepEqual(pixel(inactive,100,198),[0,205,255,255]);
+ assert.deepEqual(pixel(active,100,210),pixel(inactive,100,210));assert.equal(JSON.stringify(project),before);
+});
 test('screen fields retain their existing project paths and appear once',()=>{
  const p={changes:{menuTexts:{'game-type-native':{friendly:'JOGATINA',friendlyHelp:'X1 maroto'},'handicap-native':{data_87c811:'-VANTAGEM-'}},preMatchLabels:{gameStart:'INICIAR JOGO'}}},before=JSON.stringify(p);
  assert.equal(deluxeScreenModel('open-game',p).values.friendly,'JOGATINA');assert.equal(deluxeScreenModel('handicap',p).values.data_87c811,'-VANTAGEM-');assert.equal(deluxeScreenModel('pre-match',p).labels.gameStart,'INICIAR JOGO');assert.equal(JSON.stringify(p),before);

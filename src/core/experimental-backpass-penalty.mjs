@@ -79,7 +79,18 @@ export function experimentalBackpassHooks(){
  q(0xAF,...long(0x70),0xC9,8,0);r.reject(0xD0,'done');
  q(0xA0,0,0,0x7B,0xC9,0,5);r.reject(0xF0,'slot');
  q(0xC9,0,0x10);r.reject(0xD0,'done');q(0xA0,8,0);
- r.label('slot');q(0x7B,0xCF,...long(0xC8));r.reject(0xF0,'done');
+ r.label('slot');
+ // C8 is the last toucher, not the current ball owner. Native F8D6 clears
+ // A4/A6 before updating C8; inspect both here, while ownership is intact.
+ // Another player's controlled ball is not a released backpass. Self-control
+ // remains eligible only for a previously recorded, genuinely loose ball.
+ for(const addr of [0xA4,0xA6]){
+  const next='owner'+addr;
+  q(0xAF,...long(addr));r.reject(0xF0,next);
+  q(0x7B,0xCF,...long(addr));clear(0xD0);
+  r.label(next);
+ }
+ q(0x7B,0xCF,...long(0xC8));r.reject(0xF0,'done');
  q(0xAF,...long(0xC8),0xAA,0xE0,0,5);clear(0x90);
  q(0xE0,0,0x1B);clear(0xB0);q(0x8A,0x29,0xFF,0);clear(0xD0);
  q(0xBF,...long(0x9A),0xC5,0x9A);clear(0xD0);

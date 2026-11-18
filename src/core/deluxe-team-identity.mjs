@@ -7,6 +7,16 @@ export const DELUXE_PROJECT_TO_PLUS=Object.freeze([
  ...DELUXE_TO_PLUS_TEAM,
  ...Array.from({length:54},(_,id)=>id).filter(id=>!DELUXE_TO_PLUS_TEAM.includes(id)),54,55,56,57,58,59
 ]);
+// The imported Encefálicos flag uses transparent pixels for its black field.
+// Map them to the opaque black entry of its four-color palette.
+export function normalizeDeluxeFlag(id,row){
+ if(id!==56||!row||row.flag[2]!==0||row.flag[3]!==0)return row;
+ // Native flag rendering reserves palette entry 12 for its backdrop; use
+ // entry 13 for opaque black, including black pixels encoded as 0 or 12.
+ const opaque=raw=>{const a=raw.slice();for(let t=0;t<a.length;t+=32)for(let y=0;y<8;y++){const i=t+y*2,j=i+16,empty=~(a[i]|a[i+1]|a[j]|a[j+1])&255,black=~(a[i]|a[i+1])&a[j]&a[j+1];a[i]|=empty|black;a[j]|=empty;a[j+1]|=empty;}return a;};
+ const flag=row.flag.slice();flag[4]=0;flag[5]=0;
+ return {...row,flag,selectionFlags:opaque(row.selectionFlags),fieldFlags:opaque(row.fieldFlags)};
+}
 export function deluxeTeamIdentity(slot,structure){
  if(!Number.isInteger(slot)||slot<0||slot>=60)throw Error('Identidade de equipe inválida');
  const plusId=structure?.teams[slot]?.plusId??DELUXE_PROJECT_TO_PLUS[slot];

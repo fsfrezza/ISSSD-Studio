@@ -8,12 +8,14 @@ import {HANDICAP_LABELS,handicapLabelBitmaps} from './deluxe-handicap-labels.mjs
 import {BUTTON_LABELS,buttonLabelPixels} from './deluxe-button-labels.mjs';
 import {renderDeluxeTeamLabel} from './deluxe-team-visuals.mjs';
 import {yardsToMeters} from './deluxe-stadium-data.mjs';
+import {announcementLayoutEnabled,announcementLines,announcementRow,announcementTallTiles,announcementPortugueseReference} from './deluxe-match-announcement-layout.mjs';
+import {drawAnnouncementTile} from './deluxe-announcement-font.mjs';
 export const DELUXE_SCREEN_EDITORS=Object.freeze([
  {id:'open-game',title:'Tela de Open Game',section:'game-type-native',choices:['friendly','league','tournament'],choiceLabels:['Open Game','Short League','Short Tournament']},
  {id:'handicap',title:'Handicap',section:'handicap-native',choices:['example'],choiceLabels:['Brasil x Inglaterra · exemplo']},
  {id:'pre-match',title:'Menu pré-partida',section:null,choices:PREMATCH_GRAPHIC_LABELS.map(f=>f[0]),choiceLabels:PREMATCH_GRAPHIC_LABELS.map(f=>f[1])},
- {id:'stadium-screen',title:'Seleção de estádio',section:'stadium-native',fieldIds:['data_87ca36','data_87ca80','data_87ca9b'],choices:['usa'],choiceLabels:['U.S.A. · exemplo']},
- {id:'match-announcement',title:'Anúncio da partida',section:'stadium-native',sections:['stadium-native','match-options-native'],fieldIds:['data_87ca57','data_87ca67','data_87ca77','data_87cad3','data_87cada'],choices:['day','night'],choiceLabels:['Diurno','Noturno']},
+ {id:'stadium-screen',title:'Seleção de estádio',section:'stadium-native',fieldIds:['data_87ca36','data_87ca80','data_87ca9b'],choices:['auto','day','afternoon','night'],choiceLabels:['Aleatório','13h','16h','19h']},
+ {id:'match-announcement',title:'Anúncio da partida',section:'stadium-native',sections:['stadium-native','match-options-native'],fieldIds:['data_87ca57','data_87ca67','data_87ca77','data_87cad3','data_87cada'],choices:['day','afternoon','night'],choiceLabels:['Diurno · 13h00','Diurno · 16h00','Noturno · 19h00']},
 ].map(Object.freeze));
 export const MOVED_MENU_SECTIONS=new Set(DELUXE_SCREEN_EDITORS.flatMap(s=>s.sections??[s.section]).filter(Boolean));
 export function deluxeScreenModel(id,project,selected=0){
@@ -23,12 +25,12 @@ export function deluxeScreenModel(id,project,selected=0){
  const labels=Object.fromEntries(PREMATCH_GRAPHIC_LABELS.map(([key,en])=>[key,project?.changes?.preMatchLabels?.[key]??en]));
  const handicapLabels=Object.fromEntries(HANDICAP_LABELS.map(([key,en])=>[key,project?.changes?.handicapLabels?.[key]??en]));
  const buttonLabels=Object.fromEntries(BUTTON_LABELS.map(([key,en])=>[key,project?.changes?.buttonLabels?.[key]??en]));
- return {id,selected,values,labels,handicapLabels,buttonLabels,stadiumUnits:project?.changes?.stadiumUnits??'yards',config};
+ return {id,selected,values,labels,handicapLabels,buttonLabels,stadiumUnits:project?.changes?.stadiumUnits??'yards',stadiumOptimized:project?.changes?.improvements?.includes('stadium-layout')??false,config};
 }
 // Composition preview: original wallpaper, approximate native frames and font.
 // Every editable string is read from the same project path as the ROM writer.
-export function deluxeScreenScene(base,id,project,selected=0,reference=null){
- if(reference)return referenceScene(id,project,selected,reference);
+export function deluxeScreenScene(base,id,project,selected=0,reference=null,highlightHour=true){
+ if(reference)return referenceScene(base,id,project,selected,reference,highlightHour);
  const model=deluxeScreenModel(id,project,selected),rgba=deluxeMenuWallpaper(base),{values:v}=model;
  const put=(x,y,c)=>{if(x>=0&&x<256&&y>=0&&y<224)rgba.set([...c,255],(y*256+x)*4);};
  const rect=(x,y,w,h,color)=>{for(let yy=y;yy<y+h;yy++)for(let xx=x;xx<x+w;xx++)put(xx,yy,color);};
@@ -58,11 +60,11 @@ export function deluxeScreenScene(base,id,project,selected=0,reference=null){
  return {...model,width:256,height:224,rgba};
 }
 
-function referenceScene(id,project,selected,reference){
+function referenceScene(base,id,project,selected,reference,highlightHour){
  const model=deluxeScreenModel(id,project,selected),rgba=new Uint8ClampedArray(reference),v=model.values;
  const put=(x,y,c)=>{if(x>=0&&x<256&&y>=0&&y<224)rgba.set([...c,255],(y*256+x)*4);};
  const fill=(x,y,w,h,c=[0,0,96])=>{for(let yy=y;yy<y+h;yy++)for(let xx=x;xx<x+w;xx++)put(xx,yy,c);};
- for(const [i,[key,en]]of BUTTON_LABELS.entries())if(model.buttonLabels[key]!==en){const p=buttonLabelPixels(model.buttonLabels[key]);const top=8+i*8;for(let y=0;y<8;y++)for(let x=12;x<40;x++){const c=p[y*40+x],bg=reference.slice(((top+y)*256+248)*4,((top+y)*256+248)*4+3);put(208+x,top+y,c===1?[248,248,248]:c===3?[0,0,0]:bg);}}
+ for(const [i,[key,en]]of BUTTON_LABELS.entries())if(model.buttonLabels[key]!==en&&!(id==='match-announcement'&&announcementLayoutEnabled(project?.changes)&&announcementPortugueseReference(project?.changes))){const p=buttonLabelPixels(model.buttonLabels[key]);const top=8+i*8;for(let y=0;y<8;y++)for(let x=12;x<40;x++){const c=p[y*40+x],bg=reference.slice(((top+y)*256+248)*4,((top+y)*256+248)*4+3);put(208+x,top+y,c===1?[248,248,248]:c===3?[0,0,0]:bg);}}
  const text=(value,x,y,color=[248,248,248],compact=false)=>{let at=x;for(const c of String(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'')){let rows=REFERENCE_TALL_FONT[c]??REFERENCE_TALL_FONT[c.toUpperCase()];if(compact){const g=PLUS_MAIN_MENU_GLYPHS[c.toUpperCase()]??[];rows=Array.from({length:16},(_,y)=>g[Math.floor(y/2)]??0);}if(!rows)rows=Array.from({length:16},(_,y)=>TITLE_FONT_ROWS[c.toUpperCase()]?.[Math.floor(y/2)]??0);for(let yy=0;yy<16;yy++)for(let xx=0;xx<(compact?5:8);xx++)if((rows[yy]??0)&(1<<((compact?6:7)-xx)))put(at+xx,y+yy,color);at+=compact?(c===' '?3:6):8;}};
  const centered=(value,y,color,compact=false)=>{const w=compact?[...value].reduce((n,c)=>n+(c===' '?3:6),0):value.length*8;text(value,Math.round(128-w/2),y,color,compact);};
  const lines=(value,width)=>String(value).split('\n').flatMap(line=>{const out=[];while(line.length>width){let at=line.lastIndexOf(' ',width);if(at<1)at=width;out.push(line.slice(0,at));line=line.slice(at).trimStart();}return [...out,line];});
@@ -77,12 +79,31 @@ function referenceScene(id,project,selected,reference){
  }else if(id==='pre-match'){
   fill(70,30,124,164);const labels=selected<10?PREMATCH_GRAPHIC_LABELS.slice(0,10):[PREMATCH_GRAPHIC_LABELS[selected]];labels.forEach(([key],i)=>{const p=renderLabel(model.labels[key]),x=80+Math.floor((14-p.tiles)/2)*8;for(let yy=0;yy<16;yy++)for(let xx=0;xx<p.width;xx++){const v=p.pixels[yy*p.width+xx];if(v)put(x+xx,32+i*16+yy,v===3?[0,0,0]:key===model.config.choices[selected]?[248,248,0]:[248,248,248]);}});
  }else if(id==='stadium-screen'){
-  fill(56,8,144,16,[48,80,200]);centered(v.data_87ca36,8);const weather=v.data_87ca80.split('\n');for(let i=0;i<3;i++){fill(32+i*64,195,64,24,[0,16,136]);const label=weather[i]??'';text(label,32+i*64+Math.max(0,Math.floor((64-label.length*6)/2)),196,[248,248,248],true);}
+  if(v.data_87ca36!=='-STADIUM SELECT-'){fill(48,8,160,16,[48,80,200]);centered(v.data_87ca36,8);}const weather=v.data_87ca80.split('\n');for(let i=0;i<3;i++){const label=weather[i]??'';if(label===['SNOW','FINE','RAIN'][i])continue;const x=40+i*64,y=model.stadiumOptimized?184:200;fill(x,y,48,8,[48,80,200]);for(let j=0;j<label.length;j++){const glyph=PLUS_MAIN_MENU_GLYPHS[label[j].toUpperCase()]??[];for(let yy=0;yy<8;yy++)for(let xx=0;xx<5;xx++)if((glyph[yy]??0)&(1<<(6-xx)))put(x+Math.max(0,Math.floor((48-label.length*6)/2))+j*6+xx,y+yy,[248,248,248]);}}
+  if(project?.changes?.improvements?.includes('match-hour')){
+   const label=['HORARIO: ALEATORIO','HORARIO: 13h','HORARIO: 16h','HORARIO: 19h'][selected].padEnd(18);
+   const y=model.stadiumOptimized?200:208;
+   // Native three-pixel frame: the focus alternates between the blue and yellow palettes.
+   const colors=highlightHour?[[41,165,0],[255,255,131]]:[[33,0,131],[0,205,255]];
+   // Draw exactly the ROM's narrower frame (tile columns 15..26).
+   for(let yy=y-3;yy<=y+18;yy++)for(let xx=120;xx<=215;xx++){
+    const dx=Math.min(xx-120,215-xx),dy=Math.min(yy-y+3,y+18-yy);
+    if(dx+dy<3)continue;
+    const edge=Math.min(dx,dy,dx+dy-3);
+    if(edge<3)put(xx,yy,colors[edge===1?1:0]);
+   }
+   [...label].forEach((c,i)=>announcementTallTiles(base,c).forEach((tile,h)=>drawAnnouncementTile(rgba,tile,56+i*8,y+h*8)));
+  }
  }else if(id==='match-announcement'){
-  fill(48,16,160,16,[48,80,200]);centered(v[selected?'data_87ca67':'data_87ca57'],16);fill(56,72,144,16);centered('U.S.A. '+v.data_87cad3,72);fill(56,144,176,16);text(v.data_87cada+' 13:00',56,144);fill(64,168,168,16);text(v.data_87ca77+' '+(v.data_87ca80.split('\n')[1]??'FINE'),64,168);
+  if(announcementLayoutEnabled(project?.changes)&&base.length>0x3be6a){
+   const rows=announcementLines(v,1,selected,1,3,1);
+   rows.forEach((s,line)=>[...announcementRow(s)].forEach((c,i)=>announcementTallTiles(base,c).forEach((tile,h)=>drawAnnouncementTile(rgba,tile,8+i*8,[136,152,168,184,16][line]+h*8))));
+   return {...model,width:256,height:224,rgba};
+  }
+  fill(48,16,160,16,[48,80,200]);centered(v[selected===2?'data_87ca67':'data_87ca57'],16);fill(56,72,144,16);centered('U.S.A. '+v.data_87cad3,72);fill(56,144,176,16);text(v.data_87cada+' '+['13:00','16:00','19:00'][selected],56,144);fill(64,168,168,16);text(v.data_87ca77+' '+(v.data_87ca80.split('\n')[1]??'FINE'),64,168);
  }
  if(model.stadiumUnits==='meters'&&['stadium-screen','match-announcement'].includes(id)){
-  const positions=id==='stadium-screen'?[[136,56,118],[96,88,82]]:[[112,88,118],[72,120,82]];
+  const positions=id==='stadium-screen'?(model.stadiumOptimized?[[160,56,118],[120,88,82]]:[[136,56,118],[96,88,82]]):[[112,88,118],[72,120,82]];
   for(const [x,y,n]of positions){const value=String(yardsToMeters(n))+'m';fill(x,y,value.length*8,8,[0,0,96]);for(let i=0;i<value.length;i++){const c=value[i],glyph=c==='m'?[0,0,0,108,84,84,84]:PLUS_MAIN_MENU_GLYPHS[c];for(let yy=0;yy<7;yy++)for(let xx=0;xx<5;xx++)if((glyph[yy]??0)&(1<<(6-xx)))put(x+i*8+1+xx,y+yy,[248,248,180]);}}
  }
  return {...model,width:256,height:224,rgba};

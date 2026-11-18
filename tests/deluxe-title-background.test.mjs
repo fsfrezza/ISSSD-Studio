@@ -5,6 +5,22 @@ import {splitRom,createDeluxeProject,buildDeluxeProject} from '../src/core/delux
 import {TITLE_LAYERS,readTitleBackground,titleBackgroundPixels,importTitleBackground,titleCompositePixels,transformTitleLayer} from '../src/core/deluxe-title-background.mjs';
 import {konamiLzDecompress} from '../src/core/konami-lz.mjs';
 const fixture=process.env.ISSSD_DELUXE_ROM;
+test('legacy title portraits migrate animated palette indices without touching the other title layers',{skip:!fixture},async()=>{
+ const file=new Uint8Array(fs.readFileSync(fixture)),base=splitRom(file).rom,p=await createDeluxeProject(file);
+ const native=readTitleBackground(base,'photos').original,raw=native.slice();
+ // Tile 2 is the first portrait tile. Simulate an old import using animated CGRAM $E1.
+ for(let plane=0;plane<8;plane++){const at=2*64+(plane>>1)*16+(plane&1);raw[at]=(raw[at]&127)|((0xe1>>plane&1)<<7);}
+ p.changes.titleScreen={photoTiles:Array.from(raw)};
+ const snapshot=JSON.stringify(p),preview=titleCompositePixels(base,p.changes.titleScreen);
+ const built=splitRom((await buildDeluxeProject(file,p)).rom).rom,actual=readTitleBackground(built,'photos').original;
+ let index=0;for(let plane=0;plane<8;plane++)index|=(actual[2*64+(plane>>1)*16+(plane&1)]>>7&1)<<plane;
+ assert.ok(index>=0x20&&index<0xb0);
+ assert.deepEqual(actual.slice(0,128),native.slice(0,128));
+ assert.deepEqual(actual,readTitleBackground(base,'photos',p.changes.titleScreen).raw);
+ assert.deepEqual(titleCompositePixels(built).rgba,preview.rgba);
+ assert.deepEqual(readTitleBackground(built,'ball').original,readTitleBackground(base,'ball').original);
+ assert.equal(JSON.stringify(p),snapshot);
+});
 test('optional photo border writes the same native pixels as preview without mutating project',{skip:!fixture},async()=>{
  const file=new Uint8Array(fs.readFileSync(fixture)),base=splitRom(file).rom,p=await createDeluxeProject(file);p.changes.titleScreen={photoBorder:true};const before=JSON.stringify(p),preview=titleCompositePixels(base,p.changes.titleScreen),normal=titleCompositePixels(base),built=splitRom((await buildDeluxeProject(file,p)).rom).rom;
  assert.notDeepEqual(preview.rgba,normal.rgba);assert.deepEqual(titleCompositePixels(built).rgba,preview.rgba);assert.equal(JSON.stringify(p),before);delete p.changes.titleScreen;assert.deepEqual((await buildDeluxeProject(file,p)).rom,file);
@@ -38,7 +54,7 @@ test('original title layers: native decoding, lossless import, planar encoding, 
   for(let at=0;at<base.length;at++)if(out[at]!==base[at])assert.ok((at>=s.pc&&at<s.pc+s.compressedSize)||(at>=0x7fdc&&at<0x7fe0));
   p.changes.titleScreen={};assert.deepEqual((await buildDeluxeProject(input,p)).rom,input);
   const bad=structuredClone(p);bad.changes.titleScreen[s.key]=[0];await assert.rejects(buildDeluxeProject(input,bad),/tiles inválidos/);
-  let seed=1;bad.changes.titleScreen[s.key]=Array.from({length:s.original.length},()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed>>>24;});if(id==='photos'){const relocated=splitRom((await buildDeluxeProject(input,bad)).rom).rom;assert.deepEqual(readTitleBackground(relocated,id).original,Uint8Array.from(bad.changes.titleScreen[s.key]));}else await assert.rejects(buildDeluxeProject(input,bad),/excede espaço/);
+  let seed=1;bad.changes.titleScreen[s.key]=Array.from({length:s.original.length},()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed>>>24;});if(id==='photos'){const relocated=splitRom((await buildDeluxeProject(input,bad)).rom).rom;assert.deepEqual(readTitleBackground(relocated,id).original,readTitleBackground(base,id,bad.changes.titleScreen).raw);}else await assert.rejects(buildDeluxeProject(input,bad),/excede espaço/);
   assert.throws(()=>importTitleBackground(base,id,{},new Uint8ClampedArray(4),1,1),/use/);
  }
  assert.deepEqual(input,snapshot);

@@ -4,13 +4,24 @@ import {DELUXE_SCREEN_EDITORS,deluxeScreenScene,MOVED_MENU_SECTIONS} from '../sr
 import {DELUXE_MENU_SECTIONS,encodeNativeMenuField} from '../src/core/deluxe-menu-text.mjs';
 import {PREMATCH_GRAPHIC_LABELS,applyDeluxePrematchLabels} from '../src/core/deluxe-prematch-labels.mjs';
 import {splitRom} from '../src/core/deluxe-project.mjs';
+import {announcementReferenceId} from '../src/core/deluxe-match-announcement-layout.mjs';
 export const screenPrefix=id=>'screen'+id.split('-').map(s=>s[0].toUpperCase()+s.slice(1)).join('');
-export function installScreenEditors({getProject,getFile,textControl,addPresetButtons,onStatus}){
+export function installScreenEditors({getProject,getFile,textControl,addPresetButtons,onStatus,updateImprovements}){
  const $=id=>document.getElementById(id),references=new Map();
+ const layouts={'stadium-screen':['stadiumLayoutOptimized','stadium-layout'],'match-announcement':['announcementLayoutOptimized','announcement-layout']};
+ let draftProject=null,highlightHour=true;const drafts=new Map();
+ function layoutState(){const p=getProject();if(p!==draftProject){draftProject=p;drafts.clear();}return p;}
+ function previewProject(p,id){
+  if(!p||!layouts[id])return p;
+  const key=layouts[id][1],selected=new Set(p.changes.improvements);
+  if(drafts.has(id)){if(drafts.get(id))selected.add(key);else selected.delete(key);}
+  return {...p,changes:{...p.changes,improvements:[...selected]}};
+ }
  function draw(config){
-  const p=getProject(),prefix=screenPrefix(config.id),canvas=$(prefix+'Preview'),ctx=canvas.getContext('2d');
+  const current=layoutState(),prefix=screenPrefix(config.id),canvas=$(prefix+'Preview'),ctx=canvas.getContext('2d');
+  const p=previewProject(current,config.id);
   if(!p){ctx.clearRect(0,0,256,224);return;}
-  try{const selected=Number($(prefix+'Selection').value)||0,scene=deluxeScreenScene(splitRom(getFile()).rom,config.id,p,selected,references.get(config.id)),data=ctx.createImageData(256,224);data.data.set(scene.rgba);ctx.putImageData(data,0,0);$(prefix+'Status').textContent='';}
+  try{const selected=Number($(prefix+'Selection').value)||0,refId=config.id==='match-announcement'?announcementReferenceId(p.changes):config.id==='stadium-screen'&&p.changes.improvements.includes('stadium-layout')?(p.changes.improvements.includes('match-hour')?'stadium-optimized-hour':'stadium-optimized'):config.id;if(refId.startsWith('match-announcement-layout')&&!references.has(refId))return;const scene=deluxeScreenScene(splitRom(getFile()).rom,config.id,p,selected,references.get(refId)??references.get(config.id),highlightHour),data=ctx.createImageData(256,224);data.data.set(scene.rgba);ctx.putImageData(data,0,0);$(prefix+'Status').textContent='';}
   catch(error){$(prefix+'Status').textContent='Prévia indisponível: '+error.message;}
  }
  function updateMenu(config,sectionId,key,value,original){
@@ -19,7 +30,8 @@ export function installScreenEditors({getProject,getFile,textControl,addPresetBu
   if(!Object.keys(entries).length)delete menus[sectionId];if(!Object.keys(menus).length)delete p.changes.menuTexts;for(const screen of DELUXE_SCREEN_EDITORS)draw(screen);
  }
  function render(){
-  const p=getProject();
+  const p=layoutState();
+  for(const [id,[boxId,key]] of Object.entries(layouts)){const box=$(boxId),applied=p?.changes?.improvements?.includes(key)??false;box.disabled=!p;box.checked=drafts.get(id)??applied;$(boxId+'Apply').disabled=!p||box.checked===applied;$(boxId+'Status').textContent=box.checked===applied?'Layout '+(applied?'otimizado':'original')+' definido no projeto.':'Prévia alterada. Clique em implementar para gravar a escolha.';}
   for(const config of DELUXE_SCREEN_EDITORS){
    const prefix=screenPrefix(config.id),fields=$(prefix+'Fields'),selection=$(prefix+'Selection'),actions=$(prefix+'Actions');fields.replaceChildren();actions.replaceChildren();const previous=Number(selection.value)||0;selection.replaceChildren();selection.disabled=!p||config.choices.length===1;$(prefix+'Reset').disabled=!p;
    $(prefix+'Status').textContent='';if(!p){draw(config);continue;}
@@ -42,7 +54,16 @@ export function installScreenEditors({getProject,getFile,textControl,addPresetBu
    draw(config);
   }
  }
+ for(const [id,[boxId,key]] of Object.entries(layouts)){
+  const box=$(boxId),apply=$(boxId+'Apply'),message=$(boxId+'Status'),config=DELUXE_SCREEN_EDITORS.find(s=>s.id===id);
+  box.onchange=()=>{const p=layoutState();if(!p)return;drafts.set(id,box.checked);apply.disabled=box.checked===p.changes.improvements.includes(key);message.textContent=apply.disabled?'Prévia igual ao layout aplicado.':'Prévia alterada. A ROM ainda não foi modificada.';draw(config);};
+  apply.onclick=async()=>{const p=layoutState();if(!p)return;const choice=box.checked,pending=new Map(drafts);box.disabled=apply.disabled=true;await updateImprovements([key],choice);const after=layoutState();for(const [other,value]of pending)if(other!==id)drafts.set(other,value);render();message.textContent=after?.changes.improvements.includes(key)===choice?'Escolha implementada no projeto. Será aplicada ao gerar a ROM.':'Não foi possível implementar a escolha.';};
+ }
  for(const config of DELUXE_SCREEN_EDITORS){const prefix=screenPrefix(config.id);$(prefix+'Selection').onchange=()=>draw(config);$(prefix+'Reset').onclick=()=>{const p=getProject();if(!p)return;if(p.changes.menuTexts){for(const id of(config.sections??[config.section]).filter(Boolean)){if(config.fieldIds){for(const key of config.fieldIds)delete p.changes.menuTexts[id]?.[key];if(!Object.keys(p.changes.menuTexts[id]??{}).length)delete p.changes.menuTexts[id];}else delete p.changes.menuTexts[id];}if(!Object.keys(p.changes.menuTexts).length)delete p.changes.menuTexts;}if(config.id==='pre-match')delete p.changes.preMatchLabels;if(config.id==='handicap')delete p.changes.handicapLabels;render();onStatus(config.title+': textos originais restaurados.');};}
  for(const config of DELUXE_SCREEN_EDITORS){const img=document.createElement('img');img.onload=()=>{const canvas=document.createElement('canvas');canvas.width=256;canvas.height=224;const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,256,224);references.set(config.id,ctx.getImageData(0,0,256,224).data);draw(config);};img.src='/deluxe-editor/assets/screens/'+config.id+'.png';}
+ for(const id of ['stadium-optimized','stadium-optimized-hour']){const img=document.createElement('img');img.onload=()=>{const canvas=document.createElement('canvas');canvas.width=256;canvas.height=224;const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,256,224);references.set(id,ctx.getImageData(0,0,256,224).data);draw(DELUXE_SCREEN_EDITORS.find(s=>s.id==='stadium-screen'));};img.src='/deluxe-editor/assets/screens/'+id+'.png';}
+ for(const id of ['match-announcement-layout','match-announcement-layout-meters','match-announcement-layout-pt','match-announcement-layout-pt-meters']){const img=document.createElement('img');img.onload=()=>{const canvas=document.createElement('canvas');canvas.width=256;canvas.height=224;const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,256,224);references.set(id,ctx.getImageData(0,0,256,224).data);draw(DELUXE_SCREEN_EDITORS.find(s=>s.id==='match-announcement'));};img.src='/deluxe-editor/assets/screens/'+id+'.png';}
+ // Animate only the visible stadium preview, without touching saved project state.
+ const timer=setInterval(()=>{const config=DELUXE_SCREEN_EDITORS.find(s=>s.id==='stadium-screen'),canvas=$(screenPrefix(config.id)+'Preview');if(canvas.offsetParent&&getProject()?.changes?.improvements?.includes('match-hour')){highlightHour=!highlightHour;draw(config);}},400);timer?.unref?.();
  render();return {render,ownsSection:id=>MOVED_MENU_SECTIONS.has(id)};
 }
