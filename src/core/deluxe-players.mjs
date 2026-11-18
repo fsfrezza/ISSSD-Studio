@@ -31,11 +31,11 @@ export function applyDeluxePlayers(out,base,edits){
   if(edit.appearance!==undefined){const a=object(edit.appearance,'Aparência');if(Object.keys(a).some(k=>!['hair','palette','colors'].includes(k))||!Number.isInteger(a.hair)||a.hair<0||a.hair>15||![0,1].includes(a.palette))throw Error('Aparência: escolha um tipo de 0 a 15 e conjunto 0 ou 1');if(a.colors!==undefined&&(!(player===0||player===11)||!Array.isArray(a.colors)||a.colors.length!==11||a.colors.some(v=>!Number.isInteger(v)||v<0||v>32767)))throw Error('Cores individuais: paleta de goleiro inválida');if((player===0||player===11)&&a.hair!==0)throw Error('Goleiro usa cabelo integrado ao desenho');raw[6]=(raw[6]&224)|(a.palette<<4)|a.hair;}
   writes.push([at.record,raw]);
  }
- for(const team of teams){const nums=Array.from({length:20},(_,p)=>readDeluxePlayer(base,team,p,edits).jersey);if(nums.some(v=>!Number.isInteger(v)||v<1||v>20)||new Set(nums).size!==20)throw Error('Os números da equipe devem conter 1 a 20, sem repetição');}
+ for(const team of teams){const nums=Array.from({length:20},(_,p)=>readDeluxePlayer(base,team,p,edits).jersey);if(nums.some(v=>!Number.isInteger(v)||v<1||v>99)||new Set(nums).size!==20)throw Error('Os números da equipe devem conter 1 a 99, sem repetição');}
  for(const [at,bytes]of writes)out.set(bytes,at);return out;
 }
 export function planDeluxeJerseySwap(base,edits,team,player,jersey){
- if(!Number.isInteger(jersey)||jersey<1||jersey>20)throw Error('Número deve ser de 1 a 20');const current=readDeluxePlayer(base,team,player,edits),other=Array.from({length:20},(_,p)=>readDeluxePlayer(base,team,p,edits)).find(p=>p.player!==player&&p.jersey===jersey);
+ if(!Number.isInteger(jersey)||jersey<1||jersey>99)throw Error('Número deve ser de 1 a 99');const current=readDeluxePlayer(base,team,player,edits),other=Array.from({length:20},(_,p)=>readDeluxePlayer(base,team,p,edits)).find(p=>p.player!==player&&p.jersey===jersey);
  const result=structuredClone(edits);(result[team+':'+player]??={}).jersey=jersey;if(other)(result[team+':'+other.player]??={}).jersey=current.jersey;return result;
 }
 
