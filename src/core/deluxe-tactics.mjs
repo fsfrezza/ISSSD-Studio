@@ -8,11 +8,34 @@ export function validateDeluxeTactics(value,count){
  for(const id of Object.keys(value.teams))if(!/^\d+$/.test(id)||+id>=count)throw Error('Táticas: equipe inválida '+id);
  if(value.formations!==undefined){if(!value.formations||typeof value.formations!=='object'||Array.isArray(value.formations))throw Error('Táticas: formações inválidas');for(const [id,forms] of Object.entries(value.formations)){if(!/^\d+$/.test(id)||+id>=count||!forms||typeof forms!=='object'||Array.isArray(forms))throw Error('Táticas: equipe inválida');for(const [index,raw] of Object.entries(forms)){if(!/^\d+$/.test(index)||+index>15||!Array.isArray(raw)||raw.length!==31||raw[0]!==+index||raw.some(v=>!Number.isInteger(v)||v<0||v>255))throw Error('Táticas: formação inválida');}}}return value;
 }
+// Saved Deluxe projects may contain native-representable placements outside the
+// Plus editor's conventional class lanes, and AT players with attack bit set.
+// Preserve these values instead of normalizing the user's saved tactics.
+export function encodeDeluxeSavedTactics(raw,semantic={}){
+ if(!Array.isArray(semantic.players))return encodePlusTacticalRecord(raw,semantic);
+ const exceptional=[];
+ const normalized=semantic.players.map(player=>{
+  const zone=PLUS_TACTICAL_ZONES[player.className];
+  const extendedMC=player.className==='MC'&&Number.isInteger(player.x)&&
+   (player.x<zone.min||player.x>zone.max)&&player.x>=-40&&player.x<=40;
+  const attackingAT=player.className==='AT'&&player.attack===true;
+  if(extendedMC||attackingAT)exceptional.push({player,extendedMC,attackingAT});
+  return {...player,...(extendedMC?{x:Math.max(zone.min,Math.min(zone.max,player.x))}:{}),
+   ...(attackingAT?{attack:false}:{})};
+ });
+ const encoded=encodePlusTacticalRecord(raw,{...semantic,players:normalized});
+ for(const {player,extendedMC,attackingAT} of exceptional){
+  const index=player.index;
+  if(extendedMC)encoded[1+index*2]=player.x&255;
+  if(attackingAT)encoded[21+index]|=0x04;
+ }
+ return encoded;
+}
 function nativeRecord(base,source){const pointer=word(base,0x5ef48+source*2);if(pointer<32768)throw Error('Táticas: ponteiro nativo inválido');return base.slice(0x58000+(pointer&32767),0x58000+(pointer&32767)+31);}
-export function deluxeTacticalRecord(base,project,team){const structure=project.changes.structure,count=structure?.teams.length??36;if(!Number.isInteger(team)||team<0||team>=count)throw Error('Equipe tática inválida');const model=validateDeluxeTactics(project.changes.tactics,count),raw=model?.sourceRecords[team]?Uint8Array.from(model.sourceRecords[team]):nativeRecord(base,structure?.teams[team].sourceTeam??team);return encodePlusTacticalRecord(raw,model?.teams[team]??{});}
+export function deluxeTacticalRecord(base,project,team){const structure=project.changes.structure,count=structure?.teams.length??36;if(!Number.isInteger(team)||team<0||team>=count)throw Error('Equipe tática inválida');const model=validateDeluxeTactics(project.changes.tactics,count),raw=model?.sourceRecords[team]?Uint8Array.from(model.sourceRecords[team]):nativeRecord(base,structure?.teams[team].sourceTeam??team);return encodeDeluxeSavedTactics(raw,model?.teams[team]??{});}
 export function createDeluxeTactics(base,project){const n=project.changes.structure?.teams.length??36;const records=Object.fromEntries(Array.from({length:n},(_,team)=>[team,Array.from(deluxeTacticalRecord(base,project,team))]));return {schema:'isssd-deluxe-tactics-v1',version:1,sourceRecords:records,teams:{}};}
 export function setDeluxeTeamTactics(base,project,team,state){
- const count=project.changes.structure?.teams.length??36;if(!Number.isInteger(team)||team<0||team>=count)throw Error('Equipe tática inválida');const next=structuredClone(project);next.changes.tactics??=createDeluxeTactics(base,project);const model=next.changes.tactics,raw=model.sourceRecords[team]?Uint8Array.from(model.sourceRecords[team]):nativeRecord(base,project.changes.structure?.teams[team].sourceTeam??team);const original=decodePlusTacticalRecord(raw),changed=p=>['x','y','className','attack'].some(k=>p[k]!==original.players[p.index][k]),encoded=encodePlusTacticalRecord(raw,{...state,players:state.players.filter(changed)});model.sourceRecords[team]??=Array.from(raw);model.teams[team]={formationIndex:encoded[0],players:decodePlusTacticalRecord(encoded).players.filter(changed).map(({index,x,y,className,attack})=>({index,x,y,className,attack}))};return next;
+ const count=project.changes.structure?.teams.length??36;if(!Number.isInteger(team)||team<0||team>=count)throw Error('Equipe tática inválida');const next=structuredClone(project);next.changes.tactics??=createDeluxeTactics(base,project);const model=next.changes.tactics,raw=model.sourceRecords[team]?Uint8Array.from(model.sourceRecords[team]):nativeRecord(base,project.changes.structure?.teams[team].sourceTeam??team);const original=decodePlusTacticalRecord(raw),changed=p=>['x','y','className','attack'].some(k=>p[k]!==original.players[p.index][k]),encoded=encodeDeluxeSavedTactics(raw,{...state,players:state.players.filter(changed)});model.sourceRecords[team]??=Array.from(raw);model.teams[team]={formationIndex:encoded[0],players:decodePlusTacticalRecord(encoded).players.filter(changed).map(({index,x,y,className,attack})=>({index,x,y,className,attack}))};return next;
 }
 export function deluxeFormationPreset(raw,index){if(!Number.isInteger(index)||index<0||index>15)throw Error('Formação inválida');const counts=DELUXE_FORMATIONS[index].split('-').map(Number),players=[];for(let line=0;line<3;line++){const className=['DF','MC','AT'][line],n=counts[line];for(let i=0;i<n;i++)players.push({index:players.length,x:PLUS_TACTICAL_ZONES[className].base,y:n===1?0:Math.round(-30+i*60/(n-1)),className,attack:false});}return decodePlusTacticalRecord(encodePlusTacticalRecord(raw,{formationIndex:index,players}));}
 export function deluxeFormationRecord(base,project,team,index){
@@ -22,7 +45,7 @@ export function deluxeFormationRecord(base,project,team,index){
  return Uint8Array.from([index,...base.slice(0x10134+index*20,0x10134+index*20+20),...base.slice(0x10074+index*10,0x10074+index*10+10)]);
 }
 export function setDeluxeFormation(base,project,team,index,state){
- const raw=deluxeFormationRecord(base,project,team,index),original=decodePlusTacticalRecord(raw),encoded=encodePlusTacticalRecord(raw,{...state,formationIndex:index,players:state.players.filter(p=>['x','y','className','attack'].some(k=>p[k]!==original.players[p.index][k]))});
+ const raw=deluxeFormationRecord(base,project,team,index),original=decodePlusTacticalRecord(raw),encoded=encodeDeluxeSavedTactics(raw,{...state,formationIndex:index,players:state.players.filter(p=>['x','y','className','attack'].some(k=>p[k]!==original.players[p.index][k]))});
  if(deluxeTacticalRecord(base,project,team)[0]===index)return setDeluxeTeamTactics(base,project,team,decodePlusTacticalRecord(encoded));
  const next=structuredClone(project);next.changes.tactics??=createDeluxeTactics(base,project);const forms=next.changes.tactics.formations??={};(forms[team]??={})[index]=Array.from(encoded);return next;
 }
