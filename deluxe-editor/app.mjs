@@ -1,4 +1,5 @@
 import {appendTeamPixelEditors,appendTeamPhotoEditor} from './team-pixels.mjs';
+import {renderOverview,adjacentTeam} from './overview.mjs';
 import {renderPlayerAppearancePanel} from './player-appearance.mjs';
 import {deluxeTeamPicture,deluxeTeamFlag} from '../src/core/deluxe-team-preview.mjs';
 import {ensureDeluxeTeamPhotos} from '../src/core/deluxe-team-photos.mjs';
@@ -47,6 +48,7 @@ function download(data,name,type){const url=URL.createObjectURL(new Blob([data],
 function render(){
   document.dispatchEvent?.(new CustomEvent('deluxe:editor-ready',{detail:!!(file&&project)}));
   if(project)ensureDeluxeTeamPhotos(project);
+  renderOverview(document,project);
   renderImprovements();
   screenEditors.render();
   openingEditors.render();
@@ -358,7 +360,9 @@ function teamNames(){return project?.changes.structure?.teams.map(t=>t.name)??DE
 function playerBase(){const key=JSON.stringify(project.changes.structure);if(structureCache?.file!==file||structureCache?.key!==key)structureCache={file,key,base:prepareDeluxeStructure(splitRom(file).rom,project.changes.structure)};return structureCache.base;}
 function renderTeams(){
  if(!project)return;const names=teamNames(),i=Math.min(Number($('teamSelection').value)||0,names.length-1);$('teamSelection').replaceChildren();names.forEach((name,id)=>option($('teamSelection'),id,name));$('teamSelection').value=i;$('teamCards').replaceChildren();
- const t=project.changes.structure?.teams[i],body=document.createElement('div');body.className='card-body compact-grid';
+ const header=document.createElement('div'),heading=document.createElement('div'),name=document.createElement('strong'),meta=document.createElement('small');header.className='team-navigation';heading.className='team-navigation-title';heading.setAttribute('aria-live','polite');name.textContent=names[i];const group=deluxeGroupView(splitRom(file).rom,project).find(row=>row.teams.some(team=>team.projectSlot===i));meta.textContent=`${i+1} / ${names.length} · 20 jogadores${group?' · '+group.name:''}`;heading.append(name,meta);
+ for(const [step,label,symbol] of [[-1,'Equipe anterior','←'],[1,'Próxima equipe','→']]){const button=document.createElement('button');button.type='button';button.textContent=symbol;button.title=label;button.setAttribute('aria-label',label);button.disabled=names.length<2;button.onclick=()=>{$('teamSelection').value=String(adjacentTeam(i,names.length,step));renderTeams();};if(step===-1)header.append(button,heading);else header.append(button);}
+ const t=project.changes.structure?.teams[i],body=document.createElement('div');body.className='card-body compact-grid';body.append(header);
  const label=document.createElement('label'),input=document.createElement('input');label.textContent='Nome no projeto e no Editor';input.value=t?.name??names[i];input.maxLength=32;input.disabled=!t;input.onchange=()=>{if(!input.value.trim()){input.value=t.name;return;}t.name=input.value.trim();renderTeams();renderGroups();renderPlayers();};label.append(input);body.append(label);
  const l=document.createElement('label'),sel=document.createElement('select');l.textContent='Equipe-base dos recursos visuais';DELUXE_TEAMS.forEach((name,id)=>option(sel,id,name));sel.value=t?.sourceTeam??i;sel.disabled=i<36||!t;if((project.changes.teamVisuals||project.changes.teamPhotos)&&t){l.textContent='Recursos visuais da equipe';sel.textContent='';option(sel,'own','Próprios · '+t.name);sel.value='own';sel.disabled=true;sel.title=project.changes.teamPhotos?'Foto de seleção e recursos visuais próprios da referência.':'Bandeiras e uniformes próprios da referência.';}sel.onchange=()=>{t.sourceTeam=Number(sel.value);renderPlayers();};l.append(sel);body.append(l);$('teamCards').append(body);renderTeamVisualEditors(i);
 }
@@ -400,3 +404,4 @@ const screenEditors=installScreenEditors({getProject:()=>project,getFile:()=>fil
 const titleComposer=installTitleComposer({getProject:()=>project,getFile:()=>file,onStatus:status});
 
 document.addEventListener?.('deluxe:title-screen-open',()=>{if(!project){titleComposer.render();return;}try{renderTitleScreen(splitRom(file).rom);renderTextActions();}catch(error){status('Falha ao atualizar Tela de título: '+error.message);}});
+document.addEventListener?.('deluxe:overview-open',()=>renderOverview(document,project));

@@ -28,6 +28,7 @@ function selectPage(id){
  if(!Object.hasOwn(pages,id)||(!ready&&id!=='overview'))return;
  active=id;
  for(const panel of panels)panel.hidden=panel.dataset.panel!==id;
+ if(id==='overview')document.dispatchEvent?.(new CustomEvent('deluxe:overview-open'));
  if(id==='title-screen')document.dispatchEvent?.(new CustomEvent('deluxe:title-screen-open'));
  if(id==='scenarios')document.dispatchEvent?.(new CustomEvent('deluxe:scenarios-open'));
  for(const button of buttons){if(button.dataset.page===id)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');}
