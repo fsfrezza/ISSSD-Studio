@@ -1,5 +1,6 @@
 import {appendTeamPixelEditors,appendTeamPhotoEditor} from './team-pixels.mjs';
 import {renderOverview,adjacentTeam} from './overview.mjs';
+import {installRosterTools} from './roster-tools.mjs';
 import {renderPlayerAppearancePanel} from './player-appearance.mjs';
 import {deluxeTeamPicture,deluxeTeamFlag} from '../src/core/deluxe-team-preview.mjs';
 import {ensureDeluxeTeamPhotos} from '../src/core/deluxe-team-photos.mjs';
@@ -319,6 +320,7 @@ function renderTitleScreen(rom){
 function drawTitleLogo(){titleComposer.render();}
 
 function option(parent,value,label){const o=document.createElement('option');o.value=String(value);o.textContent=label;parent.append(o);}
+const updateRosterTools=installRosterTools({getProject:()=>project,getFile:()=>file,onCommit:next=>{try{const base=playerBase();applyDeluxePlayers(base.slice(),base,next);project.changes.players=next;renderPlayers();$('playerStatus').textContent='Alterações aplicadas ao elenco. Salve ou gere a ROM.';}catch(e){$('playerStatus').textContent=e.message;}},onSelect:slot=>{$('playerSelection').value=String(slot);renderPlayers();},onTeam:team=>{$('playerTeam').value=String(team);$('playerSelection').value='0';renderPlayers();},onStatus:message=>$('playerStatus').textContent=message,download});
 function renderPlayers(){
  if(!project)return;const base=playerBase(),names=teamNames(),team=Math.min(Number($('playerTeam').value)||0,names.length-1),player=Number($('playerSelection').value)||0;
  $('playerCount').textContent=names.length+' equipes · 20 jogadores';$('playerTeam').replaceChildren();names.forEach((label,i)=>option($('playerTeam'),i,label));$('playerTeam').value=team;
@@ -337,6 +339,7 @@ function renderPlayers(){
  renderPlayerAppearancePanel($('playerAppearance'),{base:splitRom(file).rom,project,team,player,raw:p.appearanceRaw,name:p.name,onChange:next=>{try{applyDeluxePlayers(base.slice(),base,next.changes.players);project=next;renderPlayers();$('playerStatus').textContent='Aparência atualizada no projeto. Salve o projeto ou gere a ROM.';}catch(e){$('playerStatus').textContent=e.message;}},onStatus:message=>$('playerStatus').textContent=message});
  $('resetPlayer').onclick=()=>{const next=structuredClone(project.changes.players??{}),current=readDeluxePlayer(base,team,player,next);if(current.jersey!==original.jersey){const swapped=planDeluxeJerseySwap(base,next,team,player,original.jersey);delete swapped[id];commit(swapped);}else{delete next[id];commit(next);}};
  $('resetPlayerTeam').onclick=()=>{const next=structuredClone(project.changes.players??{});for(let i=0;i<20;i++)delete next[team+':'+i];commit(next);};
+ updateRosterTools({base,team,player,names});
 }
 $('playerTeam').onchange=()=>{$('playerSelection').value=0;renderPlayers();$('playerStatus').textContent='';};
 $('playerSelection').onchange=()=>{renderPlayers();$('playerStatus').textContent='';};
