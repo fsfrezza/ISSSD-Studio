@@ -1,8 +1,14 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ISSSD Studio · Deluxe</title><link rel="stylesheet" href="/deluxe-editor/style.css"></head>
 <body>
-<aside class="sidebar"><div class="brand"><img class="brand-logo" src="/deluxe-editor/assets/editor-de-luxo.png" alt="EDITOR DE LUXO" width="2172" height="724" decoding="async"></div><div class="nav-caption">EDIÇÃO</div><nav aria-label="Áreas do editor">
+<aside class="sidebar" id="editorSidebar"><div class="brand"><img class="brand-logo" src="/deluxe-editor/assets/editor-de-luxo.png" alt="EDITOR DE LUXO" width="2172" height="724" decoding="async"><span class="brand-caption">ISSSD STUDIO · DELUXE</span></div><div class="nav-caption">ÁREAS DE EDIÇÃO</div><nav aria-label="Áreas do editor">
 <button type="button" data-page="overview" aria-current="page"><span>▦</span> Visão geral</button>
+<div class="nav-group-label" hidden>Equipes e estratégia</div>
+<button type="button" data-page="groups" hidden><span>▦</span> Grupos</button>
+<button type="button" data-page="teams" hidden><span>⚑</span> Equipes</button>
+<button type="button" data-page="players" hidden><span>♟</span> Jogadores</button>
+<button type="button" data-page="tactics" hidden><span>⇄</span> Táticas e formações</button>
+<div class="nav-group-label" hidden>Telas e gráficos</div>
 <button type="button" data-page="opening-konami" hidden><span>▣</span> Tela 1 · Konami</button>
 <button type="button" data-page="opening-international" hidden><span>▣</span> Tela 2 · International</button>
 <button type="button" data-page="opening-we-love-soccer" hidden><span>▣</span> Tela 3 · We Love Soccer</button>
@@ -13,19 +19,17 @@
 <button type="button" data-page="pre-match" hidden><span>▤</span> Menu pré-partida</button>
 <button type="button" data-page="stadium-screen" hidden><span>▤</span> Seleção de estádio</button>
 <button type="button" data-page="match-announcement" hidden><span>▤</span> Anúncio da partida</button>
-<button type="button" data-page="teams" hidden><span>⚑</span> Equipes</button>
-<button type="button" data-page="groups" hidden><span>▦</span> Grupos</button>
-<button type="button" data-page="tactics" hidden><span>⇄</span> Táticas e formações</button>
-<button type="button" data-page="players" hidden><span>♟</span> Jogadores</button>
-<button type="button" data-page="scenarios" hidden><span>⚽</span> Cenários</button>
+<div class="nav-group-label" hidden>Textos e controles</div>
 <button type="button" data-page="texts" hidden><span>Aa</span> Textos</button>
 <button type="button" data-page="match-notices" hidden><span>⚑</span> Avisos na partida</button>
 <button type="button" data-page="cursor" hidden><span>↖</span> Cursor</button>
+<div class="nav-group-label" hidden>Partida e conteúdo</div>
+<button type="button" data-page="scenarios" hidden><span>⚽</span> Cenários</button>
 <button type="button" data-page="stadiums" hidden><span>◈</span> Estádios</button>
 <button type="button" data-page="sounds" hidden><span>♫</span> Sons e vozes</button>
-<button type="button" data-page="improvements" hidden><span>✧</span> Melhorias</button>
+<button type="button" data-page="improvements" hidden><span>✧</span> Correções e Melhorias</button>
 </nav><div class="sidebar-footer">Base: Deluxe original (USA)<br><span>Suporte a 60 equipes · grupo GG</span></div></aside>
-<div class="workspace"><header class="toolbar"><div class="file-actions"><label class="button primary" for="rom">Abrir ROM</label><input class="file-input" id="rom" type="file" accept=".smc,.sfc" disabled><button type="button" id="openProjectButton" disabled>Abrir projeto</button><input class="file-input" id="load" type="file" accept=".json,.issdproj" disabled></div><div class="file-actions"><button id="save" disabled>Salvar projeto</button><button class="primary" id="export" disabled>Gerar ROM</button></div></header>
+<div class="workspace"><header class="toolbar"><div class="file-actions"><button type="button" id="sidebarToggle" aria-controls="editorSidebar" aria-expanded="true" title="Alternar modo completo, compacto e foco">☰ <span id="sidebarMode">Completo</span></button><label class="button primary" for="rom">Abrir ROM</label><input class="file-input" id="rom" type="file" accept=".smc,.sfc" disabled><button type="button" id="openProjectButton" disabled>Abrir projeto</button><input class="file-input" id="load" type="file" accept=".json,.issdproj" disabled></div><div class="file-actions"><button id="save" disabled>Salvar projeto</button><button class="primary" id="export" disabled>Gerar ROM</button></div></header>
 <div id="status" class="status" role="status">Carregando o Editor…</div>
 <main><section id="projectRomRequest" class="card project-rom-request" role="region" aria-label="ROM necessária para abrir o projeto" hidden><div class="card-body"><strong>Projeto selecionado: <span id="pendingProjectName"></span></strong><p>Selecione a ROM Deluxe original (USA), de 2 MB, para concluir a abertura. O projeto permanece guardado enquanto você escolhe a ROM.</p><button id="selectProjectRom" class="primary" type="button">Selecionar ROM e abrir projeto</button><p class="hint">Use a ROM original. A ROM Plus, a IASBESR e as ROMs editadas de 4 MB não são a base deste projeto.</p></div></section><div class="page-heading"><div><div class="eyebrow">ISSSD STUDIO / DELUXE</div><h1 id="pageTitle">Visão geral</h1><p id="pageDescription">Abra primeiro a ROM Deluxe original (USA). Depois, abra um projeto existente ou comece a editar.
 Salve o projeto para continuar depois ou gere uma cópia da ROM com suas alterações.</p></div><div class="section-actions"><button id="expandAll" type="button" title="Expandir todas as seções desta aba">Expandir tudo</button><button id="collapseAll" type="button" title="Recolher todas as seções desta aba">Recolher tudo</button></div></div>
@@ -64,7 +68,7 @@ Salve o projeto para continuar depois ou gere uma cópia da ROM com suas altera�
 </main><footer class="page-footer">ISSSD Studio · Deluxe <span>A ROM permanece no seu navegador.</span></footer></div>
 <script type="module">
 const status=document.getElementById('status');
-import('/deluxe-editor/app.mjs').then(()=>import('/deluxe-editor/layout.mjs')).then(()=>{
+import('/deluxe-editor/shell.mjs').then(()=>import('/deluxe-editor/app.mjs')).then(()=>import('/deluxe-editor/layout.mjs')).then(()=>{
  document.getElementById('rom').disabled=false;
  document.getElementById('load').disabled=true;
  document.getElementById('openProjectButton').disabled=true;

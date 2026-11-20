@@ -20,7 +20,7 @@ const pages={
  cursor:['Cursor','Personalize as instruções dos controles e da seleção de jogadores.'],
  stadiums:['Estádios','Visualize os campos e suas dimensões e ajuste as cores das paletas dos oito estádios originais.'],
  sounds:['Sons e vozes','Ouça, substitua e restaure as amostras de áudio.'],
- improvements:['Melhorias','Recursos da Plus, diferenças para o Deluxe e estado do projeto atual.'],
+ improvements:['Correções e Melhorias','Recursos da Plus, diferenças para o Deluxe e estado do projeto atual.'],
 };
 const panels=[...document.querySelectorAll('[data-panel]')],buttons=[...document.querySelectorAll('[data-page]')];
 let active='overview',ready=false;
