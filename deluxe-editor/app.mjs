@@ -19,6 +19,7 @@ import {TITLE_FONT_ROWS} from '../src/core/title-font-glyphs.mjs';
 import {installTitleComposer} from './title-composer.mjs';
 import {titlePhotoPixels,importTitlePhoto} from '../src/core/deluxe-title-photos.mjs';
 import {textPresetFields,applyTextPreset} from '../src/core/deluxe-text-presets.mjs';
+import {attachTextField,installTextFilters} from './text-workspace.mjs';
 import {deluxeMainMenuScene} from '../src/core/deluxe-main-menu-scene.mjs';
 import {addDeluxeStructureGroup,prepareDeluxeStructure,validateDeluxeStructure} from '../src/core/deluxe-structure.mjs';
 import {readDeluxeGroups,DELUXE_GROUP_LABELS,moveDeluxeGroupTeam} from '../src/core/deluxe-groups.mjs';
@@ -125,12 +126,15 @@ function textControl(container,{label,value,original,multiline=false,validate,on
  const input=document.createElement(multiline?'textarea':'input');if(!multiline)input.type='text';
  if(multiline)input.rows=Math.min(10,original.split('\n').length+1);
  input.value=value;
- input.addEventListener('input',()=>{try{validate(input.value);input.setCustomValidity('');onChange(input.value);}catch(e){input.setCustomValidity(e.message);onChange(input.value);} });
+ let updateField=()=>{};
+ input.addEventListener('input',()=>{try{validate(input.value);input.setCustomValidity('');updateField(input.value);onChange(input.value);}catch(e){input.setCustomValidity(e.message);updateField(input.value,true);onChange(input.value);} });
  const reset=document.createElement('button');reset.type='button';reset.textContent='Restaurar original';
- reset.onclick=()=>{input.value=original;input.setCustomValidity('');onChange(original);};
+ reset.onclick=()=>{input.value=original;input.setCustomValidity('');updateField(original);onChange(original);};
  row.append(input,reset);
- const pt=textPt(scope,key);if(typeof pt==='string'){const button=document.createElement('button');button.type='button';button.textContent='Português';button.onclick=()=>{try{validate(pt);input.value=pt;input.setCustomValidity('');onChange(pt);}catch(e){input.setCustomValidity(e.message);status(e.message);}};row.append(button);}
+ const pt=textPt(scope,key);if(typeof pt==='string'){const button=document.createElement('button');button.type='button';button.textContent='Português';button.onclick=()=>{try{validate(pt);input.value=pt;input.setCustomValidity('');updateField(pt);onChange(pt);}catch(e){input.setCustomValidity(e.message);status(e.message);}};row.append(button);}
  container.append(row);
+ let invalid=false;try{validate(value);}catch(e){invalid=true;input.setCustomValidity(e.message);}
+ updateField=attachTextField(row,container,{label,key,original,value,portuguese:pt,invalid});
 }
 const bgrToHex=v=>'#'+[0,5,10].map(shift=>Math.round(((v>>shift)&31)*255/31).toString(16).padStart(2,'0')).join('');
 const hexToBgr=hex=>[1,3,5].reduce((v,at,i)=>v|(Math.round(parseInt(hex.slice(at,at+2),16)*31/255)<<(i*5)),0);
@@ -401,8 +405,8 @@ $('resetStructure').onclick=()=>{delete project.changes.hiddenGroups;delete proj
 
 var presetFile,presetCatalog;
 function textPt(scope,key){if(!scope)return undefined;if(presetFile!==file){presetFile=file;presetCatalog=textPresetFields(splitRom(file).rom);}return presetCatalog.find(f=>f.scope===scope&&f.key===key)?.portuguese;}
-async function runTextPreset(scope,mode){const p=project,current=file,signature=JSON.stringify(p.changes);try{const next=applyTextPreset(p,splitRom(current).rom,scope,mode);await buildDeluxeProject(current,next);if(project!==p||file!==current||JSON.stringify(p.changes)!==signature){status('O projeto mudou durante a aplicação. Repita a ação.');return;}project=next;render();status(mode==='original'?'Textos originais restaurados na seção inteira.':'Português aplicado à seção inteira. Você pode editar cada texto livremente.');}catch(e){status('Nenhum texto foi aplicado: '+e.message);}}
-function addPresetButtons(host,scope){for(const [mode,label]of [['original','Restaurar todos os textos'],['portuguese','Português em todos os textos']]){const b=document.createElement('button');b.type='button';b.textContent=label;b.disabled=!project;b.onclick=()=>runTextPreset(scope,mode);host.append(b);}}
+async function runTextPreset(scope,mode){const p=project,current=file,signature=JSON.stringify(p.changes);try{const next=applyTextPreset(p,splitRom(current).rom,scope,mode);await buildDeluxeProject(current,next);if(project!==p||file!==current||JSON.stringify(p.changes)!==signature){status('O projeto mudou durante a aplicação. Repita a ação.');return;}project=next;render();status(mode==='original'?'Textos originais restaurados na seção inteira.':mode==='portuguese-originals'?'Textos originais traduzidos; personalizações preservadas.':'Português aplicado à seção inteira. Você pode editar cada texto livremente.');}catch(e){status('Nenhum texto foi aplicado: '+e.message);}}
+function addPresetButtons(host,scope){for(const [mode,label]of [['original','Restaurar todos os textos'],['portuguese','Português em todos os textos'],['portuguese-originals','Traduzir apenas originais']]){const b=document.createElement('button');b.type='button';b.textContent=label;b.disabled=!project;b.onclick=()=>runTextPreset(scope,mode);host.append(b);}if(host.id==='allTextsActions'||!host.closest?.('[data-panel="texts"]'))installTextFilters(host);}
 function renderTextActions(){for(const scope of ['allTexts','texts','nativeTexts','menuTexts','trainingHud','matchAnnouncements','matchStatistics','cursorHelp','mainMenu','titleTexts']){const host=$(scope+'Actions');host.replaceChildren();addPresetButtons(host,scope);}}
 
 const tacticsEditor=installTacticsEditor({getProject:()=>project,setProject:next=>project=next,getFile:()=>file,onStatus:status});
