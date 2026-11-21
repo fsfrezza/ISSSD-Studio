@@ -24,6 +24,9 @@ export function installSoundWorkspace(select,onFilter,onNavigate){
  const legend=doc.createElement('p');legend.className='hint';legend.textContent='Cinza: original · Azul: atual';
  const budget=doc.createElement('div');budget.className='sound-budget';
  workspace.append(toolbar,summary,navigation,canvas,legend,budget);label.after(workspace);
+ search.disabled=kind.disabled=source.disabled=previous.disabled=next.disabled=true;
+ canvas.hidden=legend.hidden=budget.hidden=true;
+ summary.textContent='Abra a ROM para consultar as amostras.';
  return {
   get query(){return search.value;},get kind(){return kind.value;},get source(){return source.value;},
   update(slots,all,changes,id,ready){search.disabled=kind.disabled=source.disabled=!ready;const index=slots.findIndex(s=>s.id===id);previous.disabled=index<=0;next.disabled=index<0||index===slots.length-1;position.textContent=index<0?'Nenhum som':(index+1)+' / '+slots.length;summary.textContent=slots.length+' de '+all.length+' sons · '+all.filter(s=>changes?.[s.id]).length+' modificados';if(index<0){canvas.hidden=legend.hidden=budget.hidden=true;}},

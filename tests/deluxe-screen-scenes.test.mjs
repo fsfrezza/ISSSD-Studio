@@ -11,7 +11,9 @@ test('hour preview animates the native frame without modifying the project or ba
  const active=deluxeScreenScene(base,'stadium-screen',project,0,reference,true),inactive=deluxeScreenScene(base,'stadium-screen',project,0,reference,false);
  assert.notDeepEqual(active.rgba,inactive.rgba);
  const pixel=(scene,x,y)=>Array.from(scene.rgba.slice((y*256+x)*4,(y*256+x)*4+4));
- assert.deepEqual(pixel(active,100,198),[255,255,131,255]);assert.deepEqual(pixel(inactive,100,198),[0,205,255,255]);
+ // The native frame now occupies tile columns 15..26 (x=120..215).
+ assert.deepEqual(pixel(active,140,198),[255,255,131,255]);assert.deepEqual(pixel(inactive,140,198),[0,205,255,255]);
+ assert.deepEqual(pixel(active,100,198),[49,49,49,49]);assert.deepEqual(pixel(inactive,100,198),[49,49,49,49]);
  assert.deepEqual(pixel(active,100,210),pixel(inactive,100,210));assert.equal(JSON.stringify(project),before);
 });
 test('screen fields retain their existing project paths and appear once',()=>{
