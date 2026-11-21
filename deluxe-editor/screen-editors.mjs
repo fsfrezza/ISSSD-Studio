@@ -5,9 +5,16 @@ import {DELUXE_MENU_SECTIONS,encodeNativeMenuField} from '../src/core/deluxe-men
 import {PREMATCH_GRAPHIC_LABELS,applyDeluxePrematchLabels} from '../src/core/deluxe-prematch-labels.mjs';
 import {splitRom} from '../src/core/deluxe-project.mjs';
 import {announcementReferenceId} from '../src/core/deluxe-match-announcement-layout.mjs';
+import {installPreviewComparison} from './preview-comparison.mjs';
 export const screenPrefix=id=>'screen'+id.split('-').map(s=>s[0].toUpperCase()+s.slice(1)).join('');
 export function installScreenEditors({getProject,getFile,textControl,addPresetButtons,onStatus,updateImprovements}){
- const $=id=>document.getElementById(id),references=new Map();
+ const $=id=>document.getElementById(id),references=new Map(),comparisons=new Map();
+ for(const config of DELUXE_SCREEN_EDITORS){
+  const preview=$(screenPrefix(config.id)+'Preview');
+  if(!preview.parentElement)continue;
+  const original=document.createElement('img');original.src='/deluxe-editor/assets/screens/'+config.id+'.png';original.alt='Captura original · '+config.title;original.width=256;original.height=224;
+  comparisons.set(config.id,installPreviewComparison(preview,original,{label:'Original · captura de referência'}));
+ }
  const layouts={'stadium-screen':['stadiumLayoutOptimized','stadium-layout'],'match-announcement':['announcementLayoutOptimized','announcement-layout']};
  let draftProject=null,highlightHour=true;const drafts=new Map();
  function layoutState(){const p=getProject();if(p!==draftProject){draftProject=p;drafts.clear();}return p;}
@@ -20,9 +27,10 @@ export function installScreenEditors({getProject,getFile,textControl,addPresetBu
  function draw(config){
   const current=layoutState(),prefix=screenPrefix(config.id),canvas=$(prefix+'Preview'),ctx=canvas.getContext('2d');
   const p=previewProject(current,config.id);
-  if(!p){ctx.clearRect(0,0,256,224);return;}
+  if(!p){ctx.clearRect(0,0,256,224);comparisons.get(config.id)?.setAvailable(false);return;}
   try{const selected=Number($(prefix+'Selection').value)||0,refId=config.id==='match-announcement'?announcementReferenceId(p.changes):config.id==='stadium-screen'&&p.changes.improvements.includes('stadium-layout')?(p.changes.improvements.includes('match-hour')?'stadium-optimized-hour':'stadium-optimized'):config.id;if(refId.startsWith('match-announcement-layout')&&!references.has(refId))return;const scene=deluxeScreenScene(splitRom(getFile()).rom,config.id,p,selected,references.get(refId)??references.get(config.id),highlightHour),data=ctx.createImageData(256,224);data.data.set(scene.rgba);ctx.putImageData(data,0,0);$(prefix+'Status').textContent='';}
-  catch(error){$(prefix+'Status').textContent='Prévia indisponível: '+error.message;}
+  catch(error){comparisons.get(config.id)?.setAvailable(false);$(prefix+'Status').textContent='Prévia indisponível: '+error.message;return;}
+  comparisons.get(config.id)?.setAvailable(true);
  }
  function updateMenu(config,sectionId,key,value,original){
   const p=getProject(),menus=p.changes.menuTexts??={},entries=menus[sectionId]??={};

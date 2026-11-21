@@ -10,6 +10,7 @@ import {installOpeningEditors} from './opening-editors.mjs';
 import {installScenarioEditor} from './scenario-editor.mjs';
 import {scenarioHeaderId,scenarioDescriptionId} from '../src/core/deluxe-scenarios.mjs';
 import {installScreenEditors} from './screen-editors.mjs';
+import {installPreviewComparison} from './preview-comparison.mjs';
 import {IMPROVEMENT_SECTIONS,deluxeImprovementState,deluxeStructureSummary} from '../src/core/deluxe-improvements.mjs';
 import {availablePlusTeams,addPlusCatalogGroup,applyPlusGroupOrganization} from '../src/core/deluxe-group-catalog.mjs';
 import {deluxeGroupView,swapDeluxeProjectGroups,structureGroupRows,setStructureGroupRows} from '../src/core/deluxe-team-identity.mjs';
@@ -62,7 +63,7 @@ function render(){
   $('playerFields').replaceChildren();$('playerAppearance').replaceChildren();$('playerStatus').textContent='';if(!project){$('playerTeam').replaceChildren();$('playerSelection').replaceChildren();}
   for(const id of ['texts','stadiums','stadiumData','nativeTexts','cursorHelp','menuTexts','mainMenu','trainingHud','matchAnnouncements','matchStatistics','titleTexts','titlePalettes'])$(id).replaceChildren();
   for(const id of ['menuScale','menuSelection','resetMenu'])$(id).disabled=!project;
-  if(!project){$('menuPreview').getContext('2d').clearRect(0,0,256,224);$('menuStatus').textContent='';}
+  if(!project){$('menuPreview').getContext('2d').clearRect(0,0,256,224);menuComparison?.setAvailable(false);$('menuStatus').textContent='';}
   $('title').value='';$('title').disabled=!project;$('resetTitle').disabled=!project;
   if(!project){titleComposer.render();renderSounds();return;}
   const {rom}=splitRom(file);
@@ -184,12 +185,16 @@ function updateMenu(id,value){
  if(!Object.keys(menu.texts).length&&menu.scale===80)delete project.changes.mainMenu;
  drawMenu();
 }
+const menuOriginal=document.createElement('canvas');
+menuOriginal.width=256;menuOriginal.height=224;
+const menuComparison=$('menuPreview').parentElement?installPreviewComparison($('menuPreview'),menuOriginal,{label:'Original · simulação do menu'}):null;
 function drawMenu(){
  if(!project)return;
  try{
   const preview=deluxeMainMenuScene(splitRom(file).rom,project.changes.mainMenu,Number($('menuSelection').value||0));
   const context=$('menuPreview').getContext('2d'),frame=context.createImageData(256,224);
   frame.data.set(preview.rgba);context.putImageData(frame,0,0);
+  if(menuComparison){const originalContext=menuOriginal.getContext('2d'),originalFrame=originalContext.createImageData(256,224);originalFrame.data.set(deluxeMainMenuScene(splitRom(file).rom,undefined,Number($('menuSelection').value||0)).rgba);originalContext.putImageData(originalFrame,0,0);menuComparison.setAvailable(true);}
   Array.from($('menuSelection').children).forEach((option,i)=>option.textContent=(project.changes.mainMenu?.texts?.[PLUS_MAIN_MENU_IDS[i]]??PLUS_MAIN_MENU_ORIGINAL[PLUS_MAIN_MENU_IDS[i]]).replace(/\n/g,' '));
   $('menuStatus').textContent=preview.regions.length?'Prévia atualizada. O menu cabe no espaço original.':'Menu original preservado.';
  }catch(error){$('menuStatus').textContent='Menu não pode ser gerado: '+error.message+'. A prévia mantém a última versão válida.';}
