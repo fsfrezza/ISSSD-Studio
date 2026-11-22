@@ -24,3 +24,17 @@ A defesa indevida durante o replay de pênalti permanece em investigação.
 Não confundir com o patch já disponível de interferência na cobrança.
 
 Referência da investigação do replay: `docs/deluxe/pb9t-replay-investigation.md`.
+
+## Segundo toque em reinícios
+
+Escopo: faltas, laterais e escanteios. A punição deve ocorrer somente se o
+cobrador voltar a tocar na bola antes de qualquer outro jogador, com falta
+para o adversário no ponto da infração. O estado deve ser armado na liberação
+da bola, não na preparação; deve ser limpo no toque de outro jogador e em
+qualquer interrupção ou novo reinício. Rebatimento na trave sem toque de
+outro jogador não encerra a restrição.
+
+Homologação necessária em ambos os lados: segundo toque direto, toque de
+companheiro, toque de adversário, goleiro como cobrador, rebote na trave,
+interrupção e replay. Não registrar a opção como disponível sem confirmar
+os hooks nativos de liberação, contato e reinício no emulador.

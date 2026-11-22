@@ -45,7 +45,7 @@ export const IMPROVEMENT_SECTIONS=Object.freeze([
  {id:'planned',title:'Planejadas e experimentais',description:'Itens ainda indisponíveis. Nenhum deles é aplicado à ROM por aparecer nesta lista.',items:[
   item('penalty-replay','Impedir defesa da bola durante o replay do pênalti','Trecho candidato da PB9T isolado e realocado sem colisão com a proteção da cobrança. Ainda falta comprovar a correção durante o replay; não aplicado automaticamente.'),
   item('backpass-direct-free-kick','Recuo punido com tiro livre dentro da área','Alternativa experimental à punição por pênalti, com posicionamento de barreira e goleiro ainda em revisão.'),
-  item('second-touch','Punir segundo toque em faltas e escanteios','Experimento de jogabilidade ainda sem opção integrada e validada para o Editor Deluxe.'),
+  item('second-touch','Punir segundo toque em faltas, laterais e escanteios','Ao tocar novamente na bola antes de outro jogador, o cobrador comete infração e concede falta ao adversário no local. Ainda sem patch validado para o Deluxe.'),
   item('goalkeeper-stability','Corrigir travamentos nas rotinas do goleiro','Revisar seleção de batedor, preparação da bola e substituições antes de disponibilizar os patches de goleiro no Deluxe.'),
  ]},
 ].map(section=>Object.freeze({...section,items:Object.freeze(section.items)})));

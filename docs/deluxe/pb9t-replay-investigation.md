@@ -28,6 +28,11 @@ Observações verificadas na desmontagem e nos bytes:
   sem importar essas rotinas maiores ou os mecanismos de proteção da ROM.
 
 Estado: referência preservada; opção `penalty-replay` continua desabilitada.
+Na nova homologação, ambas as cópias da referência apresentaram o SHA-256
+acima. O teste do helper em 84:FFDB passou com a Deluxe USA e a PB9T reais:
+bytes idênticos, sem sobreposição com 84:FFC0. A execução das instruções em
+16 combinações de entrada dos dois controles preservou o comportamento do
+helper e restaurou Y=$0024. Isso valida a realocação, não a correção do replay.
 Falta reproduzir a divergência Deluxe/PB9T com a mesma sequência de cobrança,
 replay e controles, reduzir as alterações que a eliminam e validar a combinação
 com `penalty-interference` e recuo. Não foi anunciado um patch de replay concluído.

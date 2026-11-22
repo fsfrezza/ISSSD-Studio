@@ -58,7 +58,7 @@ test('opening replacement preserves the full GG project and its sixty-team visua
  const edited=(await buildDeluxeProject(file,p)).rom.subarray(header);
  assert.deepEqual(edited.slice(0x17b80,0x17bb3),original.slice(0x17b80,0x17bb3));
  assert.equal(edited[0x17bb4+84*13-1],255);
- delete p.changes.openingMedia;assert.deepEqual(p,before);
+ if(Object.hasOwn(before.changes,'openingMedia'))p.changes.openingMedia=before.changes.openingMedia;else delete p.changes.openingMedia;assert.deepEqual(p,before);
 });
 test('all imported opening routes restore native PPU tile bases before initializing the title',{skip:!fixture},async()=>{
  const file=new Uint8Array(fs.readFileSync(fixture)),base=splitRom(file).rom;
