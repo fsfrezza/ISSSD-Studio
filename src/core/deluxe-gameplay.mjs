@@ -5,7 +5,8 @@ import {applyGoldenBall} from './deluxe-golden-ball.mjs';
 import {applyIndependentSecretCodes} from './deluxe-secret-codes.mjs';
 import {applyDeluxeStadiumLayout,applyDeluxeHourCursor,STADIUM_LAYOUT_ID} from './deluxe-stadium-layout.mjs';
 import {ANNOUNCEMENT_LAYOUT_ID,announcementTallTiles} from './deluxe-match-announcement-layout.mjs';
-export const DELUXE_GAMEPLAY_IDS=Object.freeze(['low-goal-kick','backpass','penalty-interference','controller-one-codes','one-minute','final-attack','goalkeeper-corner','goalkeeper-free-kick','match-hour','password-save','dog-skill-code','secret-team-skill-codes','golden-ball-code',STADIUM_LAYOUT_ID,ANNOUNCEMENT_LAYOUT_ID]);
+import {SHIRT_NUMBER_COLOR_ID} from './deluxe-shirt-number-color.mjs';
+export const DELUXE_GAMEPLAY_IDS=Object.freeze(['low-goal-kick','backpass','penalty-interference','controller-one-codes','one-minute','final-attack','goalkeeper-corner','goalkeeper-free-kick','match-hour','password-save','dog-skill-code','secret-team-skill-codes','golden-ball-code',STADIUM_LAYOUT_ID,ANNOUNCEMENT_LAYOUT_ID,SHIRT_NUMBER_COLOR_ID]);
 // Exact 44-byte helper from the clean Plus ROM at 85:FEC0. PHD/PLD preserve
 // the player's direct page; only keepers 0500/1000 consult their own controller.
 export const LOW_GOAL_KICK_HELPER=Uint8Array.from('0ba900005be00005f007e00010f0078011a2a01a8003a2d01ab58e748ec90080f005a20b002b60a20a002b60'.match(/../g).map(v=>parseInt(v,16)));

@@ -29,6 +29,7 @@ import {applyDeluxeNativeChanges} from './deluxe-native-fields.mjs';
 import {diffRanges} from './rom-integrity.mjs';
 import {applyDeluxeScenarios} from './deluxe-scenarios.mjs';
 import {applyDeluxeAnnouncementLayout} from './deluxe-match-announcement-layout.mjs';
+import {applyShirtNumberColors,validateShirtNumberColors,SHIRT_NUMBER_COLOR_ID} from './deluxe-shirt-number-color.mjs';
 
 export const DELUXE_SHA256='d2fe66c1ce66c65ce14e478c94be2e616f9e2cad374b5783a6a64d3c1a99cfa9';
 export const DELUXE_SCHEMA='isssd-deluxe-project-v1';
@@ -63,13 +64,15 @@ export async function buildDeluxeProject(file,project){
   const base=await identifyDeluxe(file);
   keys(project,['schema','version','base','changes'],'projeto');
   if(project.schema!==DELUXE_SCHEMA||project.version!==1||project.base?.sha256!==base.sha256||project.base?.id!==base.id)throw new Error('Projeto não pertence à base Deluxe original');
-  keys(project.changes,['strategyTexts','internalTitle','improvements','nativeTexts','cursorHelp','stadiums','stadiumUnits','menuTexts','mainMenu','sounds','trainingHud','matchAnnouncements','matchStatistics','titleScreen','players','groups','structure','titleComposer','groupLabels','teamVisuals','preMatchLabels','handicapLabels','buttonLabels','openingMedia','openingStart','teamPhotos','teamPhotoDrafts','tactics','hiddenGroups','scenarios'],'alterações');
+  keys(project.changes,['strategyTexts','internalTitle','improvements','nativeTexts','cursorHelp','stadiums','stadiumUnits','menuTexts','mainMenu','sounds','trainingHud','matchAnnouncements','matchStatistics','titleScreen','players','groups','structure','titleComposer','groupLabels','teamVisuals','preMatchLabels','handicapLabels','buttonLabels','openingMedia','openingStart','teamPhotos','teamPhotoDrafts','tactics','hiddenGroups','scenarios','shirtNumberColors'],'alterações');
   project=ensureDeluxeTeamPhotos(structuredClone(project));
   const changes=project.changes;
   const appliedTeamPhotos=validateTeamPhotoDrafts(changes.teamPhotoDrafts);
   if(changes.titleComposer!==undefined)validateTitleComposer(changes.titleComposer);
   if(!Array.isArray(changes.improvements))throw new Error('Lista de melhorias inválida');
   validateDeluxeGameplay(changes.improvements);
+  const numberTeamCount=changes.structure?.teams.length??36;
+  validateShirtNumberColors(changes.shirtNumberColors,numberTeamCount);
   const {rom,header}=splitRom(file),playerBase=prepareDeluxeStructure(rom,changes.structure);
   let out=playerBase.slice();
   if(changes.structure&&changes.groups!==undefined)throw Error('Use os grupos da estrutura ampliada');
@@ -105,6 +108,7 @@ export async function buildDeluxeProject(file,project){
   out=applyDeluxeGoalkeeperColors(out,rom,project);
   out=applyDeluxePlayerCloseups(out,rom,project);
   out=applyDeluxeGameplay(out,rom,changes.improvements);
+  if(changes.improvements.includes(SHIRT_NUMBER_COLOR_ID))out=applyShirtNumberColors(out,rom,changes.shirtNumberColors,numberTeamCount);
   applyDeluxeAnnouncementLayout(out,rom,changes);
   applyDeluxeHandicapLabels(out,rom,changes.handicapLabels);
   applyDeluxeButtonLabels(out,rom,changes.buttonLabels);

@@ -5,6 +5,7 @@ import {renderPlayerAppearancePanel} from './player-appearance.mjs';
 import {deluxeTeamPicture,deluxeTeamFlag} from '../src/core/deluxe-team-preview.mjs';
 import {ensureDeluxeTeamPhotos} from '../src/core/deluxe-team-photos.mjs';
 import {drawIndexedPreview,deluxeVisualRow,deluxePlayerPalette,deluxeAppearance,deluxeUniformFramePicture,visualTeamId} from '../src/core/deluxe-visual-preview.mjs';
+import {SHIRT_NUMBER_COLOR_ID} from '../src/core/deluxe-shirt-number-color.mjs';
 import {installTacticsEditor} from './tactics-editor.mjs';
 import {installOpeningEditors} from './opening-editors.mjs';
 import {installScenarioEditor} from './scenario-editor.mjs';
@@ -88,7 +89,7 @@ async function updateImprovements(ids,checked){
  const current=project,rom=file,signature=JSON.stringify(current.changes),next=structuredClone(current),selected=new Set(next.changes.improvements);
  for(const id of ids){if(checked)selected.add(id);else selected.delete(id);}
  next.changes.improvements=[...selected];improvementBusy=true;renderImprovements();
- try{await buildDeluxeProject(rom,next);if(project!==current||file!==rom||JSON.stringify(current.changes)!==signature)throw Error('O projeto mudou durante a aplicação. Repita a ação.');project=next;status('Melhoria atualizada no projeto. Salve o projeto ou gere a ROM para aplicar.');}catch(error){status(error.message);}finally{improvementBusy=false;renderImprovements();screenEditors.render();}
+ try{await buildDeluxeProject(rom,next);if(project!==current||file!==rom||JSON.stringify(current.changes)!==signature)throw Error('O projeto mudou durante a aplicação. Repita a ação.');project=next;status('Melhoria atualizada no projeto. Salve o projeto ou gere a ROM para aplicar.');}catch(error){status(error.message);}finally{improvementBusy=false;renderImprovements();screenEditors.render();if(ids.includes(SHIRT_NUMBER_COLOR_ID))renderTeams();}
 }
 function renderImprovements(){
  const root=$('improvements');root.replaceChildren();
@@ -405,7 +406,20 @@ function renderTeamVisualEditors(team){
  let uniformSelection={kit:0,frame:0};
  function redraw(onlyUniform=false){for(let j=onlyUniform?2:0;j<3;j++){const canvas=canvases[j];try{let view;if(j===0)view=deluxeTeamFlag(base,project,team);else if(j===1){const draft=project.changes.teamPhotoDrafts?.[visualTeamId(project,team)];panels[j].children[0].children[0].textContent=draft?'Equipe em formação · personalizada':'Equipe em formação';view=draft??deluxeTeamPicture(base,project,team);}else{const row=deluxeVisualRow(base,project,team),a=deluxeAppearance(base,project,team,1),{kit,frame,pattern}=uniformSelection;view={...deluxeUniformFramePicture(base,{frame,hair:a.hair,pattern:pattern??row.pattern}),colors:deluxePlayerPalette(row,a.palette,false,kit)};panels[j].children[0].children[0].textContent='Jogador com uniforme · '+(kit?'Reserva':'Titular')+' · Quadro '+(frame+1);}if(!view)throw Error('Prévia indisponível para esta composição.');drawIndexedPreview(canvas,view,view.colors);canvas.title='';}catch(e){canvas.title=e.message;canvas.width=1;canvas.height=1;}}}
  function update(next){if(next.changes.teamVisuals)project.changes.teamVisuals=next.changes.teamVisuals;if(next.changes.teamPhotos)project.changes.teamPhotos=next.changes.teamPhotos;if(next.changes.teamPhotoDrafts)project.changes.teamPhotoDrafts=next.changes.teamPhotoDrafts;else delete project.changes.teamPhotoDrafts;redraw();renderPlayers();status(project.changes.teamPhotoDrafts?'Foto personalizada salva no projeto e pronta para gerar a ROM.':'Pixels e cores atualizados no projeto. Salve o projeto ou gere a ROM.');}
- const options={base,getProject:()=>project,getSelection:()=>Number($('teamSelection').value),team,onChange:update,onStatus:status};appendTeamPixelEditors(panels[0],{...options,uniformRoot:panels[2],onUniformPreview:selection=>{uniformSelection=selection;redraw(true);}});appendTeamPhotoEditor(panels[1],options);redraw();$('teamCards').append(previews);
+ const options={base,getProject:()=>project,getSelection:()=>Number($('teamSelection').value),team,onChange:update,onStatus:status};appendTeamPixelEditors(panels[0],{...options,uniformRoot:panels[2],onUniformPreview:selection=>{uniformSelection=selection;redraw(true);}});appendTeamPhotoEditor(panels[1],options);
+ const numbers=document.createElement('fieldset'),legend=document.createElement('legend'),hint=document.createElement('small');legend.textContent='Cor do número da camisa (experimental)';numbers.append(legend);
+ const active=project.changes.improvements.includes(SHIRT_NUMBER_COLOR_ID);
+ hint.textContent=active?'Cores independentes por uniforme. Requer teste em partida.':'Ative o patch em Correções e melhorias → Patches visuais adicionais.';numbers.append(hint);
+ const native=()=>{const p=deluxeVisualRow(base,project,team).flag;return (p[2]|p[3]<<8)&0x7fff;};
+ for(const [kit,label] of [['home','Titular'],['away','Reserva']]){
+  const row=document.createElement('div'),l=document.createElement('label'),input=document.createElement('input'),sample=document.createElement('strong'),reset=document.createElement('button');
+  l.textContent=label+' ';input.type='color';input.disabled=!active;input.setAttribute('aria-label','Cor do número · '+label);sample.textContent='10';sample.style.background='#555';sample.style.padding='2px 8px';reset.type='button';reset.textContent='Original';reset.disabled=!active;
+  const refresh=()=>{input.value=bgrToHex(project.changes.shirtNumberColors?.[team]?.[kit]??native());sample.style.color=input.value;};refresh();
+  input.oninput=()=>{const colors=project.changes.shirtNumberColors??={};(colors[team]??={})[kit]=hexToBgr(input.value);refresh();status('Cor do número salva no projeto. Gere a ROM para aplicar.');};
+  reset.onclick=()=>{const colors=project.changes.shirtNumberColors;if(colors?.[team]){delete colors[team][kit];if(!Object.keys(colors[team]).length)delete colors[team];if(!Object.keys(colors).length)delete project.changes.shirtNumberColors;}refresh();status('Cor original do número restaurada.');};
+  l.append(input);row.append(l,sample,reset);numbers.append(row);
+ }
+ panels[2].append(numbers);redraw();$('teamCards').append(previews);
 }
 $('teamSelection').onchange=renderTeams;
 
@@ -419,7 +433,7 @@ $('addStructureGroup').onclick=()=>{if(!project)return;newGroupChoices=Array(6).
 $('cancelNewGroup').onclick=()=>{$('newGroupPanel').hidden=true;newGroupChoices=[];};
 $('confirmNewGroup').onclick=async()=>{const p=project,current=file,signature=JSON.stringify(p.changes);try{const next=addPlusCatalogGroup(splitRom(current).rom,p,newGroupChoices);await buildDeluxeProject(current,next);if(project!==p||file!==current||JSON.stringify(p.changes)!==signature)throw Error('O projeto mudou. Selecione o grupo novamente.');project=next;$('newGroupPanel').hidden=true;render();$('groupStatus').textContent='Grupo criado com seis equipes e seus elencos Plus. Salve o projeto ou gere a ROM.';}catch(e){$('newGroupStatus').textContent=e.message;}};
 $('applyPlusGroups').onclick=async()=>{const p=project,current=file,signature=JSON.stringify(p.changes);try{const next=applyPlusGroupOrganization(splitRom(current).rom,p);await buildDeluxeProject(current,next);if(project!==p||file!==current||JSON.stringify(p.changes)!==signature)throw Error('O projeto mudou. Repita a aplicação.');project=next;$('newGroupPanel').hidden=true;render();$('groupStatus').textContent='Nove grupos Plus aplicados. As edições existentes das equipes e jogadores foram preservadas.';}catch(e){$('groupStatus').textContent=e.message;}};
-$('resetStructure').onclick=()=>{delete project.changes.hiddenGroups;delete project.changes.structure;delete project.changes.teamPhotos;delete project.changes.teamVisuals;delete project.changes.groups;delete project.changes.groupLabels;for(const key of Object.keys(project.changes.players??{}))if(Number(key.split(':')[0])>=36)delete project.changes.players[key];$('playerTeam').value=0;render();$('groupStatus').textContent='Estrutura original restaurada. As edições dos 36 elencos nativos foram preservadas.';};
+$('resetStructure').onclick=()=>{delete project.changes.hiddenGroups;delete project.changes.structure;delete project.changes.teamPhotos;delete project.changes.teamVisuals;delete project.changes.groups;delete project.changes.groupLabels;for(const key of Object.keys(project.changes.players??{}))if(Number(key.split(':')[0])>=36)delete project.changes.players[key];for(const key of Object.keys(project.changes.shirtNumberColors??{}))if(Number(key)>=36)delete project.changes.shirtNumberColors[key];$('playerTeam').value=0;render();$('groupStatus').textContent='Estrutura original restaurada. As edições dos 36 elencos nativos foram preservadas.';};
 
 var presetFile,presetCatalog;
 function textPt(scope,key){if(!scope)return undefined;if(presetFile!==file){presetFile=file;presetCatalog=textPresetFields(splitRom(file).rom);}return presetCatalog.find(f=>f.scope===scope&&f.key===key)?.portuguese;}
