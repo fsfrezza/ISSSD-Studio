@@ -4,6 +4,14 @@ import {DELUXE_PLAYER_VIEWS} from './deluxe-player-preview-data.mjs';
 const word=(b,p)=>b[p]|b[p+1]<<8,pc=c=>((c>>>16)&127)*32768+(c&32767),signed=v=>v>127?v-256:v;
 const pal=(base,pointer,size)=>pointer?Array.from(base.slice(0x48000+(pointer&32767),0x48000+(pointer&32767)+size)):null;
 export function visualTeamId(project,team){return project.changes.structure?.teams[team]?.plusId??DELUXE_PROJECT_TO_PLUS[team];}
+// The native 4bpp shirt-number tiles use only palette index 12 (and transparency).
+export const SHIRT_NUMBER_COLOR_INDEX=12;
+export function setDeluxeShirtNumberColor(project,team,kit,color){
+ if(![0,1].includes(kit)||!Number.isInteger(color)||color<0||color>32767)throw Error('Cor do número inválida.');
+ const next=structuredClone(project),record=next.changes.teamVisuals?.teams[visualTeamId(next,team)]?.[kit?'away':'home'];
+ if(!record||record.length!==34)throw Error('A edição exige a paleta própria da equipe.');
+ const at=2+SHIRT_NUMBER_COLOR_INDEX*2;record[at]=color&255;record[at+1]=color>>8;return next;
+}
 export function deluxeVisualRow(base,project,team){const own=project.changes.teamVisuals?.teams[visualTeamId(project,team)];if(own)return normalizeDeluxeFlag(visualTeamId(project,team),own);const id=project.changes.structure?.teams[team]?.sourceTeam??team,pattern=word(base,0xfcec+id*2),at=0xc0000+(pattern&32767);let data=Array.from(base.slice(at,at+(pattern===0xf014?32:256)));if(data.length===32)data=Array.from({length:8},()=>data).flat();return{home:pal(base,word(base,0x1027a+id*2),34),away:pal(base,word(base,0x1027a+(43+id)*2),34),keeper:pal(base,word(base,0x10326+id*2),24),skin:pal(base,word(base,0x1043c+id*2),12),hair:pal(base,word(base,0x103ca+id*2),4),flag:pal(base,word(base,0xfe06+id*2),10),pattern:data};}
 export function deluxeAppearance(base,project,team,player,originalRaw){const row=deluxeVisualRow(base,project,team),source=project.changes.structure?.teams[team]?.sourceTeam??team,raw=row.appearance?.[player]??originalRaw??base[0x50000+(source*20+player)*7+6],edit=project.changes.players?.[team+':'+player]?.appearance,nativeHair=raw&15;return{hair:edit?.hair??(!project.changes.teamVisuals&&nativeHair===0?14:nativeHair),palette:edit?.palette??(raw>>4&1)};}
 export function deluxePlayerPalette(row,palette=0,keeper=false,kit=0){if(keeper)return[0,...Array.from({length:11},(_,i)=>word(row.keeper,2+i*2))];const out=Array.from({length:16},(_,i)=>word(kit?row.away:row.home,2+i*2));if(palette){if(row.skin)out.splice(2,5,...Array.from({length:5},(_,i)=>word(row.skin,2+i*2)));if(row.hair)out[1]=word(row.hair,2);}return out;}

@@ -1,10 +1,33 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {splitRom} from '../src/core/deluxe-project.mjs';
-import {deluxeUniformFramePicture,deluxePlayerPalette} from '../src/core/deluxe-visual-preview.mjs';
+import {splitRom,buildDeluxeProject} from '../src/core/deluxe-project.mjs';
+import {deluxeUniformFramePicture,deluxePlayerPalette,decodePreviewTile,SHIRT_NUMBER_COLOR_INDEX,setDeluxeShirtNumberColor,visualTeamId} from '../src/core/deluxe-visual-preview.mjs';
 import {editIndependentPattern,independentPatternPixels} from '../src/core/independent-team-fields.mjs';
 import {appendTeamPixelEditors} from '../deluxe-editor/team-pixels.mjs';
+
+test('shirt number color edits only the chosen team and kit palette word',()=>{
+ const row={home:Array(34).fill(0),away:Array(34).fill(0)},project={changes:{structure:{teams:[{plusId:54}]},teamVisuals:{teams:{54:row,55:structuredClone(row)}}}};
+ const next=setDeluxeShirtNumberColor(project,0,1,0x7fff),expected=structuredClone(project);
+ expected.changes.teamVisuals.teams[54].away.splice(26,2,255,127);
+ assert.deepEqual(next,expected);assert.equal(project.changes.teamVisuals.teams[54].away[26],0);
+ assert.throws(()=>setDeluxeShirtNumberColor(project,0,0,32768),/inválida/);
+});
+test('native shirt numbers use palette index 12 and both selected colors reach the exported ROM',{skip:!process.env.ISSSD_DELUXE_ROM||!process.env.ISSSD_GG_RECOVERED_PROJECT},async()=>{
+ const file=new Uint8Array(fs.readFileSync(process.env.ISSSD_DELUXE_ROM)),base=splitRom(file).rom,project=JSON.parse(fs.readFileSync(process.env.ISSSD_GG_RECOVERED_PROJECT));
+ for(let at=0xc65d4;at<0xc6ff4;at+=32)assert.ok(decodePreviewTile(base.slice(at,at+32)).every(v=>v===0||v===SHIRT_NUMBER_COLOR_INDEX));
+ const slot=54,id=visualTeamId(project,slot),next=setDeluxeShirtNumberColor(setDeluxeShirtNumberColor(project,slot,0,0x001f),slot,1,0x7c00);
+ const result=await buildDeluxeProject(file,JSON.parse(JSON.stringify(next))),out=result.rom.slice(result.base.headerSize);
+ const word=(b,p)=>b[p]|b[p+1]<<8;
+ // Locate the relocated native palette pointer directory.
+ const at=base.findIndex((v,i)=>v===0xbf&&word(base,i+1)===0x827a&&base[i+3]===0x82);
+ assert.ok(at>=0);const dir=((out[at+3]&127)*0x8000)+(word(out,at+1)&32767);
+ for(const [kit,key,color] of [[0,'home',0x001f],[1,'away',0x7c00]]){
+  const ptr=word(out,dir+(slot+kit*(next.changes.structure.teams.length+7))*2),p=0x228000+ptr;
+  assert.equal(word(out,p+26),color);
+  assert.deepEqual(Array.from(out.slice(p,p+34)),next.changes.teamVisuals.teams[id][key]);
+ }
+});
 
 test('each uniform preview uses its matching native pose and pattern tile',{skip:!process.env.ISSSD_DELUXE_ROM},()=>{
  const base=splitRom(new Uint8Array(fs.readFileSync(process.env.ISSSD_DELUXE_ROM))).rom;
